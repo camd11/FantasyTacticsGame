@@ -174,6 +174,20 @@ IRON_BOW = Weapon("Iron Bow", 6, 5, 85, 5, [2], 'Bow', 40)
 VULNERARY = Consumable("Vulnerary", 'heal', 10, "Restores 10 HP.")
 SPEED_RING = Consumable("Speed Ring", 'stat_spd', 2, "Permanently increases Speed by 2.")
 
+# --- Chapter 1 Event Data ---
+# Defines rewards/messages for visiting houses. Coordinates are (x, y).
+HOUSE_REWARDS = {
+    (7, 0): {'item': copy.deepcopy(VULNERARY), 'message': "A villager gives you a Vulnerary."},
+    (9, 0): {'message': "Villager: 'Be careful, the bandits are ruthless!'"},
+    (12, 6): {'item': copy.deepcopy(IRON_SWORD), 'message': "You found an Iron Sword!"},
+    (2, 11): {'message': "Villager: 'Leif! You must escape!'"},
+    (13, 12): {'item': copy.deepcopy(VULNERARY), 'message': "Another Vulnerary."},
+    (10, 14): {'message': "Villager: 'Good luck!'"},
+}
+# Defines turn-based reinforcements: (turn, unit_template, [(x1,y1), (x2,y2)...])
+REINFORCEMENTS = [
+    # Example: (3, BANDIT_TEMPLATE, [(0, 0), (14, 0)]) # Turn 3, 2 bandits appear
+] # Empty for now
 
 # --- Unit Class ---
 class Unit:
@@ -1143,7 +1157,11 @@ class Game:
         # Events
         if self.current_turn=='Player': self.event_manager.trigger_turn_events(self.turn_count)
         # Switch Turn
-        if self.current_turn=='Player': self.current_turn='Enemy' else: self.current_turn='Player'; self.turn_count+=1
+        if self.current_turn == 'Player':
+            self.current_turn = 'Enemy'
+        else:
+            self.current_turn = 'Player'
+            self.turn_count += 1
         print(f"\n--- Start {self.current_turn}'s Turn {self.turn_count if self.current_turn=='Player' else ''} ---")
         [u.reset_turn() for u in self.units if u.team==self.current_turn and u.is_alive and not u.is_captured and not u.has_escaped]; self.check_game_over()
 
@@ -1371,16 +1389,29 @@ class Game:
     # --- Polished Info/Targets Commands ---
     def handle_info_command(self, parts):
         if len(parts) == 3:
-             target_unit = None; try: x, y = int(parts[1]), int(parts[2]); target_unit = self.get_unit_at(x, y); except ValueError: print("Invalid coords."); return
-             if target_unit:
-                 print(f"\n--- Info: {target_unit.name} ({target_unit.symbol}) ---"); print(f"  Team: {target_unit.team}, Status: {'Alive' if target_unit.is_alive else 'Defeated'} {'(Exh)' if target_unit.is_exhausted else ''} {'<Carry>' if target_unit.is_capturing else ''}"); print(f"  HP: {target_unit.hp}/{target_unit.max_hp}, Fatigue: {target_unit.fatigue}"); t_props=self.get_terrain_props(target_unit.x, target_unit.y); ldr_bonus=self.calculate_leadership_bonus(target_unit); ldr_str=f"(Ldr+{ldr_bonus})" if ldr_bonus > 0 else ""; print(f"  Pos: ({target_unit.x},{target_unit.y}) on {t_props['name']} {ldr_str}");
-                 stats=["strength","magic","skill","speed","luck","defense","resistance","constitution","move","pcc","leadership_stars"]; print(f"  Stats (Base -> Eff):"); stat_strs=[]
-                 for stat in stats: base=target_unit.get_base_stat(stat); eff=getattr(target_unit, stat, base); show_eff=base!=eff and stat not in ['pcc','leadership_stars']; stat_strs.append(f"{stat.capitalize()[:3]} {base}{'->'+str(eff) if show_eff else ''}")
-                 for i in range(0, len(stat_strs), 3): print("    "+" | ".join(stat_strs[i:i+3]))
-                 print(f"  Skills: {', '.join(sorted(list(target_unit.skills))) if target_unit.skills else 'None'}"); wpn=target_unit.equipped_weapon; print(f"  Weapon: {wpn or 'None'}");
-                 if wpn: eff_hit=target_unit.hit_rate+ldr_bonus; eff_avo=target_unit.avoid+t_props['avoid']+ldr_bonus; print(f"  Combat: AS={target_unit.attack_speed} Hit={eff_hit} Avo={eff_avo} Crit={target_unit.crit_rate_base}(+{target_unit.pcc}*ASΔ) C.Avo={target_unit.crit_avoid} Atk={target_unit.attack_power}")
-                 else: print("  Combat: N/A"); self.display_inventory(target_unit)
-             else: print(f"No active unit at ({x},{y}).")
+            target_unit = None
+            try:
+                x, y = int(parts[1]), int(parts[2])
+                target_unit = self.get_unit_at(x, y)
+            except ValueError:
+                print("Invalid coords.")
+                return
+            if target_unit:
+                print(f"\n--- Info: {target_unit.name} ({target_unit.symbol}) ---"); print(f"  Team: {target_unit.team}, Status: {'Alive' if target_unit.is_alive else 'Defeated'} {'(Exh)' if target_unit.is_exhausted else ''} {'<Carry>' if target_unit.is_capturing else ''}"); print(f"  HP: {target_unit.hp}/{target_unit.max_hp}, Fatigue: {target_unit.fatigue}"); t_props=self.get_terrain_props(target_unit.x, target_unit.y); ldr_bonus=self.calculate_leadership_bonus(target_unit); ldr_str=f"(Ldr+{ldr_bonus})" if ldr_bonus > 0 else ""; print(f"  Pos: ({target_unit.x},{target_unit.y}) on {t_props['name']} {ldr_str}");
+                stats=["strength","magic","skill","speed","luck","defense","resistance","constitution","move","pcc","leadership_stars"]; print(f"  Stats (Base -> Eff):"); stat_strs=[]
+                for stat in stats:
+                    base=target_unit.get_base_stat(stat)
+                    eff=getattr(target_unit, stat, base)
+                    show_eff=base!=eff and stat not in ['pcc','leadership_stars']
+                    stat_strs.append(f"{stat.capitalize()[:3]} {base}{'->'+str(eff) if show_eff else ''}")
+                for i in range(0, len(stat_strs), 3): print("    "+" | ".join(stat_strs[i:i+3]))
+                print(f"  Skills: {', '.join(sorted(list(target_unit.skills))) if target_unit.skills else 'None'}"); wpn=target_unit.equipped_weapon; print(f"  Weapon: {wpn or 'None'}");
+                if wpn:
+                    eff_hit=target_unit.hit_rate+ldr_bonus; eff_avo=target_unit.avoid+t_props['avoid']+ldr_bonus; print(f"  Combat: AS={target_unit.attack_speed} Hit={eff_hit} Avo={eff_avo} Crit={target_unit.crit_rate_base}(+{target_unit.pcc}*ASΔ) C.Avo={target_unit.crit_avoid} Atk={target_unit.attack_power}")
+                else:
+                    print("  Combat: N/A")
+                    self.display_inventory(target_unit)
+            else: print(f"No active unit at ({x},{y}).")
         else: print("Usage: i <x> <y>")
 
     def handle_moves_command(self, parts):
@@ -1584,7 +1615,10 @@ class Game:
     # --- Combat Prediction (Updated for Ldr/PCC) ---
     def predict_combat(self, attacker, defender, ax, ay):
         """Predicts combat outcome: (dmg_dealt, dmg_taken, is_lethal, attacker_survives)."""
-        dmg_d,dmg_t,lethal,survives = 0,0,False,True; wpn=attacker.equipped_weapon; if not wpn: return 0,0,False,True
+        dmg_d, dmg_t, lethal, survives = 0, 0, False, True
+        wpn = attacker.equipped_weapon
+        if not wpn:
+            return 0, 0, False, True
         # Attacker Stats + Ldr
         astr=attacker.strength;amag=attacker.magic;askl=attacker.skill;aspd=attacker.speed;alck=attacker.luck;acon=attacker.constitution; wt=wpn.weight if wpn else 0; p=max(0,wt-acon); eff_as=max(0,aspd-p); b_crit=attacker.crit_rate_base; b_hit=attacker.hit_rate; ldr_a=self.calculate_leadership_bonus(attacker); atk_pcc=attacker.pcc
         # Defender Stats + Terrain + Ldr
@@ -1628,9 +1662,16 @@ class Game:
         """Finds reachable square closest (Manhattan dist) to priority target."""
         if not potential_targets: return None
         priority_target = None # Find Leif or closest target (same logic as before)
-        leif=next((t for t in potential_targets if t.name=="Leif"),None);
-        if leif: priority_target=leif
-        else: min_d=float('inf'); [min_d:=d, priority_target:=t for t in potential_targets if (d:=self.distance(unit.x,unit.y,t.x,t.y))<min_d]
+        leif = next((t for t in potential_targets if t.name == "Leif"), None)
+        if leif:
+            priority_target = leif
+        else:
+            min_d = float('inf')
+            for t in potential_targets:
+                d = self.distance(unit.x, unit.y, t.x, t.y)
+                if d < min_d:
+                    min_d = d
+                    priority_target = t
         if not priority_target: return None
 
         reachable = self.get_valid_moves(unit)
