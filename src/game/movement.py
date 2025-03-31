@@ -63,12 +63,6 @@ def calculate_move_range(game_state: GameState, unit: Unit) -> Set[Tuple[int, in
                 # print(f"Debug: Tile ({next_x},{next_y}) terrain {terrain_type} impassable for {unit_move_type}")
                 continue # Impassable terrain for this unit type
 
-            # Handle case where terrain type might not be in the specific cost_table (e.g., Water for Infantry)
-            # Treat unknown terrain as impassable for now.
-            if move_cost is None:
-                 # print(f"Debug: Terrain type {terrain_type} cost not defined for {unit_move_type}")
-                 continue
-
             # Ensure cost is positive
             if move_cost <= 0:
                 move_cost = 1 # Minimum cost is 1

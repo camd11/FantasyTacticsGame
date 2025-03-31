@@ -56,14 +56,14 @@ def setup_initial_state() -> GameState:
 
     # Weapons & Items
     iron_sword = Weapon(name="Iron Sword", might=5, hit=90, weight=5, wtype="Sword", range_min=1, range_max=1, uses=50, max_uses=50)
-    iron_axe = Weapon(name="Iron Axe", might=8, hit=75, weight=10, wtype="Axe", range_min=1, range_max=1, uses=50, max_uses=50)
+    iron_axe = Weapon(name="Iron Axe", might=8, hit=75, weight=10, wtype="Axe", range_min=1, range_max=1, uses=50, max_uses=50) # Restore might=8
     # Give enough vulneraries for 20 uses (7 items * 3 uses/item = 21 uses)
     leif_inventory = [iron_sword] + [Vulnerary() for _ in range(7)]
 
-    # Add Leif (Player - Cavalry) - Start fatigue high, Def normal
+    # Add Leif (Player - Cavalry) - Default setup
     leif = Unit(
-        id=1, name="Leif", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 4),
-        max_hp=20, hp=10, strength=5, magic=0, skill=6, speed=7, luck=6, defense=3, constitution=5, mov=7, fatigue=19, # Set fatigue=19, reset Def
+        id=1, name="Leif", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 4), # Default start (1,4)
+        max_hp=20, hp=20, strength=5, magic=0, skill=6, speed=7, luck=6, defense=3, constitution=5, mov=7, fatigue=0,
         inventory=leif_inventory
     )
     game_state.add_unit(leif)
@@ -72,7 +72,7 @@ def setup_initial_state() -> GameState:
     bandit_inventory = [iron_axe]
     bandit = Unit(
         id=101, name="Bandit", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(5, 4),
-        max_hp=200, hp=200, strength=1, magic=0, skill=2, speed=4, luck=0, defense=2, constitution=10, mov=4, fatigue=0,
+        max_hp=200, hp=200, strength=1, magic=0, skill=2, speed=4, luck=0, defense=2, constitution=10, mov=4, fatigue=0, # Restore skill=2
         inventory=bandit_inventory
     )
     game_state.add_unit(bandit)
@@ -96,7 +96,16 @@ def run_cli():
         if not command_str or command_str.startswith("#"):
             continue
 
+        # Remove trailing comments before splitting
+        command_str = command_str.split('#', 1)[0].strip()
+        # Re-check if the line became empty after removing the comment
+        if not command_str:
+            continue
+
         parts = command_str.lower().split() # Lowercase after comment check
+        # Check if parts is empty after splitting (e.g., if input was just whitespace)
+        if not parts:
+            continue
         command = parts[0]
         args = parts[1:] # Arguments are now a list
 

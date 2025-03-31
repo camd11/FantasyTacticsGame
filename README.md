@@ -49,6 +49,30 @@ The initial Minimum Viable Product (MVP) focusing on foundational map/unit repre
     cat test_combat_commands.txt | python3 src/cli.py
     ```
 
+## Development Workflow
+
+It's important to maintain good version control practices. After making changes and verifying they work (e.g., by running relevant test files):
+
+1.  **Stage your changes:**
+    ```bash
+    # Stage specific files
+    git add src/cli.py tests/my_new_test.txt
+    # Or stage all tracked changes
+    git add .
+    ```
+2.  **Commit your changes** with a clear, descriptive message:
+    ```bash
+    git commit -m "Fix: Correctly parse commands with comments in pipe"
+    # Or for more significant changes:
+    git commit -m "Feat: Implement basic fatigue mechanic"
+    ```
+3.  **Push your changes** to the remote repository (assuming one is configured):
+    ```bash
+    git push
+    ```
+
+Commit frequently with focused changes to make tracking history easier.
+
 ## Next Steps (Potential)
 
 *   Refine combat calculations closer to Thracia's formulas (Con impact on AS, 1-99% hit cap, terrain bonuses, magic damage, crits, PCC, skills).
