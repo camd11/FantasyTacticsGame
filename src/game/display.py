@@ -43,7 +43,9 @@ def render_map(game_state: GameState, move_range: Optional[Set[Tuple[int, int]]]
                 unit = game_state.units.get(unit_id)
 
             # Overlay unit/selection/range markers
-            # Order matters: Defeated > Selected > Capturing > Normal Unit > Move Range
+            # Order matters: Defeated > Selected > Capturing > Fatigued > Normal Unit > Move Range
+            is_fatigued = unit and unit.fatigue >= unit.max_hp
+
             if unit and not unit.is_alive:
                 display_char = "X" # Defeated
             elif unit and unit.is_captured:
@@ -58,6 +60,8 @@ def render_map(game_state: GameState, move_range: Optional[Set[Tuple[int, int]]]
                     elif unit.faction == Faction.ENEMY:
                         display_char = "c" # Enemy Capturing
                     # Add Ally capturing later if needed ('G'?)
+                elif is_fatigued and unit.faction == Faction.PLAYER: # Check fatigue *after* capturing
+                     display_char = "f" # Fatigued Player unit (lowercase 'f')
                 elif unit.faction == Faction.PLAYER:
                     display_char = "P" if not unit.has_acted else "p"
                 elif unit.faction == Faction.ENEMY:
@@ -87,7 +91,10 @@ def render_map(game_state: GameState, move_range: Optional[Set[Tuple[int, int]]]
             captive_name = captive.name if captive else "Unknown"
             capture_status_str = f" | Capturing: {captive_name}"
         # Added MoveType and Capture Status to selected unit info
-        print(f"Selected: {selected_unit.name} ({selected_unit.move_type}) at {selected_unit.position}{capture_status_str} | HP: {selected_unit.hp}/{selected_unit.max_hp} | Mov: {selected_unit.mov} | Weapon: {weapon_name} | Acted: {selected_unit.has_acted}")
+        # Also add Fatigue display
+        fatigue_status = f" | Fatigue: {selected_unit.fatigue}/{selected_unit.max_hp}"
+        fatigued_warning = " [FATIGUED]" if selected_unit.fatigue >= selected_unit.max_hp else ""
+        print(f"Selected: {selected_unit.name} ({selected_unit.move_type}) at {selected_unit.position}{capture_status_str}{fatigue_status}{fatigued_warning} | HP: {selected_unit.hp}/{selected_unit.max_hp} | Mov: {selected_unit.mov} | Weapon: {weapon_name} | Acted: {selected_unit.has_acted}")
     else:
         print("Selected: None")
 

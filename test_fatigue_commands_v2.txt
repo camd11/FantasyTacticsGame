@@ -1,0 +1,12 @@
+# Test sequence for fatigue mechanic v2 (using item)
+# Leif (MaxHP 20, HP 10, Fatigue 19)
+select 1 4
+info
+item vulnerary
+# Fatigue should now be 20
+info 1 4 # Check info after using item (should show acted, fatigue 20)
+endturn
+# Turn 2
+select 1 4 # Attempt select (should fail due to fatigue)
+info 1 4 # Check info again
+quit

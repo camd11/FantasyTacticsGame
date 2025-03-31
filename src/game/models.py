@@ -49,6 +49,12 @@ TERRAIN_COSTS: Dict[MoveType, Dict[TerrainType, Optional[int]]] = {
     # Add other move types later
 }
 
+# --- Fatigue Costs ---
+FATIGUE_COST_COMBAT = 1
+FATIGUE_COST_ITEM = 1 # Simplified cost for using items like Vulnerary
+# Add costs for Staff, Dance, Steal later
+
+
 # --- Item Base Class ---
 @dataclass
 class Item:
@@ -126,6 +132,7 @@ class Unit:
     defense: int = 0
     constitution: int = 0
     mov: int = 0
+    fatigue: int = 0 # NEW: Fatigue counter
 
     # Equipment & Inventory
     inventory: List[InventoryItem] = field(default_factory=list)
@@ -133,8 +140,8 @@ class Unit:
 
     # Status
     is_alive: bool = True
-    is_captured: bool = False # NEW: Is this unit currently captured?
-    is_capturing: Optional[int] = None # NEW: ID of the unit this unit is capturing, if any
+    is_captured: bool = False
+    is_capturing: Optional[int] = None
 
     def __post_init__(self):
         self.hp = min(self.hp, self.max_hp)
@@ -300,10 +307,12 @@ class GameState:
             print(f"Error: Cannot add unit {unit.name} at {unit.position}")
 
     def reset_player_actions(self):
+        """Resets action flag for Player units. Fatigue is NOT reset here."""
         for unit in self.units.values():
             # Only reset actions for alive, non-captured player units
             if unit.faction == Faction.PLAYER and unit.is_alive and not unit.is_captured:
                 unit.has_acted = False
+                # Fatigue persists across turns within a chapter
 
     def get_units_by_faction(self, faction: Faction) -> List[Unit]:
         # Return only alive, non-captured units with HP > 0
@@ -314,10 +323,20 @@ class GameState:
 
     def handle_unit_death(self, unit: Unit):
         """Handles setting unit status on death (NOT capture)."""
+        # --- DEBUG ---
+        print(f"  DEBUG: handle_unit_death called for {unit.name}. Current HP: {unit.hp}")
+        # -----------
+        # Add check to ensure HP is actually 0 before proceeding with death state
+        if unit.hp > 0 and not unit.is_captured:
+            print(f"  ERROR: handle_unit_death called for {unit.name} but HP is {unit.hp}. NOT setting dead.")
+            # Potentially log this error, but don't mark as dead if HP > 0
+            return # Do not proceed if HP is not 0 (unless captured)
+
         if not unit.is_captured: # Only print death message if not captured
             print(f"{unit.name} has been defeated!")
         unit.is_alive = False
-        unit.hp = 0
+        # unit.hp = 0 # HP should already be 0 if this is called correctly
+
         # If unit was capturing someone, release the captive
         if unit.is_capturing is not None:
             captured_unit = self.units.get(unit.is_capturing) # Use .units.get()
