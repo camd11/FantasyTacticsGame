@@ -1,0 +1,13 @@
+# Test sequence for capture mechanic (revised again)
+select 1 4
+move 4 4
+info 4 4
+capture 5 4
+# Leif should remain selected, Bandit captured
+info 4 4 # Check Leif status (should show capturing)
+info 5 4 # Check Bandit's original tile (should be empty)
+move 4 5 # Attempt move while capturing (should fail)
+release
+info 4 4 # Check Leif status after release (should not be capturing)
+endturn
+quit

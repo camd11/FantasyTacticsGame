@@ -39,20 +39,31 @@ def render_map(game_state: GameState, move_range: Optional[Set[Tuple[int, int]]]
             # Check unit status first
             unit = None
             if unit_id is not None:
-                unit = game_state.get_unit(unit_id)
+                # Get unit directly from dictionary to handle captured/capturing status display
+                unit = game_state.units.get(unit_id)
 
             # Overlay unit/selection/range markers
-            if unit and not unit.is_alive: # Check if unit is defeated
-                display_char = "X" # Display 'X' for defeated units
+            # Order matters: Defeated > Selected > Capturing > Normal Unit > Move Range
+            if unit and not unit.is_alive:
+                display_char = "X" # Defeated
+            elif unit and unit.is_captured:
+                 # Should not appear on map, but just in case
+                 display_char = "?" # Captured (should be off-map)
             elif selected_pos == current_pos:
-                display_char = "@" # Currently selected unit
-            elif unit: # If unit exists and is alive
-                if unit.faction == Faction.PLAYER:
-                    display_char = "P" if not unit.has_acted else "p" # Lowercase if acted
+                display_char = "@" # Selected
+            elif unit: # Unit exists, is alive, and not captured
+                if unit.is_capturing is not None: # Check if capturing FIRST
+                    if unit.faction == Faction.PLAYER:
+                        display_char = "C" # Player Capturing
+                    elif unit.faction == Faction.ENEMY:
+                        display_char = "c" # Enemy Capturing
+                    # Add Ally capturing later if needed ('G'?)
+                elif unit.faction == Faction.PLAYER:
+                    display_char = "P" if not unit.has_acted else "p"
                 elif unit.faction == Faction.ENEMY:
                     display_char = "E"
                 elif unit.faction == Faction.ALLY:
-                    display_char = "A" # Added Ally display
+                    display_char = "A"
             elif current_pos in move_range: # Check move_range only if tile is empty/passable terrain
                  # Show move range only if no unit is present
                  if display_char == terrain_char: # Only overlay if it's just terrain
@@ -69,8 +80,14 @@ def render_map(game_state: GameState, move_range: Optional[Set[Tuple[int, int]]]
     # Display selected unit info
     if selected_unit:
         weapon_name = selected_unit.equipped_weapon.name if selected_unit.equipped_weapon else "None"
-        # Added MoveType to selected unit info
-        print(f"Selected: {selected_unit.name} ({selected_unit.move_type}) at {selected_unit.position} | HP: {selected_unit.hp}/{selected_unit.max_hp} | Mov: {selected_unit.mov} | Weapon: {weapon_name} | Acted: {selected_unit.has_acted}")
+        capture_status_str = ""
+        if selected_unit.is_capturing is not None:
+            # Get captive name directly from dictionary
+            captive = game_state.units.get(selected_unit.is_capturing)
+            captive_name = captive.name if captive else "Unknown"
+            capture_status_str = f" | Capturing: {captive_name}"
+        # Added MoveType and Capture Status to selected unit info
+        print(f"Selected: {selected_unit.name} ({selected_unit.move_type}) at {selected_unit.position}{capture_status_str} | HP: {selected_unit.hp}/{selected_unit.max_hp} | Mov: {selected_unit.mov} | Weapon: {weapon_name} | Acted: {selected_unit.has_acted}")
     else:
         print("Selected: None")
 

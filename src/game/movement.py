@@ -1,5 +1,6 @@
 # src/game/movement.py (Updated)
 
+import math # Import math
 from typing import Set, Tuple, Optional
 from collections import deque
 # Import MoveType and TERRAIN_COSTS
@@ -8,13 +9,24 @@ from .models import GameState, Unit, MoveType, TERRAIN_COSTS, TerrainType
 def calculate_move_range(game_state: GameState, unit: Unit) -> Set[Tuple[int, int]]:
     """
     Calculates the set of reachable tiles for a given unit using BFS.
-    Considers unit.mov, terrain costs based on unit.move_type, and blocking by other units.
+    Considers unit.mov, terrain costs based on unit.move_type, blocking by other units,
+    and movement penalty if capturing.
     """
     if not unit.is_alive or unit.has_acted: # Also check if alive
         return set()
 
     start_pos = unit.position
     max_move = unit.mov
+
+    # --- Apply Capture Movement Penalty ---
+    # Thracia: Mov halved if carried unit Con > half rescuer Con (+5 if mounted)
+    # MVP Simplification: Halve movement if capturing anyone.
+    if unit.is_capturing is not None:
+        # print(f"  (Movement halved for {unit.name} due to capturing)") # Debug print
+        max_move = math.floor(max_move / 2) # Use math.floor
+    # ------------------------------------
+
+
     reachable = {start_pos}
     # Queue stores tuples of (position, remaining_move)
     queue = deque([(start_pos, max_move)])
