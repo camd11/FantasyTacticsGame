@@ -8,10 +8,10 @@ from typing import Optional, Set, Tuple
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 # Import necessary components
-from game.models import GameState, GameMap, Unit, Weapon, Faction
-from game.display import render_map # Display needs update too
+from game.models import GameState, GameMap, Unit, Weapon, Faction, MoveType, TerrainType # Add MoveType, TerrainType
+from game.display import render_map
 from game.movement import calculate_move_range
-from game.combat import simulate_combat # Import combat simulation
+from game.combat import simulate_combat
 
 # --- Helper Function ---
 def get_attack_range(unit: Unit, game_state: GameState) -> Set[Tuple[int, int]]:
@@ -35,29 +35,38 @@ def get_attack_range(unit: Unit, game_state: GameState) -> Set[Tuple[int, int]]:
     return attack_range
 
 
-# --- Initial Game Setup (Updated with Stats & Weapons) ---
+# --- Initial Game Setup (Updated with Stats & Weapons & Terrain) ---
 def setup_initial_state() -> GameState:
-    """Creates a simple initial game state for testing with combat."""
+    """Creates a simple initial game state for testing terrain."""
     map_width = 10
     map_height = 8
     game_map = GameMap(width=map_width, height=map_height)
+
+    # Add some terrain features
+    game_map.set_tile_terrain(3, 3, TerrainType.FOREST)
+    game_map.set_tile_terrain(4, 3, TerrainType.FOREST)
+    game_map.set_tile_terrain(5, 3, TerrainType.FOREST)
+    game_map.set_tile_terrain(6, 3, TerrainType.MOUNTAIN)
+    game_map.set_tile_terrain(6, 4, TerrainType.MOUNTAIN)
+    game_map.set_tile_terrain(6, 5, TerrainType.MOUNTAIN)
+
     game_state = GameState(game_map=game_map)
 
     # Weapons
     iron_sword = Weapon(name="Iron Sword", might=5, hit=90, weight=5, wtype="Sword", range_min=1, range_max=1)
     iron_axe = Weapon(name="Iron Axe", might=8, hit=75, weight=10, wtype="Axe", range_min=1, range_max=1)
 
-    # Add Leif (Player) - Changed starting position
+    # Add Leif (Player - Cavalry) - Start at (1, 4) for better terrain interaction test
     leif = Unit(
-        id=1, name="Leif", faction=Faction.PLAYER, position=(4, 4), # Start at (4, 4)
-        max_hp=20, hp=20, strength=5, magic=0, skill=6, speed=7, luck=6, defense=3, constitution=5, mov=5,
+        id=1, name="Leif", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 4), # Changed pos & move_type
+        max_hp=20, hp=20, strength=5, magic=0, skill=6, speed=7, luck=6, defense=3, constitution=5, mov=7, # Increased mov for cavalry
         equipped_weapon=iron_sword
     )
     game_state.add_unit(leif)
 
-    # Add a generic enemy
+    # Add Bandit (Enemy - Infantry) - Keep at (5, 4)
     bandit = Unit(
-        id=101, name="Bandit", faction=Faction.ENEMY, position=(5, 4),
+        id=101, name="Bandit", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(5, 4), # Added move_type
         max_hp=25, hp=25, strength=6, magic=0, skill=2, speed=4, luck=0, defense=2, constitution=10, mov=4,
         equipped_weapon=iron_axe
     )
@@ -75,8 +84,7 @@ def run_cli():
 
     while True:
         # Render the map, passing ranges for display
-        # TODO: Update render_map to show attack range (e.g., with '+')
-        render_map(game_state, current_move_range) # Attack range display TBD
+        render_map(game_state, current_move_range) # Pass move range to display
 
         # Get user input
         prompt = "Enter command (select x y | move x y | attack x y | wait | info [x y] | endturn | quit): "
@@ -107,7 +115,7 @@ def run_cli():
                             game_state.selected_unit_id = unit_id
                             current_move_range = calculate_move_range(game_state, unit)
                             current_attack_range = get_attack_range(unit, game_state) # Calculate attack range
-                            print(f"Selected {unit.name}. Move(*), Attack(+) - Attack range display TBD.")
+                            print(f"Selected {unit.name}. Move(*).") # Updated message
                         elif unit and unit.faction != Faction.PLAYER:
                             print("Cannot select non-player units.")
                             game_state.selected_unit_id = None
@@ -148,7 +156,7 @@ def run_cli():
                     x, y = int(args[0]), int(args[1])
                     target_pos = (x, y)
 
-                    # Need to recalculate move range if not already calculated
+                    # Need to recalculate move range if not already calculated (e.g., if user typed 'move' without 'select' first)
                     if current_move_range is None:
                          current_move_range = calculate_move_range(game_state, selected_unit)
 
@@ -246,7 +254,7 @@ def run_cli():
                     if target_unit:
                          weapon_name = target_unit.equipped_weapon.name if target_unit.equipped_weapon else "None"
                          status = "Alive" if target_unit.is_alive else "Defeated"
-                         print(f"Info: {target_unit.name} (ID: {target_unit.id}) | Faction: {target_unit.faction} | Status: {status}")
+                         print(f"Info: {target_unit.name} (ID: {target_unit.id}) | Faction: {target_unit.faction} | MoveType: {target_unit.move_type} | Status: {status}") # Added MoveType
                          print(f"  Pos: {target_unit.position} | HP: {target_unit.hp}/{target_unit.max_hp} | Mov: {target_unit.mov}")
                          print(f"  Stats: Str:{target_unit.strength} Skl:{target_unit.skill} Spd:{target_unit.speed} Lck:{target_unit.luck} Def:{target_unit.defense} Con:{target_unit.constitution}")
                          print(f"  Weapon: {weapon_name} | Acted: {target_unit.has_acted}")

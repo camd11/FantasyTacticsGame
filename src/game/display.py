@@ -1,7 +1,7 @@
 # src/game/display.py (Updated)
 
 from typing import Set, Tuple, Optional
-from .models import GameState, Unit, Faction # Import Faction
+from .models import GameState, Unit, Faction, TerrainType # Import Faction, TerrainType
 
 def render_map(game_state: GameState, move_range: Optional[Set[Tuple[int, int]]] = None):
     """Renders the current game map and state to the console."""
@@ -12,27 +12,36 @@ def render_map(game_state: GameState, move_range: Optional[Set[Tuple[int, int]]]
     if move_range is None:
         move_range = set() # Default to empty set if no range provided
 
-    # Header row (X coordinates) - Adjust spacing for two-digit numbers if map is wide
+    # Header row (X coordinates)
     header = "   " + " ".join(f"{str(i):<2}" for i in range(game_state.game_map.width))
     print(header)
-    # Adjust border length based on character spacing (3 chars per tile: ' X ')
+    # Adjust border length
     print("  +" + "---"*game_state.game_map.width + "+") # Top border
 
     for y in range(game_state.game_map.height):
-        # Adjust spacing for two-digit Y coordinates if map is tall
         row_str = f"{str(y):<2}|" # Y coordinate prefix
         for x in range(game_state.game_map.width):
-            char = "." # Default empty tile
             unit_id = game_state.game_map.get_unit_id_at(x, y)
             current_pos = (x, y)
 
-            display_char = char # Character to display for this tile
+            # Determine base terrain character
+            terrain_char = "." # Default Plain
+            tile_for_render = game_state.game_map.get_tile(x, y)
+            if tile_for_render:
+                if tile_for_render.terrain_type == TerrainType.FOREST:
+                    terrain_char = "F"
+                elif tile_for_render.terrain_type == TerrainType.MOUNTAIN:
+                    terrain_char = "M"
+                # Add more terrain chars later (e.g., '#' for Fort, '~' for Water)
+
+            display_char = terrain_char # Start with terrain char
 
             # Check unit status first
             unit = None
             if unit_id is not None:
                 unit = game_state.get_unit(unit_id)
 
+            # Overlay unit/selection/range markers
             if unit and not unit.is_alive: # Check if unit is defeated
                 display_char = "X" # Display 'X' for defeated units
             elif selected_pos == current_pos:
@@ -44,21 +53,24 @@ def render_map(game_state: GameState, move_range: Optional[Set[Tuple[int, int]]]
                     display_char = "E"
                 elif unit.faction == Faction.ALLY:
                     display_char = "A" # Added Ally display
-            elif current_pos in move_range: # Check move_range only if tile is empty
-                 display_char = "*" # Reachable tile for selected unit
+            elif current_pos in move_range: # Check move_range only if tile is empty/passable terrain
+                 # Show move range only if no unit is present
+                 if display_char == terrain_char: # Only overlay if it's just terrain
+                    display_char = "*" # Reachable tile for selected unit
             # TODO: Add display for attack range ('+') later
 
             row_str += f" {display_char} " # Add spacing around character
         row_str += "|" # Right border
         print(row_str)
 
-    # Adjust border length based on character spacing
+    # Adjust border length
     print("  +" + "---"*game_state.game_map.width + "+") # Bottom border
 
     # Display selected unit info
     if selected_unit:
         weapon_name = selected_unit.equipped_weapon.name if selected_unit.equipped_weapon else "None"
-        print(f"Selected: {selected_unit.name} (ID: {selected_unit.id}) at {selected_unit.position} | HP: {selected_unit.hp}/{selected_unit.max_hp} | Mov: {selected_unit.mov} | Weapon: {weapon_name} | Acted: {selected_unit.has_acted}")
+        # Added MoveType to selected unit info
+        print(f"Selected: {selected_unit.name} ({selected_unit.move_type}) at {selected_unit.position} | HP: {selected_unit.hp}/{selected_unit.max_hp} | Mov: {selected_unit.mov} | Weapon: {weapon_name} | Acted: {selected_unit.has_acted}")
     else:
         print("Selected: None")
 

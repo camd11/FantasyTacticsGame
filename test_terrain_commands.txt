@@ -1,0 +1,6 @@
+# Test sequence for terrain costs
+select 1 4
+info
+# Observe the '*' markers showing move range
+# Leif (Cavalry, Mov 7) should be heavily restricted by forests and blocked by mountains
+quit
