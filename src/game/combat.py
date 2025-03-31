@@ -140,6 +140,10 @@ def resolve_attack(
         weapon_might = attacker.equipped_weapon.might if attacker.equipped_weapon else 0
         damage = calculate_damage(temp_str, weapon_might, defender_def_final)
 
+        # --- DEBUG ---
+        print(f"  DEBUG: {defender.name} HP before damage: {defender.hp}, Damage calculated: {damage}")
+        # -----------
+
         # Apply damage
         defender.hp = max(0, defender.hp - damage)
         print(f"  HIT! {defender.name} takes {damage} damage. (HP: {defender.hp}/{defender.max_hp})")
@@ -207,6 +211,7 @@ def simulate_combat(
         return # End combat immediately
 
     # 2. Defender's counter-attack (if alive and in range)
+    # Check aliveness *after* attacker's first strike AND capture check
     if defender.equipped_weapon: # Check weapon first
         dist_x = abs(attacker.position[0] - defender.position[0])
         dist_y = abs(attacker.position[1] - defender.position[1])
@@ -226,6 +231,7 @@ def simulate_combat(
 
     # 3. Attacker's follow-up attack (if doubling and both are alive)
     can_double = does_double(attacker, defender)
+    # Check aliveness *after* potential counter-attack
     if attacker.is_alive and defender.is_alive and can_double:
         if is_capture_attempt:
              print(f"  (Doubling prevented during capture attempt)")
@@ -240,6 +246,7 @@ def simulate_combat(
 
     # 4. Defender's follow-up attack (Rare)
     can_defender_double = does_double(defender, attacker)
+    # Check aliveness *after* potential attacker follow-up
     if defender.is_alive and attacker.is_alive and can_defender_double:
         if is_capture_attempt:
             pass
