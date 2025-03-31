@@ -1,0 +1,7 @@
+# Core dependencies
+# Currently minimal as we're using standard library
+
+# For future phases
+# pygame==2.5.0  # For graphical implementation
+# pyyaml==6.0    # For data loading
+# pytest==7.3.1  # For testing
