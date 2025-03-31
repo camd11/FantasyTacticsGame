@@ -2,29 +2,35 @@
 
 This project aims to recreate the gameplay mechanics of Fire Emblem: Thracia 776 in a text-based CLI format first, eventually leading to a graphical implementation.
 
-## Current Status: MVP Phase 1 Complete
+## Current Status: MVP Phase 1 & Basic Combat Complete
 
-The initial Minimum Viable Product (MVP) focusing on foundational map and unit representation is complete.
+The initial Minimum Viable Product (MVP) focusing on foundational map/unit representation and the core combat loop is complete.
 
 **Features Implemented:**
 
-*   Basic data structures for Game State, Map, Tiles, and Units (`src/game/models.py`).
-*   Text-based map rendering in the CLI (`src/game/display.py`).
-*   Calculation of basic movement range on plain terrain, avoiding other units (`src/game/movement.py`).
-*   Core CLI application (`src/cli.py`) supporting:
-    *   Displaying the game map and unit positions.
-    *   Selecting player units (`select x y`).
-    *   Displaying unit info (`info [x y]`).
-    *   Moving selected units within range (`move x y`).
-    *   Waiting with a selected unit (`wait`).
-    *   Ending the player turn (`endturn`) and cycling through a basic turn structure.
-    *   Quitting the application (`quit`).
-*   Automated testing via command file input (`test_mvp_commands.txt`).
+*   **Phase 1:**
+    *   Basic data structures for Game State, Map, Tiles, and Units (`src/game/models.py`).
+    *   Text-based map rendering in the CLI (`src/game/display.py`), including showing defeated units ('X').
+    *   Calculation of basic movement range on plain terrain, avoiding other units (`src/game/movement.py`).
+    *   Core CLI application (`src/cli.py`) supporting basic commands (`select`, `move`, `wait`, `info`, `endturn`, `quit`).
+*   **Phase 2 (Basic Combat):**
+    *   Added core combat stats (Str, Skl, Spd, Lck, Def) and basic `Weapon` class to `models.py`.
+    *   Implemented combat calculation logic (`src/game/combat.py`) including:
+        *   Simplified Attack Speed (AS), Hit Rate, Avoid.
+        *   Simplified physical Damage calculation (Str+Mt - Def).
+        *   Attack resolution with hit check (1-100 roll).
+        *   Basic doubling check (Attacker AS >= Defender AS + 4).
+        *   Attack/Counter-attack sequence simulation.
+        *   Unit death handling (sets `is_alive=False`, removes from map tile).
+    *   Integrated `attack x y` command into `cli.py`.
+    *   Updated `info` command to show combat stats.
+*   **Testing:**
+    *   Automated testing via command file input (`test_mvp_commands.txt`, `test_combat_commands.txt`).
 
-**Design Document:**
+**Design Documents:**
 
-*   The plan for this phase is documented in `DESIGN_MVP_PHASE1.md`.
-*   The original research and detailed mechanics specification is in `research.md`.
+*   Phase 1 plan: `DESIGN_MVP_PHASE1.md`.
+*   Original research: `research.md`.
 
 ## How to Run
 
@@ -34,15 +40,20 @@ The initial Minimum Viable Product (MVP) focusing on foundational map and unit r
     ```bash
     python3 src/cli.py
     ```
-4.  Alternatively, run the automated test sequence:
+4.  Alternatively, run the automated test sequences:
     ```bash
+    # Test basic movement/turns
     cat test_mvp_commands.txt | python3 src/cli.py
+
+    # Test combat
+    cat test_combat_commands.txt | python3 src/cli.py
     ```
 
-## Next Steps
+## Next Steps (Potential)
 
-*   Implement Phase 2: Core Combat Loop (Attack command, basic damage/hit calculation, doubling).
-*   Expand data structures to include more unit stats (Str, Def, Skl, Luk, Con).
-*   Refine movement to include terrain costs.
-*   Implement more unit actions (Attack, Item, etc.).
-*   Develop more sophisticated Enemy AI.
+*   Refine combat calculations closer to Thracia's formulas (Con impact on AS, 1-99% hit cap, terrain bonuses, magic damage, crits, PCC, skills).
+*   Implement terrain costs for movement.
+*   Implement inventory management and item usage (Vulneraries).
+*   Implement unique mechanics (Capture, Steal, Fatigue).
+*   Implement basic Enemy AI for the Enemy Phase.
+*   Add more complex map scenarios and unit types.

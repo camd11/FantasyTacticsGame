@@ -1,0 +1,7 @@
+# Test sequence for combat MVP (updated start pos)
+select 4 4
+info
+attack 5 4
+info 5 4
+endturn
+quit

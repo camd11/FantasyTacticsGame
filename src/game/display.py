@@ -1,7 +1,7 @@
-# src/game/display.py
+# src/game/display.py (Updated)
 
 from typing import Set, Tuple, Optional
-from .models import GameState, Unit
+from .models import GameState, Unit, Faction # Import Faction
 
 def render_map(game_state: GameState, move_range: Optional[Set[Tuple[int, int]]] = None):
     """Renders the current game map and state to the console."""
@@ -28,18 +28,25 @@ def render_map(game_state: GameState, move_range: Optional[Set[Tuple[int, int]]]
 
             display_char = char # Character to display for this tile
 
-            if selected_pos == current_pos:
-                display_char = "@" # Currently selected unit
-            elif unit_id is not None:
+            # Check unit status first
+            unit = None
+            if unit_id is not None:
                 unit = game_state.get_unit(unit_id)
-                if unit:
-                    if unit.faction == "Player":
-                        display_char = "P" if not unit.has_acted else "p" # Lowercase if acted
-                    elif unit.faction == "Enemy":
-                        display_char = "E"
-                    # Add 'A' for Ally later if needed
-            elif current_pos in move_range:
+
+            if unit and not unit.is_alive: # Check if unit is defeated
+                display_char = "X" # Display 'X' for defeated units
+            elif selected_pos == current_pos:
+                display_char = "@" # Currently selected unit
+            elif unit: # If unit exists and is alive
+                if unit.faction == Faction.PLAYER:
+                    display_char = "P" if not unit.has_acted else "p" # Lowercase if acted
+                elif unit.faction == Faction.ENEMY:
+                    display_char = "E"
+                elif unit.faction == Faction.ALLY:
+                    display_char = "A" # Added Ally display
+            elif current_pos in move_range: # Check move_range only if tile is empty
                  display_char = "*" # Reachable tile for selected unit
+            # TODO: Add display for attack range ('+') later
 
             row_str += f" {display_char} " # Add spacing around character
         row_str += "|" # Right border
@@ -50,7 +57,8 @@ def render_map(game_state: GameState, move_range: Optional[Set[Tuple[int, int]]]
 
     # Display selected unit info
     if selected_unit:
-        print(f"Selected: {selected_unit.name} (ID: {selected_unit.id}) at {selected_unit.position} | HP: {selected_unit.hp}/{selected_unit.max_hp} | Mov: {selected_unit.mov} | Acted: {selected_unit.has_acted}")
+        weapon_name = selected_unit.equipped_weapon.name if selected_unit.equipped_weapon else "None"
+        print(f"Selected: {selected_unit.name} (ID: {selected_unit.id}) at {selected_unit.position} | HP: {selected_unit.hp}/{selected_unit.max_hp} | Mov: {selected_unit.mov} | Weapon: {weapon_name} | Acted: {selected_unit.has_acted}")
     else:
         print("Selected: None")
 
