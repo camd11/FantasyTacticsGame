@@ -9,7 +9,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 
 # Import necessary components
 from game.models import (GameState, GameMap, Unit, Weapon, Faction, MoveType,
-                         TerrainType, Vulnerary, Item,
+                         TerrainType, Vulnerary, Item, StatusEffect, # Added StatusEffect
                          FATIGUE_COST_COMBAT, FATIGUE_COST_ITEM) # Import fatigue costs
 from game.display import render_map
 from game.movement import calculate_move_range
@@ -66,6 +66,8 @@ def setup_initial_state() -> GameState:
     leif = Unit(
         id=1, name="Leif", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 4), # Default start (1,4)
         max_hp=20, hp=20, strength=5, magic=5, skill=6, speed=7, luck=6, defense=3, constitution=5, mov=7, fatigue=0, pcc=1, # Added pcc=1, set magic=5
+        skills=["Adept", "Nihil"], # Added skills for testing
+        status_effect=StatusEffect.POISON, # Added for status test
         inventory=leif_inventory
     )
     game_state.add_unit(leif)
@@ -74,12 +76,32 @@ def setup_initial_state() -> GameState:
     bandit_inventory = [iron_axe]
     bandit = Unit(
         id=101, name="Bandit", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(5, 4),
-        max_hp=200, hp=200, strength=1, magic=0, skill=2, speed=4, luck=0, defense=2, constitution=10, mov=4, fatigue=0, pcc=0, # Added pcc=0
+        max_hp=200, hp=10, strength=1, magic=0, skill=2, speed=4, luck=0, defense=2, constitution=10, mov=4, fatigue=0, pcc=0, # Added pcc=0, Lowered HP to test Miracle
+        skills=["Wrath", "Miracle"], # Added skills for testing
+        status_effect=StatusEffect.SLEEP, # Added for status test
         inventory=[rapier] # Give Bandit Rapier instead of Axe
     )
     game_state.add_unit(bandit)
 
     return game_state
+
+# --- Turn Start Effects ---
+def apply_turn_start_effects(game_state: GameState):
+    """Applies effects like poison damage at the start of a phase."""
+    active_faction = game_state.active_faction
+    print(f"Applying turn start effects for {active_faction}...")
+    for unit in list(game_state.units.values()): # Iterate over copy
+        if unit.faction == active_faction and unit.is_alive and not unit.is_captured:
+            # Poison Damage
+            if unit.status_effect == StatusEffect.POISON:
+                poison_damage = 1 # Simplified poison damage
+                print(f"  {unit.name} takes {poison_damage} damage from Poison.")
+                unit.hp = max(0, unit.hp - poison_damage)
+                print(f"  (HP: {unit.hp}/{unit.max_hp})")
+                if unit.hp == 0:
+                    game_state.handle_unit_death(unit)
+                    print(f"  {unit.name} succumbed to poison!")
+            # Add other start-of-turn effects here (e.g., healing terrain)
 
 # --- Main CLI Loop (Updated) ---
 def run_cli():
@@ -717,6 +739,12 @@ def run_cli():
                          print(f"  Equipped: {equipped_name} | Acted: {target_unit.has_acted}{acted_status}")
                          # Add fatigue display
                          print(f"  Fatigue: {target_unit.fatigue}/{target_unit.max_hp}")
+                         # Display Skills
+                         skills_str = ", ".join(target_unit.skills) if target_unit.skills else "None"
+                         print(f"  Skills: {skills_str}")
+                         # Display Status Effect
+                         status_str = target_unit.status_effect if target_unit.status_effect != StatusEffect.NONE else "Normal"
+                         print(f"  Status: {status_str}")
 
 
                 elif command == "endturn":
@@ -752,6 +780,8 @@ def run_cli():
                         game_state.turn += 1
                         game_state.reset_player_actions()
                         print(f"\n--- Starting Turn {game_state.turn} - Player Phase ---")
+                        # Apply Player Phase start effects
+                        apply_turn_start_effects(game_state)
                     else:
                         print("Cannot end turn now.")
 

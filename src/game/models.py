@@ -22,6 +22,14 @@ class MoveType:
     FLYING = "Flying"
     # Add Brigand, Pirate etc. later
 
+# --- Status Effects Enum ---
+class StatusEffect:
+    NONE = "None"
+    POISON = "Poison"
+    SLEEP = "Sleep"
+    SILENCE = "Silence"
+    BERSERK = "Berserk"
+    # Petrify is rare, skip for now
 # --- Movement Costs ---
 # Structure: terrain_costs[move_type][terrain_type] = cost (or None if impassable)
 # Based loosely on research.md / Serenes Forest data for Thracia
@@ -185,7 +193,8 @@ class Unit:
     is_alive: bool = True
     is_captured: bool = False
     is_capturing: Optional[int] = None
-    can_steal: bool = False # NEW: Flag for units that can steal (Thieves)
+    can_steal: bool = False # Flag for units that can steal (Thieves)
+    status_effect: str = StatusEffect.NONE # NEW: Current status effect
 
     def __post_init__(self):
         self.hp = min(self.hp, self.max_hp)
@@ -353,10 +362,12 @@ class GameState:
     def reset_player_actions(self):
         """Resets action flag for Player units. Fatigue is NOT reset here."""
         for unit in self.units.values():
-            # Only reset actions for alive, non-captured player units
+            # Only reset actions for alive, non-captured player units that are not asleep/berserk
             if unit.faction == Faction.PLAYER and unit.is_alive and not unit.is_captured:
-                unit.has_acted = False
+                if unit.status_effect not in [StatusEffect.SLEEP, StatusEffect.BERSERK]:
+                    unit.has_acted = False
                 # Fatigue persists across turns within a chapter
+                # Status effects also persist until cleared
 
     def get_units_by_faction(self, faction: Faction) -> List[Unit]:
         # Return only alive, non-captured units with HP > 0

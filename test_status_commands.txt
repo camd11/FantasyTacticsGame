@@ -1,0 +1,36 @@
+# Test file for status effects (Poison, Sleep)
+
+# Setup: Leif (1,4) has Poison. Bandit (5,4) has Sleep.
+
+# 1. Check Leif's status
+select 1 4
+info
+
+# 2. End turn immediately to trigger start-of-phase effects
+endturn
+
+# --- Turn 2 Starts ---
+# Poison should damage Leif at start of Player Phase 2
+
+# 3. Check Leif's HP and status again
+select 1 4
+info
+
+# 4. Check Bandit's status (should be Sleep)
+select 5 4
+info
+
+# 5. Move Leif adjacent to Bandit
+move 4 4
+
+# 6. Attack the sleeping Bandit
+# Bandit has Sleep, so Def/Avoid should be 0. Bandit cannot counter.
+attack 5 4
+
+# 7. End turn again
+# Sleeping Bandit should not act during Enemy Phase
+endturn
+
+# --- Turn 3 Starts ---
+
+quit

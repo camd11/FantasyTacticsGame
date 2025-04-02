@@ -1,0 +1,27 @@
+# Test file for unit skills (Wrath, Adept, Miracle, Nihil) - Corrected
+
+# Setup: Leif (1,4) has Adept, Nihil. Bandit (5,4) has Wrath, Miracle, HP=10.
+
+# 1. Check Leif's skills
+select 1 4
+info
+
+# 2. Move Leif adjacent to Bandit
+move 4 4
+
+# 3. Leif attacks Bandit. Check for Adept (6% chance).
+# Bandit has Miracle (HP=10), so Leif's hit should be 1%.
+attack 5 4
+
+# 4. End turn. Bandit (Enemy) phase.
+# Bandit should attack Leif.
+# Bandit has Wrath, counter should be critical.
+# Leif has Nihil, should negate the critical.
+endturn
+
+# 5. Check Bandit's skills (after enemy phase)
+# Bandit should be at (5,4) still
+select 5 4
+info
+
+quit
