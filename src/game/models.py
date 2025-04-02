@@ -143,6 +143,18 @@ class Vulnerary(Item):
     uses: int = 3
     max_uses: int = 3
     heal_amount: int = 20 # Thracia Vulnerary heals 20 HP (Corrected based on research.md)
+    weight: int = 1 # Added weight for steal testing
+    # Note: Vulnerary weight is implicitly 0 or handled differently in Thracia?
+    # For now, it lacks a weight attribute, making it unstealable by weight check.
+
+# --- Potion Item ---
+@dataclass
+class Potion(Item):
+    name: str = "Potion"
+    uses: int = 1 # Assuming single use like some FE games, adjust if needed
+    max_uses: int = 1
+    heal_amount: int = 10 # Standard FE potion heal amount
+    weight: int = 3 # Weight as specified in test_steal_commands.txt
 
 # --- Weapon (inherits from Item for potential uses later) ---
 @dataclass

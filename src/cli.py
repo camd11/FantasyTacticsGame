@@ -2,8 +2,9 @@
 
 import sys
 import os
-import random # NEW: Import random module for Movement Stars
-from typing import Optional, Set, Tuple, Dict # Add Dict
+import random
+import argparse # NEW: Import argparse
+from typing import Optional, Set, Tuple, Dict
 
 # Ensure the 'src' directory is in the Python path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -11,7 +12,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 # Import necessary components
 from game.models import (GameState, GameMap, Unit, Weapon, Faction, MoveType,
                          TerrainType, Vulnerary, Item, StatusEffect, # Added StatusEffect
-                         FATIGUE_COST_COMBAT, FATIGUE_COST_ITEM, CHARISMA_SKILL_NAME) # Import fatigue costs, Charisma skill name
+                         FATIGUE_COST_COMBAT, FATIGUE_COST_ITEM, CHARISMA_SKILL_NAME, Potion) # Import fatigue costs, Charisma skill name, Potion
 from game.display import render_map
 from game.movement import calculate_move_range
 from game.combat import simulate_combat
@@ -38,8 +39,8 @@ def get_attack_range(unit: Unit, game_state: GameState) -> Set[Tuple[int, int]]:
     return attack_range
 
 
-# --- Initial Game Setup (Updated for Item Fatigue Test - Corrected Start Fatigue) ---
-def setup_initial_state() -> GameState:
+# --- Test Setup Functions ---
+def setup_effectiveness_test_state() -> GameState: # RENAMED
     """Creates a simple initial game state for testing fatigue with items."""
     map_width = 10
     map_height = 8
@@ -61,7 +62,7 @@ def setup_initial_state() -> GameState:
     fire_tome = Weapon(name="Fire Tome", might=6, hit=85, weight=4, wtype="Fire", damage_type="Magical", range_min=1, range_max=2, uses=40, max_uses=40)
     rapier = Weapon(name="Rapier", might=5, hit=95, weight=3, wtype="Sword", damage_type="Physical", range_min=1, range_max=1, uses=40, max_uses=40, effective_against=[MoveType.CAVALRY, MoveType.ARMOR]) # Effective vs Cavalry/Armor
     # Give enough vulneraries for 20 uses (7 items * 3 uses/item = 21 uses)
-    leif_inventory = [iron_sword, fire_tome] + [Vulnerary() for _ in range(5)] # Adjusted vulnerary count (Reverted order)
+    leif_inventory = [iron_sword, fire_tome, rapier] + [Vulnerary() for _ in range(4)] # Add Rapier, reduce Vulneraries
 
     # Add Leif (Player - Cavalry) - Default setup
     leif = Unit(
@@ -75,27 +76,796 @@ def setup_initial_state() -> GameState:
     )
     game_state.add_unit(leif)
 
-    # Add Bandit (Enemy - Infantry) - Keep Str low and HP high
-    bandit_inventory = [iron_axe]
-    bandit = Unit(
-        id=101, name="Bandit", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(5, 4),
-        max_hp=200, hp=200, strength=1, magic=0, skill=2, speed=4, luck=0, defense=2, constitution=10, mov=4, fatigue=0, pcc=0, # Added pcc=0, Set HP to max
-        skills=["Miracle"], # REMOVED Wrath skill
-        status_effect=StatusEffect.SLEEP, # RE-ADD Sleep for testing status penalties
-        inventory=[iron_axe] # Give Bandit Iron Axe back
-    )
-    game_state.add_unit(bandit)
+    # Bandit removed for effectiveness test clarity
+    # bandit_inventory = [iron_axe]
+    # bandit = Unit(
+    #     id=101, name="Bandit", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(5, 4),
+    #     max_hp=200, hp=200, strength=1, magic=0, skill=2, speed=4, luck=0, defense=2, constitution=10, mov=4, fatigue=0, pcc=0, # Added pcc=0, Set HP to max
+    #     skills=["Miracle"], # REMOVED Wrath skill
+    #     status_effect=StatusEffect.SLEEP, # RE-ADD Sleep for testing status penalties
+    #     inventory=[iron_axe] # Give Bandit Iron Axe back
+    # )
+    # game_state.add_unit(bandit)
 
     # Add Nanna (Player - Cavalry) for Support/Charisma testing
     nanna_inventory = [Weapon(name="Heal Staff", wtype="Staff", staff_rank='E', uses=30, max_uses=30)] # Give her a basic staff
     nanna = Unit(
-        id=2, name="Nanna", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 3), # Position near Leif
+        id=2, name="Nanna", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(0, 0), # Moved away from Leif
         max_hp=18, hp=18, strength=3, magic=6, skill=5, speed=8, luck=8, defense=2, constitution=4, mov=7, fatigue=0, pcc=2,
         leadership_stars=0,
         skills=[CHARISMA_SKILL_NAME], # Give Nanna Charisma
         inventory=nanna_inventory
     )
     game_state.add_unit(nanna)
+
+    # Add Enemy Cavalry for Effectiveness Test
+    enemy_cav = Unit(
+        id=102, name="Enemy Knight", faction=Faction.ENEMY, move_type=MoveType.CAVALRY, position=(2, 4), # Moved closer for test
+        max_hp=25, hp=25, strength=6, magic=1, skill=4, speed=5, luck=2, defense=5, constitution=9, mov=7, fatigue=0, pcc=0,
+        inventory=[Weapon(name="Iron Lance", might=7, hit=80, weight=8, wtype="Lance")]
+    )
+    game_state.add_unit(enemy_cav)
+
+    return game_state
+
+def setup_combat_test_state() -> GameState:
+    """Creates the initial game state for the basic combat test."""
+    map_width = 10
+    map_height = 8
+    game_map = GameMap(width=map_width, height=map_height)
+    game_state = GameState(game_map=game_map)
+
+    # Weapons
+    iron_sword = Weapon(name="Iron Sword", might=5, hit=90, weight=5, wtype="Sword", damage_type="Physical", range_min=1, range_max=1, uses=50, max_uses=50)
+    iron_axe = Weapon(name="Iron Axe", might=8, hit=75, weight=10, wtype="Axe", damage_type="Physical", range_min=1, range_max=1, uses=50, max_uses=50)
+    heal_staff = Weapon(name="Heal Staff", wtype="Staff", staff_rank='E', uses=30, max_uses=30)
+
+    # Leif (Player)
+    leif = Unit(
+        id=1, name="Leif", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 4),
+        max_hp=20, hp=20, strength=5, magic=5, skill=6, speed=7, luck=6, defense=3, constitution=5, mov=7, fatigue=0, pcc=1,
+        inventory=[iron_sword] # Only Iron Sword
+    )
+    game_state.add_unit(leif)
+
+    # Nanna (Player) - Needed to end turn
+    nanna = Unit(
+        id=2, name="Nanna", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 3),
+        max_hp=18, hp=18, strength=3, magic=6, skill=5, speed=8, luck=8, defense=2, constitution=4, mov=7, fatigue=0, pcc=2,
+        inventory=[heal_staff]
+    )
+    game_state.add_unit(nanna)
+
+    # Bandit (Enemy) - High HP, Asleep
+    bandit = Unit(
+        id=101, name="Bandit", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(5, 4),
+        max_hp=200, hp=200, strength=1, magic=0, skill=2, speed=4, luck=0, defense=2, constitution=10, mov=4, fatigue=0, pcc=0,
+        status_effect=StatusEffect.SLEEP, # Start asleep
+        inventory=[iron_axe]
+    )
+    game_state.add_unit(bandit)
+
+    return game_state
+
+def setup_fatigue_test_state() -> GameState:
+    """Creates the initial game state for the fatigue test (v2)."""
+    map_width = 5
+    map_height = 5 # Smaller map is fine
+    game_map = GameMap(width=map_width, height=map_height)
+    game_state = GameState(game_map=game_map)
+
+    # Weapons & Staves
+    iron_sword = Weapon(name="Iron Sword", might=5, hit=90, weight=5, wtype="Sword", damage_type="Physical", range_min=1, range_max=1, uses=50, max_uses=50)
+    heal_staff = Weapon(name="Heal Staff", wtype="Staff", staff_rank='E', uses=30, max_uses=30)
+    mend_staff = Weapon(name="Mend Staff", wtype="Staff", staff_rank='C', uses=20, max_uses=20) # Assume Mend is Rank C
+
+    # Player Unit (Fatigue Tester)
+    player_unit = Unit(
+        id=1, name="FatigueTester", faction=Faction.PLAYER, move_type=MoveType.INFANTRY, position=(1, 1),
+        max_hp=20, hp=20, strength=10, # Give enough strength to damage enemy
+        magic=5, skill=5, speed=5, luck=5, defense=5, constitution=5, mov=5, fatigue=0, pcc=0,
+        inventory=[iron_sword, heal_staff, mend_staff]
+    )
+    game_state.add_unit(player_unit)
+
+    # Enemy Unit (Damage Sponge)
+    enemy_unit = Unit(
+        id=101, name="TrainingDummy", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(2, 1),
+        max_hp=500, hp=500, # High HP to survive many hits
+        strength=0, magic=0, skill=0, speed=0, luck=0, defense=0, constitution=10, mov=0, fatigue=0, pcc=0,
+        inventory=[] # Unarmed
+    )
+    game_state.add_unit(enemy_unit)
+
+    return game_state
+
+def setup_staff_test_state() -> GameState:
+    """Creates the initial game state for the staff test."""
+    map_width = 10
+    map_height = 8
+    game_map = GameMap(width=map_width, height=map_height)
+    game_state = GameState(game_map=game_map)
+
+    # Weapons & Staves
+    iron_sword = Weapon(name="Iron Sword", might=5, hit=90, weight=5, wtype="Sword", damage_type="Physical", range_min=1, range_max=1, uses=50, max_uses=50)
+    heal_staff = Weapon(name="Heal Staff", wtype="Staff", staff_rank='E', uses=30, max_uses=30)
+    iron_axe = Weapon(name="Iron Axe", might=8, hit=75, weight=10, wtype="Axe", damage_type="Physical", range_min=1, range_max=1, uses=50, max_uses=50)
+
+    # Leif (Player) - Injured, Poisoned
+    leif = Unit(
+        id=1, name="Leif", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 4),
+        max_hp=20, hp=10, # Start injured
+        strength=5, magic=5, skill=6, speed=7, luck=6, defense=3, constitution=5, mov=7, fatigue=0, pcc=1,
+        status_effect=StatusEffect.POISON, # Start poisoned as implied by test
+        inventory=[iron_sword]
+    )
+    game_state.add_unit(leif)
+
+    # Nanna (Player) - Healer
+    nanna = Unit(
+        id=2, name="Nanna", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 3),
+        max_hp=18, hp=18, strength=3, magic=6, skill=5, speed=8, luck=8, defense=2, constitution=4, mov=7, fatigue=0, pcc=2,
+        inventory=[heal_staff] # Has Heal Staff
+        # TODO: Need to represent Staff Rank E properly if not implicit
+    )
+    game_state.add_unit(nanna)
+
+    # Bandit (Enemy) - Just exists
+    bandit = Unit(
+        id=101, name="Bandit", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(5, 4),
+        max_hp=20, hp=20, strength=1, magic=0, skill=2, speed=4, luck=0, defense=2, constitution=10, mov=4, fatigue=0, pcc=0,
+        inventory=[iron_axe]
+    )
+    game_state.add_unit(bandit)
+
+    return game_state
+
+def setup_skills_test_state() -> GameState:
+    """Creates the initial game state for the skills test."""
+    map_width = 10
+    map_height = 8
+    game_map = GameMap(width=map_width, height=map_height)
+    game_state = GameState(game_map=game_map)
+
+    # Weapons
+    iron_sword = Weapon(name="Iron Sword", might=5, hit=90, weight=5, wtype="Sword", uses=50, max_uses=50)
+    iron_axe = Weapon(name="Iron Axe", might=8, hit=75, weight=10, wtype="Axe", uses=50, max_uses=50)
+
+    # Leif (Player) - With Adept and Nihil
+    leif = Unit(
+        id=1, name="Leif", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 4),
+        max_hp=20, hp=20, strength=5, magic=5, skill=6,
+        speed=7, # Speed affects Adept chance (AS = Spd - Wt)
+        luck=6, defense=3, constitution=5, mov=7, fatigue=0, pcc=1,
+        skills=["Adept", "Nihil"], # Skills to test
+        inventory=[iron_sword]
+    )
+    game_state.add_unit(leif)
+
+    # Bandit (Enemy) - With Wrath and Miracle, low HP
+    bandit = Unit(
+        id=101, name="Bandit", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(5, 4),
+        max_hp=20, hp=10, # Start at low HP for Miracle test
+        strength=4, magic=0, skill=2, speed=4,
+        luck=5, # Luck affects Miracle chance
+        defense=2, constitution=10, mov=4, fatigue=0, pcc=0,
+        skills=["Wrath", "Miracle"], # Skills to test
+        inventory=[iron_axe]
+    )
+    game_state.add_unit(bandit)
+
+    # Add another player unit to allow ending the turn if Leif acts
+    nanna = Unit(
+        id=2, name="Nanna", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(0, 0), # Out of the way
+        max_hp=18, hp=18, strength=3, magic=6, skill=5, speed=8, luck=8, defense=2, constitution=4, mov=7, fatigue=0, pcc=2,
+        inventory=[Weapon(name="Heal Staff", wtype="Staff", staff_rank='E', uses=30, max_uses=30)]
+    )
+    game_state.add_unit(nanna)
+
+
+    return game_state
+
+def setup_steal_test_state() -> GameState:
+    """Creates the initial game state for the steal test."""
+    map_width = 5
+    map_height = 5 # Small map is sufficient
+    game_map = GameMap(width=map_width, height=map_height)
+    game_state = GameState(game_map=game_map)
+
+    # Items needed for the test
+    iron_sword = Weapon(name="Iron Sword", might=5, hit=90, weight=5, wtype="Sword", uses=50, max_uses=50) # Thief needs a weapon
+    vulnerary = Vulnerary() # Weight is now defined in the class (models.py)
+    iron_axe = Weapon(name="Iron Axe", might=8, hit=75, weight=10, wtype="Axe", uses=50, max_uses=50)
+    potion = Potion() # Uses weight=3 from models.py
+
+    # Thief Unit (Player)
+    thief = Unit(
+        id=1, name="Thief", faction=Faction.PLAYER, move_type=MoveType.INFANTRY, position=(1, 4),
+        max_hp=20, hp=20, strength=5, magic=0, skill=5,
+        speed=10, # High speed for AS check
+        luck=5, defense=2,
+        constitution=5, # Low constitution for weight check
+        mov=5, fatigue=0, pcc=0,
+        can_steal=True, # Must be able to steal
+        inventory=[iron_sword] # Start with just a sword
+    )
+    game_state.add_unit(thief)
+
+    # Target Unit (Enemy)
+    target = Unit(
+        id=101, name="Target", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(2, 4), # Adjacent to thief
+        max_hp=20, hp=20, strength=5, magic=0, skill=5,
+        speed=5, # Lower speed for AS check
+        luck=5, defense=5,
+        constitution=10, # Higher constitution
+        mov=5, fatigue=0, pcc=0,
+        inventory=[vulnerary, iron_axe, potion] # Specific inventory for testing steal indices/weights
+    )
+    game_state.add_unit(target)
+
+    return game_state
+
+def setup_terrain_test_state() -> GameState:
+    """Creates the initial game state for the terrain movement test."""
+    map_width = 6
+    map_height = 7 # Need enough height for cavalry test
+    game_map = GameMap(width=map_width, height=map_height)
+    game_state = GameState(game_map=game_map)
+
+    # Set specific terrain tiles
+    game_map.set_tile_terrain(3, 1, TerrainType.FOREST)
+    game_map.set_tile_terrain(4, 1, TerrainType.FOREST)
+    game_map.set_tile_terrain(3, 5, TerrainType.MOUNTAIN)
+    game_map.set_tile_terrain(4, 5, TerrainType.MOUNTAIN)
+    # Add another forest for cavalry test pathing
+    game_map.set_tile_terrain(3, 2, TerrainType.FOREST) # Added based on test commands
+
+    # Player Infantry Unit
+    infantry = Unit(
+        id=1, name="Infantry", faction=Faction.PLAYER, move_type=MoveType.INFANTRY, position=(1, 1),
+        max_hp=20, hp=20, strength=5, magic=0, skill=5, speed=5, luck=5, defense=5, constitution=10,
+        mov=5, # As per test assumption
+        fatigue=0, pcc=0,
+        inventory=[] # No items needed
+    )
+    game_state.add_unit(infantry)
+
+    # Player Cavalry Unit
+    cavalry = Unit(
+        id=2, name="Cavalry", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 5),
+        max_hp=25, hp=25, strength=7, magic=1, skill=6, speed=8, luck=6, defense=6, constitution=9,
+        mov=7, # As per test assumption
+        fatigue=0, pcc=0,
+        inventory=[] # No items needed
+    )
+    game_state.add_unit(cavalry)
+
+    return game_state
+
+def setup_status_test_state() -> GameState:
+    """Creates the initial game state for the status effect test."""
+    map_width = 10
+    map_height = 8
+    game_map = GameMap(width=map_width, height=map_height)
+    game_state = GameState(game_map=game_map)
+
+    # Weapons
+    iron_sword = Weapon(name="Iron Sword", might=5, hit=90, weight=5, wtype="Sword", uses=50, max_uses=50)
+    iron_axe = Weapon(name="Iron Axe", might=8, hit=75, weight=10, wtype="Axe", uses=50, max_uses=50)
+
+    # Leif (Player) - Poisoned
+    leif = Unit(
+        id=1, name="Leif", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 4),
+        max_hp=20, hp=20, # Start at full HP
+        strength=5, magic=5, skill=6, speed=7, luck=6, defense=3, constitution=5, mov=7, fatigue=0, pcc=1,
+        status_effect=StatusEffect.POISON, # Start poisoned
+        inventory=[iron_sword]
+    )
+    game_state.add_unit(leif)
+
+    # Bandit (Enemy) - Sleeping
+    bandit = Unit(
+        id=101, name="Bandit", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(5, 4),
+        max_hp=20, hp=20, # Start at full HP
+        strength=4, magic=0, skill=2, speed=4, luck=0,
+        defense=2, # Base defense for damage calculation check
+        constitution=10, mov=4, fatigue=0, pcc=0,
+        status_effect=StatusEffect.SLEEP, # Start asleep
+        inventory=[iron_axe]
+    )
+    game_state.add_unit(bandit)
+
+    # Add another player unit to allow ending the turn
+    nanna = Unit(
+        id=2, name="Nanna", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(0, 0), # Out of the way
+        max_hp=18, hp=18, strength=3, magic=6, skill=5, speed=8, luck=8, defense=2, constitution=4, mov=7, fatigue=0, pcc=2,
+        inventory=[Weapon(name="Heal Staff", wtype="Staff", staff_rank='E', uses=30, max_uses=30)]
+    )
+    game_state.add_unit(nanna)
+
+    return game_state
+
+def setup_movestars_test_state() -> GameState:
+    """Creates the initial game state for the movement stars test."""
+    map_width = 10
+    map_height = 8
+    game_map = GameMap(width=map_width, height=map_height)
+    game_state = GameState(game_map=game_map)
+
+    # Weapons
+    iron_sword = Weapon(name="Iron Sword", might=5, hit=90, weight=5, wtype="Sword", uses=50, max_uses=50)
+    iron_axe = Weapon(name="Iron Axe", might=8, hit=75, weight=10, wtype="Axe", uses=50, max_uses=50)
+
+    # Leif (Player) - With 20 Movement Stars
+    leif = Unit(
+        id=1, name="Leif", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 4),
+        max_hp=20, hp=20, strength=5, magic=5, skill=6, speed=7, luck=6, defense=3, constitution=5, mov=7, fatigue=0, pcc=1,
+        movement_stars=20, # Guarantee activation
+        inventory=[iron_sword]
+    )
+    game_state.add_unit(leif)
+
+    # Bandit (Enemy) - Target for attack
+    bandit = Unit(
+        id=101, name="Bandit", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(5, 4),
+        max_hp=20, hp=20, strength=4, magic=0, skill=2, speed=4, luck=0, defense=2, constitution=10, mov=4, fatigue=0, pcc=0,
+        inventory=[iron_axe]
+    )
+    game_state.add_unit(bandit)
+
+    # Add another player unit to allow ending the turn
+    nanna = Unit(
+        id=2, name="Nanna", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(0, 0), # Out of the way
+        max_hp=18, hp=18, strength=3, magic=6, skill=5, speed=8, luck=8, defense=2, constitution=4, mov=7, fatigue=0, pcc=2,
+        inventory=[Weapon(name="Heal Staff", wtype="Staff", staff_rank='E', uses=30, max_uses=30)]
+    )
+    game_state.add_unit(nanna)
+
+    return game_state
+
+def setup_triangle_test_state() -> GameState:
+    """Creates the initial game state for the weapon triangle test."""
+    map_width = 10
+    map_height = 8
+    game_map = GameMap(width=map_width, height=map_height)
+    game_state = GameState(game_map=game_map)
+
+    # Weapons
+    iron_sword = Weapon(name="Iron Sword", might=5, hit=90, weight=5, wtype="Sword", uses=50, max_uses=50)
+    iron_axe = Weapon(name="Iron Axe", might=8, hit=75, weight=10, wtype="Axe", uses=50, max_uses=50)
+    heal_staff = Weapon(name="Heal Staff", wtype="Staff", staff_rank='E', uses=30, max_uses=30)
+
+    # Leif (Player) - With Iron Sword
+    leif = Unit(
+        id=1, name="Leif", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 4),
+        max_hp=20, hp=20, strength=5, magic=5, skill=6, speed=7, luck=6, defense=3, constitution=5, mov=7, fatigue=0, pcc=1,
+        inventory=[iron_sword] # Ensure Iron Sword is equipped
+    )
+    game_state.add_unit(leif)
+
+    # Nanna (Player) - To end turn
+    nanna = Unit(
+        id=2, name="Nanna", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 3),
+        max_hp=18, hp=18, strength=3, magic=6, skill=5, speed=8, luck=8, defense=2, constitution=4, mov=7, fatigue=0, pcc=2,
+        inventory=[heal_staff]
+    )
+    game_state.add_unit(nanna)
+
+    # Bandit (Enemy) - With Iron Axe, Asleep
+    bandit = Unit(
+        id=101, name="Bandit", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(5, 4),
+        max_hp=200, hp=200, strength=1, magic=0, skill=2, speed=4, luck=0, defense=2, constitution=10, mov=4, fatigue=0, pcc=0,
+        status_effect=StatusEffect.SLEEP, # Start asleep
+        inventory=[iron_axe] # Ensure Iron Axe is equipped
+    )
+    game_state.add_unit(bandit)
+
+    return game_state
+
+def setup_skills_test_state() -> GameState:
+    """Creates the initial game state for the skills test."""
+    map_width = 10
+    map_height = 8
+    game_map = GameMap(width=map_width, height=map_height)
+    game_state = GameState(game_map=game_map)
+
+    # Weapons
+    iron_sword = Weapon(name="Iron Sword", might=5, hit=90, weight=5, wtype="Sword", uses=50, max_uses=50)
+    iron_axe = Weapon(name="Iron Axe", might=8, hit=75, weight=10, wtype="Axe", uses=50, max_uses=50)
+
+    # Leif (Player) - With Adept and Nihil
+    leif = Unit(
+        id=1, name="Leif", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 4),
+        max_hp=20, hp=20, strength=5, magic=5, skill=6,
+        speed=7, # Speed affects Adept chance (AS = Spd - Wt)
+        luck=6, defense=3, constitution=5, mov=7, fatigue=0, pcc=1,
+        skills=["Adept", "Nihil"], # Skills to test
+        inventory=[iron_sword]
+    )
+    game_state.add_unit(leif)
+
+    # Bandit (Enemy) - With Wrath and Miracle, low HP
+    bandit = Unit(
+        id=101, name="Bandit", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(5, 4),
+        max_hp=20, hp=10, # Start at low HP for Miracle test
+        strength=4, magic=0, skill=2, speed=4,
+        luck=5, # Luck affects Miracle chance
+        defense=2, constitution=10, mov=4, fatigue=0, pcc=0,
+        skills=["Wrath", "Miracle"], # Skills to test
+        inventory=[iron_axe]
+    )
+    game_state.add_unit(bandit)
+
+    # Add another player unit to allow ending the turn if Leif acts
+    nanna = Unit(
+        id=2, name="Nanna", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(0, 0), # Out of the way
+        max_hp=18, hp=18, strength=3, magic=6, skill=5, speed=8, luck=8, defense=2, constitution=4, mov=7, fatigue=0, pcc=2,
+        inventory=[Weapon(name="Heal Staff", wtype="Staff", staff_rank='E', uses=30, max_uses=30)]
+    )
+    game_state.add_unit(nanna)
+
+
+    return game_state
+
+def setup_item_test_state() -> GameState:
+    """Creates the initial game state for the item/inventory test."""
+    map_width = 10
+    map_height = 8
+    game_map = GameMap(width=map_width, height=map_height)
+    game_state = GameState(game_map=game_map)
+
+    # Weapons & Items
+    iron_sword = Weapon(name="Iron Sword", might=5, hit=90, weight=5, wtype="Sword", uses=50, max_uses=50)
+    fire_tome = Weapon(name="Fire Tome", might=6, hit=85, weight=4, wtype="Fire", damage_type="Magical", range_min=1, range_max=2, uses=40, max_uses=40)
+    # Inventory: Sword, Tome, 5x Vulnerary (Indices 0, 1, 2, 3, 4, 5, 6)
+    leif_inventory = [iron_sword, fire_tome] + [Vulnerary() for _ in range(5)]
+
+    # Leif (Player) - Damaged
+    leif = Unit(
+        id=1, name="Leif", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 4),
+        max_hp=20, hp=1, # Start heavily damaged
+        strength=5, magic=5, skill=6, speed=7, luck=6, defense=3, constitution=5, mov=7, fatigue=0, pcc=1,
+        inventory=leif_inventory
+    )
+    game_state.add_unit(leif)
+
+    # Add a dummy enemy just so the map isn't empty
+    enemy = Unit(
+        id=101, name="Dummy", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(5, 4),
+        max_hp=10, hp=10, strength=0, magic=0, skill=0, speed=0, luck=0, defense=0, constitution=10, mov=0, fatigue=0, pcc=0,
+        inventory=[]
+    )
+    game_state.add_unit(enemy)
+
+    return game_state
+
+def setup_ai_test_state() -> GameState:
+    """Creates the initial game state for the AI test."""
+    map_width = 10
+    map_height = 8
+    game_map = GameMap(width=map_width, height=map_height)
+    game_state = GameState(game_map=game_map)
+
+    # Weapons
+    iron_sword = Weapon(name="Iron Sword", might=5, hit=90, weight=5, wtype="Sword", uses=50, max_uses=50)
+    iron_axe = Weapon(name="Iron Axe", might=8, hit=75, weight=10, wtype="Axe", uses=50, max_uses=50)
+
+    # Leif (Player)
+    leif = Unit(
+        id=1, name="Leif", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 4),
+        max_hp=20, hp=20, strength=5, magic=5, skill=6, speed=7, luck=6, defense=3, constitution=5, mov=7, fatigue=0, pcc=1,
+        inventory=[iron_sword]
+    )
+    game_state.add_unit(leif)
+
+    # Bandit (Enemy) - Standard, not asleep
+    bandit = Unit(
+        id=101, name="Bandit", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(5, 4),
+        max_hp=20, hp=20, strength=4, magic=0, skill=2, speed=4, luck=0, defense=2, constitution=10, mov=4, fatigue=0, pcc=0,
+        inventory=[iron_axe]
+    )
+    game_state.add_unit(bandit)
+
+    return game_state
+
+def setup_bonus_test_state() -> GameState:
+    """Creates the initial game state for the bonus test."""
+    map_width = 10
+    map_height = 8
+    game_map = GameMap(width=map_width, height=map_height)
+    game_state = GameState(game_map=game_map)
+
+    # Weapons
+    iron_sword = Weapon(name="Iron Sword", might=5, hit=90, weight=5, wtype="Sword", uses=50, max_uses=50)
+    iron_axe = Weapon(name="Iron Axe", might=8, hit=75, weight=10, wtype="Axe", uses=50, max_uses=50)
+    heal_staff = Weapon(name="Heal Staff", wtype="Staff", staff_rank='E', uses=30, max_uses=30) # Give Nanna something
+
+    # Leif (Player) - With Leadership Star
+    leif = Unit(
+        id=1, name="Leif", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 4),
+        max_hp=20, hp=20, strength=5, magic=5, skill=6, speed=7, luck=6, defense=3, constitution=5, mov=7, fatigue=0, pcc=1,
+        leadership_stars=1, # Ensure Leif has 1 LS
+        inventory=[iron_sword]
+    )
+    game_state.add_unit(leif)
+
+    # Nanna (Player) - With Charisma
+    nanna = Unit(
+        id=2, name="Nanna", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 3), # Start near Leif
+        max_hp=18, hp=18, strength=3, magic=6, skill=5, speed=8, luck=8, defense=2, constitution=4, mov=7, fatigue=0, pcc=2,
+        skills=[CHARISMA_SKILL_NAME], # Ensure Nanna has Charisma
+        inventory=[heal_staff]
+    )
+    game_state.add_unit(nanna)
+
+    # Bandit (Enemy)
+    bandit = Unit(
+        id=101, name="Bandit", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(5, 4),
+        max_hp=20, hp=20, strength=4, magic=0, skill=2, speed=4, luck=0, defense=2, constitution=10, mov=4, fatigue=0, pcc=0,
+        inventory=[iron_axe]
+    )
+    game_state.add_unit(bandit)
+
+    return game_state
+
+def setup_magic_crit_test_state() -> GameState:
+    """Creates the initial game state for the magic crit/combat flow test."""
+    map_width = 10
+    map_height = 8
+    game_map = GameMap(width=map_width, height=map_height)
+    game_state = GameState(game_map=game_map)
+
+    # Weapons
+    iron_sword = Weapon(name="Iron Sword", might=5, hit=90, crit=0, weight=5, wtype="Sword", uses=50, max_uses=50)
+    fire_tome = Weapon(name="Fire Tome", might=6, hit=85, crit=0, weight=4, wtype="Fire", damage_type="Magical", range_min=1, range_max=2, uses=40, max_uses=40)
+    iron_axe = Weapon(name="Iron Axe", might=8, hit=75, weight=10, wtype="Axe", uses=50, max_uses=50)
+    heal_staff = Weapon(name="Heal Staff", wtype="Staff", staff_rank='E', uses=30, max_uses=30)
+
+    # Leif (Player) - With Sword, Tome, and Movement Stars
+    leif = Unit(
+        id=1, name="Leif", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 4),
+        max_hp=20, hp=20,
+        strength=5, magic=5, skill=6, speed=7, luck=6, defense=3, constitution=5, mov=7, fatigue=0, pcc=1,
+        movement_stars=20, # Guarantee activation for test flow
+        inventory=[iron_sword, fire_tome] # Has both weapons
+    )
+    game_state.add_unit(leif) # Leif will auto-equip Iron Sword (index 0)
+
+    # Nanna (Player) - To end turn
+    nanna = Unit(
+        id=2, name="Nanna", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 3),
+        max_hp=18, hp=18, strength=3, magic=6, skill=5, speed=8, luck=8, defense=2, constitution=4, mov=7, fatigue=0, pcc=2,
+        inventory=[heal_staff]
+    )
+    game_state.add_unit(nanna)
+
+    # Bandit (Enemy) - Asleep
+    bandit = Unit(
+        id=101, name="Bandit", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(5, 4),
+        max_hp=200, hp=200, strength=1,
+        magic=0, # Target for magic damage
+        skill=2, speed=4, luck=0,
+        defense=2, # Target for physical damage
+        constitution=10, mov=4, fatigue=0, pcc=0,
+        status_effect=StatusEffect.SLEEP, # Start asleep
+        inventory=[iron_axe]
+    )
+    game_state.add_unit(bandit)
+
+    return game_state
+
+def setup_capture_test_state() -> GameState:
+    """Creates the initial game state for the capture test (Case 1 & 7)."""
+    map_width = 6
+    map_height = 4 # Smaller map
+    game_map = GameMap(width=map_width, height=map_height)
+    game_state = GameState(game_map=game_map)
+
+    # Weapons
+    iron_sword = Weapon(name="Iron Sword", might=5, hit=90, weight=5, wtype="Sword", uses=50, max_uses=50)
+    iron_lance = Weapon(name="Iron Lance", might=7, hit=80, weight=8, wtype="Lance", uses=50, max_uses=50)
+
+    # Player Units
+    player1 = Unit(
+        id=1, name="PlayerInf", faction=Faction.PLAYER, move_type=MoveType.INFANTRY, position=(1, 1),
+        max_hp=20, hp=20, strength=10, skill=5, speed=5, luck=5, defense=5, constitution=10, mov=5, fatigue=0, pcc=0,
+        inventory=[iron_sword]
+    )
+    game_state.add_unit(player1)
+
+    player2 = Unit( # Needed for later tests, include for completeness
+        id=2, name="PlayerCav", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 2),
+        max_hp=20, hp=20, strength=10, skill=5, speed=8, luck=5, defense=5, constitution=8, mov=7, fatigue=0, pcc=0,
+        inventory=[iron_lance]
+    )
+    game_state.add_unit(player2)
+
+    # Enemy Units
+    enemy1 = Unit( # Target for successful capture
+        id=101, name="EnemyLowCon", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(2, 1),
+        max_hp=1, hp=1, strength=1, skill=1, speed=1, luck=1, defense=1, constitution=5, mov=4, fatigue=0, pcc=0,
+        inventory=[iron_sword]
+    )
+    game_state.add_unit(enemy1)
+
+    enemy2 = Unit( # Target for failed capture (Con too high)
+        id=102, name="EnemyHighCon", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(3, 1),
+        max_hp=1, hp=1, strength=1, skill=1, speed=1, luck=1, defense=1, constitution=15, mov=4, fatigue=0, pcc=0,
+        inventory=[iron_sword]
+    )
+    game_state.add_unit(enemy2)
+
+    enemy3 = Unit( # Target for failed capture (Immune Con)
+        id=103, name="EnemyImmuneCon", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(4, 1),
+        max_hp=1, hp=1, strength=1, skill=1, speed=1, luck=1, defense=1, constitution=20, mov=4, fatigue=0, pcc=0,
+        inventory=[iron_sword]
+    )
+    game_state.add_unit(enemy3)
+
+    enemy4 = Unit( # Target for failed capture (Mounted)
+        id=104, name="EnemyCavTarget", faction=Faction.ENEMY, move_type=MoveType.CAVALRY, position=(2, 2),
+        max_hp=1, hp=1, strength=1, skill=1, speed=1, luck=1, defense=1, constitution=5, mov=7, fatigue=0, pcc=0,
+        inventory=[iron_lance]
+    )
+    game_state.add_unit(enemy4)
+
+    return game_state
+
+def setup_crit_test_state() -> GameState:
+    """Creates the initial game state for the critical hit test."""
+    map_width = 10
+    map_height = 8
+    game_map = GameMap(width=map_width, height=map_height)
+    game_state = GameState(game_map=game_map)
+
+    # Weapons
+    iron_sword = Weapon(name="Iron Sword", might=5, hit=90, crit=0, weight=5, wtype="Sword", uses=50, max_uses=50)
+    iron_axe = Weapon(name="Iron Axe", might=8, hit=75, weight=10, wtype="Axe", uses=50, max_uses=50)
+    heal_staff = Weapon(name="Heal Staff", wtype="Staff", staff_rank='E', uses=30, max_uses=30)
+
+    # Leif (Player) - Ensure PCC=1
+    leif = Unit(
+        id=1, name="Leif", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 4),
+        max_hp=20, hp=20, strength=5, magic=5, skill=6, speed=7, luck=6, defense=3, constitution=5, mov=7, fatigue=0, pcc=1, # Set PCC=1
+        inventory=[iron_sword]
+    )
+    game_state.add_unit(leif)
+
+    # Nanna (Player) - To end turn
+    nanna = Unit(
+        id=2, name="Nanna", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 3),
+        max_hp=18, hp=18, strength=3, magic=6, skill=5, speed=8, luck=8, defense=2, constitution=4, mov=7, fatigue=0, pcc=2,
+        inventory=[heal_staff]
+    )
+    game_state.add_unit(nanna)
+
+    # Bandit (Enemy) - Asleep, Luk 0
+    bandit = Unit(
+        id=101, name="Bandit", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(5, 4),
+        max_hp=200, hp=200, strength=1, magic=0, skill=2, speed=4, luck=0, defense=2, constitution=10, mov=4, fatigue=0, pcc=0,
+        status_effect=StatusEffect.SLEEP, # Start asleep
+        inventory=[iron_axe]
+    )
+    game_state.add_unit(bandit)
+
+    return game_state
+
+def setup_magic_attack_test_state() -> GameState:
+    """Creates the initial game state for the magic attack test."""
+    map_width = 10
+    map_height = 8
+    game_map = GameMap(width=map_width, height=map_height)
+    game_state = GameState(game_map=game_map)
+
+    # Weapons
+    iron_sword = Weapon(name="Iron Sword", might=5, hit=90, weight=5, wtype="Sword", uses=50, max_uses=50)
+    fire_tome = Weapon(name="Fire Tome", might=6, hit=85, crit=0, weight=4, wtype="Fire", damage_type="Magical", range_min=1, range_max=2, uses=40, max_uses=40)
+    iron_axe = Weapon(name="Iron Axe", might=8, hit=75, weight=10, wtype="Axe", uses=50, max_uses=50)
+    heal_staff = Weapon(name="Heal Staff", wtype="Staff", staff_rank='E', uses=30, max_uses=30)
+
+    # Leif (Player) - With Fire Tome and guaranteed Movement Stars for this test
+    leif = Unit(
+        id=1, name="Leif", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 4),
+        max_hp=20, hp=20, strength=5, magic=5, skill=6, speed=7, luck=6, defense=3, constitution=5, mov=7, fatigue=0, pcc=1,
+        movement_stars=20, # Add stars to guarantee second action for test
+        inventory=[iron_sword, fire_tome] # Add Fire Tome
+    )
+    game_state.add_unit(leif)
+
+    # Nanna (Player) - To end turn
+    nanna = Unit(
+        id=2, name="Nanna", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 3),
+        max_hp=18, hp=18, strength=3, magic=6, skill=5, speed=8, luck=8, defense=2, constitution=4, mov=7, fatigue=0, pcc=2,
+        inventory=[heal_staff]
+    )
+    game_state.add_unit(nanna)
+
+    # Bandit (Enemy) - Asleep, Mag 0
+    bandit = Unit(
+        id=101, name="Bandit", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(5, 4),
+        max_hp=200, hp=200, strength=1, magic=0, skill=2, speed=4, luck=0, defense=2, constitution=10, mov=4, fatigue=0, pcc=0,
+        status_effect=StatusEffect.SLEEP, # Start asleep
+        inventory=[iron_axe]
+    )
+    game_state.add_unit(bandit)
+
+    return game_state
+
+def setup_mvp_test_state() -> GameState:
+    """Creates the initial game state for the MVP commands test."""
+    map_width = 10
+    map_height = 8
+    game_map = GameMap(width=map_width, height=map_height)
+    game_state = GameState(game_map=game_map)
+
+    # Weapons
+    iron_sword = Weapon(name="Iron Sword", might=5, hit=90, weight=5, wtype="Sword", damage_type="Physical", range_min=1, range_max=1, uses=50, max_uses=50)
+    iron_axe = Weapon(name="Iron Axe", might=8, hit=75, weight=10, wtype="Axe", damage_type="Physical", range_min=1, range_max=1, uses=50, max_uses=50)
+    heal_staff = Weapon(name="Heal Staff", wtype="Staff", staff_rank='E', uses=30, max_uses=30)
+
+    # Leif (Player) - Cavalry
+    leif = Unit(
+        id=1, name="Leif", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 4),
+        max_hp=20, hp=20, strength=5, magic=5, skill=6, speed=7, luck=6, defense=3, constitution=5, mov=7, fatigue=0, pcc=1,
+        inventory=[iron_sword]
+    )
+    game_state.add_unit(leif)
+
+    # Nanna (Player) - Cavalry
+    nanna = Unit(
+        id=2, name="Nanna", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 3),
+        max_hp=18, hp=18, strength=3, magic=6, skill=5, speed=8, luck=8, defense=2, constitution=4, mov=7, fatigue=0, pcc=2,
+        inventory=[heal_staff]
+    )
+    game_state.add_unit(nanna)
+
+    # Bandit (Enemy) - Asleep
+    bandit = Unit(
+        id=101, name="Bandit", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(5, 4),
+        max_hp=20, hp=20, strength=1, magic=0, skill=2, speed=4, luck=0, defense=2, constitution=10, mov=4, fatigue=0, pcc=0,
+        status_effect=StatusEffect.SLEEP, # Start asleep
+        inventory=[iron_axe]
+    )
+    game_state.add_unit(bandit)
+
+    return game_state
+
+def setup_canto_test_state() -> GameState:
+    """Creates the initial game state for the Canto test."""
+    map_width = 10
+    map_height = 8
+    game_map = GameMap(width=map_width, height=map_height)
+    game_state = GameState(game_map=game_map)
+
+    # Weapons & Items
+    iron_sword = Weapon(name="Iron Sword", might=5, hit=90, weight=5, wtype="Sword", uses=50, max_uses=50)
+    iron_axe = Weapon(name="Iron Axe", might=8, hit=75, weight=10, wtype="Axe", uses=50, max_uses=50)
+    heal_staff = Weapon(name="Heal Staff", wtype="Staff", staff_rank='E', uses=30, max_uses=30)
+    vulnerary = Vulnerary()
+
+    # Leif (Player) - Cavalry, with Vulnerary
+    leif = Unit(
+        id=1, name="Leif", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 4),
+        max_hp=20, hp=20, strength=5, magic=5, skill=6, speed=7, luck=6, defense=3, constitution=5, mov=7, fatigue=0, pcc=1,
+        inventory=[iron_sword, vulnerary] # Need sword for attack test, vulnerary for use test
+    )
+    game_state.add_unit(leif)
+
+    # Nanna (Player) - To end turn
+    nanna = Unit(
+        id=2, name="Nanna", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 3),
+        max_hp=18, hp=18, strength=3, magic=6, skill=5, speed=8, luck=8, defense=2, constitution=4, mov=7, fatigue=0, pcc=2,
+        inventory=[heal_staff]
+    )
+    game_state.add_unit(nanna)
+
+    # Bandit (Enemy) - Target
+    bandit = Unit(
+        id=101, name="Bandit", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(5, 4),
+        max_hp=20, hp=20, strength=4, magic=0, skill=2, speed=4, luck=0, defense=2, constitution=10, mov=4, fatigue=0, pcc=0,
+        inventory=[iron_axe]
+    )
+    game_state.add_unit(bandit)
 
     return game_state
 
@@ -137,6 +907,8 @@ def complete_action(unit: Unit, game_state: GameState) -> bool:
             # Deselect unit so player must re-select to act again
             game_state.selected_unit_id = None
             return True # Unit gets another action
+        elif setup_name == "crit": # ADDED
+            game_state = setup_crit_test_state() # ADDED
         else:
             print(f"  (Movement Star did not activate)")
 
@@ -146,9 +918,53 @@ def complete_action(unit: Unit, game_state: GameState) -> bool:
     return False # Unit's turn ends
 
 # --- Main CLI Loop (Updated) ---
-def run_cli():
+def run_cli(setup_name: str = "effectiveness"): # MODIFIED: Accept setup name
     """Runs the main command-line interface loop."""
-    game_state = setup_initial_state()
+    random.seed(42) # Seed RNG for deterministic tests
+
+    # Select the setup function based on the name
+    if setup_name == "effectiveness":
+        game_state = setup_effectiveness_test_state()
+    # Add other setup functions here later
+    elif setup_name == "combat":
+        game_state = setup_combat_test_state()
+    elif setup_name == "fatigue": # ADDED
+        game_state = setup_fatigue_test_state() # ADDED
+    elif setup_name == "staff":
+        game_state = setup_staff_test_state()
+    elif setup_name == "item":
+        game_state = setup_item_test_state()
+    elif setup_name == "ai": # ADDED
+        game_state = setup_ai_test_state() # ADDED
+    elif setup_name == "bonus":
+        game_state = setup_bonus_test_state()
+    elif setup_name == "canto":
+        game_state = setup_canto_test_state()
+    elif setup_name == "capture": # ADDED
+        game_state = setup_capture_test_state() # ADDED
+    elif setup_name == "crit":
+        game_state = setup_crit_test_state()
+    elif setup_name == "magic_attack":
+        game_state = setup_magic_attack_test_state()
+    elif setup_name == "magic_crit": # ADDED
+        game_state = setup_magic_crit_test_state() # ADDED
+    elif setup_name == "mvp": # ADDED
+        game_state = setup_mvp_test_state() # ADDED
+    elif setup_name == "steal": # ADDED
+        game_state = setup_steal_test_state() # ADDED
+    elif setup_name == "skills": # ADDED
+        game_state = setup_skills_test_state() # ADDED
+    elif setup_name == "status": # ADDED
+        game_state = setup_status_test_state() # ADDED
+    elif setup_name == "movestars": # ADDED
+        game_state = setup_movestars_test_state() # ADDED
+    elif setup_name == "triangle": # ADDED
+        game_state = setup_triangle_test_state() # ADDED
+    elif setup_name == "terrain": # ADDED
+        game_state = setup_terrain_test_state() # ADDED
+    else:
+        print(f"Error: Unknown setup name '{setup_name}'. Defaulting to effectiveness.")
+        game_state = setup_effectiveness_test_state()
     # Store move range as {pos: cost}
     current_move_range: Optional[Dict[Tuple[int, int], int]] = None
     current_attack_range: Optional[Set[Tuple[int, int]]] = None
@@ -560,10 +1376,15 @@ def run_cli():
                         print(f"Item type '{item_to_use.name}' use effect not implemented yet.")
 
                     if item_used_successfully:
-                        # Fatigue handled in action
-                        # Item use allows Canto
+                        # Apply fatigue for item use
+                        selected_unit.fatigue += FATIGUE_COST_ITEM
+                        print(f"  (+{FATIGUE_COST_ITEM} Fatigue for {selected_unit.name}. Total: {selected_unit.fatigue})")
+
+                        # Item use allows Canto (check before completing action)
                         is_mounted = selected_unit.move_type in [MoveType.CAVALRY, MoveType.FLYING]
-                        if is_mounted and canto_move_points is not None and canto_move_points > 0:
+                        can_canto = is_mounted and canto_move_points is not None and canto_move_points > 0
+
+                        if can_canto:
                              print(f"  {selected_unit.name} can Canto with {canto_move_points} movement.")
                              # Recalculate Canto range (position hasn't changed)
                              current_canto_range = calculate_move_range(game_state, selected_unit, override_max_move=canto_move_points)
@@ -577,10 +1398,11 @@ def run_cli():
                              canto_move_points = None
                              is_canto_active = False
                              current_canto_range = None
+                             # Call complete_action here to handle has_acted and movement stars
                              if not complete_action(selected_unit, game_state):
                                  current_move_range = None
                                  current_attack_range = None
-                             else:
+                             else: # Movement star activated
                                  current_move_range = None
                                  current_attack_range = None
 
@@ -687,7 +1509,8 @@ def run_cli():
 
                     # Check Steal Conditions (AS and Item Weight)
                     # Need to import calculate_attack_speed from combat
-                    from game.combat import calculate_attack_speed, FATIGUE_COST_STEAL # Import AS calc and fatigue cost
+                    from game.combat import calculate_attack_speed # Import AS calc
+                    from game.models import FATIGUE_COST_STEAL # Import fatigue cost from models
                     thief_as = calculate_attack_speed(thief, game_state)
                     target_as = calculate_attack_speed(target, game_state)
 
@@ -777,10 +1600,14 @@ def run_cli():
                         print(f"{caster.name} cannot use staves while capturing.")
                         continue
 
-                    equipped_item = caster.equipped_weapon
-                    if not equipped_item or not hasattr(equipped_item, 'staff_rank') or equipped_item.staff_rank is None:
+                    equipped_staff = caster.equipped_weapon
+                    if not equipped_staff or not isinstance(equipped_staff, Weapon) or equipped_staff.wtype != "Staff":
                         print(f"{caster.name} does not have a staff equipped.")
                         continue
+                    # Ensure it has a rank for fatigue calculation later
+                    if not equipped_staff.staff_rank:
+                         print(f"Error: Equipped staff '{equipped_staff.name}' has no rank defined.")
+                         continue
 
                     # Basic command structure, no actual effect yet
                     if len(args) != 2:
@@ -789,24 +1616,77 @@ def run_cli():
 
                     try:
                         target_x, target_y = int(args[0]), int(args[1])
-                        # TODO: Add range check, target validation later
-                        print(f"{caster.name} uses {equipped_item.name} (Rank {equipped_item.staff_rank}) on ({target_x}, {target_y})... (No effect yet)")
+                        target_pos = (target_x, target_y)
+
+                        # --- Staff Range Check ---
+                        # Basic Heal staff is range 1
+                        staff_range = 1 # Default for Heal/Mend
+                        # TODO: Add logic for other staff ranges later (e.g., Physic, status staves)
+                        dist_x = abs(caster.position[0] - target_x)
+                        dist_y = abs(caster.position[1] - target_y)
+                        distance = dist_x + dist_y
+
+                        if distance > staff_range:
+                            print(f"Target ({target_x}, {target_y}) is out of range for {equipped_staff.name} (Range: {staff_range}).")
+                            continue
+
+                        # --- Target Validation ---
+                        target_unit_id = game_state.game_map.get_unit_id_at(target_x, target_y)
+                        target_unit = game_state.get_unit(target_unit_id) if target_unit_id is not None else None
+
+                        staff_used_successfully = False
+                        # --- Heal Staff Logic ---
+                        if equipped_staff.name == "Heal Staff": # Check specifically for Heal staff
+                            if not target_unit:
+                                print(f"No unit at ({target_x}, {target_y}).")
+                                continue
+                            if target_unit.faction != caster.faction:
+                                print(f"Cannot heal non-allied unit {target_unit.name}.")
+                                continue
+                            if not target_unit.is_alive or target_unit.is_captured:
+                                print(f"Cannot heal defeated or captured unit {target_unit.name}.")
+                                continue
+                            if target_unit.hp >= target_unit.max_hp:
+                                print(f"{target_unit.name} is already at full HP.")
+                                continue
+
+                            # Calculate Heal Amount (10 + User's Magic)
+                            heal_amount = 10 + caster.magic
+                            actual_healed = min(heal_amount, target_unit.max_hp - target_unit.hp)
+                            target_unit.hp += actual_healed
+                            print(f"{caster.name} used {equipped_staff.name} on {target_unit.name}, recovering {actual_healed} HP. (HP: {target_unit.hp}/{target_unit.max_hp})")
+                            staff_used_successfully = True
+                        else:
+                             # Placeholder for other staves
+                             print(f"{caster.name} uses {equipped_staff.name} (Rank {equipped_staff.staff_rank}) on ({target_x}, {target_y})... (Effect for this staff not implemented yet)")
+                             # Assume success for fatigue/use consumption for now if target exists
+                             if target_unit:
+                                 staff_used_successfully = True # Allow fatigue/use for unimplemented staves if target valid
+
+                        # --- Apply Fatigue & Consume Use (if successful) ---
+                        if staff_used_successfully:
 
                         # Apply fatigue based on staff rank
                         # Need to import FATIGUE_COST_STAFF from models
-                        from game.models import FATIGUE_COST_STAFF
-                        rank = equipped_item.staff_rank
-                        cost = FATIGUE_COST_STAFF.get(rank, 1) # Default to 1 if rank not found
-                        caster.fatigue += cost
-                        print(f"  ({caster.name} fatigue increases by {cost} to {caster.fatigue})")
+                            from game.models import FATIGUE_COST_STAFF
+                            rank = equipped_staff.staff_rank
+                            cost = FATIGUE_COST_STAFF.get(rank, 1) # Default to 1 if rank not found
+                            caster.fatigue += cost
+                            print(f"  ({caster.name} fatigue increases by {cost} to {caster.fatigue})")
 
                         # Consume staff use
-                        if equipped_item.uses is not None:
-                            equipped_item.uses -= 1
-                            if equipped_item.uses == 0:
-                                print(f"  {equipped_item.name} broke.")
-                                # TODO: Handle removing/replacing broken item
-    
+                            if equipped_staff.use(): # Use the item's use method
+                                if equipped_staff.uses == 0:
+                                    print(f"  {equipped_staff.name} broke.")
+                                    caster.remove_item(equipped_staff) # Remove the broken staff
+                            else:
+                                # This case should ideally not be reached if is_usable was checked, but handle defensively
+                                print(f"  Error: Failed to consume use for {equipped_staff.name}.")
+                                continue # Skip action completion if use failed unexpectedly
+
+                            # TODO: Add WExp gain for staff use
+
+                            # Staff use prevents Canto, always end action
                             # Staff use prevents Canto, always end action
                             canto_move_points = None
                             is_canto_active = False
@@ -966,9 +1846,20 @@ def run_cli():
             print(f"An unexpected error occurred: {e}")
 
 if __name__ == "__main__":
+    # --- Argument Parsing ---
+    parser = argparse.ArgumentParser(description="Run Fantasy Tactics CLI with specific test setup.")
+    parser.add_argument(
+        "--setup",
+        type=str,
+        default="effectiveness", # Default to the current setup
+        help="Name of the test setup to load (e.g., 'effectiveness', 'combat')."
+    )
+    args = parser.parse_args()
+    # ----------------------
+
     src_dir = os.path.dirname(__file__)
     game_dir = os.path.join(src_dir, "game")
     if not os.path.exists(os.path.join(game_dir, "__init__.py")):
         open(os.path.join(game_dir, "__init__.py"), 'a').close()
 
-    run_cli()
+    run_cli(setup_name=args.setup) # Pass the setup name
