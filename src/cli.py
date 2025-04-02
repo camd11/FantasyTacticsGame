@@ -930,6 +930,86 @@ def setup_canto_test_state() -> GameState:
     game_state.add_unit(bandit)
 
     return game_state
+def setup_restore_staff_test_state() -> GameState:
+    """Creates the initial game state for the Restore staff test."""
+    map_width = 6
+    map_height = 6
+    game_map = GameMap(width=map_width, height=map_height)
+    game_state = GameState(game_map=game_map)
+
+    # Items
+    restore_staff = Weapon(name="Restore Staff", wtype="Staff", staff_rank='B', uses=10, max_uses=10) # Assume B rank
+    iron_sword = Weapon(name="Iron Sword", might=5, hit=90, weight=5, wtype="Sword", uses=50, max_uses=50)
+
+    # Player Units
+    healer = Unit(
+        id=1, name="Healer", cls_name="Priest", faction=Faction.PLAYER, move_type=MoveType.INFANTRY, position=(1, 1),
+        max_hp=20, hp=20, strength=0, magic=8, skill=6, speed=5, luck=5, defense=2, constitution=4, mov=5, fatigue=0, pcc=0,
+        inventory=[restore_staff],
+        weapon_ranks={'Staff': 'B'}, # Needs B rank to use Restore
+        growth_rates={'hp': 50, 'strength': 0, 'magic': 40, 'skill': 30, 'speed': 25, 'luck': 60, 'defense': 10, 'constitution': 1, 'mov': 1}
+    )
+    game_state.add_unit(healer)
+    healer.equipped_weapon_index = 0 # Equip Restore Staff
+
+    target_poison = Unit(
+        id=2, name="TargetPoison", cls_name="Fighter", faction=Faction.PLAYER, move_type=MoveType.INFANTRY, position=(1, 2), # Adjacent
+        max_hp=25, hp=25, strength=10, magic=0, skill=5, speed=5, luck=5, defense=5, constitution=10, mov=5, fatigue=0, pcc=0,
+        status_effect=StatusEffect.POISON,
+        inventory=[iron_sword],
+        growth_rates={'hp': 70, 'strength': 40, 'magic': 5, 'skill': 30, 'speed': 20, 'luck': 10, 'defense': 30, 'constitution': 10, 'mov': 1}
+    )
+    game_state.add_unit(target_poison)
+
+    target_sleep = Unit(
+        id=3, name="TargetSleep", cls_name="Archer", faction=Faction.PLAYER, move_type=MoveType.INFANTRY, position=(2, 1), # Adjacent
+        max_hp=22, hp=22, strength=8, magic=1, skill=7, speed=6, luck=4, defense=3, constitution=6, mov=5, fatigue=0, pcc=0,
+        status_effect=StatusEffect.SLEEP,
+        inventory=[],
+        growth_rates={'hp': 60, 'strength': 35, 'magic': 10, 'skill': 45, 'speed': 40, 'luck': 30, 'defense': 15, 'constitution': 4, 'mov': 1}
+    )
+    game_state.add_unit(target_sleep)
+
+    target_silence = Unit(
+        id=4, name="TargetSilence", cls_name="Mage", faction=Faction.PLAYER, move_type=MoveType.INFANTRY, position=(0, 1), # Adjacent
+        max_hp=18, hp=18, strength=1, magic=12, skill=8, speed=7, luck=6, defense=2, constitution=3, mov=5, fatigue=0, pcc=0,
+        status_effect=StatusEffect.SILENCE,
+        inventory=[],
+        growth_rates={'hp': 45, 'strength': 5, 'magic': 50, 'skill': 40, 'speed': 45, 'luck': 35, 'defense': 10, 'constitution': 2, 'mov': 1}
+    )
+    game_state.add_unit(target_silence)
+
+    target_berserk = Unit( # Need to implement Berserk AI later, but can test curing it
+        id=5, name="TargetBerserk", cls_name="Mercenary", faction=Faction.PLAYER, move_type=MoveType.INFANTRY, position=(2, 2), # Adjacent
+        max_hp=28, hp=28, strength=9, magic=2, skill=10, speed=9, luck=3, defense=4, constitution=8, mov=5, fatigue=0, pcc=0,
+        status_effect=StatusEffect.BERSERK,
+        inventory=[iron_sword],
+        growth_rates={'hp': 75, 'strength': 45, 'magic': 15, 'skill': 50, 'speed': 55, 'luck': 25, 'defense': 20, 'constitution': 7, 'mov': 1}
+    )
+    game_state.add_unit(target_berserk)
+
+    target_healthy = Unit(
+        id=6, name="TargetHealthy", cls_name="Soldier", faction=Faction.PLAYER, move_type=MoveType.INFANTRY, position=(0, 0), # Adjacent
+        max_hp=26, hp=26, strength=7, magic=0, skill=4, speed=4, luck=2, defense=6, constitution=9, mov=5, fatigue=0, pcc=0,
+        status_effect=StatusEffect.NONE,
+        inventory=[],
+        growth_rates={'hp': 80, 'strength': 30, 'magic': 0, 'skill': 20, 'speed': 15, 'luck': 10, 'defense': 35, 'constitution': 8, 'mov': 1}
+    )
+    game_state.add_unit(target_healthy)
+
+    # Enemy Unit
+    enemy_unit = Unit(
+        id=101, name="Enemy", cls_name="Bandit", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(3, 1), # Adjacent
+        max_hp=20, hp=20, strength=5, magic=0, skill=2, speed=3, luck=0, defense=1, constitution=11, mov=5, fatigue=0, pcc=0,
+        status_effect=StatusEffect.POISON, # Enemy can have status too
+        inventory=[],
+        growth_rates={'hp': 90, 'strength': 50, 'magic': 0, 'skill': 10, 'speed': 20, 'luck': 5, 'defense': 5, 'constitution': 12, 'mov': 1}
+    )
+    game_state.add_unit(enemy_unit)
+
+    return game_state
+
+
 
 def setup_staff_wexp_test_state() -> GameState:
     """Creates the initial game state for the staff WExp test."""
@@ -967,6 +1047,85 @@ def setup_staff_wexp_test_state() -> GameState:
     game_state.add_unit(target)
 
     return game_state
+def setup_restore_staff_test_state() -> GameState:
+    """Creates the initial game state for the Restore staff test."""
+    map_width = 6
+    map_height = 6
+    game_map = GameMap(width=map_width, height=map_height)
+    game_state = GameState(game_map=game_map)
+
+    # Items
+    restore_staff = Weapon(name="Restore Staff", wtype="Staff", staff_rank='B', uses=10, max_uses=10) # Assume B rank
+    iron_sword = Weapon(name="Iron Sword", might=5, hit=90, weight=5, wtype="Sword", uses=50, max_uses=50)
+
+    # Player Units
+    healer = Unit(
+        id=1, name="Healer", cls_name="Priest", faction=Faction.PLAYER, move_type=MoveType.INFANTRY, position=(1, 1),
+        max_hp=20, hp=20, strength=0, magic=8, skill=6, speed=5, luck=5, defense=2, constitution=4, mov=5, fatigue=0, pcc=0,
+        inventory=[restore_staff],
+        weapon_ranks={'Staff': 'B'}, # Needs B rank to use Restore
+        growth_rates={'hp': 50, 'strength': 0, 'magic': 40, 'skill': 30, 'speed': 25, 'luck': 60, 'defense': 10, 'constitution': 1, 'mov': 1}
+    )
+    game_state.add_unit(healer)
+    healer.equipped_weapon_index = 0 # Equip Restore Staff
+
+    target_poison = Unit(
+        id=2, name="TargetPoison", cls_name="Fighter", faction=Faction.PLAYER, move_type=MoveType.INFANTRY, position=(1, 2), # Adjacent
+        max_hp=25, hp=25, strength=10, magic=0, skill=5, speed=5, luck=5, defense=5, constitution=10, mov=5, fatigue=0, pcc=0,
+        status_effect=StatusEffect.POISON,
+        inventory=[iron_sword],
+        growth_rates={'hp': 70, 'strength': 40, 'magic': 5, 'skill': 30, 'speed': 20, 'luck': 10, 'defense': 30, 'constitution': 10, 'mov': 1}
+    )
+    game_state.add_unit(target_poison)
+
+    target_sleep = Unit(
+        id=3, name="TargetSleep", cls_name="Archer", faction=Faction.PLAYER, move_type=MoveType.INFANTRY, position=(2, 1), # Adjacent
+        max_hp=22, hp=22, strength=8, magic=1, skill=7, speed=6, luck=4, defense=3, constitution=6, mov=5, fatigue=0, pcc=0,
+        status_effect=StatusEffect.SLEEP,
+        inventory=[],
+        growth_rates={'hp': 60, 'strength': 35, 'magic': 10, 'skill': 45, 'speed': 40, 'luck': 30, 'defense': 15, 'constitution': 4, 'mov': 1}
+    )
+    game_state.add_unit(target_sleep)
+
+    target_silence = Unit(
+        id=4, name="TargetSilence", cls_name="Mage", faction=Faction.PLAYER, move_type=MoveType.INFANTRY, position=(0, 1), # Adjacent
+        max_hp=18, hp=18, strength=1, magic=12, skill=8, speed=7, luck=6, defense=2, constitution=3, mov=5, fatigue=0, pcc=0,
+        status_effect=StatusEffect.SILENCE,
+        inventory=[],
+        growth_rates={'hp': 45, 'strength': 5, 'magic': 50, 'skill': 40, 'speed': 45, 'luck': 35, 'defense': 10, 'constitution': 2, 'mov': 1}
+    )
+    game_state.add_unit(target_silence)
+
+    target_berserk = Unit( # Need to implement Berserk AI later, but can test curing it
+        id=5, name="TargetBerserk", cls_name="Mercenary", faction=Faction.PLAYER, move_type=MoveType.INFANTRY, position=(2, 2), # Adjacent
+        max_hp=28, hp=28, strength=9, magic=2, skill=10, speed=9, luck=3, defense=4, constitution=8, mov=5, fatigue=0, pcc=0,
+        status_effect=StatusEffect.BERSERK,
+        inventory=[iron_sword],
+        growth_rates={'hp': 75, 'strength': 45, 'magic': 15, 'skill': 50, 'speed': 55, 'luck': 25, 'defense': 20, 'constitution': 7, 'mov': 1}
+    )
+    game_state.add_unit(target_berserk)
+
+    target_healthy = Unit(
+        id=6, name="TargetHealthy", cls_name="Soldier", faction=Faction.PLAYER, move_type=MoveType.INFANTRY, position=(0, 0), # Adjacent
+        max_hp=26, hp=26, strength=7, magic=0, skill=4, speed=4, luck=2, defense=6, constitution=9, mov=5, fatigue=0, pcc=0,
+        status_effect=StatusEffect.NONE,
+        inventory=[],
+        growth_rates={'hp': 80, 'strength': 30, 'magic': 0, 'skill': 20, 'speed': 15, 'luck': 10, 'defense': 35, 'constitution': 8, 'mov': 1}
+    )
+    game_state.add_unit(target_healthy)
+
+    # Enemy Unit
+    enemy_unit = Unit(
+        id=101, name="Enemy", cls_name="Bandit", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(3, 1), # Adjacent
+        max_hp=20, hp=20, strength=5, magic=0, skill=2, speed=3, luck=0, defense=1, constitution=11, mov=5, fatigue=0, pcc=0,
+        status_effect=StatusEffect.POISON, # Enemy can have status too
+        inventory=[],
+        growth_rates={'hp': 90, 'strength': 50, 'magic': 0, 'skill': 10, 'speed': 20, 'luck': 5, 'defense': 5, 'constitution': 12, 'mov': 1}
+    )
+    game_state.add_unit(enemy_unit)
+
+    return game_state
+
 
 def setup_mvp_phase1_state() -> GameState:
     """Creates a simple game state aligned with DESIGN_MVP_PHASE1.md goals."""
@@ -1897,7 +2056,7 @@ def run_cli(setup_name: str = "effectiveness"): # MODIFIED: Accept setup name
                             staff_used_successfully = True
 
                         # --- Restore Staff Logic ---
-                        elif staff_name == "restore staff":
+                        elif staff_name == "restore staff": # Assuming name is exactly "restore staff"
                             if not target_unit:
                                 print(f"No unit at ({target_x}, {target_y}).")
                                 continue
@@ -1909,12 +2068,14 @@ def run_cli(setup_name: str = "effectiveness"): # MODIFIED: Accept setup name
                                 continue
                             if target_unit.status_effect == StatusEffect.NONE:
                                 print(f"{target_unit.name} has no status condition to restore.")
+                                # Technically, using Restore on a healthy target might still consume a use/fatigue?
+                                # For now, let's prevent action if no status.
                                 continue
 
                             # Cure the status
                             old_status = target_unit.status_effect
                             target_unit.status_effect = StatusEffect.NONE
-                            print(f"{caster.name} used {equipped_staff.name} on {target_unit.name}, curing {old_status}.")
+                            print(f"{caster.name} used {equipped_staff.name} on {target_unit.name}, curing {old_status.value}.") # Use .value for enum display
                             staff_used_successfully = True
 
                         # --- Mend Staff Logic (Example) ---
@@ -2202,12 +2363,12 @@ if __name__ == "__main__":
             "triangle": setup_triangle_test_state,
             "terrain": setup_terrain_test_state,
             "mvp_phase1": setup_mvp_phase1_state, # Add the new one here
-            "staff_wexp": setup_staff_wexp_test_state # Add Staff WExp setup
+            "staff_wexp": setup_staff_wexp_test_state, # Add Staff WExp setup
+            "restore_staff": setup_restore_staff_test_state # Add Restore Staff setup
         }
         if args.setup in setup_functions:
              run_cli(setup_name=args.setup) # Pass the setup name
-        elif args.setup in setup_functions: # Check if setup exists before calling
-            run_cli(setup_name=args.setup) # Pass the setup name
         else:
-             print(f"Error: Unknown setup name '{args.setup}'. Available: {list(setup_functions.keys())}. Using default 'mvp_phase1'.")
+             available_setups = list(setup_functions.keys())
+             print(f"Error: Unknown setup name '{args.setup}'. Available: {available_setups}. Using default 'mvp_phase1'.")
              run_cli(setup_name="mvp_phase1")

@@ -1,0 +1,79 @@
+# Test file for Restore Staff
+
+# --- Setup ---
+# Healer (ID 1, Pos 1,1, Mag 8, B Staff Rank) has Restore Staff (10 uses)
+# TargetPoison (ID 2, Pos 1,2, Status: Poison)
+# TargetSleep (ID 3, Pos 2,1, Status: Sleep)
+# TargetSilence (ID 4, Pos 0,1, Status: Silence)
+# TargetBerserk (ID 5, Pos 2,2, Status: Berserk)
+# TargetHealthy (ID 6, Pos 0,0, Status: None)
+# Enemy (ID 101, Pos 3,1, Status: Poison)
+
+# --- Initial State ---
+info 1 1 # Check Healer: Restore Staff (10 uses), Fatigue 0
+info 1 2 # Check TargetPoison: Status Poison
+info 2 1 # Check TargetSleep: Status Sleep
+info 0 1 # Check TargetSilence: Status Silence
+info 2 2 # Check TargetBerserk: Status Berserk
+info 0 0 # Check TargetHealthy: Status Normal
+info 3 1 # Check Enemy: Status Poison
+
+# --- Test 1: Restore Poison ---
+select 1 1 # Select Healer
+staff 1 2 # Restore TargetPoison
+# Expected: Cures Poison, Healer fatigue +4 (B rank), Restore uses -1 (9)
+info 1 2 # Verify TargetPoison: Status Normal
+info 1 1 # Verify Healer: Fatigue 4, Restore Staff (9 uses), Acted
+
+# --- Test 2: Restore Sleep (Requires next turn) ---
+select 2 2 # Select Berserk target to pass turn
+wait
+# Turn 1 ends, Turn 2 starts. Healer action resets.
+info 1 1 # Verify Healer: Fatigue 4, Restore Staff (9 uses), Not Acted
+select 1 1 # Select Healer
+staff 2 1 # Restore TargetSleep
+# Expected: Cures Sleep, Healer fatigue +4 (Total 8), Restore uses -1 (8)
+info 2 1 # Verify TargetSleep: Status Normal
+info 1 1 # Verify Healer: Fatigue 8, Restore Staff (8 uses), Acted
+
+# --- Test 3: Restore Silence (Requires next turn) ---
+select 2 2 # Select Berserk target to pass turn
+wait
+# Turn 2 ends, Turn 3 starts. Healer action resets.
+info 1 1 # Verify Healer: Fatigue 8, Restore Staff (8 uses), Not Acted
+select 1 1 # Select Healer
+staff 0 1 # Restore TargetSilence
+# Expected: Cures Silence, Healer fatigue +4 (Total 12), Restore uses -1 (7)
+info 0 1 # Verify TargetSilence: Status Normal
+info 1 1 # Verify Healer: Fatigue 12, Restore Staff (7 uses), Acted
+
+# --- Test 4: Restore Berserk (Requires next turn) ---
+select 2 2 # Select Berserk target to pass turn
+wait
+# Turn 3 ends, Turn 4 starts. Healer action resets.
+info 1 1 # Verify Healer: Fatigue 12, Restore Staff (7 uses), Not Acted
+select 1 1 # Select Healer
+staff 2 2 # Restore TargetBerserk
+# Expected: Cures Berserk, Healer fatigue +4 (Total 16), Restore uses -1 (6)
+info 2 2 # Verify TargetBerserk: Status Normal
+info 1 1 # Verify Healer: Fatigue 16, Restore Staff (6 uses), Acted
+
+# --- Test 5: Restore Healthy Target (Requires next turn) ---
+select 2 2 # Select formerly Berserk target to pass turn
+wait
+# Turn 4 ends, Turn 5 starts. Healer action resets.
+info 1 1 # Verify Healer: Fatigue 16, Restore Staff (6 uses), Not Acted
+select 1 1 # Select Healer
+staff 0 0 # Attempt to restore TargetHealthy
+# Expected: Message "has no status condition to restore", Healer not acted, no fatigue/use change
+info 0 0 # Verify TargetHealthy: Status Normal
+info 1 1 # Verify Healer: Fatigue 16, Restore Staff (6 uses), Not Acted
+
+# --- Test 6: Restore Enemy Target (Still Healer's turn) ---
+staff 3 1 # Attempt to restore Enemy
+# Expected: Message "Cannot restore non-allied unit", Healer not acted
+info 3 1 # Verify Enemy: Status Poison
+info 1 1 # Verify Healer: Fatigue 16, Restore Staff (6 uses), Not Acted
+
+# --- Cleanup ---
+quit

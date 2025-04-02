@@ -45,6 +45,7 @@ The initial Minimum Viable Product (MVP) focusing on foundational map/unit repre
     *   Implemented Canto: Mounted units can use remaining movement after non-combat actions (`src/game/movement.py`, `src/cli.py`, `src/game/display.py`).
     *   Implemented basic Staff usage: Added `staff <x> <y>` command. Implemented Heal staff effect (Range 1, Heals 10 + User Mag), fatigue cost, use consumption, and Canto prevention (`src/cli.py`, `test_staff_commands.txt`). Other staff effects are pending.
     *   Implemented Staff WExp gain based on staff rank and rank-up thresholds (`src/game/models.py`, `src/cli.py`, `test_staff_wexp.txt`).
+    *   Implemented Restore staff effect to cure negative status conditions (Poison, Sleep, Silence, Berserk) (`src/cli.py`, `test_restore_staff.txt`).
     *   Fixed AI logic to correctly prioritize attacking when in range before attempting to move (`src/game/ai.py`).
     *   Fixed movement state handling in the CLI to allow subsequent valid moves after a failed move attempt (e.g., trying to enter impassable terrain) (`src/cli.py`).
 *   **Testing (Refactored Approach):**
@@ -126,6 +127,9 @@ The initial Minimum Viable Product (MVP) focusing on foundational map/unit repre
 
     # Test staff WExp gain
     cat test_staff_wexp.txt | python3 src/cli.py --setup staff_wexp
+
+    # Test Restore staff
+    cat test_restore_staff.txt | python3 src/cli.py --setup restore_staff
     ```
 
 ## Development Workflow
