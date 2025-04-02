@@ -1,7 +1,41 @@
-# Test sequence for combat MVP (updated start pos)
-select 4 4
-info
+# Test file for Basic Combat - Refactored
+
+# --- Setup ---
+# Leif (ID 1, Pos 1,4, Str 5, Iron Sword)
+# Nanna (ID 2, Pos 1,3)
+# Bandit (ID 101, Pos 5,4, HP 200, Def 2, Iron Axe, Asleep)
+
+# --- Turn 1: Initial Attack ---
+info 1 4 # Check Leif initial state
+info 5 4 # Check Bandit initial state (Asleep)
+
+# Move Leif adjacent to Bandit
+select 1 4
+move 4 4
+# Leif is now at (4,4), Canto might be active if mounted
+
+# Attack the sleeping Bandit
 attack 5 4
-info 5 4
-endturn
+# Expected: Leif attacks Bandit. Bandit takes damage. Bandit cannot counter (asleep). Leif's action ends (attack prevents Canto). Fatigue +1.
+info 4 4 # Verify Leif state (Acted, Fatigue 1)
+info 5 4 # Verify Bandit HP (Should be reduced)
+
+# End Turn 1
+# Nanna needs to act to end turn
+select 1 3
+wait
+# Turn 1 ends. Enemy Phase: Bandit is asleep, does nothing. Turn 2 starts. Actions reset.
+
+# --- Turn 2: Attack (Bandit still asleep) ---
+info 4 4 # Verify Leif state (Not Acted)
+info 5 4 # Verify Bandit state (Still Asleep, HP reduced)
+
+# Attack again
+select 4 4
+attack 5 4
+# Expected: Leif attacks Bandit again. Bandit takes more damage. Bandit still cannot counter. Leif's action ends. Fatigue +1 (Total 2).
+info 4 4 # Verify Leif state (Acted, Fatigue 2)
+info 5 4 # Verify Bandit HP (Further reduced)
+
+# --- Cleanup ---
 quit

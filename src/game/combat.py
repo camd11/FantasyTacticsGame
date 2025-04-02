@@ -388,7 +388,9 @@ def resolve_attack(
 
             # Roll for critical
             crit_roll = random.randint(1, 100)
+            print(f"  DEBUG: Crit Roll: {crit_roll}, Crit Chance: {battle_crit_chance}") # ADDED DEBUG
             is_critical = crit_roll <= battle_crit_chance # Check if normal crit roll succeeds
+            print(f"  DEBUG: is_critical set to: {is_critical}") # ADDED DEBUG
 
         # --- Nihil Check (Defender) ---
         if "Nihil" in defender.skills and is_critical:

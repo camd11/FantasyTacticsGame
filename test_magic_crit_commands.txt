@@ -1,53 +1,43 @@
-# test_magic_crit_commands.txt
-# Test Magic Damage, AS calculation, and Crit/PCC integration.
+# Test file for Magic Crit/Combat Flow - Refactored
 
-# Setup: Leif (pcc=1, mag=5) vs Bandit (pcc=0, mag=0)
-# Leif Inventory: Iron Sword, Fire Tome
-# Iron Sword: Phys, Mt 5, Hit 90, Crit 0, Wt 5
-# Fire Tome: Magic, Mt 6, Hit 85, Crit 0, Wt 4, Rng 1-2
-# Bandit Inventory: Iron Axe
+# --- Setup ---
+# Leif (ID 1, Pos 1,4, Str 5, Mag 5, Skl 6, Spd 7, PCC 1, Iron Sword [0], Fire Tome [1])
+# Nanna (ID 2, Pos 1,3)
+# Bandit (ID 101, Pos 5,4, Asleep)
 
-# --- Initial State Info ---
-info 1 4 # Leif
-info 5 4 # Bandit
+# --- Turn 1: Physical Attack, then Magic Attack ---
+info 1 4 # Check Leif initial state (Iron Sword equipped)
+info 5 4 # Check Bandit initial state (Asleep)
 
-# --- Test 1: Physical Attack (Check Crit/Fatigue) ---
-# Leif AS = 7 - max(0, 5-5) = 7
-# Bandit AS = 4 - max(0, 10-10) = 4
-# Leif Hit = 99% vs Bandit Avoid 8% -> 91%
-# Leif Base Crit = 0 + 6 = 6% -> Battle Crit (1st hit) = 6% (capped at 6%)
-# Leif Damage = (Str 5 + Mt 5) - Def 2 = 8
+# Move Leif adjacent to Bandit
 select 1 4
-# Ensure Iron Sword is equipped (should be default)
-info # Check equipped weapon
-attack 5 4
-# Expect: Leif attacks Bandit. Fatigue +1. Low crit chance (6%).
-# Expect: Bandit counters. Fatigue +1.
-info 1 4 # Check Leif HP/Fatigue
-info 5 4 # Check Bandit HP/Fatigue
-
-# --- Test 2: Magical Attack (Check Damage/AS/Fatigue) ---
-# Need to move Leif first if Bandit countered to (4,4) or similar
-# Assuming Bandit is still at (5,4) or reachable
-select 1 4
-# Equip Fire Tome - Need an 'equip' command, which doesn't exist yet.
-# WORKAROUND: Assume Leif can attack from current position or move first.
-# Let's move Leif to (4,4) to be in range 1-2 for Fire Tome vs Bandit at (5,4)
 move 4 4
-# Now attack with Fire Tome (assuming it gets equipped automatically or via a future command)
-# Leif AS (Magic) = Spd 7 - Wt 4 = 3
-# Bandit AS = 4
-# Leif does NOT double (3 < 4+4)
-# Leif Hit = Tome Hit 85 + 2*Skl 6 + Luk 6 = 85 + 12 + 6 = 103 -> 99%
-# Bandit Avoid = 8% (unchanged)
-# Leif Battle Hit = 99 - 8 = 91%
-# Leif Base Crit = Tome Crit 0 + Skl 6 = 6% -> Battle Crit (1st hit) = 6% (capped at 6%)
-# Leif Damage = (Mag 5 + Mt 6) - Bandit Mag 0 = 11
-attack 5 4
-# Expect: Leif attacks Bandit with Fire Tome. Fatigue +1. Deals 11 damage. Low crit chance (6%).
-# Expect: Bandit cannot counter (Range 1 vs Range 1-2).
-info 1 4 # Check Leif HP/Fatigue
-info 5 4 # Check Bandit HP/Fatigue
+# Leif is now at (4,4)
 
-endturn
+# Attack with Iron Sword (Physical)
+# Expected Calc: AS 7 vs 0 (Sleep), Leif doubles. Damage 8 per hit. Crit 6% (1st), 6% (2nd).
+attack 5 4
+# Expected Outcome: Leif attacks twice. Bandit takes damage (e.g., 16 if no crits). Bandit cannot counter. Leif's action ends (attack prevents Canto). Fatigue +2.
+# NOTE: Movement Stars might activate here.
+info 4 4 # Verify Leif state (Acted or Not Acted if Stars proc'd, Fatigue 2)
+info 5 4 # Verify Bandit HP (Should be reduced by ~16)
+
+# If Movement Stars activated, Leif can act again. If not, Nanna needs to wait to end turn.
+# Assuming Movement Stars DID activate (based on previous tests with Leif's setup):
+select 4 4 # Re-select Leif
+equip 1 # Equip Fire Tome
+info 4 4 # Verify Fire Tome equipped, Acted=False
+
+# Attack with Fire Tome (Magical)
+# Expected Calc: AS 3 vs 0 (Sleep), Leif does NOT double. Damage 11 per hit. Crit 6% (1st).
+attack 5 4
+# Expected Outcome: Leif attacks once. Bandit takes damage (e.g., 11 if no crit). Bandit cannot counter. Leif's action ends. Fatigue +1 (Total 3).
+info 4 4 # Verify Leif state (Acted, Fatigue 3)
+info 5 4 # Verify Bandit HP (Should be further reduced by ~11)
+
+# End Turn 1 (Nanna waits, assuming Leif used both actions)
+select 1 3
+wait
+
+# --- Cleanup ---
 quit

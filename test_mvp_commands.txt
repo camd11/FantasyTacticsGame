@@ -1,8 +1,46 @@
-select 1 1
-move 3 3
+# Test file for Basic MVP commands (Select, Move, Wait, Info, EndTurn) - Refactored
+
+# --- Turn 1 ---
+info 1 4 # Check Leif initial state
+info 1 3 # Check Nanna initial state
+info 5 4 # Check Bandit initial state
+
+# Select and move Leif
+select 1 4
+move 3 4 # Move Leif 2 tiles right
+info 3 4 # Verify Leif moved and is now selected (or deselected if Canto didn't trigger/apply)
+# Note: Leif might have Canto active here if setup gives him a mount.
+
+# Select and move Nanna (assuming Nanna didn't act due to Leif's move)
+select 1 3
+move 2 3 # Move Nanna 1 tile right
+info 2 3 # Verify Nanna moved
+
+# Try selecting enemy
 select 5 4
-select 3 3
+# Expected: Cannot select non-player units.
+
+# Try selecting units that acted
+select 3 4 # Select Leif again
+# Expected: Should show Leif, possibly marked as [Acted] or [Canto]
+select 2 3 # Select Nanna again
+# Expected: Should show Nanna, possibly marked as [Acted] or [Canto]
+
+# End Turn 1
 endturn
-select 3 3
+# Expected: Enemy phase runs (Bandit is asleep), Turn 2 starts, actions reset.
+
+# --- Turn 2 ---
+info 3 4 # Check Leif state (Should not be Acted)
+info 2 3 # Check Nanna state (Should not be Acted)
+
+# Wait with units
+select 3 4
 wait
+info 3 4 # Verify Leif is Acted
+select 2 3
+wait
+info 2 3 # Verify Nanna is Acted
+
+# --- Cleanup ---
 quit

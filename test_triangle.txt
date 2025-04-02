@@ -1,31 +1,34 @@
-# test_triangle.txt (Corrected for default setup)
-# Test Weapon Triangle bonuses (+/- 5 Hit) - Sword vs Axe
+# Test file for Weapon Triangle (Sword vs Axe) - Refactored
 
-# Setup: Leif (Sword) at (1,4) vs Bandit (Axe) at (5,4)
-# Leif: Iron Sword (Phys, Mt 5, Hit 90, Crit 0, Wt 5, Type Sword)
-# Bandit: Iron Axe (Phys, Mt 8, Hit 75, Crit 0, Wt 10, Type Axe)
+# --- Setup ---
+# Leif (ID 1, Pos 1,4, Iron Sword)
+# Nanna (ID 2, Pos 1,3)
+# Bandit (ID 101, Pos 5,4, Iron Axe, Asleep)
 
-# Base Calculations (Ignoring Triangle):
-# Leif (vs Bandit): Hit 91% (99 - 8)
-# Bandit (vs Leif): Hit 59% (79 - 20)
+# --- Turn 1: Test Sword vs Axe Advantage ---
+info 1 4 # Check Leif initial state
+info 5 4 # Check Bandit initial state (Asleep)
 
-# --- Test Sword vs Axe (Advantage: Leif +5 Hit) ---
 # Move Leif adjacent to Bandit
 select 1 4
-move 4 4 # Move Leif to (4,4)
+move 4 4
+# Leif is now at (4,4)
 
-# Attack Bandit at (5,4)
-# Expected Leif Hit vs Bandit = 91% + 5% = 96%
+# Attack the sleeping Bandit with Iron Sword
+# Expected Calculations (Leif vs Bandit):
+# Base Hit (No Triangle) = 91% (From previous tests/comments)
+# Triangle Bonus (Sword > Axe) = +5%
+# Expected Battle Hit = 91% + 5% = 96%
 attack 5 4
-# Expect Hit% in combat log to be 96
+# Expected Outcome: Combat log shows Leif attacking Bandit with 96% Hit. Leif attacks twice (doubling vs sleep). Bandit takes damage. Bandit cannot counter. Leif's action ends. Fatigue +2.
+info 4 4 # Verify Leif state (Acted, Fatigue 2)
+info 5 4 # Verify Bandit HP (Should be reduced)
 
-# --- Check Final State ---
-info 4 4 # Leif
-info 5 4 # Bandit
+# Note: Cannot easily test Axe vs Sword disadvantage as Bandit is asleep.
 
-# --- Test Axe vs Sword (Disadvantage: Bandit -5 Hit) ---
-# Let Bandit counter-attack or attack on Enemy Phase
-# Expected Bandit Hit vs Leif = 59% - 5% = 54%
-endturn
+# End Turn 1
+select 1 3 # Nanna waits to end turn
+wait
 
+# --- Cleanup ---
 quit

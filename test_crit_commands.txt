@@ -1,89 +1,35 @@
-# test_crit_commands.txt
-# Test critical hit mechanics (PCC, 25% cap, double damage)
+# Test file for Critical Hit display and basic combat - Refactored
 
-# Setup: Leif (pcc=1) vs Bandit (pcc=0)
-# Leif: Str 5, Skl 6, Spd 7, Luk 6, Con 5, Mov 7, HP 20. Iron Sword (Mt 5, Hit 90, Crit 0, Wt 5)
-# Bandit: Str 1, Skl 2, Spd 4, Luk 0, Def 2, Con 10, Mov 4, HP 200. Iron Axe (Mt 8, Hit 75, Crit 0, Wt 10)
+# --- Setup ---
+# Leif (ID 1, Pos 1,4, Skl 6, PCC 1, Iron Sword Crit 0)
+# Nanna (ID 2, Pos 1,3)
+# Bandit (ID 101, Pos 5,4, Luk 0, Asleep)
 
-# Initial State:
-# Leif AS = 7 - max(0, 5-5) = 7
-# Bandit AS = 4 - max(0, 10-10) = 4
-# Leif doubles Bandit (7 >= 4 + 4 is FALSE -> Leif does NOT double initially)
-# Leif Hit = 90 + 2*6 + 6 = 108 -> 99%
-# Bandit Avoid = 2*4 + 0 = 8
-# Leif Battle Hit = 99 - 8 = 91%
-# Leif Base Crit = 0 + 6 = 6%
-# Bandit Crit Evade = 0 // 2 = 0
-# Leif Battle Crit (1st hit) = max(0, 6 - 0) = 6% (capped at min(25, 6) = 6%)
-# Leif Damage = (5 + 5) - 2 = 8
+# --- Turn 1: Observe Crit Chance & Attack ---
+info 1 4 # Check Leif initial state
+info 5 4 # Check Bandit initial state (Asleep)
 
-# Bandit Hit = 75 + 2*2 + 0 = 79%
-# Leif Avoid = 2*7 + 6 = 20
-# Bandit Battle Hit = 79 - 20 = 59%
-# Bandit Base Crit = 0 + 2 = 2%
-# Leif Crit Evade = 6 // 2 = 3
-# Bandit Battle Crit (1st hit) = max(0, 2 - 3) = 0%
-
-# --- Test 1: Basic attack, low crit chance ---
+# Move Leif adjacent to Bandit
 select 1 4
-info
-# Expected Leif Crit: 6%
+move 4 4
+# Leif is now at (4,4)
+
+# Attack the sleeping Bandit
+# Expected Calculations (Leif vs Bandit):
+# Leif Base Crit = Weapon Crit (0) + Skill (6) = 6%
+# Bandit Crit Evade = Luck (0) / 2 = 0
+# Battle Crit (1st hit) = max(0, 6 - 0) = 6% (Capped at min(25, 6) = 6%)
+# Battle Crit (2nd hit, if doubling) = max(0, 6 - 0) * PCC (1) = 6% * 1 = 6%
+# Leif AS = 7, Bandit AS = 0 (Sleep). Leif doubles (7 >= 0 + 4).
+# Combat Forecast should show Leif Crit: 6%
 attack 5 4
-# Expect Leif hits for 8 damage. Bandit counters.
+# Expected Outcome: Leif attacks twice. Each hit has a 6% chance to crit. Bandit takes damage. Bandit cannot counter. Leif's action ends. Fatigue +2 (for double).
+info 4 4 # Verify Leif state (Acted, Fatigue 2)
+info 5 4 # Verify Bandit HP (Should be reduced)
 
-# --- Modify Leif for High Crit & Doubling ---
-# Give Leif a Killer Sword (Crit 30) and boost Skl/Spd
-# Need to modify setup or add commands if possible. Assuming setup modification for now.
-# Let's assume Leif now has Skl=20, Spd=15, Killer Sword (Crit 30)
-# Leif AS = 15 - max(0, 5-5) = 15
-# Leif doubles Bandit (15 >= 4 + 4 is TRUE)
-# Leif Base Crit = 30 + 20 = 50%
-# Leif Battle Crit (1st hit) = max(0, 50 - 0) = 50% -> CAPPED at 25%
-# Leif Battle Crit (2nd hit) = max(0, 50 - 0) * pcc(1) = 50% * 1 = 50%
-# Leif Damage = (5 + 5) - 2 = 8. Crit Damage = 16.
+# End Turn 1
+select 1 3 # Nanna waits to end turn
+wait
 
-# --- Test 2: High Crit, First Hit Cap ---
-# (Requires modified setup - cannot change stats mid-CLI)
-# Assuming Leif starts with high stats/killer weapon for this test file run:
-# select 1 4
-# info
-# attack 5 4
-# Expect: First hit has 25% crit chance. If crit, deals 16 dmg.
-# Expect: Bandit counters (if alive).
-# Expect: Second hit has 50% crit chance. If crit, deals 16 dmg.
-
-# --- Test 3: Modify Bandit for Crit Evade ---
-# Assuming Bandit now has Luck=20
-# Bandit Crit Evade = 20 // 2 = 10
-# Leif Battle Crit (1st hit) = max(0, 50 - 10) = 40% -> CAPPED at 25%
-# Leif Battle Crit (2nd hit) = max(0, 50 - 10) * pcc(1) = 40% * 1 = 40%
-# (Requires modified setup)
-# select 1 4
-# info
-# attack 5 4
-# Expect: Crit chances reduced to 25% (1st) and 40% (2nd).
-
-# --- Test 4: High PCC ---
-# Assuming Leif has PCC=5, Skl=10, Crit=0 weapon
-# Leif Base Crit = 0 + 10 = 10%
-# Leif Battle Crit (1st hit) = max(0, 10 - 0) = 10% (capped at 10%)
-# Leif Battle Crit (2nd hit) = max(0, 10 - 0) * pcc(5) = 10% * 5 = 50%
-# (Requires modified setup)
-# select 1 4
-# info
-# attack 5 4
-# Expect: Crit chances 10% (1st) and 50% (2nd).
-
-# --- Conclusion ---
-# Direct testing via CLI commands is limited without ways to modify unit stats/equipment mid-test.
-# These comments outline the expected calculations.
-# A manual run with modified setup_initial_state() in cli.py would be needed for full verification.
-
-# Run a simple combat to see fatigue/crit output
-select 1 4
-attack 5 4
-info 1 4
-info 5 4
-
-endturn
+# --- Cleanup ---
 quit

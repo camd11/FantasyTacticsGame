@@ -1,27 +1,36 @@
-# test_effectiveness.txt
-# Test Weapon Effectiveness (Rapier vs Cavalry)
+# Test file for Weapon Effectiveness (Rapier vs Cavalry) - Refactored v3
 
-# Setup: Leif (Cavalry) at (1,4) vs Bandit (Infantry, Rapier) at (2,4)
-# Leif: HP 20, Def 3
-# Bandit: Str 1, Rapier (Mt 5, Hit 95, Crit 0, Wt 3, Type Sword, Eff vs Cavalry)
+# --- Setup ---
+# Leif (ID 1, Pos 1,4, Str 5, Rapier in inventory[2])
+# Nanna (ID 2, Pos 1,3)
+# Enemy Knight (ID 102, Pos 2,4, Cavalry, Def 5)
 
-# Calculation:
-# Bandit Base Damage = Str 1 + Mt 5 = 6
-# Bandit Effective Damage = Str 1 + (Mt 5 * 3) = 1 + 15 = 16
-# Final Damage = Effective Damage 16 - Leif Def 3 = 13
+# --- Turn 1: Test Rapier vs Cavalry ---
+info 1 4 # Check Leif initial state
+info 2 4 # Check Enemy Knight initial state
 
-# Test requires Bandit to attack Leif. Need to end player turn.
-# Manually modify setup_initial_state in cli.py to place Bandit at (2,4).
+# Leif is already adjacent to Enemy Knight at (1,4) vs (2,4)
 
-# (Assuming Bandit starts at (2,4) via manual setup modification)
-info 1 4 # Leif
-info 2 4 # Bandit
+# Equip Rapier (Index 2 in modified inventory)
+select 1 4
+equip 2
+info 1 4 # Verify Rapier is equipped
 
-# End player turn immediately to trigger enemy phase
-endturn
+# Attack the Enemy Knight at (2,4) with Rapier
+# Expected Calculations (Leif vs Enemy Knight):
+# Rapier Mt = 5. Effective Bonus = 3x. Effective Mt = 15.
+# Leif Damage = (Leif Str (5) + Effective Mt (15)) - Enemy Knight Def (5) = 15
+# Leif AS = Spd (7) - Rapier Wt (3) = 4 (Con 5 >= Wt 3)
+# Enemy Knight AS = Spd (5) - Lance Wt (8) = 5 (Con 9 > Wt 8)
+# Leif does NOT double (4 < 5 + 4)
+attack 2 4
+# Expected Outcome: Combat log shows "(Rapier is effective against Cavalry!)". Leif attacks once. Deals 15 damage. Enemy Knight counters (if alive). Leif's action ends. Fatigue +1.
+info 1 4 # Verify Leif state (Acted, Fatigue 1)
+info 2 4 # Verify Enemy Knight HP (Should be 25 - 15 = 10)
 
-# Expect Bandit at (2,4) to attack Leif at (1,4)
-# Expect combat log to show "(Rapier is effective against Cavalry!)"
-# Expect damage dealt to Leif to be 13.
+# End Turn 1
+select 1 3 # Nanna waits to end turn
+wait
 
+# --- Cleanup ---
 quit

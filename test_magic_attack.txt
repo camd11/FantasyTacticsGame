@@ -1,35 +1,41 @@
-# test_magic_attack.txt (Corrected)
-# Test Magic Damage, AS calculation, and Fatigue with Fire Tome equipped.
+# Test file for Magic Attack - Refactored
 
-# Setup: Leif (pcc=1, mag=5, Fire Tome equipped) vs Bandit (pcc=0, mag=0)
-# Fire Tome: Magic, Mt 6, Hit 85, Crit 0, Wt 4, Rng 1-2
+# --- Setup ---
+# Leif (ID 1, Pos 1,4, Mag 5, Spd 7, Skl 6, Luk 6, Fire Tome in inventory[1])
+# Nanna (ID 2, Pos 1,3)
+# Bandit (ID 101, Pos 5,4, Mag 0, Asleep)
 
-# --- Initial State Info ---
-info 1 4 # Leif - Check equipped weapon is Fire Tome
-info 5 4 # Bandit
+# --- Turn 1: Equip Tome and Attack ---
+info 1 4 # Check Leif initial state (Should have Iron Sword equipped)
+info 5 4 # Check Bandit initial state (Asleep)
 
-# --- Test Magic Attack ---
-# Move Leif into range first, then equip Fire Tome
+# Move Leif adjacent to Bandit
 select 1 4
-move 4 4 # Move Leif to (4,4), adjacent to Bandit at (5,4)
-equip 1 # Equip item at index 1 (Fire Tome)
+move 4 4
+# Leif is now at (4,4)
 
-# Now attack with Fire Tome
-# Leif AS (Magic) = Spd 7 - Wt 4 = 3
-# Bandit AS = 4
-# Leif does NOT double (3 < 4+4)
-# Leif Hit = Tome Hit 85 + 2*Skl 6 + Luk 6 = 85 + 12 + 6 = 103 -> 99%
-# Bandit Avoid = 2*AS 4 + Luk 0 = 8%
-# Leif Battle Hit = 99 - 8 = 91%
-# Leif Base Crit = Tome Crit 0 + Skl 6 = 6% -> Battle Crit (1st hit) = 6% (capped at 6%)
-# Leif Damage = (Mag 5 + Mt 6) - Bandit Mag 0 = 11
+# Equip Fire Tome (Index 1 in default inventory)
+equip 1
+info 4 4 # Verify Fire Tome is equipped
+
+# Attack the sleeping Bandit with Fire Tome
+# Expected Calculations (Leif vs Bandit):
+# Leif AS (Magic) = Spd (7) - Tome Wt (4) = 3
+# Bandit AS = 0 (Sleep)
+# Leif does NOT double (3 < 0 + 4)
+# Leif Hit = Tome Hit (85) + 2*Skl (6) + Luk (6) = 85 + 12 + 6 = 103 -> 99%
+# Bandit Avoid = 0 (Sleep)
+# Leif Battle Hit = 99 - 0 = 99%
+# Leif Base Crit = Tome Crit (0) + Skl (6) = 6% -> Battle Crit (1st hit) = 6% (capped at 6%)
+# Leif Damage = (Leif Mag (5) + Tome Mt (6)) - Bandit Mag (0) = 11
 attack 5 4
-# Expect: Leif attacks Bandit with Fire Tome. Fatigue +1. Deals 11 damage. Low crit chance (6%).
-# Expect: Bandit cannot counter (Range 1 vs Range 1-2).
+# Expected Outcome: Leif attacks once with Fire Tome. Deals 11 damage. 6% crit chance. Bandit cannot counter (asleep). Leif's action ends. Fatigue +1.
+info 4 4 # Verify Leif state (Acted, Fatigue 1)
+info 5 4 # Verify Bandit HP (Should be 200 - 11 = 189)
 
-# --- Check Final State ---
-info 4 4 # Check Leif HP/Fatigue at new position
-info 5 4 # Check Bandit HP/Fatigue
+# End Turn 1
+select 1 3 # Nanna waits to end turn
+wait
 
-endturn
+# --- Cleanup ---
 quit
