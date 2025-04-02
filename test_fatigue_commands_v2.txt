@@ -1,12 +1,101 @@
-# Test sequence for fatigue mechanic v2 (using item)
-# Leif (MaxHP 20, HP 10, Fatigue 19)
-select 1 4
-info
-item vulnerary
-# Fatigue should now be 20
-info 1 4 # Check info after using item (should show acted, fatigue 20)
+# Test file for refined Fatigue mechanics (v2)
+
+# --- Setup Assumptions ---
+# Unit 1: Player, Pos(1,1), MaxHP 20, Fatigue 0
+# Unit 1 Inventory: [Iron Sword, Heal Staff (Rank E), Mend Staff (Rank C)]
+# Unit 101: Enemy, Pos(2,1), HP 50
+# FATIGUE_COST_COMBAT = 1
+# FATIGUE_COST_ITEM = 1
+# FATIGUE_COST_STAFF = {'E': 1, 'D': 2, 'C': 3, 'B': 4, 'A': 5, '*': 5}
+# -------------------------
+
+# Initial state
+info 1 1
+
+# --- Turn 1 ---
+select 1 1
+# Equip Heal Staff (assume index 1)
+equip 1
+info 1 1
+# Use Heal Staff (Rank E, Cost 1)
+staff 1 1 # Target self for simplicity
+info 1 1 # Fatigue should be 1
+
+# --- Turn 2 ---
 endturn
-# Turn 2
-select 1 4 # Attempt select (should fail due to fatigue)
-info 1 4 # Check info again
+select 1 1
+# Equip Mend Staff (assume index 2)
+equip 2
+info 1 1
+# Use Mend Staff (Rank C, Cost 3)
+staff 1 1
+info 1 1 # Fatigue should be 1 + 3 = 4
+
+# --- Turn 3 ---
+endturn
+select 1 1
+# Equip Iron Sword (assume index 0)
+equip 0
+info 1 1
+# Attack enemy (Cost 1)
+attack 2 1
+info 1 1 # Fatigue should be 4 + 1 = 5
+
+# --- Turn 4-18 (Repeat combat 15 times) ---
+# (Simulate reaching high fatigue)
+endturn
+select 1 1
+attack 2 1 # Fatigue +1 (Total 6)
+endturn
+select 1 1
+attack 2 1 # Fatigue +1 (Total 7)
+endturn
+select 1 1
+attack 2 1 # Fatigue +1 (Total 8)
+endturn
+select 1 1
+attack 2 1 # Fatigue +1 (Total 9)
+endturn
+select 1 1
+attack 2 1 # Fatigue +1 (Total 10)
+endturn
+select 1 1
+attack 2 1 # Fatigue +1 (Total 11)
+endturn
+select 1 1
+attack 2 1 # Fatigue +1 (Total 12)
+endturn
+select 1 1
+attack 2 1 # Fatigue +1 (Total 13)
+endturn
+select 1 1
+attack 2 1 # Fatigue +1 (Total 14)
+endturn
+select 1 1
+attack 2 1 # Fatigue +1 (Total 15)
+endturn
+select 1 1
+attack 2 1 # Fatigue +1 (Total 16)
+endturn
+select 1 1
+attack 2 1 # Fatigue +1 (Total 17)
+endturn
+select 1 1
+attack 2 1 # Fatigue +1 (Total 18)
+endturn
+select 1 1
+attack 2 1 # Fatigue +1 (Total 19)
+endturn
+select 1 1
+attack 2 1 # Fatigue +1 (Total 20) - Unit should now be fatigued
+
+# --- Turn 19 ---
+endturn
+# Try to select the fatigued unit
+select 1 1 # Should print fatigue message and fail selection
+info 1 1 # Check fatigue state
+
+# Try to perform an action (should fail as unit not selected)
+attack 2 1
+
 quit

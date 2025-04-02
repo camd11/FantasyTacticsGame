@@ -26,15 +26,20 @@ The initial Minimum Viable Product (MVP) focusing on foundational map/unit repre
     *   Integrated `attack x y` command into `cli.py`.
     *   Updated `info` command to show combat stats.
 *   **Phase 3 (Core Combat Mechanics):**
-    *   Implemented Fatigue tracking (increment on combat/item use) (`src/game/models.py`, `src/game/combat.py`, `src/cli.py`).
+    *   Refined Fatigue tracking: Added staff costs by rank, prevents action if `fatigue >= max_hp` (`src/game/models.py`, `src/cli.py`).
     *   Implemented Critical Hit calculation including Pursuit Critical Coefficient (PCC/FCM), 25% first-hit cap, and double damage (`src/game/combat.py`).
     *   Implemented Magic Damage calculation using Magic stat for offense/defense and separate Attack Speed calculation (`src/game/models.py`, `src/game/combat.py`).
     *   Implemented Terrain Combat Bonuses (DEF/AVO) (`src/game/models.py`, `src/game/combat.py`).
     *   Implemented Weapon Triangle bonuses (+/- 5 Hit) (`src/game/models.py`, `src/game/combat.py`).
     *   Implemented Weapon Effectiveness (3x Might) (`src/game/models.py`, `src/game/combat.py`).
     *   Added `equip` command to CLI (`src/cli.py`).
+    *   Added `inventory` command to view unit items (`src/cli.py`).
+    *   Added `use <item_index>` command to use consumable items (e.g., Vulnerary) (`src/cli.py`, `src/game/models.py`).
+    *   Added `steal <x> <y> [item_index]` command for units with `can_steal=True`, checking AS and Con vs item weight (`src/cli.py`, `src/game/models.py`, `src/game/combat.py`).
+    *   Implemented basic Enemy AI: find closest player, move adjacent, attack if possible (`src/game/ai.py`, `src/cli.py`).
+    *   Refined Capture mechanics: Added immunity checks (Con>=20, Mounted Target), verified stat penalties (`src/game/combat.py`).
 *   **Testing:**
-    *   Automated testing via command file input (`test_mvp_commands.txt`, `test_combat_commands.txt`, `test_crit_commands.txt`, `test_magic_attack.txt`, `test_triangle.txt`, `test_effectiveness.txt`).
+    *   Automated testing via command file input (`test_mvp_commands.txt`, `test_combat_commands.txt`, `test_crit_commands.txt`, `test_magic_attack.txt`, `test_triangle.txt`, `test_effectiveness.txt`, `test_item_commands.txt`, `test_steal_commands.txt`, `test_ai_commands.txt`, `test_capture_commands.txt`, `test_terrain_commands.txt`, `test_fatigue_commands_v2.txt`).
 
 **Design Documents:**
 

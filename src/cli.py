@@ -91,7 +91,7 @@ def run_cli():
     while True:
         render_map(game_state, current_move_range)
         # Update prompt
-        prompt = "Cmds: select|move|attack|capture|equip|item|trade|release|wait|info|endturn|quit: " # Added equip
+        prompt = "Cmds: select|move|attack|capture|equip|inventory|use|trade|release|wait|info|endturn|quit: " # Added inventory, use
         command_str = input(prompt).strip() # Don't lowercase yet
 
         # Ignore empty lines and comments
@@ -348,7 +348,21 @@ def run_cli():
                     except ValueError:
                         print("Invalid input. Please provide the inventory index number to equip.")
 
-                elif command == "item":
+                elif command == "inventory":
+                    selected_unit = game_state.get_selected_unit()
+                    if not selected_unit:
+                        print("No unit selected.")
+                        continue
+                    print(f"Inventory for {selected_unit.name}:")
+                    if not selected_unit.inventory:
+                        print("  (Empty)")
+                    else:
+                        for i, item in enumerate(selected_unit.inventory):
+                            equipped_marker = " (E)" if i == selected_unit.equipped_weapon_index else ""
+                            uses_str = f" ({item.uses}/{item.max_uses})" if item.uses is not None else ""
+                            print(f"  {i}: {item.name}{uses_str}{equipped_marker}")
+
+                elif command == "use": # Renamed from "item"
                     selected_unit = game_state.get_selected_unit()
                     if not selected_unit:
                         print("No unit selected.")
@@ -363,16 +377,29 @@ def run_cli():
                         print(f"{selected_unit.name} cannot use items while capturing.")
                         continue
                     if not args:
-                        usable_items = [f"{item.name}({item.uses})" for item in selected_unit.inventory if not isinstance(item, Weapon) and item.is_usable()]
-                        print(f"Usable items for {selected_unit.name}: {usable_items or ['None']}")
+                        # List usable items with indices
+                        print(f"Usable items for {selected_unit.name}:")
+                        found_usable = False
+                        for i, item in enumerate(selected_unit.inventory):
+                            if not isinstance(item, Weapon) and item.is_usable():
+                                print(f"  {i}: {item.name} ({item.uses}/{item.max_uses})")
+                                found_usable = True
+                        if not found_usable:
+                            print("  (None)")
                         continue
 
-                    item_name_to_use = " ".join(args)
-                    item_to_use = selected_unit.get_item_by_name(item_name_to_use)
-
-                    if not item_to_use:
-                        print(f"{selected_unit.name} does not have '{item_name_to_use}'.")
+                    try:
+                        item_index_to_use = int(args[0])
+                        if not (0 <= item_index_to_use < len(selected_unit.inventory)):
+                            print(f"Invalid inventory index: {item_index_to_use}")
+                            continue
+                        item_to_use = selected_unit.inventory[item_index_to_use]
+                    except (ValueError, IndexError):
+                        print("Usage: use <item_index>")
                         continue
+
+                    # No need for 'if not item_to_use:' check as index validation handles it
+
                     if isinstance(item_to_use, Weapon):
                         print(f"Cannot 'use' a weapon directly. Use 'attack' or 'capture'.")
                         continue
@@ -440,6 +467,177 @@ def run_cli():
                     else:
                         print(f"{selected_unit.name} is not capturing anyone.")
 
+                elif command == "steal":
+                    thief = game_state.get_selected_unit()
+                    if not thief:
+                        print("No unit selected.")
+                        continue
+                    if not thief.can_steal: # Check if the unit has the steal ability
+                        print(f"{thief.name} cannot steal.")
+                        continue
+                    if thief.fatigue >= thief.max_hp:
+                         print(f"{thief.name} is fatigued and cannot act.")
+                         continue
+                    if thief.has_acted:
+                         print(f"{thief.name} has already acted.")
+                         continue
+                    if thief.is_capturing is not None:
+                        print(f"{thief.name} cannot steal while capturing.")
+                        continue
+                    if len(thief.inventory) >= 7: # Thracia inventory limit
+                         print(f"{thief.name}'s inventory is full.")
+                         continue
+
+                    if len(args) < 2 or len(args) > 3:
+                        print("Usage: steal <x> <y> [item_index]")
+                        continue
+
+                    try:
+                        x, y = int(args[0]), int(args[1])
+                        target_pos = (x, y)
+                    except ValueError:
+                        print("Invalid coordinates.")
+                        continue
+
+                    # Check adjacency
+                    dist_x = abs(thief.position[0] - x)
+                    dist_y = abs(thief.position[1] - y)
+                    distance = dist_x + dist_y
+                    if distance != 1:
+                        print("Target is not adjacent.")
+                        continue
+
+                    target_id = game_state.game_map.get_unit_id_at(x, y)
+                    if target_id is None:
+                        print(f"No unit at ({x}, {y}).")
+                        continue
+
+                    target = game_state.get_unit(target_id)
+                    if not target or not target.is_alive or target.is_captured:
+                        print("Invalid target.")
+                        continue
+                    if target.faction == thief.faction:
+                        print("Cannot steal from allies.")
+                        continue
+
+                    # Check Steal Conditions (AS and Item Weight)
+                    # Need to import calculate_attack_speed from combat
+                    from game.combat import calculate_attack_speed, FATIGUE_COST_STEAL # Import AS calc and fatigue cost
+                    thief_as = calculate_attack_speed(thief, game_state)
+                    target_as = calculate_attack_speed(target, game_state)
+
+                    if thief_as <= target_as:
+                        print(f"Cannot steal: {thief.name}'s AS ({thief_as}) must be greater than {target.name}'s AS ({target_as}).")
+                        continue
+
+                    # List stealable items if no index provided
+                    if len(args) == 2:
+                        print(f"Stealable items from {target.name} (Thief Con: {thief.constitution}, AS: {thief_as} > Tgt AS: {target_as}):")
+                        found_stealable = False
+                        for i, item in enumerate(target.inventory):
+                            # Check weight condition
+                            item_weight = getattr(item, 'weight', float('inf')) # Get weight or assume infinite if no weight attr
+                            if item_weight <= thief.constitution:
+                                print(f"  {i}: {item.name} (Wt: {item_weight})")
+                                found_stealable = True
+                        if not found_stealable:
+                            print("  (None stealable - check weight/AS)")
+                        continue # Wait for user to provide index
+
+                    # Attempt to steal specific item index
+                    if len(args) == 3:
+                        try:
+                            item_index_to_steal = int(args[2])
+                            if not (0 <= item_index_to_steal < len(target.inventory)):
+                                print(f"Invalid target inventory index: {item_index_to_steal}")
+                                continue
+                            item_to_steal = target.inventory[item_index_to_steal]
+                        except ValueError:
+                            print("Invalid item index.")
+                            continue
+
+                        # Final check: Item weight vs Thief Con
+                        item_weight = getattr(item_to_steal, 'weight', float('inf'))
+                        if item_weight > thief.constitution:
+                             print(f"Cannot steal {item_to_steal.name}: Item weight ({item_weight}) exceeds {thief.name}'s Constitution ({thief.constitution}).")
+                             continue
+
+                        # Perform the steal
+                        print(f"Attempting to steal {item_to_steal.name} from {target.name}...")
+                        stolen_item = target.inventory.pop(item_index_to_steal)
+                        thief.inventory.append(stolen_item)
+                        print(f"Success! {thief.name} stole {stolen_item.name}.")
+
+                        # Handle target potentially becoming unarmed
+                        if target.equipped_weapon_index == item_index_to_steal:
+                             print(f"  {target.name} is now unarmed!")
+                             target.equipped_weapon_index = None
+                             target._auto_equip_first_weapon() # Try to equip something else
+                        elif target.equipped_weapon_index is not None and target.equipped_weapon_index > item_index_to_steal:
+                             # Adjust equipped index if it was after the stolen item
+                             target.equipped_weapon_index -= 1
+
+                        # Apply fatigue and end action
+                        thief.fatigue += FATIGUE_COST_STEAL
+                        print(f"  ({thief.name} fatigue increases to {thief.fatigue})")
+                        thief.has_acted = True
+                        game_state.selected_unit_id = None
+                        current_move_range = None
+                        current_attack_range = None
+
+                elif command == "staff": # NEW command
+                    caster = game_state.get_selected_unit()
+                    if not caster:
+                        print("No unit selected.")
+                        continue
+                    if caster.fatigue >= caster.max_hp:
+                         print(f"{caster.name} is fatigued and cannot act.")
+                         continue
+                    if caster.has_acted:
+                         print(f"{caster.name} has already acted.")
+                         continue
+                    if caster.is_capturing is not None:
+                        print(f"{caster.name} cannot use staves while capturing.")
+                        continue
+
+                    equipped_item = caster.equipped_weapon
+                    if not equipped_item or not hasattr(equipped_item, 'staff_rank') or equipped_item.staff_rank is None:
+                        print(f"{caster.name} does not have a staff equipped.")
+                        continue
+
+                    # Basic command structure, no actual effect yet
+                    if len(args) != 2:
+                        print("Usage: staff <target_x> <target_y>")
+                        continue
+
+                    try:
+                        target_x, target_y = int(args[0]), int(args[1])
+                        # TODO: Add range check, target validation later
+                        print(f"{caster.name} uses {equipped_item.name} (Rank {equipped_item.staff_rank}) on ({target_x}, {target_y})... (No effect yet)")
+
+                        # Apply fatigue based on staff rank
+                        # Need to import FATIGUE_COST_STAFF from models
+                        from game.models import FATIGUE_COST_STAFF
+                        rank = equipped_item.staff_rank
+                        cost = FATIGUE_COST_STAFF.get(rank, 1) # Default to 1 if rank not found
+                        caster.fatigue += cost
+                        print(f"  ({caster.name} fatigue increases by {cost} to {caster.fatigue})")
+
+                        # Consume staff use
+                        if equipped_item.uses is not None:
+                            equipped_item.uses -= 1
+                            if equipped_item.uses == 0:
+                                print(f"  {equipped_item.name} broke.")
+                                # TODO: Handle removing/replacing broken item
+
+                        caster.has_acted = True
+                        game_state.selected_unit_id = None
+                        current_move_range = None
+                        current_attack_range = None
+
+                    except ValueError:
+                        print("Invalid coordinates.")
+                        continue
 
                 elif command == "wait":
                     selected_unit = game_state.get_selected_unit()
@@ -505,8 +703,14 @@ def run_cli():
                          print(f"Info: {target_unit.name} (ID: {target_unit.id}) | Faction: {target_unit.faction} | MoveType: {target_unit.move_type}{capture_status_str}")
                          print(f"  Pos: {target_unit.position} | HP: {target_unit.hp}/{target_unit.max_hp} | Mov: {target_unit.mov}")
                          print(f"  Stats: Str:{target_unit.strength} Skl:{target_unit.skill} Spd:{target_unit.speed} Lck:{target_unit.luck} Def:{target_unit.defense} Con:{target_unit.constitution}")
-                         inventory_names = [(f"{item.name}" + (f" ({item.uses}/{item.max_uses})" if item.uses is not None else "")) for item in target_unit.inventory]
-                         print(f"  Inventory: {inventory_names or ['None']}")
+                         print("  Inventory:")
+                         if not target_unit.inventory:
+                             print("    (Empty)")
+                         else:
+                             for i, item in enumerate(target_unit.inventory):
+                                 equipped_marker = " (E)" if i == target_unit.equipped_weapon_index else ""
+                                 uses_str = f" ({item.uses}/{item.max_uses})" if item.uses is not None else ""
+                                 print(f"    {i}: {item.name}{uses_str}{equipped_marker}")
                          equipped_idx = target_unit.equipped_weapon_index
                          equipped_name = target_unit.inventory[equipped_idx].name if equipped_idx is not None and equipped_idx < len(target_unit.inventory) else "None"
                          acted_status = " [Acted]" if target_unit.has_acted else ""

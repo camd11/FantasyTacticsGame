@@ -80,7 +80,17 @@ LIGHT_DARK_TYPES = {"Light", "Dark"} # Add Staff? No, staves don't participate.
 # --- Fatigue Costs ---
 FATIGUE_COST_COMBAT = 1
 FATIGUE_COST_ITEM = 1 # Simplified cost for using items like Vulnerary
-# Add costs for Staff, Dance, Steal later
+FATIGUE_COST_STEAL = 1 # Cost for successful steal (research.md line 543)
+# Staff fatigue costs by rank (research.md line 329)
+FATIGUE_COST_STAFF = {
+    'E': 1,
+    'D': 2,
+    'C': 3,
+    'B': 4,
+    'A': 5,
+    '*': 5 # Assuming '*' rank costs the same as A
+}
+# Add cost for Dance later
 
 
 # --- Item Base Class ---
@@ -130,6 +140,7 @@ class Weapon(Item):
     uses: Optional[int] = 50 # Example default uses
     max_uses: Optional[int] = 50
     effective_against: List[str] = field(default_factory=list) # e.g., ['Armor', 'Cavalry', 'Flying'] - Matches MoveType names
+    staff_rank: Optional[str] = None # NEW: Rank ('E', 'D', 'C', 'B', 'A', '*') if it's a staff
 
 # --- Tile ---
 @dataclass
@@ -164,6 +175,7 @@ class Unit:
     mov: int = 0
     fatigue: int = 0 # NEW: Fatigue counter
     pcc: int = 0 # Pursuit Critical Coefficient (FCM)
+    skills: List[str] = field(default_factory=list) # NEW: List of skill names (e.g., ["Wrath", "Adept"])
 
     # Equipment & Inventory
     inventory: List[InventoryItem] = field(default_factory=list)
@@ -173,6 +185,7 @@ class Unit:
     is_alive: bool = True
     is_captured: bool = False
     is_capturing: Optional[int] = None
+    can_steal: bool = False # NEW: Flag for units that can steal (Thieves)
 
     def __post_init__(self):
         self.hp = min(self.hp, self.max_hp)

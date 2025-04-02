@@ -1,6 +1,73 @@
-# Test sequence for terrain costs
-select 1 4
-info
-# Observe the '*' markers showing move range
-# Leif (Cavalry, Mov 7) should be heavily restricted by forests and blocked by mountains
+# Test file for Terrain Movement Costs
+
+# --- Setup Assumptions ---
+# Unit 1: Player Infantry, Pos(1,1), Mov 5
+# Unit 2: Player Cavalry, Pos(1,5), Mov 7
+# Terrain: Forest at (3,1), (4,1). Mountain at (3,5), (4,5).
+# Plain cost = 1
+# Forest cost = 2 (Inf), 3 (Cav)
+# Mountain cost = 2 (Inf), None (Cav - Impassable)
+# -------------------------
+
+# --- Infantry Tests ---
+select 1 1 # Select Infantry (Mov 5)
+
+# Check initial range (should include plains around)
+# Example reachable: (1,0), (2,1), (1,2), (0,1), (3,1) (cost 1+1+2=4), (2,2) (cost 1+1=2) etc.
+
+# Move onto plains (cost 1)
+move 2 1
+info 2 1
+
+# Move onto forest (cost 2) - Remaining Mov = 5 - 1 = 4
+# Should be possible (cost 2 <= 4)
+move 3 1
+info 3 1
+
+# Move onto next forest (cost 2) - Remaining Mov = 4 - 2 = 2
+# Should be possible (cost 2 <= 2)
+move 4 1
+info 4 1
+
+# Try to move further (cost 1) - Remaining Mov = 2 - 2 = 0
+# Should fail
+move 5 1
+wait # End infantry turn
+
+# --- Cavalry Tests ---
+select 1 5 # Select Cavalry (Mov 7)
+
+# Check initial range (should include plains, avoid mountains)
+# Example reachable: (1,4), (2,5), (1,6), (0,5), (4,5) (cost 1*3=3), (2,4) (cost 1+1=2) etc.
+# Should NOT include (3,5) or (4,5)
+
+# Move onto plains (cost 1)
+move 2 5
+info 2 5
+
+# Try to move onto Mountain (Impassable) - Remaining Mov = 7 - 1 = 6
+# Should fail
+move 3 5
+info 2 5 # Position should be unchanged
+
+# Move onto plains towards forest - Remaining Mov = 6
+move 2 3 # Cost 1+1 = 2. Pos (2,3). Rem Mov = 4
+info 2 3
+
+# Move onto plains adjacent to forest - Remaining Mov = 4
+move 2 2 # Cost 1. Pos (2,2). Rem Mov = 3
+info 2 2
+
+# Try to move onto Forest (Cost 3) - Remaining Mov = 3
+# Should succeed (cost 3 <= 3)
+move 3 2 # Should move onto (3,2) if it's plain, or (3,1) if targeting forest
+# Let's target the forest tile directly
+move 3 1 # Pos (3,1). Rem Mov = 3 - 3 = 0
+info 3 1
+
+# Try to move onto next Forest (Cost 3) - Remaining Mov = 0
+# Should fail
+move 4 1
+wait # End cavalry turn
+
 quit

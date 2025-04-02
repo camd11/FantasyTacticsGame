@@ -106,7 +106,8 @@ def resolve_attack(
     game_state: GameState,
     is_capture_attempt: bool = False,
     capture_penalty_active: bool = False, # Is the penalty applied to *this* attacker?
-    is_follow_up: bool = False # NEW: Flag for PCC calculation
+    is_follow_up: bool = False, # NEW: Flag for PCC calculation
+    is_counter_attack: bool = False # NEW: Flag for Wrath check
 ) -> bool:
     """Resolves a single attack instance (hit check, damage application)."""
     # Ensure both units are alive at the start of this specific attack resolution
@@ -210,21 +211,28 @@ def resolve_attack(
     roll = random.randint(1, 100)
     if roll <= hit_chance:
         # --- Critical Hit Calculation ---
-        attacker_crit_rate = calculate_crit_rate(attacker, game_state) # Pass game_state
-        defender_crit_evade = calculate_crit_evade(defender, game_state) # Pass game_state
-        battle_crit_chance = max(0, attacker_crit_rate - defender_crit_evade)
-
-        # Apply PCC and 25% cap
-        if is_follow_up:
-            # Apply PCC multiplier on follow-up
-            battle_crit_chance = min(100, battle_crit_chance * attacker.pcc)
+        is_critical = False # Initialize
+        # Check for Wrath first (only on counter-attacks)
+        if is_counter_attack and "Wrath" in attacker.skills:
+            print(f"  ({attacker.name}'s Wrath activates!)")
+            is_critical = True
         else:
-            # Apply 25% cap on first hit
-            battle_crit_chance = min(25, battle_crit_chance)
+            # Normal critical calculation
+            attacker_crit_rate = calculate_crit_rate(attacker, game_state) # Pass game_state
+            defender_crit_evade = calculate_crit_evade(defender, game_state) # Pass game_state
+            battle_crit_chance = max(0, attacker_crit_rate - defender_crit_evade)
 
-        # Roll for critical
-        crit_roll = random.randint(1, 100)
-        is_critical = crit_roll <= battle_crit_chance
+            # Apply PCC and 25% cap
+            if is_follow_up:
+                # Apply PCC multiplier on follow-up
+                battle_crit_chance = min(100, battle_crit_chance * attacker.pcc)
+            else:
+                # Apply 25% cap on first hit
+                battle_crit_chance = min(25, battle_crit_chance)
+
+            # Roll for critical
+            crit_roll = random.randint(1, 100)
+            is_critical = crit_roll <= battle_crit_chance
 
         # --- Damage Calculation ---
         weapon = attacker.equipped_weapon
@@ -287,18 +295,28 @@ def resolve_attack(
                 # MVP Simplification: Attacker Con > Target Con OR Attacker is Cavalry
                 can_capture = False
                 is_mounted_attacker = attacker.move_type == MoveType.CAVALRY # Basic mount check
-                # is_mounted_defender = defender.move_type == MoveType.CAVALRY # Add later if needed
+                is_mounted_defender = defender.move_type == MoveType.CAVALRY # Check if defender is mounted
 
-                # TODO: Add immunity checks (Con >= 20, Mounted target)
+                # --- Immunity Checks (Thracia Rules) ---
+                is_immune = False
+                if defender.constitution >= 20:
+                    print(f"  Capture Immune: Target Con ({defender.constitution}) >= 20.")
+                    is_immune = True
+                elif is_mounted_defender:
+                    print(f"  Capture Immune: Target is mounted.")
+                    is_immune = True
 
-                if attacker.constitution > defender.constitution:
-                    can_capture = True
-                elif is_mounted_attacker: # Add mounted capture rule (simplified)
-                    can_capture = True
-                    print("  (Mounted capture bonus applied)")
+                # --- Capture Condition Checks (Only if not immune) ---
+                if not is_immune:
+                    if attacker.constitution > defender.constitution:
+                        can_capture = True
+                    # Mounted attacker can capture non-mounted target regardless of Con
+                    elif is_mounted_attacker and not is_mounted_defender:
+                        can_capture = True
+                        print("  (Mounted capture bonus applied vs non-mounted target)")
 
-
-                if can_capture:
+                # --- Resolve Capture/Death ---
+                if can_capture and not is_immune: # Double check can_capture and not immune
                     game_state.handle_unit_capture(attacker, defender)
                     # Return True immediately after successful capture to prevent counter/follow-ups
                     return True # Indicate hit landed, but also signals capture occurred
@@ -336,9 +354,20 @@ def simulate_combat(
     # Increment fatigue for attacker participating
     attacker.fatigue += FATIGUE_COST_COMBAT
     print(f"  (+{FATIGUE_COST_COMBAT} Fatigue for {attacker.name}. Total: {attacker.fatigue})")
-    hit_landed = resolve_attack(attacker, defender, game_state, is_capture_attempt, attacker_penalty, is_follow_up=False)
+    hit_landed = resolve_attack(attacker, defender, game_state, is_capture_attempt, attacker_penalty, is_follow_up=False, is_counter_attack=False) # Added is_counter_attack=False
 
-    # Check if target was captured OR defeated by the first hit
+    # --- Adept Check (Attacker) ---
+    if hit_landed and attacker.is_alive and defender.is_alive and not is_capture_attempt and "Adept" in attacker.skills:
+        adept_chance = attacker.skill # Thracia Adept chance = Skill%
+        if random.randint(1, 100) <= adept_chance:
+            print(f"  ({attacker.name}'s Adept activates!)")
+            attacker.fatigue += FATIGUE_COST_COMBAT # Fatigue for extra attack
+            print(f"  (+{FATIGUE_COST_COMBAT} Fatigue for {attacker.name}. Total: {attacker.fatigue})")
+            # Adept attack counts as a follow-up for PCC purposes
+            resolve_attack(attacker, defender, game_state, False, attacker_penalty, is_follow_up=True, is_counter_attack=False)
+    # -----------------------------
+
+    # Check if target was captured OR defeated by the first hit or Adept
     if defender.is_captured or not defender.is_alive:
         print(f"--- Combat End ---")
         return # End combat immediately
@@ -357,7 +386,7 @@ def simulate_combat(
                 # Increment fatigue for defender participating
                 defender.fatigue += FATIGUE_COST_COMBAT
                 print(f"  (+{FATIGUE_COST_COMBAT} Fatigue for {defender.name}. Total: {defender.fatigue})")
-                resolve_attack(defender, attacker, game_state, False, defender_penalty, is_follow_up=False)
+                resolve_attack(defender, attacker, game_state, False, defender_penalty, is_follow_up=False, is_counter_attack=True) # Added is_counter_attack=True
                 # Check if attacker was defeated by counter
                 if not attacker.is_alive:
                     print(f"--- Combat End ---")
@@ -377,7 +406,7 @@ def simulate_combat(
             attacker.fatigue += FATIGUE_COST_COMBAT
             print(f"  (+{FATIGUE_COST_COMBAT} Fatigue for {attacker.name}. Total: {attacker.fatigue})")
             followup_attacker_penalty = attacker.is_capturing is not None
-            resolve_attack(attacker, defender, game_state, False, followup_attacker_penalty, is_follow_up=True)
+            resolve_attack(attacker, defender, game_state, False, followup_attacker_penalty, is_follow_up=True, is_counter_attack=False) # Added is_counter_attack=False
             # Check if defender defeated by follow-up
             if not defender.is_alive:
                  print(f"--- Combat End ---")
@@ -394,7 +423,7 @@ def simulate_combat(
             # Increment fatigue for defender participating in follow-up
             defender.fatigue += FATIGUE_COST_COMBAT
             print(f"  (+{FATIGUE_COST_COMBAT} Fatigue for {defender.name}. Total: {defender.fatigue})")
-            resolve_attack(defender, attacker, game_state, False, defender_penalty, is_follow_up=True)
+            resolve_attack(defender, attacker, game_state, False, defender_penalty, is_follow_up=True, is_counter_attack=True) # Added is_counter_attack=True
             # No need to check attacker death again, as combat ends after this sequence anyway
 
     print(f"--- Combat End ---")

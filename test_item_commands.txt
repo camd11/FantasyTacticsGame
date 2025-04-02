@@ -1,13 +1,89 @@
-# Test sequence for item usage (Vulnerary)
-# Leif starts at (1,4), Bandit at (5,4)
-# Turn 1: Leif waits, Bandit moves to (2,4) and attacks Leif
+# Test file for inventory and item use commands
+
+# Initial state check
+info 1 4
+
+# Select Leif
 select 1 4
+
+# Display inventory
+inventory
+
+# Try to use a weapon (should fail)
+use 0
+
+# Try to use an invalid index
+use 99
+
+# Damage Leif (using a temporary enemy attack for setup)
+# (Need to ensure Bandit can attack Leif from start)
+# Move Bandit closer first if needed
+select 5 4 # Select Bandit (This won't work in player phase, need setup change)
+# Assume Bandit attacks Leif in Enemy Phase 1
+
+# --- Turn 1 Player Phase ---
+# (Assume Leif is damaged after Enemy Phase 0)
+select 1 4
+info 1 4 # Check HP before healing
+
+# Use Vulnerary (index depends on setup, assume it's index 2 after Iron Sword, Fire Tome)
+use 2
+info 1 4 # Check HP and fatigue after healing
+
+# Try to act again (should fail as item use consumes action)
+move 2 4
 wait
-endturn
-# Turn 2: Leif should be damaged. Select Leif and use Vulnerary.
+
+# --- Turn 2 Player Phase ---
 select 1 4
-info
-item vulnerary
-info
-endturn
+info 1 4
+
+# Use another Vulnerary charge
+use 2
+info 1 4
+
+# --- Turn 3 Player Phase ---
+select 1 4
+info 1 4
+
+# Use the last Vulnerary charge (item should break)
+use 2
+info 1 4 # Check HP and fatigue
+inventory # Check inventory, Vulnerary at index 2 should be gone or have 0 uses
+
+# Try to use the broken/gone item
+use 2
+
+# Try to use another Vulnerary (assuming index 3 now) when at full HP
+use 3
+info 1 4 # HP should not change, action should not be consumed? (Verify this behavior)
+
+# Use remaining Vulneraries until one breaks
+# (Assuming index 3 is next)
+use 3
+use 3
+use 3 # Break Vulnerary at index 3
+inventory
+
+# (Assuming index 4 is next)
+use 4
+use 4
+use 4 # Break Vulnerary at index 4
+inventory
+
+# (Assuming index 5 is next)
+use 5
+use 5
+use 5 # Break Vulnerary at index 5
+inventory
+
+# (Assuming index 6 is next)
+use 6
+use 6
+use 6 # Break Vulnerary at index 6
+inventory
+
+# Check final state
+info 1 4
+
 quit

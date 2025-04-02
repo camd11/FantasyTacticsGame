@@ -1,6 +1,39 @@
-# Test sequence for basic enemy AI
+# Test file for basic Enemy AI
+
+# Initial state check
+info 1 4 # Leif
+info 5 4 # Bandit
+
+# --- Turn 1 Player Phase ---
+# Do nothing, just end turn to trigger Enemy Phase
 select 1 4
 wait
 endturn
-# Observe Bandit's actions during Enemy Phase
+
+# --- Turn 2 Player Phase ---
+# Check Bandit position and HP after AI turn
+# Bandit (Mov 4) should move from (5,4) towards Leif (1,4)
+# Expected move: (5,4) -> (2,4) (4 steps)
+# Expected action: Attack Leif from (2,4)
+info 1 4 # Check Leif's HP
+info 2 4 # Check Bandit's new position
+
+# --- Turn 2 Player Phase (Alternative Scenario: Player moves away) ---
+# Reset state or run separately? For now, assume separate run or manual reset.
+# setup_initial_state() # Conceptually reset
+
+# info 1 4
+# info 5 4
+
+# select 1 4
+# move 1 0 # Move Leif far away
+# wait
+# endturn
+
+# --- Turn 3 Player Phase ---
+# Check Bandit position - should have moved towards (1,0)
+# Expected move: (5,4) -> (5,0) or similar path (4 steps)
+# info 1 0 # Leif's new position
+# info 5 0 # Check Bandit's new position (approx)
+
 quit

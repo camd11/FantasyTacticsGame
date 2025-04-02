@@ -1,0 +1,63 @@
+# Test file for the steal command
+
+# --- Setup Assumptions ---
+# - Unit 1 (Leif at 1,4) has can_steal=True, Spd=10, Con=5
+# - Unit 101 (Bandit at 2,4) has Spd=5, Con=10
+# - Unit 101 Inventory: [Vulnerary (Wt=1), Iron Axe (Wt=10), Potion (Wt=3)]
+# -------------------------
+
+# Initial state
+info 1 4
+info 2 4
+
+# Select the thief
+select 1 4
+
+# --- Basic Checks ---
+# Try stealing from non-adjacent target
+steal 3 4
+
+# Try stealing from ally (assuming another player unit at 1,3)
+# select 1 3 # Add temp ally
+# info 1 3
+# select 1 4
+# steal 1 3
+
+# --- List Stealable Items ---
+# Target is adjacent (2,4)
+steal 2 4
+
+# --- Attempt Steals ---
+# Steal Vulnerary (Index 0, Wt=1 <= Con=5, AS > Target AS) - Should succeed
+steal 2 4 0
+info 1 4 # Check thief inventory & fatigue
+info 2 4 # Check target inventory
+
+# Try to act again (should fail)
+wait
+move 1 5
+
+# --- Turn 2 ---
+endturn # Go through enemy phase and back to player
+
+# Select thief again
+select 1 4
+
+# Try to steal Iron Axe (Index 0 now, Wt=10 > Con=5) - Should fail (Weight)
+steal 2 4 0
+info 1 4 # Inventory should be unchanged from end of last turn
+info 2 4
+
+# --- Test AS Condition (Requires setup modification) ---
+# Assume Target Spd is now 15 (Target AS > Thief AS)
+# steal 2 4 1 # Try stealing Potion (Index 1, Wt=3 <= Con=5) - Should fail (AS)
+
+# --- Test Full Inventory (Requires setup modification) ---
+# Assume Thief inventory is full (7 items)
+# steal 2 4 1 # Try stealing Potion - Should fail (Inventory Full)
+
+# --- Final State ---
+info 1 4
+info 2 4
+
+quit

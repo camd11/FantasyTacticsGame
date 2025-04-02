@@ -1,13 +1,60 @@
-# Test sequence for capture mechanic (revised again)
-select 1 4
-move 4 4
-info 4 4
-capture 5 4
-# Leif should remain selected, Bandit captured
-info 4 4 # Check Leif status (should show capturing)
-info 5 4 # Check Bandit's original tile (should be empty)
-move 4 5 # Attempt move while capturing (should fail)
+# Test file for refined Capture mechanics
+
+# --- Setup Assumptions ---
+# Unit 1: Player Infantry, Pos(1,1), Con 10
+# Unit 2: Player Cavalry, Pos(1,2), Con 8
+# Unit 101: Enemy Infantry, Pos(2,1), Con 5, HP 1
+# Unit 102: Enemy Infantry, Pos(3,1), Con 15, HP 1
+# Unit 103: Enemy Infantry, Pos(4,1), Con 20, HP 1
+# Unit 104: Enemy Cavalry, Pos(2,2), Con 5, HP 1
+# All units have basic weapons equipped.
+# -------------------------
+
+# --- Test Case 1: Standard Capture (Infantry vs Lower Con Infantry) ---
+select 1 1 # Select Player Infantry (Con 10)
+capture 2 1 # Target Enemy Infantry (Con 5) - Should succeed
+info 1 1 # Check attacker status (is_capturing=101)
+info 2 1 # Target should be captured (is_captured=True) or gone
+
+# --- Test Case 2: Mounted Capture (Cavalry vs Lower Con Infantry) ---
+# Reset state conceptually or run separately
+# select 1 2 # Select Player Cavalry (Con 8)
+# capture 2 1 # Target Enemy Infantry (Con 5) - Should succeed (Mounted bonus)
+# info 1 2 # Check attacker status (is_capturing=101)
+# info 2 1 # Target should be captured
+
+# --- Test Case 3: Failed Capture (Con too low) ---
+# Reset state conceptually or run separately
+# select 1 1 # Select Player Infantry (Con 10)
+# capture 3 1 # Target Enemy Infantry (Con 15) - Should fail (Con check)
+# info 1 1 # Attacker should not be capturing
+# info 3 1 # Target should be defeated (treated as kill)
+
+# --- Test Case 4: Failed Capture (Immunity - Con >= 20) ---
+# Reset state conceptually or run separately
+# select 1 1 # Select Player Infantry (Con 10)
+# capture 4 1 # Target Enemy Infantry (Con 20) - Should fail (Immune)
+# info 1 1 # Attacker should not be capturing
+# info 4 1 # Target should be defeated
+
+# --- Test Case 5: Failed Capture (Immunity - Mounted Target) ---
+# Reset state conceptually or run separately
+# select 1 1 # Select Player Infantry (Con 10)
+# capture 2 2 # Target Enemy Cavalry (Con 5) - Should fail (Immune)
+# info 1 1 # Attacker should not be capturing
+# info 2 2 # Target should be defeated
+
+# --- Test Case 6: Failed Capture (Mounted vs Mounted) ---
+# Reset state conceptually or run separately
+# select 1 2 # Select Player Cavalry (Con 8)
+# capture 2 2 # Target Enemy Cavalry (Con 5) - Should fail (Immune)
+# info 1 2 # Attacker should not be capturing
+# info 2 2 # Target should be defeated
+
+# --- Test Case 7: Release Captured Unit ---
+# Assume Unit 1 successfully captured Unit 101 in Case 1
+select 1 1 # Select Player Infantry (holding Unit 101)
 release
-info 4 4 # Check Leif status after release (should not be capturing)
-endturn
+info 1 1 # Attacker should no longer be capturing, fatigue increased, acted=True
+
 quit
