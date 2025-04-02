@@ -44,6 +44,8 @@ The initial Minimum Viable Product (MVP) focusing on foundational map/unit repre
     *   Implemented Movement Stars: Units have a chance (5% per star) to act again after completing an action (`src/game/models.py`, `src/cli.py`).
     *   Implemented Canto: Mounted units can use remaining movement after non-combat actions (`src/game/movement.py`, `src/cli.py`, `src/game/display.py`).
     *   Implemented basic Staff usage: Added `staff <x> <y>` command. Implemented Heal staff effect (Range 1, Heals 10 + User Mag), fatigue cost, use consumption, and Canto prevention (`src/cli.py`, `test_staff_commands.txt`). Other staff effects are pending.
+    *   Fixed AI logic to correctly prioritize attacking when in range before attempting to move (`src/game/ai.py`).
+    *   Fixed movement state handling in the CLI to allow subsequent valid moves after a failed move attempt (e.g., trying to enter impassable terrain) (`src/cli.py`).
 *   **Testing (Refactored Approach):**
     *   Automated testing uses command file input piped to `src/cli.py`.
     *   `src/cli.py` now accepts a `--setup <setup_name>` argument to load specific initial game states defined within `cli.py` (e.g., `setup_combat_test_state()`). This isolates test setups from the core CLI logic, improving stability.

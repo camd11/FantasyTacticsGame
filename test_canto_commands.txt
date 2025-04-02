@@ -43,7 +43,7 @@ move 5 4
 # Expect: Canto message, remaining move = 7 - 1 = 6. Leif still selected.
 
 # 9. Attack Bandit (Action prevents Canto)
-attack 4 4
+attack 5 4
 # Expect: Combat simulation. Turn should end (no Canto after attack). Movement Star might activate.
 
 # 10. Select Nanna and wait

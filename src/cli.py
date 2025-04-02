@@ -5,6 +5,7 @@ import os
 import random
 import argparse # NEW: Import argparse
 from typing import Optional, Set, Tuple, Dict
+import math # Need math for floor/ceil if halving stats
 
 # Ensure the 'src' directory is in the Python path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -12,10 +13,12 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 # Import necessary components
 from game.models import (GameState, GameMap, Unit, Weapon, Faction, MoveType,
                          TerrainType, Vulnerary, Item, StatusEffect, # Added StatusEffect
-                         FATIGUE_COST_COMBAT, FATIGUE_COST_ITEM, CHARISMA_SKILL_NAME, Potion) # Import fatigue costs, Charisma skill name, Potion
+                         FATIGUE_COST_COMBAT, FATIGUE_COST_ITEM, CHARISMA_SKILL_NAME, Potion, # Import fatigue costs, Charisma skill name, Potion
+                         TERRAIN_PROPERTIES, WEAPON_TRIANGLE_BONUS, PHYSICAL_TRIANGLE, ANIMA_TRIANGLE, # Triangle, Terrain
+                         ANIMA_TYPES, LIGHT_DARK_TYPES, SUPPORTS) # Triangle helpers, Supports
 from game.display import render_map
 from game.movement import calculate_move_range
-from game.combat import simulate_combat
+from game.combat import simulate_combat, calculate_attack_speed # Import AS calc
 from game.ai import run_enemy_ai
 
 # --- Helper Function ---
@@ -24,6 +27,9 @@ def get_attack_range(unit: Unit, game_state: GameState) -> Set[Tuple[int, int]]:
     attack_range = set()
     # Cannot attack if capturing, no weapon, or not alive
     if unit.is_capturing is not None or not unit.equipped_weapon or not unit.is_alive:
+        return attack_range
+
+    if not unit.equipped_weapon: # Added check
         return attack_range
 
     min_r = unit.equipped_weapon.range_min
@@ -1084,14 +1090,15 @@ def run_cli(setup_name: str = "effectiveness"): # MODIFIED: Accept setup name
                     x, y = int(args[0]), int(args[1])
                     target_pos = (x, y)
 
-                    if current_move_range is None:
+                    # Determine which range to check (Canto or Normal)
+                    active_range = current_canto_range if is_canto_active else current_move_range
+
+                    if active_range is None:
                          print(f"Cannot move {selected_unit.name} (already acted or no range calculated).")
                          continue
 
-                    # Check if target_pos is in the keys of the move range dict
-                    # Check if target_pos is in the current move/canto range
-                    active_range = current_canto_range if is_canto_active else current_move_range
-                    if active_range and target_pos in active_range:
+                    # Check if target_pos is in the active range
+                    if target_pos in active_range:
                         move_cost = active_range[target_pos]
                         if game_state.game_map.move_unit(selected_unit, x, y):
                             print(f"Moved {selected_unit.name} to ({x}, {y}) (Cost: {move_cost}).")
@@ -1099,7 +1106,10 @@ def run_cli(setup_name: str = "effectiveness"): # MODIFIED: Accept setup name
                             # --- Canto Logic ---
                             is_mounted = selected_unit.move_type in [MoveType.CAVALRY, MoveType.FLYING]
                             # Calculate remaining move based on original move allowance before capture penalty
-                            base_remaining_move = selected_unit.mov - move_cost
+                            # If it was a Canto move, use the stored canto_move_points
+                            original_mov = canto_move_points if is_canto_active else selected_unit.mov
+                            base_remaining_move = original_mov - move_cost
+
                             # Apply capture penalty *after* calculating base remaining
                             canto_mov = base_remaining_move
                             if selected_unit.is_capturing is not None:
@@ -1123,11 +1133,12 @@ def run_cli(setup_name: str = "effectiveness"): # MODIFIED: Accept setup name
                                     is_canto_active = False
                                     current_canto_range = None
                                     if not complete_action(selected_unit, game_state):
+                                        # Action ended normally, clear ranges
                                         current_move_range = None
                                         current_attack_range = None
-                                    else:
-                                        current_move_range = None
-                                        current_attack_range = None
+                                    else: # Movement star activated
+                                        # Don't clear ranges, they will be recalculated on re-select
+                                        pass
                             else:
                                 # This was a Canto move, always end the turn now
                                 print(f"  (Canto move completed)")
@@ -1135,17 +1146,20 @@ def run_cli(setup_name: str = "effectiveness"): # MODIFIED: Accept setup name
                                 is_canto_active = False
                                 current_canto_range = None
                                 if not complete_action(selected_unit, game_state):
+                                    # Action ended normally, clear ranges
                                     current_move_range = None
                                     current_attack_range = None
-                                else:
-                                    current_move_range = None
-                                    current_attack_range = None
+                                else: # Movement star activated
+                                    # Don't clear ranges, they will be recalculated on re-select
+                                    pass
                             # -----------------
 
                         else:
                             print(f"Cannot move to ({x}, {y}) - tile might be occupied or invalid.")
-                    else:
+                            # Do not end action here, allow player to try again
+                    else: # Target not in active_range
                         print(f"Cannot move to ({x}, {y}) - not in range.")
+                        # Do not end action here, allow player to try again
 
                 elif command == "attack":
                     attacker = game_state.get_selected_unit()
@@ -1171,8 +1185,9 @@ def run_cli(setup_name: str = "effectiveness"): # MODIFIED: Accept setup name
                     x, y = int(args[0]), int(args[1])
                     target_pos = (x, y)
 
-                    if current_attack_range is None:
-                         current_attack_range = get_attack_range(attacker, game_state)
+                    # Recalculate attack range based on current position if needed
+                    # This is important if the unit moved before attacking
+                    current_attack_range = get_attack_range(attacker, game_state)
 
                     if target_pos in current_attack_range:
                         defender_id = game_state.game_map.get_unit_id_at(x, y)
@@ -1230,8 +1245,8 @@ def run_cli(setup_name: str = "effectiveness"): # MODIFIED: Accept setup name
                     x, y = int(args[0]), int(args[1])
                     target_pos = (x, y)
 
-                    if current_attack_range is None:
-                         current_attack_range = get_attack_range(attacker, game_state)
+                    # Recalculate attack range based on current position if needed
+                    current_attack_range = get_attack_range(attacker, game_state)
 
                     if target_pos in current_attack_range:
                         defender_id = game_state.game_map.get_unit_id_at(x, y)
@@ -1509,7 +1524,7 @@ def run_cli(setup_name: str = "effectiveness"): # MODIFIED: Accept setup name
 
                     # Check Steal Conditions (AS and Item Weight)
                     # Need to import calculate_attack_speed from combat
-                    from game.combat import calculate_attack_speed # Import AS calc
+                    # from game.combat import calculate_attack_speed # Import AS calc
                     from game.models import FATIGUE_COST_STEAL # Import fatigue cost from models
                     thief_as = calculate_attack_speed(thief, game_state)
                     target_as = calculate_attack_speed(target, game_state)

@@ -43,29 +43,35 @@ def get_simple_move_target(enemy_unit: Unit, target_unit: Unit, game_state: Game
         if not (0 <= adj_x < game_state.game_map.width and 0 <= adj_y < game_state.game_map.height):
             continue
 
-        # Check if tile is empty or occupied by the moving unit itself (shouldn't happen here)
+        # Check if tile is empty (cannot move onto occupied tiles)
         occupant_id = game_state.game_map.get_unit_id_at(adj_x, adj_y)
-        if occupant_id is None or occupant_id == enemy_unit.id:
+        if occupant_id is None: # Only consider empty tiles
             potential_targets.append(adj_pos)
 
     if not potential_targets:
-        # print(f"Debug AI: No empty adjacent tiles found for target {target_unit.name}")
+        print(f"  AI DEBUG (get_simple_move_target): No empty adjacent tiles found for target {target_unit.name} at {(tx, ty)}")
         return None # No empty adjacent tiles
 
+    print(f"  AI DEBUG (get_simple_move_target): Target: {target_unit.name} at {(tx, ty)}")
+    print(f"  AI DEBUG (get_simple_move_target): Potential adjacent targets: {potential_targets}")
     # Find reachable adjacent tiles
     # Ensure move range calculation happens correctly for AI unit
     # Need to temporarily unset has_acted if AI units use it, but they don't yet
     move_range = calculate_move_range(game_state, enemy_unit)
+    print(f"  AI DEBUG (get_simple_move_target): Enemy {enemy_unit.name} move_range keys: {list(move_range.keys())}")
     reachable_adj_targets = [pos for pos in potential_targets if pos in move_range]
 
+    print(f"  AI DEBUG (get_simple_move_target): Reachable adjacent targets: {reachable_adj_targets}")
+
     if not reachable_adj_targets:
-        # print(f"Debug AI: Cannot reach any empty adjacent tile for target {target_unit.name}")
+        print(f"  AI DEBUG (get_simple_move_target): Cannot reach any empty adjacent tile for target {target_unit.name}")
         return None # Cannot reach any empty adjacent tile
 
     # Simplistic choice: pick the first reachable adjacent tile found
     # TODO: Improve this later (e.g., pick closest reachable, pathfinding, consider safety)
-    # print(f"Debug AI: Found reachable adjacent tiles: {reachable_adj_targets}")
-    return reachable_adj_targets[0]
+    result_pos = reachable_adj_targets[0]
+    print(f"  AI DEBUG (get_simple_move_target): Returning target position: {result_pos}")
+    return result_pos
 
 
 def run_enemy_ai(game_state: GameState):
@@ -133,8 +139,8 @@ def run_enemy_ai(game_state: GameState):
                 if not target_player.is_alive:
                     player_units.remove(target_player) # Update list for subsequent AI
 
-        # 2. If couldn't attack, try to move and attack
-        if not action_taken:
+        # 2. If couldn't attack from current position, try to move and attack
+        elif not action_taken: # Use elif to ensure this only runs if attack wasn't possible initially
             # Ensure enemy can move (not capturing)
             if enemy.is_capturing is not None:
                  print(f"  {enemy.name} cannot move (is capturing).")
@@ -149,17 +155,20 @@ def run_enemy_ai(game_state: GameState):
                         print(f"  {enemy.name} moved to {move_target_pos}.")
                         action_taken = True # Consider move as an action for now
                         # Check if can attack after moving
+                        # Recalculate distance after moving
                         dist = abs(enemy.position[0] - target_player.position[0]) + abs(enemy.position[1] - target_player.position[1])
                         if enemy.equipped_weapon and enemy.equipped_weapon.range_min <= dist <= enemy.equipped_weapon.range_max:
                              print(f"  {enemy.name} attacking after moving.")
                              simulate_combat(enemy, target_player, game_state)
                              # Check if target player was defeated
                              if not target_player.is_alive:
-                                 player_units.remove(target_player) # Update list
+                                 # Check if target_player is still in the list before removing
+                                 if target_player in player_units:
+                                     player_units.remove(target_player) # Update list
                         else:
                              print(f"  {enemy.name} moved but cannot attack target.")
                     else:
-                        print(f"  {enemy.name} failed to move to {move_target_pos} (unexpected).")
+                        print(f"  {enemy.name} failed to move to {move_target_pos} (tile might be occupied or invalid).")
                         action_taken = False # Move failed, no action taken
                 else:
                     print(f"  {enemy.name} cannot find a suitable position to move and attack.")
