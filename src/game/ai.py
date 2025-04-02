@@ -183,3 +183,35 @@ def run_enemy_ai(game_state: GameState):
         # No need to track 'has_acted' for enemies in this simple version yet
 
     print("--- Ending Enemy Phase ---")
+
+def run_npc_ai(game_state: GameState):
+    """Runs the AI logic for all NPC/Ally units."""
+    print("\n--- NPC Phase ---")
+    # Get lists of units at the start of the phase
+    npc_units = game_state.get_units_by_faction(Faction.ALLY)
+    # player_units = game_state.get_units_by_faction(Faction.PLAYER) # NPCs might target enemies or move to objectives
+    # enemy_units = game_state.get_units_by_faction(Faction.ENEMY)
+
+    if not npc_units:
+        print("No NPC units remaining.")
+        print("--- Ending NPC Phase ---")
+        return
+
+    for npc in npc_units:
+        if not npc.is_alive or npc.is_captured:
+            continue
+
+        # Check for status effects preventing action
+        if npc.status_effect == StatusEffect.SLEEP:
+            print(f"  NPC SKIP: {npc.name} cannot act (Sleeping).")
+            continue
+        if npc.status_effect == StatusEffect.BERSERK:
+            print(f"  NPC SKIP: {npc.name} cannot act (Berserk - AI control not implemented).")
+            continue
+
+        print(f"Processing AI for NPC {npc.name} at {npc.position}...")
+        # TODO: Implement actual NPC AI logic (e.g., move towards player, attack enemies, escape)
+        print(f"  (NPC AI for {npc.name} not implemented yet - taking no action)")
+        # Simple placeholder: NPCs do nothing for now
+
+    print("--- Ending NPC Phase ---")

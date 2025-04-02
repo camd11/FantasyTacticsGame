@@ -186,6 +186,26 @@ def does_double(attacker: Unit, defender: Unit, game_state: GameState) -> bool: 
     defender_as = calculate_attack_speed(defender, game_state) # Pass game_state
     return attacker_as >= defender_as + 4
 
+def calculate_exp_gain(attacker: Unit, defender: Unit, did_defeat: bool) -> int:
+    """Calculates EXP gain based on standard FE formula."""
+    BASE_HIT_EXP = 1
+    BASE_KILL_EXP = 20
+    LEVEL_DIFF_EXP_FACTOR = 2
+    MIN_EXP_GAIN = 1
+
+    if not attacker.is_alive:
+        return 0
+
+    if did_defeat:
+        level_diff = defender.level - attacker.level # Assuming level attribute exists
+        level_bonus = max(0, level_diff) * LEVEL_DIFF_EXP_FACTOR
+        exp_gain = BASE_KILL_EXP + level_bonus
+        return max(MIN_EXP_GAIN, exp_gain)
+    else:
+        # Grant minimal EXP for hitting, but only if damage was dealt?
+        # For simplicity now, grant base hit EXP on any hit.
+        return BASE_HIT_EXP
+
 
 def resolve_attack(
     attacker: Unit,
@@ -368,11 +388,14 @@ def resolve_attack(
     if roll <= hit_chance:
         # --- Critical Hit Calculation ---
         is_critical = False # Initialize before checks
+        attacker_activated_wrath = False # Flag for scroll check
+
         # Check for Wrath first (triggers on counter-attack OR any attack during enemy phase)
         is_enemy_phase = game_state.active_faction == Faction.ENEMY
         if ("Wrath" in attacker.skills) and (is_counter_attack or is_enemy_phase):
             print(f"  ({attacker.name}'s Wrath activates!)")
             is_critical = True # Wrath guarantees crit
+            attacker_activated_wrath = True
         else:
             # Normal critical calculation
             # Use the full calculation functions which include support bonuses
@@ -392,11 +415,18 @@ def resolve_attack(
             is_critical = crit_roll <= battle_crit_chance # Check if normal crit roll succeeds
             print(f"  DEBUG: is_critical set to: {is_critical}") # ADDED DEBUG
 
+        # --- Scroll Check (Defender) ---
+        # Scrolls negate crits unless attacker used Wrath
+        defender_has_scroll = any("Scroll" in item.name for item in defender.inventory if hasattr(item, 'name')) # Basic check
+        if defender_has_scroll and is_critical and not attacker_activated_wrath:
+             print(f"  ({defender.name}'s Scroll negates the critical!)")
+             is_critical = False
+
         # --- Nihil Check (Defender) ---
+        # Nihil also negates crits (redundant if scroll already did, but check anyway)
         if "Nihil" in defender.skills and is_critical:
             print(f"  ({defender.name}'s Nihil negates the critical!)")
             is_critical = False # Override critical if defender has Nihil
-
         # --- Damage Calculation ---
         weapon = attacker.equipped_weapon
         weapon_might = weapon.might if weapon else 0
@@ -449,15 +479,33 @@ def resolve_attack(
         defender.hp = max(0, defender.hp - damage)
         print(f"  HIT!{crit_str} {defender.name} takes {damage} damage. (HP: {defender.hp}/{defender.max_hp})")
 
-        # --- Check for Capture/Death ---
+        # --- Grant Weapon Experience (WExp) & Check Rank Up ---
+        if weapon: # Ensure there was a weapon used
+            wtype = weapon.wtype
+            from .models import WEXP_PER_USE, WEAPON_RANKS, WEXP_THRESHOLDS # Import constants
+            current_wexp = attacker.wexp.get(wtype, 0)
+            new_total_wexp = current_wexp + WEXP_PER_USE
+            attacker.wexp[wtype] = new_total_wexp
+            print(f"  ({attacker.name} gained +{WEXP_PER_USE} WExp for {wtype}. Total: {new_total_wexp})")
+            # Check Rank Up
+            current_rank = attacker.weapon_ranks.get(wtype, 'E')
+            current_rank_index = WEAPON_RANKS.index(current_rank) if current_rank in WEAPON_RANKS else 0
+            if current_rank != '*':
+                threshold_for_next_rank = WEXP_THRESHOLDS.get(current_rank)
+                if threshold_for_next_rank is not None and new_total_wexp >= threshold_for_next_rank:
+                    next_rank_index = current_rank_index + 1
+                    if next_rank_index < len(WEAPON_RANKS):
+                        new_rank = WEAPON_RANKS[next_rank_index]
+                        attacker.weapon_ranks[wtype] = new_rank
+                        print(f"  RANK UP! {attacker.name}'s {wtype} rank increased to {new_rank}!")
+
+        # --- Check for Capture/Death & Grant Combat EXP ---
         if defender.hp == 0:
             if is_capture_attempt:
-                # Check capture conditions
+                # Check capture conditions (as before) ...
                 can_capture = False
                 is_mounted_attacker = attacker.move_type == MoveType.CAVALRY
                 is_mounted_defender = defender.move_type == MoveType.CAVALRY
-
-                # --- Immunity Checks (Thracia Rules) ---
                 is_immune = False
                 if defender.constitution >= 20:
                     print(f"  Capture Immune: Target Con ({defender.constitution}) >= 20.")
@@ -465,8 +513,6 @@ def resolve_attack(
                 elif is_mounted_defender:
                     print(f"  Capture Immune: Target is mounted.")
                     is_immune = True
-
-                # --- Capture Condition Checks (Only if not immune) ---
                 if not is_immune:
                     if attacker.constitution > defender.constitution:
                         can_capture = True
@@ -474,21 +520,42 @@ def resolve_attack(
                         can_capture = True
                         print("  (Mounted capture bonus applied vs non-mounted target)")
 
-                # --- Resolve Capture/Death ---
                 if can_capture and not is_immune:
+                    # Grant EXP for successful capture (same as kill)
+                    exp_gain = calculate_exp_gain(attacker, defender, did_defeat=True)
+                    attacker.exp += exp_gain
+                    print(f"  ({attacker.name} gained {exp_gain} EXP. Total: {attacker.exp})")
+                    if attacker.exp >= 100: attacker.level_up()
                     game_state.handle_unit_capture(attacker, defender)
                     return True, False # Hit landed, wasn't critical (capture overrides)
                 else:
                     print(f"  Capture failed (Check: AtkCon {attacker.constitution} vs TgtCon {defender.constitution}, AtkMounted {is_mounted_attacker}). {defender.name} is defeated.")
+                    # Grant EXP for kill after failed capture
+                    exp_gain = calculate_exp_gain(attacker, defender, did_defeat=True)
+                    attacker.exp += exp_gain
+                    print(f"  ({attacker.name} gained {exp_gain} EXP. Total: {attacker.exp})")
+                    if attacker.exp >= 100: attacker.level_up()
                     game_state.handle_unit_death(defender) # Treat as death if capture fails
             else:
-                # Normal death
+                # Normal death - Grant EXP
+                exp_gain = calculate_exp_gain(attacker, defender, did_defeat=True)
+                attacker.exp += exp_gain
+                print(f"  ({attacker.name} gained {exp_gain} EXP. Total: {attacker.exp})")
+                if attacker.exp >= 100: attacker.level_up()
                 game_state.handle_unit_death(defender)
+        else:
+             # Hit landed but didn't defeat - Grant hit EXP
+             exp_gain = calculate_exp_gain(attacker, defender, did_defeat=False)
+             attacker.exp += exp_gain
+             print(f"  ({attacker.name} gained {exp_gain} EXP. Total: {attacker.exp})")
+             if attacker.exp >= 100: attacker.level_up()
+
         # Return hit status and whether it was critical
         return True, is_critical
     else:
         print(f"  MISS!")
         return False, False # Attack missed, wasn't critical
+
 
 # --- Main Combat Simulation (Updated) ---
 

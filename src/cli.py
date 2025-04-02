@@ -19,6 +19,7 @@ from game.models import (GameState, GameMap, Unit, Weapon, Faction, MoveType,
 from game.display import render_map
 from game.movement import calculate_move_range
 from game.combat import simulate_combat, calculate_attack_speed # Import AS calc
+from game.ai import run_enemy_ai, run_npc_ai # Import AI functions
 from game.ai import run_enemy_ai
 
 # --- Helper Function ---
@@ -70,15 +71,16 @@ def setup_effectiveness_test_state() -> GameState: # RENAMED
     # Give enough vulneraries for 20 uses (7 items * 3 uses/item = 21 uses)
     leif_inventory = [iron_sword, fire_tome, rapier] + [Vulnerary() for _ in range(4)] # Add Rapier, reduce Vulneraries
 
-    # Add Leif (Player - Cavalry) - Default setup
+    # Add Leif (Player - Lord, Cavalry) - Default setup
     leif = Unit(
-        id=1, name="Leif", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 4), # Default start (1,4)
+        id=1, name="Leif", cls_name="Lord", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 4), # Default start (1,4)
         max_hp=20, hp=20, strength=5, magic=5, skill=6, speed=7, luck=6, defense=3, constitution=5, mov=7, fatigue=0, pcc=1,
         leadership_stars=1, # Give Leif 1 leadership star
         movement_stars=20, # NEW: Give Leif 20 stars (100% chance) for testing
         skills=["Adept", "Nihil"], # Added skills for testing
         status_effect=StatusEffect.POISON, # Added for status test
-        inventory=leif_inventory
+        inventory=leif_inventory,
+        growth_rates={'hp': 80, 'strength': 30, 'magic': 10, 'skill': 40, 'speed': 40, 'luck': 50, 'defense': 20, 'constitution': 5, 'mov': 2} # Leif growths
     )
     game_state.add_unit(leif)
 
@@ -93,22 +95,24 @@ def setup_effectiveness_test_state() -> GameState: # RENAMED
     # )
     # game_state.add_unit(bandit)
 
-    # Add Nanna (Player - Cavalry) for Support/Charisma testing
+    # Add Nanna (Player - Troubadour, Cavalry) for Support/Charisma testing
     nanna_inventory = [Weapon(name="Heal Staff", wtype="Staff", staff_rank='E', uses=30, max_uses=30)] # Give her a basic staff
     nanna = Unit(
-        id=2, name="Nanna", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(0, 0), # Moved away from Leif
+        id=2, name="Nanna", cls_name="Troubadour", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(0, 0), # Moved away from Leif
         max_hp=18, hp=18, strength=3, magic=6, skill=5, speed=8, luck=8, defense=2, constitution=4, mov=7, fatigue=0, pcc=2,
         leadership_stars=0,
         skills=[CHARISMA_SKILL_NAME], # Give Nanna Charisma
-        inventory=nanna_inventory
+        inventory=nanna_inventory,
+        growth_rates={'hp': 60, 'strength': 20, 'magic': 35, 'skill': 45, 'speed': 50, 'luck': 60, 'defense': 15, 'constitution': 3, 'mov': 2} # Nanna growths
     )
     game_state.add_unit(nanna)
 
-    # Add Enemy Cavalry for Effectiveness Test
+    # Add Enemy Lance Knight (Cavalry) for Effectiveness Test
     enemy_cav = Unit(
-        id=102, name="Enemy Knight", faction=Faction.ENEMY, move_type=MoveType.CAVALRY, position=(2, 4), # Moved closer for test
+        id=102, name="Enemy Knight", cls_name="Lance Knight", faction=Faction.ENEMY, move_type=MoveType.CAVALRY, position=(2, 4), # Moved closer for test
         max_hp=25, hp=25, strength=6, magic=1, skill=4, speed=5, luck=2, defense=5, constitution=9, mov=7, fatigue=0, pcc=0,
-        inventory=[Weapon(name="Iron Lance", might=7, hit=80, weight=8, wtype="Lance")]
+        inventory=[Weapon(name="Iron Lance", might=7, hit=80, weight=8, wtype="Lance")],
+        growth_rates={'hp': 75, 'strength': 35, 'magic': 5, 'skill': 30, 'speed': 25, 'luck': 15, 'defense': 30, 'constitution': 8, 'mov': 1} # Generic Knight growths
     )
     game_state.add_unit(enemy_cav)
 
@@ -126,28 +130,31 @@ def setup_combat_test_state() -> GameState:
     iron_axe = Weapon(name="Iron Axe", might=8, hit=75, weight=10, wtype="Axe", damage_type="Physical", range_min=1, range_max=1, uses=50, max_uses=50)
     heal_staff = Weapon(name="Heal Staff", wtype="Staff", staff_rank='E', uses=30, max_uses=30)
 
-    # Leif (Player)
+    # Leif (Player - Lord, Cavalry)
     leif = Unit(
-        id=1, name="Leif", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 4),
+        id=1, name="Leif", cls_name="Lord", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 4),
         max_hp=20, hp=20, strength=5, magic=5, skill=6, speed=7, luck=6, defense=3, constitution=5, mov=7, fatigue=0, pcc=1,
-        inventory=[iron_sword] # Only Iron Sword
+        inventory=[iron_sword], # Only Iron Sword
+        growth_rates={'hp': 80, 'strength': 30, 'magic': 10, 'skill': 40, 'speed': 40, 'luck': 50, 'defense': 20, 'constitution': 5, 'mov': 2} # Leif growths
     )
     game_state.add_unit(leif)
 
-    # Nanna (Player) - Needed to end turn
+    # Nanna (Player - Troubadour, Cavalry) - Needed to end turn
     nanna = Unit(
-        id=2, name="Nanna", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 3),
+        id=2, name="Nanna", cls_name="Troubadour", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 3),
         max_hp=18, hp=18, strength=3, magic=6, skill=5, speed=8, luck=8, defense=2, constitution=4, mov=7, fatigue=0, pcc=2,
-        inventory=[heal_staff]
+        inventory=[heal_staff],
+        growth_rates={'hp': 60, 'strength': 20, 'magic': 35, 'skill': 45, 'speed': 50, 'luck': 60, 'defense': 15, 'constitution': 3, 'mov': 2} # Nanna growths
     )
     game_state.add_unit(nanna)
 
-    # Bandit (Enemy) - High HP, Asleep
+    # Bandit (Enemy - Fighter, Infantry) - High HP, Asleep
     bandit = Unit(
-        id=101, name="Bandit", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(5, 4),
+        id=101, name="Bandit", cls_name="Fighter", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(5, 4),
         max_hp=200, hp=200, strength=1, magic=0, skill=2, speed=4, luck=0, defense=2, constitution=10, mov=4, fatigue=0, pcc=0,
         status_effect=StatusEffect.SLEEP, # Start asleep
-        inventory=[iron_axe]
+        inventory=[iron_axe],
+        growth_rates={'hp': 70, 'strength': 40, 'magic': 5, 'skill': 30, 'speed': 20, 'luck': 10, 'defense': 30, 'constitution': 10, 'mov': 1} # Generic Fighter growths
     )
     game_state.add_unit(bandit)
 
@@ -165,21 +172,23 @@ def setup_fatigue_test_state() -> GameState:
     heal_staff = Weapon(name="Heal Staff", wtype="Staff", staff_rank='E', uses=30, max_uses=30)
     mend_staff = Weapon(name="Mend Staff", wtype="Staff", staff_rank='C', uses=20, max_uses=20) # Assume Mend is Rank C
 
-    # Player Unit (Fatigue Tester)
+    # Player Unit (Fatigue Tester - Fighter, Infantry)
     player_unit = Unit(
-        id=1, name="FatigueTester", faction=Faction.PLAYER, move_type=MoveType.INFANTRY, position=(1, 1),
+        id=1, name="FatigueTester", cls_name="Fighter", faction=Faction.PLAYER, move_type=MoveType.INFANTRY, position=(1, 1),
         max_hp=20, hp=20, strength=10, # Give enough strength to damage enemy
         magic=5, skill=5, speed=5, luck=5, defense=5, constitution=5, mov=5, fatigue=0, pcc=0,
-        inventory=[iron_sword, heal_staff, mend_staff]
+        inventory=[iron_sword, heal_staff, mend_staff],
+        growth_rates={'hp': 70, 'strength': 40, 'magic': 5, 'skill': 30, 'speed': 20, 'luck': 10, 'defense': 30, 'constitution': 10, 'mov': 1} # Generic Fighter growths
     )
     game_state.add_unit(player_unit)
 
-    # Enemy Unit (Damage Sponge)
+    # Enemy Unit (Damage Sponge - Soldier, Infantry)
     enemy_unit = Unit(
-        id=101, name="TrainingDummy", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(2, 1),
+        id=101, name="TrainingDummy", cls_name="Soldier", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(2, 1),
         max_hp=500, hp=500, # High HP to survive many hits
         strength=0, magic=0, skill=0, speed=0, luck=0, defense=0, constitution=10, mov=0, fatigue=0, pcc=0,
-        inventory=[] # Unarmed
+        inventory=[], # Unarmed
+        growth_rates={'hp': 50, 'strength': 20, 'magic': 0, 'skill': 10, 'speed': 10, 'luck': 0, 'defense': 20, 'constitution': 5, 'mov': 0} # Generic Soldier growths
     )
     game_state.add_unit(enemy_unit)
 
@@ -197,30 +206,33 @@ def setup_staff_test_state() -> GameState:
     heal_staff = Weapon(name="Heal Staff", wtype="Staff", staff_rank='E', uses=30, max_uses=30)
     iron_axe = Weapon(name="Iron Axe", might=8, hit=75, weight=10, wtype="Axe", damage_type="Physical", range_min=1, range_max=1, uses=50, max_uses=50)
 
-    # Leif (Player) - Injured, Poisoned
+    # Leif (Player - Lord, Cavalry) - Injured, Poisoned
     leif = Unit(
-        id=1, name="Leif", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 4),
+        id=1, name="Leif", cls_name="Lord", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 4),
         max_hp=20, hp=10, # Start injured
         strength=5, magic=5, skill=6, speed=7, luck=6, defense=3, constitution=5, mov=7, fatigue=0, pcc=1,
         status_effect=StatusEffect.POISON, # Start poisoned as implied by test
-        inventory=[iron_sword]
+        inventory=[iron_sword],
+        growth_rates={'hp': 80, 'strength': 30, 'magic': 10, 'skill': 40, 'speed': 40, 'luck': 50, 'defense': 20, 'constitution': 5, 'mov': 2} # Leif growths
     )
     game_state.add_unit(leif)
 
-    # Nanna (Player) - Healer
+    # Nanna (Player - Troubadour, Cavalry) - Healer
     nanna = Unit(
-        id=2, name="Nanna", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 3),
+        id=2, name="Nanna", cls_name="Troubadour", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 3),
         max_hp=18, hp=18, strength=3, magic=6, skill=5, speed=8, luck=8, defense=2, constitution=4, mov=7, fatigue=0, pcc=2,
-        inventory=[heal_staff] # Has Heal Staff
+        inventory=[heal_staff], # Has Heal Staff
         # TODO: Need to represent Staff Rank E properly if not implicit
+        growth_rates={'hp': 60, 'strength': 20, 'magic': 35, 'skill': 45, 'speed': 50, 'luck': 60, 'defense': 15, 'constitution': 3, 'mov': 2} # Nanna growths
     )
     game_state.add_unit(nanna)
 
-    # Bandit (Enemy) - Just exists
+    # Bandit (Enemy - Fighter, Infantry) - Just exists
     bandit = Unit(
-        id=101, name="Bandit", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(5, 4),
+        id=101, name="Bandit", cls_name="Fighter", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(5, 4),
         max_hp=20, hp=20, strength=1, magic=0, skill=2, speed=4, luck=0, defense=2, constitution=10, mov=4, fatigue=0, pcc=0,
-        inventory=[iron_axe]
+        inventory=[iron_axe],
+        growth_rates={'hp': 70, 'strength': 40, 'magic': 5, 'skill': 30, 'speed': 20, 'luck': 10, 'defense': 30, 'constitution': 10, 'mov': 1} # Generic Fighter growths
     )
     game_state.add_unit(bandit)
 
@@ -237,34 +249,37 @@ def setup_skills_test_state() -> GameState:
     iron_sword = Weapon(name="Iron Sword", might=5, hit=90, weight=5, wtype="Sword", uses=50, max_uses=50)
     iron_axe = Weapon(name="Iron Axe", might=8, hit=75, weight=10, wtype="Axe", uses=50, max_uses=50)
 
-    # Leif (Player) - With Adept and Nihil
+    # Leif (Player - Lord, Cavalry) - With Adept and Nihil
     leif = Unit(
-        id=1, name="Leif", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 4),
+        id=1, name="Leif", cls_name="Lord", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 4),
         max_hp=20, hp=20, strength=5, magic=5, skill=6,
         speed=7, # Speed affects Adept chance (AS = Spd - Wt)
         luck=6, defense=3, constitution=5, mov=7, fatigue=0, pcc=1,
         skills=["Adept", "Nihil"], # Skills to test
-        inventory=[iron_sword]
+        inventory=[iron_sword],
+        growth_rates={'hp': 80, 'strength': 30, 'magic': 10, 'skill': 40, 'speed': 40, 'luck': 50, 'defense': 20, 'constitution': 5, 'mov': 2} # Leif growths
     )
     game_state.add_unit(leif)
 
-    # Bandit (Enemy) - With Wrath and Miracle, low HP
+    # Bandit (Enemy - Fighter, Infantry) - With Wrath and Miracle, low HP
     bandit = Unit(
-        id=101, name="Bandit", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(5, 4),
+        id=101, name="Bandit", cls_name="Fighter", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(5, 4),
         max_hp=20, hp=10, # Start at low HP for Miracle test
         strength=4, magic=0, skill=2, speed=4,
         luck=5, # Luck affects Miracle chance
         defense=2, constitution=10, mov=4, fatigue=0, pcc=0,
         skills=["Wrath", "Miracle"], # Skills to test
-        inventory=[iron_axe]
+        inventory=[iron_axe],
+        growth_rates={'hp': 70, 'strength': 40, 'magic': 5, 'skill': 30, 'speed': 20, 'luck': 10, 'defense': 30, 'constitution': 10, 'mov': 1} # Generic Fighter growths
     )
     game_state.add_unit(bandit)
 
-    # Add another player unit to allow ending the turn if Leif acts
+    # Add another player unit (Troubadour, Cavalry) to allow ending the turn if Leif acts
     nanna = Unit(
-        id=2, name="Nanna", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(0, 0), # Out of the way
+        id=2, name="Nanna", cls_name="Troubadour", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(0, 0), # Out of the way
         max_hp=18, hp=18, strength=3, magic=6, skill=5, speed=8, luck=8, defense=2, constitution=4, mov=7, fatigue=0, pcc=2,
-        inventory=[Weapon(name="Heal Staff", wtype="Staff", staff_rank='E', uses=30, max_uses=30)]
+        inventory=[Weapon(name="Heal Staff", wtype="Staff", staff_rank='E', uses=30, max_uses=30)],
+        growth_rates={'hp': 60, 'strength': 20, 'magic': 35, 'skill': 45, 'speed': 50, 'luck': 60, 'defense': 15, 'constitution': 3, 'mov': 2} # Nanna growths
     )
     game_state.add_unit(nanna)
 
@@ -284,28 +299,30 @@ def setup_steal_test_state() -> GameState:
     iron_axe = Weapon(name="Iron Axe", might=8, hit=75, weight=10, wtype="Axe", uses=50, max_uses=50)
     potion = Potion() # Uses weight=3 from models.py
 
-    # Thief Unit (Player)
+    # Thief Unit (Player - Thief, Infantry)
     thief = Unit(
-        id=1, name="Thief", faction=Faction.PLAYER, move_type=MoveType.INFANTRY, position=(1, 4),
+        id=1, name="Thief", cls_name="Thief", faction=Faction.PLAYER, move_type=MoveType.INFANTRY, position=(1, 4),
         max_hp=20, hp=20, strength=5, magic=0, skill=5,
         speed=10, # High speed for AS check
         luck=5, defense=2,
         constitution=5, # Low constitution for weight check
         mov=5, fatigue=0, pcc=0,
         can_steal=True, # Must be able to steal
-        inventory=[iron_sword] # Start with just a sword
+        inventory=[iron_sword], # Start with just a sword
+        growth_rates={'hp': 65, 'strength': 25, 'magic': 5, 'skill': 35, 'speed': 55, 'luck': 40, 'defense': 15, 'constitution': 2, 'mov': 1} # Generic Thief growths
     )
     game_state.add_unit(thief)
 
-    # Target Unit (Enemy)
+    # Target Unit (Enemy - Soldier, Infantry)
     target = Unit(
-        id=101, name="Target", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(2, 4), # Adjacent to thief
+        id=101, name="Target", cls_name="Soldier", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(2, 4), # Adjacent to thief
         max_hp=20, hp=20, strength=5, magic=0, skill=5,
         speed=5, # Lower speed for AS check
         luck=5, defense=5,
         constitution=10, # Higher constitution
         mov=5, fatigue=0, pcc=0,
-        inventory=[vulnerary, iron_axe, potion] # Specific inventory for testing steal indices/weights
+        inventory=[vulnerary, iron_axe, potion], # Specific inventory for testing steal indices/weights
+        growth_rates={'hp': 50, 'strength': 20, 'magic': 0, 'skill': 10, 'speed': 10, 'luck': 0, 'defense': 20, 'constitution': 5, 'mov': 0} # Generic Soldier growths
     )
     game_state.add_unit(target)
 
@@ -326,23 +343,25 @@ def setup_terrain_test_state() -> GameState:
     # Add another forest for cavalry test pathing
     game_map.set_tile_terrain(3, 2, TerrainType.FOREST) # Added based on test commands
 
-    # Player Infantry Unit
+    # Player Infantry Unit (Fighter)
     infantry = Unit(
-        id=1, name="Infantry", faction=Faction.PLAYER, move_type=MoveType.INFANTRY, position=(1, 1),
+        id=1, name="Infantry", cls_name="Fighter", faction=Faction.PLAYER, move_type=MoveType.INFANTRY, position=(1, 1),
         max_hp=20, hp=20, strength=5, magic=0, skill=5, speed=5, luck=5, defense=5, constitution=10,
         mov=5, # As per test assumption
         fatigue=0, pcc=0,
-        inventory=[] # No items needed
+        inventory=[], # No items needed
+        growth_rates={'hp': 70, 'strength': 40, 'magic': 5, 'skill': 30, 'speed': 20, 'luck': 10, 'defense': 30, 'constitution': 10, 'mov': 1} # Generic Fighter growths
     )
     game_state.add_unit(infantry)
 
-    # Player Cavalry Unit
+    # Player Cavalry Unit (Lance Knight)
     cavalry = Unit(
-        id=2, name="Cavalry", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 5),
+        id=2, name="Cavalry", cls_name="Lance Knight", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 5),
         max_hp=25, hp=25, strength=7, magic=1, skill=6, speed=8, luck=6, defense=6, constitution=9,
         mov=7, # As per test assumption
         fatigue=0, pcc=0,
-        inventory=[] # No items needed
+        inventory=[], # No items needed
+        growth_rates={'hp': 75, 'strength': 35, 'magic': 5, 'skill': 30, 'speed': 25, 'luck': 15, 'defense': 30, 'constitution': 8, 'mov': 1} # Generic Knight growths
     )
     game_state.add_unit(cavalry)
 
@@ -359,33 +378,36 @@ def setup_status_test_state() -> GameState:
     iron_sword = Weapon(name="Iron Sword", might=5, hit=90, weight=5, wtype="Sword", uses=50, max_uses=50)
     iron_axe = Weapon(name="Iron Axe", might=8, hit=75, weight=10, wtype="Axe", uses=50, max_uses=50)
 
-    # Leif (Player) - Poisoned
+    # Leif (Player - Lord, Cavalry) - Poisoned
     leif = Unit(
-        id=1, name="Leif", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 4),
+        id=1, name="Leif", cls_name="Lord", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 4),
         max_hp=20, hp=20, # Start at full HP
         strength=5, magic=5, skill=6, speed=7, luck=6, defense=3, constitution=5, mov=7, fatigue=0, pcc=1,
         status_effect=StatusEffect.POISON, # Start poisoned
-        inventory=[iron_sword]
+        inventory=[iron_sword],
+        growth_rates={'hp': 80, 'strength': 30, 'magic': 10, 'skill': 40, 'speed': 40, 'luck': 50, 'defense': 20, 'constitution': 5, 'mov': 2} # Leif growths
     )
     game_state.add_unit(leif)
 
-    # Bandit (Enemy) - Sleeping
+    # Bandit (Enemy - Fighter, Infantry) - Sleeping
     bandit = Unit(
-        id=101, name="Bandit", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(5, 4),
+        id=101, name="Bandit", cls_name="Fighter", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(5, 4),
         max_hp=20, hp=20, # Start at full HP
         strength=4, magic=0, skill=2, speed=4, luck=0,
         defense=2, # Base defense for damage calculation check
         constitution=10, mov=4, fatigue=0, pcc=0,
         status_effect=StatusEffect.SLEEP, # Start asleep
-        inventory=[iron_axe]
+        inventory=[iron_axe],
+        growth_rates={'hp': 70, 'strength': 40, 'magic': 5, 'skill': 30, 'speed': 20, 'luck': 10, 'defense': 30, 'constitution': 10, 'mov': 1} # Generic Fighter growths
     )
     game_state.add_unit(bandit)
 
-    # Add another player unit to allow ending the turn
+    # Add another player unit (Troubadour, Cavalry) to allow ending the turn
     nanna = Unit(
-        id=2, name="Nanna", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(0, 0), # Out of the way
+        id=2, name="Nanna", cls_name="Troubadour", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(0, 0), # Out of the way
         max_hp=18, hp=18, strength=3, magic=6, skill=5, speed=8, luck=8, defense=2, constitution=4, mov=7, fatigue=0, pcc=2,
-        inventory=[Weapon(name="Heal Staff", wtype="Staff", staff_rank='E', uses=30, max_uses=30)]
+        inventory=[Weapon(name="Heal Staff", wtype="Staff", staff_rank='E', uses=30, max_uses=30)],
+        growth_rates={'hp': 60, 'strength': 20, 'magic': 35, 'skill': 45, 'speed': 50, 'luck': 60, 'defense': 15, 'constitution': 3, 'mov': 2} # Nanna growths
     )
     game_state.add_unit(nanna)
 
@@ -402,28 +424,31 @@ def setup_movestars_test_state() -> GameState:
     iron_sword = Weapon(name="Iron Sword", might=5, hit=90, weight=5, wtype="Sword", uses=50, max_uses=50)
     iron_axe = Weapon(name="Iron Axe", might=8, hit=75, weight=10, wtype="Axe", uses=50, max_uses=50)
 
-    # Leif (Player) - With 20 Movement Stars
+    # Leif (Player - Lord, Cavalry) - With 20 Movement Stars
     leif = Unit(
-        id=1, name="Leif", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 4),
+        id=1, name="Leif", cls_name="Lord", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 4),
         max_hp=20, hp=20, strength=5, magic=5, skill=6, speed=7, luck=6, defense=3, constitution=5, mov=7, fatigue=0, pcc=1,
         movement_stars=20, # Guarantee activation
-        inventory=[iron_sword]
+        inventory=[iron_sword],
+        growth_rates={'hp': 80, 'strength': 30, 'magic': 10, 'skill': 40, 'speed': 40, 'luck': 50, 'defense': 20, 'constitution': 5, 'mov': 2} # Leif growths
     )
     game_state.add_unit(leif)
 
-    # Bandit (Enemy) - Target for attack
+    # Bandit (Enemy - Fighter, Infantry) - Target for attack
     bandit = Unit(
-        id=101, name="Bandit", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(5, 4),
+        id=101, name="Bandit", cls_name="Fighter", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(5, 4),
         max_hp=20, hp=20, strength=4, magic=0, skill=2, speed=4, luck=0, defense=2, constitution=10, mov=4, fatigue=0, pcc=0,
-        inventory=[iron_axe]
+        inventory=[iron_axe],
+        growth_rates={'hp': 70, 'strength': 40, 'magic': 5, 'skill': 30, 'speed': 20, 'luck': 10, 'defense': 30, 'constitution': 10, 'mov': 1} # Generic Fighter growths
     )
     game_state.add_unit(bandit)
 
-    # Add another player unit to allow ending the turn
+    # Add another player unit (Troubadour, Cavalry) to allow ending the turn
     nanna = Unit(
-        id=2, name="Nanna", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(0, 0), # Out of the way
+        id=2, name="Nanna", cls_name="Troubadour", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(0, 0), # Out of the way
         max_hp=18, hp=18, strength=3, magic=6, skill=5, speed=8, luck=8, defense=2, constitution=4, mov=7, fatigue=0, pcc=2,
-        inventory=[Weapon(name="Heal Staff", wtype="Staff", staff_rank='E', uses=30, max_uses=30)]
+        inventory=[Weapon(name="Heal Staff", wtype="Staff", staff_rank='E', uses=30, max_uses=30)],
+        growth_rates={'hp': 60, 'strength': 20, 'magic': 35, 'skill': 45, 'speed': 50, 'luck': 60, 'defense': 15, 'constitution': 3, 'mov': 2} # Nanna growths
     )
     game_state.add_unit(nanna)
 
@@ -441,28 +466,31 @@ def setup_triangle_test_state() -> GameState:
     iron_axe = Weapon(name="Iron Axe", might=8, hit=75, weight=10, wtype="Axe", uses=50, max_uses=50)
     heal_staff = Weapon(name="Heal Staff", wtype="Staff", staff_rank='E', uses=30, max_uses=30)
 
-    # Leif (Player) - With Iron Sword
+    # Leif (Player - Lord, Cavalry) - With Iron Sword
     leif = Unit(
-        id=1, name="Leif", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 4),
+        id=1, name="Leif", cls_name="Lord", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 4),
         max_hp=20, hp=20, strength=5, magic=5, skill=6, speed=7, luck=6, defense=3, constitution=5, mov=7, fatigue=0, pcc=1,
-        inventory=[iron_sword] # Ensure Iron Sword is equipped
+        inventory=[iron_sword], # Ensure Iron Sword is equipped
+        growth_rates={'hp': 80, 'strength': 30, 'magic': 10, 'skill': 40, 'speed': 40, 'luck': 50, 'defense': 20, 'constitution': 5, 'mov': 2} # Leif growths
     )
     game_state.add_unit(leif)
 
-    # Nanna (Player) - To end turn
+    # Nanna (Player - Troubadour, Cavalry) - To end turn
     nanna = Unit(
-        id=2, name="Nanna", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 3),
+        id=2, name="Nanna", cls_name="Troubadour", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 3),
         max_hp=18, hp=18, strength=3, magic=6, skill=5, speed=8, luck=8, defense=2, constitution=4, mov=7, fatigue=0, pcc=2,
-        inventory=[heal_staff]
+        inventory=[heal_staff],
+        growth_rates={'hp': 60, 'strength': 20, 'magic': 35, 'skill': 45, 'speed': 50, 'luck': 60, 'defense': 15, 'constitution': 3, 'mov': 2} # Nanna growths
     )
     game_state.add_unit(nanna)
 
-    # Bandit (Enemy) - With Iron Axe, Asleep
+    # Bandit (Enemy - Fighter, Infantry) - With Iron Axe, Asleep
     bandit = Unit(
-        id=101, name="Bandit", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(5, 4),
+        id=101, name="Bandit", cls_name="Fighter", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(5, 4),
         max_hp=200, hp=200, strength=1, magic=0, skill=2, speed=4, luck=0, defense=2, constitution=10, mov=4, fatigue=0, pcc=0,
         status_effect=StatusEffect.SLEEP, # Start asleep
-        inventory=[iron_axe] # Ensure Iron Axe is equipped
+        inventory=[iron_axe], # Ensure Iron Axe is equipped
+        growth_rates={'hp': 70, 'strength': 40, 'magic': 5, 'skill': 30, 'speed': 20, 'luck': 10, 'defense': 30, 'constitution': 10, 'mov': 1} # Generic Fighter growths
     )
     game_state.add_unit(bandit)
 
@@ -479,34 +507,37 @@ def setup_skills_test_state() -> GameState:
     iron_sword = Weapon(name="Iron Sword", might=5, hit=90, weight=5, wtype="Sword", uses=50, max_uses=50)
     iron_axe = Weapon(name="Iron Axe", might=8, hit=75, weight=10, wtype="Axe", uses=50, max_uses=50)
 
-    # Leif (Player) - With Adept and Nihil
+    # Leif (Player - Lord, Cavalry) - With Adept and Nihil
     leif = Unit(
-        id=1, name="Leif", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 4),
+        id=1, name="Leif", cls_name="Lord", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 4),
         max_hp=20, hp=20, strength=5, magic=5, skill=6,
         speed=7, # Speed affects Adept chance (AS = Spd - Wt)
         luck=6, defense=3, constitution=5, mov=7, fatigue=0, pcc=1,
         skills=["Adept", "Nihil"], # Skills to test
-        inventory=[iron_sword]
+        inventory=[iron_sword],
+        growth_rates={'hp': 80, 'strength': 30, 'magic': 10, 'skill': 40, 'speed': 40, 'luck': 50, 'defense': 20, 'constitution': 5, 'mov': 2} # Leif growths
     )
     game_state.add_unit(leif)
 
-    # Bandit (Enemy) - With Wrath and Miracle, low HP
+    # Bandit (Enemy - Fighter, Infantry) - With Wrath and Miracle, low HP
     bandit = Unit(
-        id=101, name="Bandit", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(5, 4),
+        id=101, name="Bandit", cls_name="Fighter", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(5, 4),
         max_hp=20, hp=10, # Start at low HP for Miracle test
         strength=4, magic=0, skill=2, speed=4,
         luck=5, # Luck affects Miracle chance
         defense=2, constitution=10, mov=4, fatigue=0, pcc=0,
         skills=["Wrath", "Miracle"], # Skills to test
-        inventory=[iron_axe]
+        inventory=[iron_axe],
+        growth_rates={'hp': 70, 'strength': 40, 'magic': 5, 'skill': 30, 'speed': 20, 'luck': 10, 'defense': 30, 'constitution': 10, 'mov': 1} # Generic Fighter growths
     )
     game_state.add_unit(bandit)
 
-    # Add another player unit to allow ending the turn if Leif acts
+    # Add another player unit (Troubadour, Cavalry) to allow ending the turn if Leif acts
     nanna = Unit(
-        id=2, name="Nanna", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(0, 0), # Out of the way
+        id=2, name="Nanna", cls_name="Troubadour", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(0, 0), # Out of the way
         max_hp=18, hp=18, strength=3, magic=6, skill=5, speed=8, luck=8, defense=2, constitution=4, mov=7, fatigue=0, pcc=2,
-        inventory=[Weapon(name="Heal Staff", wtype="Staff", staff_rank='E', uses=30, max_uses=30)]
+        inventory=[Weapon(name="Heal Staff", wtype="Staff", staff_rank='E', uses=30, max_uses=30)],
+        growth_rates={'hp': 60, 'strength': 20, 'magic': 35, 'skill': 45, 'speed': 50, 'luck': 60, 'defense': 15, 'constitution': 3, 'mov': 2} # Nanna growths
     )
     game_state.add_unit(nanna)
 
@@ -526,20 +557,22 @@ def setup_item_test_state() -> GameState:
     # Inventory: Sword, Tome, 5x Vulnerary (Indices 0, 1, 2, 3, 4, 5, 6)
     leif_inventory = [iron_sword, fire_tome] + [Vulnerary() for _ in range(5)]
 
-    # Leif (Player) - Damaged
+    # Leif (Player - Lord, Cavalry) - Damaged
     leif = Unit(
-        id=1, name="Leif", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 4),
+        id=1, name="Leif", cls_name="Lord", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 4),
         max_hp=20, hp=1, # Start heavily damaged
         strength=5, magic=5, skill=6, speed=7, luck=6, defense=3, constitution=5, mov=7, fatigue=0, pcc=1,
-        inventory=leif_inventory
+        inventory=leif_inventory,
+        growth_rates={'hp': 80, 'strength': 30, 'magic': 10, 'skill': 40, 'speed': 40, 'luck': 50, 'defense': 20, 'constitution': 5, 'mov': 2} # Leif growths
     )
     game_state.add_unit(leif)
 
-    # Add a dummy enemy just so the map isn't empty
+    # Add a dummy enemy (Soldier, Infantry) just so the map isn't empty
     enemy = Unit(
-        id=101, name="Dummy", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(5, 4),
+        id=101, name="Dummy", cls_name="Soldier", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(5, 4),
         max_hp=10, hp=10, strength=0, magic=0, skill=0, speed=0, luck=0, defense=0, constitution=10, mov=0, fatigue=0, pcc=0,
-        inventory=[]
+        inventory=[],
+        growth_rates={'hp': 50, 'strength': 20, 'magic': 0, 'skill': 10, 'speed': 10, 'luck': 0, 'defense': 20, 'constitution': 5, 'mov': 0} # Generic Soldier growths
     )
     game_state.add_unit(enemy)
 
@@ -556,19 +589,21 @@ def setup_ai_test_state() -> GameState:
     iron_sword = Weapon(name="Iron Sword", might=5, hit=90, weight=5, wtype="Sword", uses=50, max_uses=50)
     iron_axe = Weapon(name="Iron Axe", might=8, hit=75, weight=10, wtype="Axe", uses=50, max_uses=50)
 
-    # Leif (Player)
+    # Leif (Player - Lord, Cavalry)
     leif = Unit(
-        id=1, name="Leif", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 4),
+        id=1, name="Leif", cls_name="Lord", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 4),
         max_hp=20, hp=20, strength=5, magic=5, skill=6, speed=7, luck=6, defense=3, constitution=5, mov=7, fatigue=0, pcc=1,
-        inventory=[iron_sword]
+        inventory=[iron_sword],
+        growth_rates={'hp': 80, 'strength': 30, 'magic': 10, 'skill': 40, 'speed': 40, 'luck': 50, 'defense': 20, 'constitution': 5, 'mov': 2} # Leif growths
     )
     game_state.add_unit(leif)
 
-    # Bandit (Enemy) - Standard, not asleep
+    # Bandit (Enemy - Fighter, Infantry) - Standard, not asleep
     bandit = Unit(
-        id=101, name="Bandit", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(5, 4),
+        id=101, name="Bandit", cls_name="Fighter", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(5, 4),
         max_hp=20, hp=20, strength=4, magic=0, skill=2, speed=4, luck=0, defense=2, constitution=10, mov=4, fatigue=0, pcc=0,
-        inventory=[iron_axe]
+        inventory=[iron_axe],
+        growth_rates={'hp': 70, 'strength': 40, 'magic': 5, 'skill': 30, 'speed': 20, 'luck': 10, 'defense': 30, 'constitution': 10, 'mov': 1} # Generic Fighter growths
     )
     game_state.add_unit(bandit)
 
@@ -586,29 +621,32 @@ def setup_bonus_test_state() -> GameState:
     iron_axe = Weapon(name="Iron Axe", might=8, hit=75, weight=10, wtype="Axe", uses=50, max_uses=50)
     heal_staff = Weapon(name="Heal Staff", wtype="Staff", staff_rank='E', uses=30, max_uses=30) # Give Nanna something
 
-    # Leif (Player) - With Leadership Star
+    # Leif (Player - Lord, Cavalry) - With Leadership Star
     leif = Unit(
-        id=1, name="Leif", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 4),
+        id=1, name="Leif", cls_name="Lord", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 4),
         max_hp=20, hp=20, strength=5, magic=5, skill=6, speed=7, luck=6, defense=3, constitution=5, mov=7, fatigue=0, pcc=1,
         leadership_stars=1, # Ensure Leif has 1 LS
-        inventory=[iron_sword]
+        inventory=[iron_sword],
+        growth_rates={'hp': 80, 'strength': 30, 'magic': 10, 'skill': 40, 'speed': 40, 'luck': 50, 'defense': 20, 'constitution': 5, 'mov': 2} # Leif growths
     )
     game_state.add_unit(leif)
 
-    # Nanna (Player) - With Charisma
+    # Nanna (Player - Troubadour, Cavalry) - With Charisma
     nanna = Unit(
-        id=2, name="Nanna", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 3), # Start near Leif
+        id=2, name="Nanna", cls_name="Troubadour", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 3), # Start near Leif
         max_hp=18, hp=18, strength=3, magic=6, skill=5, speed=8, luck=8, defense=2, constitution=4, mov=7, fatigue=0, pcc=2,
         skills=[CHARISMA_SKILL_NAME], # Ensure Nanna has Charisma
-        inventory=[heal_staff]
+        inventory=[heal_staff],
+        growth_rates={'hp': 60, 'strength': 20, 'magic': 35, 'skill': 45, 'speed': 50, 'luck': 60, 'defense': 15, 'constitution': 3, 'mov': 2} # Nanna growths
     )
     game_state.add_unit(nanna)
 
-    # Bandit (Enemy)
+    # Bandit (Enemy - Fighter, Infantry)
     bandit = Unit(
-        id=101, name="Bandit", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(5, 4),
+        id=101, name="Bandit", cls_name="Fighter", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(5, 4),
         max_hp=20, hp=20, strength=4, magic=0, skill=2, speed=4, luck=0, defense=2, constitution=10, mov=4, fatigue=0, pcc=0,
-        inventory=[iron_axe]
+        inventory=[iron_axe],
+        growth_rates={'hp': 70, 'strength': 40, 'magic': 5, 'skill': 30, 'speed': 20, 'luck': 10, 'defense': 30, 'constitution': 10, 'mov': 1} # Generic Fighter growths
     )
     game_state.add_unit(bandit)
 
@@ -627,34 +665,37 @@ def setup_magic_crit_test_state() -> GameState:
     iron_axe = Weapon(name="Iron Axe", might=8, hit=75, weight=10, wtype="Axe", uses=50, max_uses=50)
     heal_staff = Weapon(name="Heal Staff", wtype="Staff", staff_rank='E', uses=30, max_uses=30)
 
-    # Leif (Player) - With Sword, Tome, and Movement Stars
+    # Leif (Player - Lord, Cavalry) - With Sword, Tome, and Movement Stars
     leif = Unit(
-        id=1, name="Leif", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 4),
+        id=1, name="Leif", cls_name="Lord", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 4),
         max_hp=20, hp=20,
         strength=5, magic=5, skill=6, speed=7, luck=6, defense=3, constitution=5, mov=7, fatigue=0, pcc=1,
         movement_stars=20, # Guarantee activation for test flow
-        inventory=[iron_sword, fire_tome] # Has both weapons
+        inventory=[iron_sword, fire_tome], # Has both weapons
+        growth_rates={'hp': 80, 'strength': 30, 'magic': 10, 'skill': 40, 'speed': 40, 'luck': 50, 'defense': 20, 'constitution': 5, 'mov': 2} # Leif growths
     )
     game_state.add_unit(leif) # Leif will auto-equip Iron Sword (index 0)
 
-    # Nanna (Player) - To end turn
+    # Nanna (Player - Troubadour, Cavalry) - To end turn
     nanna = Unit(
-        id=2, name="Nanna", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 3),
+        id=2, name="Nanna", cls_name="Troubadour", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 3),
         max_hp=18, hp=18, strength=3, magic=6, skill=5, speed=8, luck=8, defense=2, constitution=4, mov=7, fatigue=0, pcc=2,
-        inventory=[heal_staff]
+        inventory=[heal_staff],
+        growth_rates={'hp': 60, 'strength': 20, 'magic': 35, 'skill': 45, 'speed': 50, 'luck': 60, 'defense': 15, 'constitution': 3, 'mov': 2} # Nanna growths
     )
     game_state.add_unit(nanna)
 
-    # Bandit (Enemy) - Asleep
+    # Bandit (Enemy - Fighter, Infantry) - Asleep
     bandit = Unit(
-        id=101, name="Bandit", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(5, 4),
+        id=101, name="Bandit", cls_name="Fighter", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(5, 4),
         max_hp=200, hp=200, strength=1,
         magic=0, # Target for magic damage
         skill=2, speed=4, luck=0,
         defense=2, # Target for physical damage
         constitution=10, mov=4, fatigue=0, pcc=0,
         status_effect=StatusEffect.SLEEP, # Start asleep
-        inventory=[iron_axe]
+        inventory=[iron_axe],
+        growth_rates={'hp': 70, 'strength': 40, 'magic': 5, 'skill': 30, 'speed': 20, 'luck': 10, 'defense': 30, 'constitution': 10, 'mov': 1} # Generic Fighter growths
     )
     game_state.add_unit(bandit)
 
@@ -671,47 +712,53 @@ def setup_capture_test_state() -> GameState:
     iron_sword = Weapon(name="Iron Sword", might=5, hit=90, weight=5, wtype="Sword", uses=50, max_uses=50)
     iron_lance = Weapon(name="Iron Lance", might=7, hit=80, weight=8, wtype="Lance", uses=50, max_uses=50)
 
-    # Player Units
+    # Player Units (Fighter, Lance Knight)
     player1 = Unit(
-        id=1, name="PlayerInf", faction=Faction.PLAYER, move_type=MoveType.INFANTRY, position=(1, 1),
+        id=1, name="PlayerInf", cls_name="Fighter", faction=Faction.PLAYER, move_type=MoveType.INFANTRY, position=(1, 1),
         max_hp=20, hp=20, strength=10, skill=5, speed=5, luck=5, defense=5, constitution=10, mov=5, fatigue=0, pcc=0,
-        inventory=[iron_sword]
+        inventory=[iron_sword],
+        growth_rates={'hp': 70, 'strength': 40, 'magic': 5, 'skill': 30, 'speed': 20, 'luck': 10, 'defense': 30, 'constitution': 10, 'mov': 1} # Generic Fighter growths
     )
     game_state.add_unit(player1)
 
     player2 = Unit( # Needed for later tests, include for completeness
-        id=2, name="PlayerCav", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 2),
+        id=2, name="PlayerCav", cls_name="Lance Knight", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 2),
         max_hp=20, hp=20, strength=10, skill=5, speed=8, luck=5, defense=5, constitution=8, mov=7, fatigue=0, pcc=0,
-        inventory=[iron_lance]
+        inventory=[iron_lance],
+        growth_rates={'hp': 75, 'strength': 35, 'magic': 5, 'skill': 30, 'speed': 25, 'luck': 15, 'defense': 30, 'constitution': 8, 'mov': 1} # Generic Knight growths
     )
     game_state.add_unit(player2)
 
-    # Enemy Units
+    # Enemy Units (Soldier, Soldier, Soldier, Lance Knight)
     enemy1 = Unit( # Target for successful capture
-        id=101, name="EnemyLowCon", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(2, 1),
+        id=101, name="EnemyLowCon", cls_name="Soldier", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(2, 1),
         max_hp=1, hp=1, strength=1, skill=1, speed=1, luck=1, defense=1, constitution=5, mov=4, fatigue=0, pcc=0,
-        inventory=[iron_sword]
+        inventory=[iron_sword],
+        growth_rates={'hp': 50, 'strength': 20, 'magic': 0, 'skill': 10, 'speed': 10, 'luck': 0, 'defense': 20, 'constitution': 5, 'mov': 0} # Generic Soldier growths
     )
     game_state.add_unit(enemy1)
 
     enemy2 = Unit( # Target for failed capture (Con too high)
-        id=102, name="EnemyHighCon", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(3, 1),
+        id=102, name="EnemyHighCon", cls_name="Soldier", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(3, 1),
         max_hp=1, hp=1, strength=1, skill=1, speed=1, luck=1, defense=1, constitution=15, mov=4, fatigue=0, pcc=0,
-        inventory=[iron_sword]
+        inventory=[iron_sword],
+        growth_rates={'hp': 50, 'strength': 20, 'magic': 0, 'skill': 10, 'speed': 10, 'luck': 0, 'defense': 20, 'constitution': 5, 'mov': 0} # Generic Soldier growths
     )
     game_state.add_unit(enemy2)
 
     enemy3 = Unit( # Target for failed capture (Immune Con)
-        id=103, name="EnemyImmuneCon", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(4, 1),
+        id=103, name="EnemyImmuneCon", cls_name="Soldier", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(4, 1),
         max_hp=1, hp=1, strength=1, skill=1, speed=1, luck=1, defense=1, constitution=20, mov=4, fatigue=0, pcc=0,
-        inventory=[iron_sword]
+        inventory=[iron_sword],
+        growth_rates={'hp': 50, 'strength': 20, 'magic': 0, 'skill': 10, 'speed': 10, 'luck': 0, 'defense': 20, 'constitution': 5, 'mov': 0} # Generic Soldier growths
     )
     game_state.add_unit(enemy3)
 
     enemy4 = Unit( # Target for failed capture (Mounted)
-        id=104, name="EnemyCavTarget", faction=Faction.ENEMY, move_type=MoveType.CAVALRY, position=(2, 2),
+        id=104, name="EnemyCavTarget", cls_name="Lance Knight", faction=Faction.ENEMY, move_type=MoveType.CAVALRY, position=(2, 2),
         max_hp=1, hp=1, strength=1, skill=1, speed=1, luck=1, defense=1, constitution=5, mov=7, fatigue=0, pcc=0,
-        inventory=[iron_lance]
+        inventory=[iron_lance],
+        growth_rates={'hp': 75, 'strength': 35, 'magic': 5, 'skill': 30, 'speed': 25, 'luck': 15, 'defense': 30, 'constitution': 8, 'mov': 1} # Generic Knight growths
     )
     game_state.add_unit(enemy4)
 
@@ -729,29 +776,31 @@ def setup_crit_test_state() -> GameState:
     iron_axe = Weapon(name="Iron Axe", might=8, hit=75, weight=10, wtype="Axe", uses=50, max_uses=50)
     heal_staff = Weapon(name="Heal Staff", wtype="Staff", staff_rank='E', uses=30, max_uses=30)
 
-    # Leif (Player) - Ensure PCC=1
+    # Leif (Player - Lord, Cavalry) - Ensure PCC=1
     leif = Unit(
-        id=1, name="Leif", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 4),
+        id=1, name="Leif", cls_name="Lord", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 4),
         max_hp=20, hp=20, strength=5, magic=5, skill=6, speed=7, luck=6, defense=3, constitution=5, mov=7, fatigue=0, pcc=1, # Set PCC=1
         inventory=[iron_sword]
     )
     game_state.add_unit(leif)
 
-    # Nanna (Player) - To end turn
+    # Nanna (Player - Troubadour, Cavalry) - To end turn
     nanna = Unit(
-        id=2, name="Nanna", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 3),
+        id=2, name="Nanna", cls_name="Troubadour", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 3),
         max_hp=18, hp=18, strength=3, magic=6, skill=5, speed=8, luck=8, defense=2, constitution=4, mov=7, fatigue=0, pcc=2,
-        inventory=[heal_staff]
+        inventory=[heal_staff],
+        growth_rates={'hp': 60, 'strength': 20, 'magic': 35, 'skill': 45, 'speed': 50, 'luck': 60, 'defense': 15, 'constitution': 3, 'mov': 2} # Nanna growths
     )
     game_state.add_unit(nanna)
 
-    # Bandit (Enemy) - Asleep, Luk 0
+    # Bandit (Enemy - Fighter, Infantry) - Asleep, Luk 0
     bandit = Unit(
-        id=101, name="Bandit", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(5, 4),
+        id=101, name="Bandit", cls_name="Fighter", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(5, 4),
         max_hp=200, hp=200, strength=1, magic=0, skill=2, speed=4, luck=0, defense=2, constitution=10, mov=4, fatigue=0, pcc=0,
-        status_effect=StatusEffect.SLEEP, # Start asleep
-        inventory=[iron_axe]
-    )
+        status_effect=StatusEffect.SLEEP, # Start asleep,
+        inventory=[iron_axe], # Need to re-add inventory line that was missing in read_file result
+        growth_rates={'hp': 70, 'strength': 40, 'magic': 5, 'skill': 30, 'speed': 20, 'luck': 10, 'defense': 30, 'constitution': 10, 'mov': 1} # Generic Fighter growths
+    ) # Add closing parenthesis here and remove duplicate inventory line
     game_state.add_unit(bandit)
 
     return game_state
@@ -769,29 +818,32 @@ def setup_magic_attack_test_state() -> GameState:
     iron_axe = Weapon(name="Iron Axe", might=8, hit=75, weight=10, wtype="Axe", uses=50, max_uses=50)
     heal_staff = Weapon(name="Heal Staff", wtype="Staff", staff_rank='E', uses=30, max_uses=30)
 
-    # Leif (Player) - With Fire Tome and guaranteed Movement Stars for this test
+    # Leif (Player - Lord, Cavalry) - With Fire Tome and guaranteed Movement Stars for this test
     leif = Unit(
-        id=1, name="Leif", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 4),
+        id=1, name="Leif", cls_name="Lord", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 4),
         max_hp=20, hp=20, strength=5, magic=5, skill=6, speed=7, luck=6, defense=3, constitution=5, mov=7, fatigue=0, pcc=1,
         movement_stars=20, # Add stars to guarantee second action for test
-        inventory=[iron_sword, fire_tome] # Add Fire Tome
+        inventory=[iron_sword, fire_tome], # Add Fire Tome
+        growth_rates={'hp': 80, 'strength': 30, 'magic': 10, 'skill': 40, 'speed': 40, 'luck': 50, 'defense': 20, 'constitution': 5, 'mov': 2} # Leif growths
     )
     game_state.add_unit(leif)
 
-    # Nanna (Player) - To end turn
+    # Nanna (Player - Troubadour, Cavalry) - To end turn
     nanna = Unit(
-        id=2, name="Nanna", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 3),
+        id=2, name="Nanna", cls_name="Troubadour", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 3),
         max_hp=18, hp=18, strength=3, magic=6, skill=5, speed=8, luck=8, defense=2, constitution=4, mov=7, fatigue=0, pcc=2,
-        inventory=[heal_staff]
+        inventory=[heal_staff],
+        growth_rates={'hp': 60, 'strength': 20, 'magic': 35, 'skill': 45, 'speed': 50, 'luck': 60, 'defense': 15, 'constitution': 3, 'mov': 2} # Nanna growths
     )
     game_state.add_unit(nanna)
 
-    # Bandit (Enemy) - Asleep, Mag 0
+    # Bandit (Enemy - Fighter, Infantry) - Asleep, Mag 0
     bandit = Unit(
-        id=101, name="Bandit", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(5, 4),
+        id=101, name="Bandit", cls_name="Fighter", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(5, 4),
         max_hp=200, hp=200, strength=1, magic=0, skill=2, speed=4, luck=0, defense=2, constitution=10, mov=4, fatigue=0, pcc=0,
         status_effect=StatusEffect.SLEEP, # Start asleep
-        inventory=[iron_axe]
+        inventory=[iron_axe],
+        growth_rates={'hp': 70, 'strength': 40, 'magic': 5, 'skill': 30, 'speed': 20, 'luck': 10, 'defense': 30, 'constitution': 10, 'mov': 1} # Generic Fighter growths
     )
     game_state.add_unit(bandit)
 
@@ -809,28 +861,31 @@ def setup_mvp_test_state() -> GameState:
     iron_axe = Weapon(name="Iron Axe", might=8, hit=75, weight=10, wtype="Axe", damage_type="Physical", range_min=1, range_max=1, uses=50, max_uses=50)
     heal_staff = Weapon(name="Heal Staff", wtype="Staff", staff_rank='E', uses=30, max_uses=30)
 
-    # Leif (Player) - Cavalry
+    # Leif (Player - Lord, Cavalry)
     leif = Unit(
-        id=1, name="Leif", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 4),
+        id=1, name="Leif", cls_name="Lord", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 4),
         max_hp=20, hp=20, strength=5, magic=5, skill=6, speed=7, luck=6, defense=3, constitution=5, mov=7, fatigue=0, pcc=1,
-        inventory=[iron_sword]
+        inventory=[iron_sword],
+        growth_rates={'hp': 80, 'strength': 30, 'magic': 10, 'skill': 40, 'speed': 40, 'luck': 50, 'defense': 20, 'constitution': 5, 'mov': 2} # Leif growths
     )
     game_state.add_unit(leif)
 
-    # Nanna (Player) - Cavalry
+    # Nanna (Player - Troubadour, Cavalry)
     nanna = Unit(
-        id=2, name="Nanna", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 3),
+        id=2, name="Nanna", cls_name="Troubadour", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 3),
         max_hp=18, hp=18, strength=3, magic=6, skill=5, speed=8, luck=8, defense=2, constitution=4, mov=7, fatigue=0, pcc=2,
-        inventory=[heal_staff]
+        inventory=[heal_staff],
+        growth_rates={'hp': 60, 'strength': 20, 'magic': 35, 'skill': 45, 'speed': 50, 'luck': 60, 'defense': 15, 'constitution': 3, 'mov': 2} # Nanna growths
     )
     game_state.add_unit(nanna)
 
-    # Bandit (Enemy) - Asleep
+    # Bandit (Enemy - Fighter, Infantry) - Asleep
     bandit = Unit(
-        id=101, name="Bandit", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(5, 4),
+        id=101, name="Bandit", cls_name="Fighter", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(5, 4),
         max_hp=20, hp=20, strength=1, magic=0, skill=2, speed=4, luck=0, defense=2, constitution=10, mov=4, fatigue=0, pcc=0,
         status_effect=StatusEffect.SLEEP, # Start asleep
-        inventory=[iron_axe]
+        inventory=[iron_axe],
+        growth_rates={'hp': 70, 'strength': 40, 'magic': 5, 'skill': 30, 'speed': 20, 'luck': 10, 'defense': 30, 'constitution': 10, 'mov': 1} # Generic Fighter growths
     )
     game_state.add_unit(bandit)
 
@@ -849,32 +904,66 @@ def setup_canto_test_state() -> GameState:
     heal_staff = Weapon(name="Heal Staff", wtype="Staff", staff_rank='E', uses=30, max_uses=30)
     vulnerary = Vulnerary()
 
-    # Leif (Player) - Cavalry, with Vulnerary
+    # Leif (Player - Lord, Cavalry), with Vulnerary
     leif = Unit(
-        id=1, name="Leif", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 4),
+        id=1, name="Leif", cls_name="Lord", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 4),
         max_hp=20, hp=20, strength=5, magic=5, skill=6, speed=7, luck=6, defense=3, constitution=5, mov=7, fatigue=0, pcc=1,
         inventory=[iron_sword, vulnerary] # Need sword for attack test, vulnerary for use test
     )
     game_state.add_unit(leif)
 
-    # Nanna (Player) - To end turn
+    # Nanna (Player - Troubadour, Cavalry) - To end turn
     nanna = Unit(
-        id=2, name="Nanna", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 3),
+        id=2, name="Nanna", cls_name="Troubadour", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 3),
         max_hp=18, hp=18, strength=3, magic=6, skill=5, speed=8, luck=8, defense=2, constitution=4, mov=7, fatigue=0, pcc=2,
         inventory=[heal_staff]
     )
     game_state.add_unit(nanna)
 
-    # Bandit (Enemy) - Target
+    # Bandit (Enemy - Fighter, Infantry) - Target
     bandit = Unit(
-        id=101, name="Bandit", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(5, 4),
+        id=101, name="Bandit", cls_name="Fighter", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(5, 4),
         max_hp=20, hp=20, strength=4, magic=0, skill=2, speed=4, luck=0, defense=2, constitution=10, mov=4, fatigue=0, pcc=0,
-        inventory=[iron_axe]
-    )
+        inventory=[iron_axe], # Need to re-add inventory
+        growth_rates={'hp': 70, 'strength': 40, 'magic': 5, 'skill': 30, 'speed': 20, 'luck': 10, 'defense': 30, 'constitution': 10, 'mov': 1} # Generic Fighter growths
+    ) # Add closing parenthesis and remove duplicate inventory line
     game_state.add_unit(bandit)
 
     return game_state
 
+def setup_mvp_phase1_state() -> GameState:
+    """Creates a simple game state aligned with DESIGN_MVP_PHASE1.md goals."""
+    map_width = 8
+    map_height = 6
+    game_map = GameMap(width=map_width, height=map_height) # All Plain tiles by default
+    game_state = GameState(game_map=game_map)
+
+    # Basic Player Unit (Leif) - Assuming Lord class for MVP
+    leif = Unit(
+        id=1, name="Leif", cls_name="Lord", faction=Faction.PLAYER, move_type=MoveType.INFANTRY, # Simple infantry for MVP
+        position=(1, 1),
+        max_hp=20, hp=20,
+        mov=5, # Basic movement
+        # MVP doesn't require other stats, skills, items yet
+        inventory=[], # Start unarmed for simplicity or add basic sword
+        growth_rates={'hp': 80, 'strength': 30, 'magic': 10, 'skill': 40, 'speed': 40, 'luck': 50, 'defense': 20, 'constitution': 5, 'mov': 2} # Example Leif-like growths
+    )
+    game_state.add_unit(leif)
+
+    # Basic Enemy Unit (Stationary) - Assuming Fighter class for MVP
+    enemy = Unit(
+        id=101, name="Enemy", cls_name="Fighter", faction=Faction.ENEMY, move_type=MoveType.INFANTRY,
+        position=(5, 3),
+        max_hp=15, hp=15,
+        mov=4,
+        inventory=[], # Unarmed
+        growth_rates={'hp': 70, 'strength': 40, 'magic': 5, 'skill': 30, 'speed': 20, 'luck': 10, 'defense': 30, 'constitution': 10, 'mov': 1} # Example Fighter growths
+    )
+    game_state.add_unit(enemy)
+
+    return game_state
+
+# --- Turn Start Effects ---
 # --- Turn Start Effects ---
 def apply_turn_start_effects(game_state: GameState):
     """Applies effects like poison damage at the start of a phase."""
@@ -970,7 +1059,7 @@ def run_cli(setup_name: str = "effectiveness"): # MODIFIED: Accept setup name
         game_state = setup_terrain_test_state() # ADDED
     else:
         print(f"Error: Unknown setup name '{setup_name}'. Defaulting to effectiveness.")
-        game_state = setup_effectiveness_test_state()
+        game_state = setup_mvp_phase1_state() # Default to new MVP setup
     # Store move range as {pos: cost}
     current_move_range: Optional[Dict[Tuple[int, int], int]] = None
     current_attack_range: Optional[Set[Tuple[int, int]]] = None
@@ -983,7 +1072,7 @@ def run_cli(setup_name: str = "effectiveness"): # MODIFIED: Accept setup name
         # Pass canto range to render_map if active
         render_map(game_state, current_move_range if not is_canto_active else None, current_canto_range if is_canto_active else None)
         # Update prompt
-        prompt = "Cmds: select|move|attack|capture|equip|inventory|use|trade|release|wait|info|endturn|quit: " # Added inventory, use
+        prompt = "Cmds: select|move|attack|capture|equip|inventory|use|promote|trade|release|wait|info|endturn|quit: " # Added promote
         command_str = input(prompt).strip() # Don't lowercase yet
 
         # Ignore empty lines and comments
@@ -1390,6 +1479,103 @@ def run_cli(setup_name: str = "effectiveness"): # MODIFIED: Accept setup name
                     else:
                         print(f"Item type '{item_to_use.name}' use effect not implemented yet.")
 
+                elif command == "promote":
+                    selected_unit = game_state.get_selected_unit()
+                    if not selected_unit:
+                        print("No unit selected.")
+                        continue
+                    if selected_unit.fatigue >= selected_unit.max_hp:
+                         print(f"{selected_unit.name} is fatigued and cannot act.")
+                         continue
+                    if selected_unit.has_acted:
+                         print(f"{selected_unit.name} has already acted.")
+                         continue
+                    if selected_unit.is_capturing is not None:
+                        print(f"{selected_unit.name} cannot promote while capturing.")
+                        continue
+
+                    # Check for Master Seal
+                    master_seal_item = None
+                    seal_index = -1
+                    for i, item in enumerate(selected_unit.inventory):
+                        # Need to import MasterSeal from models
+                        from .models import MasterSeal
+                        if isinstance(item, MasterSeal):
+                            master_seal_item = item
+                            seal_index = i
+                            break
+
+                    if not master_seal_item:
+                        print(f"{selected_unit.name} does not have a Master Seal.")
+                        continue
+
+                    # Check if promotion path exists
+                    # Need to import PROMOTION_PATHS from models
+                    from .models import PROMOTION_PATHS
+                    current_class = selected_unit.cls_name # Assuming cls_name attribute exists - NEED TO ADD THIS TO UNIT MODEL
+                    if current_class not in PROMOTION_PATHS:
+                        print(f"No promotion path defined for class '{current_class}'.")
+                        continue
+
+                    promo_data = PROMOTION_PATHS[current_class]
+                    promoted_class = promo_data['promoted_class']
+                    stat_gains = promo_data['gains']
+                    wexp_bonus = promo_data.get('wexp_bonus', {}) # Use .get for safety
+
+                    print(f"Promoting {selected_unit.name} from {current_class} to {promoted_class}...")
+
+                    # Consume Master Seal
+                    if master_seal_item.use():
+                        if master_seal_item.uses == 0:
+                            print(f"  Used {master_seal_item.name}.")
+                            selected_unit.remove_item(master_seal_item)
+                    else:
+                        # Should not happen if check passed, but handle defensively
+                        print(f"  Error: Could not use {master_seal_item.name}.")
+                        continue
+
+                    # Apply Stat Gains
+                    print("  Applying stat gains:")
+                    for stat, gain in stat_gains.items():
+                        current_val = getattr(selected_unit, stat, 0)
+                        # TODO: Check against class caps later
+                        new_val = current_val + gain
+                        setattr(selected_unit, stat, new_val)
+                        print(f"    {stat.capitalize()}: {current_val} + {gain} -> {new_val}")
+
+                    # Update Class Name
+                    selected_unit.cls_name = promoted_class # NEED TO ADD cls_name attribute
+
+                    # Update Weapon Ranks
+                    print("  Updating weapon ranks:")
+                    for wtype, new_rank_letter in wexp_bonus.items():
+                        # Need WEAPON_RANKS from models
+                        from .models import WEAPON_RANKS
+                        if new_rank_letter in WEAPON_RANKS:
+                             current_rank = selected_unit.weapon_ranks.get(wtype, 'E')
+                             # Only update if the new rank is higher
+                             if current_rank not in WEAPON_RANKS or WEAPON_RANKS.index(new_rank_letter) > WEAPON_RANKS.index(current_rank):
+                                 selected_unit.weapon_ranks[wtype] = new_rank_letter
+                                 print(f"    {wtype.capitalize()} rank set to {new_rank_letter}.")
+                        else:
+                             print(f"    Warning: Invalid target rank '{new_rank_letter}' for {wtype}.")
+
+
+                    # Reset Level (Thracia rule)
+                    selected_unit.level = 1 # NEED TO ADD level attribute
+                    selected_unit.exp = 0 # NEED TO ADD exp attribute
+                    print(f"  Level reset to 1.")
+
+                    # Promotion consumes action, prevents Canto
+                    canto_move_points = None
+                    is_canto_active = False
+                    if not complete_action(selected_unit, game_state):
+                        current_move_range = None
+                        current_attack_range = None
+                    else: # Movement star activated
+                        current_move_range = None
+                        current_attack_range = None
+
                     if item_used_successfully:
                         # Apply fatigue for item use
                         selected_unit.fatigue += FATIGUE_COST_ITEM
@@ -1650,8 +1836,9 @@ def run_cli(setup_name: str = "effectiveness"): # MODIFIED: Accept setup name
                         target_unit = game_state.get_unit(target_unit_id) if target_unit_id is not None else None
 
                         staff_used_successfully = False
+                        staff_name = equipped_staff.name.lower() # Use lowercase for comparison
                         # --- Heal Staff Logic ---
-                        if equipped_staff.name == "Heal Staff": # Check specifically for Heal staff
+                        if staff_name == "heal staff": # Check specifically for Heal staff
                             if not target_unit:
                                 print(f"No unit at ({target_x}, {target_y}).")
                                 continue
@@ -1671,6 +1858,40 @@ def run_cli(setup_name: str = "effectiveness"): # MODIFIED: Accept setup name
                             target_unit.hp += actual_healed
                             print(f"{caster.name} used {equipped_staff.name} on {target_unit.name}, recovering {actual_healed} HP. (HP: {target_unit.hp}/{target_unit.max_hp})")
                             staff_used_successfully = True
+
+                        # --- Restore Staff Logic ---
+                        elif staff_name == "restore staff":
+                            if not target_unit:
+                                print(f"No unit at ({target_x}, {target_y}).")
+                                continue
+                            if target_unit.faction != caster.faction:
+                                print(f"Cannot restore non-allied unit {target_unit.name}.")
+                                continue
+                            if not target_unit.is_alive or target_unit.is_captured:
+                                print(f"Cannot restore defeated or captured unit {target_unit.name}.")
+                                continue
+                            if target_unit.status_effect == StatusEffect.NONE:
+                                print(f"{target_unit.name} has no status condition to restore.")
+                                continue
+
+                            # Cure the status
+                            old_status = target_unit.status_effect
+                            target_unit.status_effect = StatusEffect.NONE
+                            print(f"{caster.name} used {equipped_staff.name} on {target_unit.name}, curing {old_status}.")
+                            staff_used_successfully = True
+
+                        # --- Mend Staff Logic (Example) ---
+                        elif staff_name == "mend staff":
+                            if not target_unit:
+                                print(f"No unit at ({target_x}, {target_y}).")
+                                continue
+
+                            # Calculate Heal Amount (10 + User's Magic)
+                            heal_amount = 10 + caster.magic
+                            actual_healed = min(heal_amount, target_unit.max_hp - target_unit.hp)
+                            target_unit.hp += actual_healed
+                            print(f"{caster.name} used {equipped_staff.name} on {target_unit.name}, recovering {actual_healed} HP. (HP: {target_unit.hp}/{target_unit.max_hp})")
+                            staff_used_successfully = True
                         else:
                              # Placeholder for other staves
                              print(f"{caster.name} uses {equipped_staff.name} (Rank {equipped_staff.staff_rank}) on ({target_x}, {target_y})... (Effect for this staff not implemented yet)")
@@ -1678,40 +1899,59 @@ def run_cli(setup_name: str = "effectiveness"): # MODIFIED: Accept setup name
                              if target_unit:
                                  staff_used_successfully = True # Allow fatigue/use for unimplemented staves if target valid
 
-                        # --- Apply Fatigue & Consume Use (if successful) ---
+                        # --- Apply WExp, Fatigue & Consume Use (if successful) ---
                         if staff_used_successfully:
 
-                        # Apply fatigue based on staff rank
-                        # Need to import FATIGUE_COST_STAFF from models
-                            from game.models import FATIGUE_COST_STAFF
-                            rank = equipped_staff.staff_rank
-                            cost = FATIGUE_COST_STAFF.get(rank, 1) # Default to 1 if rank not found
-                            caster.fatigue += cost
-                            print(f"  ({caster.name} fatigue increases by {cost} to {caster.fatigue})")
+                           # --- Grant Staff WExp ---
+                           from .models import WEXP_THRESHOLDS, WEAPON_RANKS # Import WExp constants
+                           staff_rank_wexp_gain = {'E': 1, 'D': 2, 'C': 3, 'B': 4, 'A': 5, '*': 5}
+                           rank = equipped_staff.staff_rank
+                           wexp_gain = staff_rank_wexp_gain.get(rank, 1) # Default to 1 if rank unknown
+                           wtype = "Staff" # Staff WExp type
+                           current_wexp = caster.wexp.get(wtype, 0)
+                           new_total_wexp = current_wexp + wexp_gain
+                           caster.wexp[wtype] = new_total_wexp
+                           print(f"  ({caster.name} gained +{wexp_gain} WExp for {wtype}. Total: {new_total_wexp})")
 
-                        # Consume staff use
-                            if equipped_staff.use(): # Use the item's use method
-                                if equipped_staff.uses == 0:
-                                    print(f"  {equipped_staff.name} broke.")
-                                    caster.remove_item(equipped_staff) # Remove the broken staff
-                            else:
-                                # This case should ideally not be reached if is_usable was checked, but handle defensively
-                                print(f"  Error: Failed to consume use for {equipped_staff.name}.")
-                                continue # Skip action completion if use failed unexpectedly
+                           # --- Check for Staff Rank Increase ---
+                           current_staff_rank = caster.weapon_ranks.get(wtype, 'E') # Default to E
+                           current_rank_index = WEAPON_RANKS.index(current_staff_rank) if current_staff_rank in WEAPON_RANKS else 0
+                           if current_staff_rank != '*':
+                               threshold_for_next_rank = WEXP_THRESHOLDS.get(current_staff_rank)
+                               if threshold_for_next_rank is not None and new_total_wexp >= threshold_for_next_rank:
+                                   next_rank_index = current_rank_index + 1
+                                   if next_rank_index < len(WEAPON_RANKS):
+                                       new_rank = WEAPON_RANKS[next_rank_index]
+                                       caster.weapon_ranks[wtype] = new_rank
+                                       print(f"  RANK UP! {caster.name}'s {wtype} rank increased to {new_rank}!")
 
-                            # TODO: Add WExp gain for staff use
+                           # --- Apply Fatigue ---
+                           from game.models import FATIGUE_COST_STAFF
+                           cost = FATIGUE_COST_STAFF.get(rank, 1) # Default to 1 if rank not found
+                           caster.fatigue += cost
+                           print(f"  ({caster.name} fatigue increases by {cost} to {caster.fatigue})")
 
-                            # Staff use prevents Canto, always end action
-                            # Staff use prevents Canto, always end action
-                            canto_move_points = None
-                            is_canto_active = False
-                            if not complete_action(caster, game_state):
-                                current_move_range = None
-                                current_attack_range = None
-                            else:
-                                # Movement star activated, clear ranges
-                                current_move_range = None
-                                current_attack_range = None
+                           # Consume staff use
+                           if equipped_staff.use(): # Use the item's use method
+                               if equipped_staff.uses == 0:
+                                   print(f"  {equipped_staff.name} broke.")
+                                   caster.remove_item(equipped_staff) # Remove the broken staff
+                           else:
+                               # This case should ideally not be reached if is_usable was checked, but handle defensively
+                               print(f"  Error: Failed to consume use for {equipped_staff.name}.")
+                               continue # Skip action completion if use failed unexpectedly
+                            # TODO: Add WExp gain for staff use (Already added above)
+
+                        # Staff use prevents Canto, always end action
+                        canto_move_points = None
+                        is_canto_active = False
+                        if not complete_action(caster, game_state):
+                            current_move_range = None
+                            current_attack_range = None
+                        else:
+                            # Movement star activated, clear ranges
+                            current_move_range = None
+                            current_attack_range = None
 
                     except ValueError:
                         print("Invalid coordinates.")
@@ -1784,7 +2024,9 @@ def run_cli(setup_name: str = "effectiveness"): # MODIFIED: Accept setup name
                          else:
                               capture_status_str = " | Status: Alive"
 
-                         print(f"Info: {target_unit.name} (ID: {target_unit.id}) | Faction: {target_unit.faction} | MoveType: {target_unit.move_type}{capture_status_str}")
+                         # Display Class, Level, Exp
+                         print(f"Info: {target_unit.name} (ID: {target_unit.id}) | Class: {target_unit.cls_name} | Lvl: {target_unit.level} | Exp: {target_unit.exp}/100")
+                         print(f"  Faction: {target_unit.faction} | MoveType: {target_unit.move_type}{capture_status_str}")
                          print(f"  Pos: {target_unit.position} | HP: {target_unit.hp}/{target_unit.max_hp} | Mov: {target_unit.mov}")
                          print(f"  Stats: Str:{target_unit.strength} Skl:{target_unit.skill} Spd:{target_unit.speed} Lck:{target_unit.luck} Def:{target_unit.defense} Con:{target_unit.constitution}")
                          print("  Inventory:")
@@ -1823,14 +2065,16 @@ def run_cli(setup_name: str = "effectiveness"): # MODIFIED: Accept setup name
                                      print(f"  WARNING: {unit.name} is fatigued ({unit.fatigue}/{unit.max_hp})!")
                         # ---------------------
 
+                        # --- Transition to Enemy Phase ---
                         game_state.active_faction = Faction.ENEMY
                         game_state.selected_unit_id = None
                         current_move_range = None
                         current_attack_range = None
-
+                        print("\n--- Starting Enemy Phase ---")
                         render_map(game_state)
-                        run_enemy_ai(game_state)
+                        run_enemy_ai(game_state) # Run Enemy AI
 
+                        # Check for Game Over after Enemy Phase
                         leif = game_state.units.get(1)
                         if leif and not leif.is_alive:
                             render_map(game_state)
@@ -1838,13 +2082,31 @@ def run_cli(setup_name: str = "effectiveness"): # MODIFIED: Accept setup name
                             print("Leif has been defeated!")
                             sys.exit(0)
 
+                        # --- Transition to NPC Phase ---
+                        # Check if there are any living Ally units
+                        npc_units_exist = any(u.faction == Faction.ALLY and u.is_alive for u in game_state.units.values())
+                        if npc_units_exist:
+                            game_state.active_faction = Faction.ALLY # Use ALLY faction for NPC phase
+                            game_state.selected_unit_id = None
+                            current_move_range = None
+                            current_attack_range = None
+                            print("\n--- Starting NPC Phase ---")
+                            render_map(game_state)
+                            # Call the imported run_npc_ai function
+                            run_npc_ai(game_state)
+                            print("(NPC AI not implemented yet)")
+                        else:
+                            print("\n(Skipping NPC Phase - No Ally units)")
+
+
+                        # --- Transition back to Player Phase ---
                         game_state.active_faction = Faction.PLAYER
                         game_state.turn += 1
-                        game_state.reset_player_actions()
+                        game_state.reset_player_actions() # Resets actions and applies fatigue restriction
                         print(f"\n--- Starting Turn {game_state.turn} - Player Phase ---")
                         # Apply Player Phase start effects
                         apply_turn_start_effects(game_state)
-                    else:
+                    else: # This else corresponds to `if game_state.active_faction == Faction.PLAYER:`
                         print("Cannot end turn now.")
 
                 else:
@@ -1866,8 +2128,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "--setup",
         type=str,
-        default="effectiveness", # Default to the current setup
-        help="Name of the test setup to load (e.g., 'effectiveness', 'combat')."
+        default="mvp_phase1", # Default to the new MVP setup
+        help="Name of the test setup to load (e.g., 'mvp_phase1', 'effectiveness', 'combat')."
     )
     args = parser.parse_args()
     # ----------------------
@@ -1877,4 +2139,35 @@ if __name__ == "__main__":
     if not os.path.exists(os.path.join(game_dir, "__init__.py")):
         open(os.path.join(game_dir, "__init__.py"), 'a').close()
 
-    run_cli(setup_name=args.setup) # Pass the setup name
+    # Map the new default name to the function
+    if args.setup == "mvp_phase1":
+        run_cli(setup_name="mvp_phase1")
+    else:
+        # Add the new setup to the existing logic
+        setup_functions = {
+            "effectiveness": setup_effectiveness_test_state,
+            "combat": setup_combat_test_state,
+            "fatigue": setup_fatigue_test_state,
+            "staff": setup_staff_test_state,
+            "item": setup_item_test_state,
+            "ai": setup_ai_test_state,
+            "bonus": setup_bonus_test_state,
+            "canto": setup_canto_test_state,
+            "capture": setup_capture_test_state,
+            "crit": setup_crit_test_state,
+            "magic_attack": setup_magic_attack_test_state,
+            "magic_crit": setup_magic_crit_test_state,
+            "mvp": setup_mvp_test_state, # Keep old 'mvp' test setup distinct
+            "steal": setup_steal_test_state,
+            "skills": setup_skills_test_state,
+            "status": setup_status_test_state,
+            "movestars": setup_movestars_test_state,
+            "triangle": setup_triangle_test_state,
+            "terrain": setup_terrain_test_state,
+            "mvp_phase1": setup_mvp_phase1_state # Add the new one here
+        }
+        if args.setup in setup_functions:
+             run_cli(setup_name=args.setup) # Pass the setup name
+        else:
+             print(f"Error: Unknown setup name '{args.setup}'. Using default 'mvp_phase1'.")
+             run_cli(setup_name="mvp_phase1")

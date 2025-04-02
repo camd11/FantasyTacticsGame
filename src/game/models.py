@@ -85,6 +85,18 @@ ANIMA_TRIANGLE: Dict[str, Dict[str, bool]] = {
 ANIMA_TYPES = {"Fire", "Wind", "Thunder"}
 LIGHT_DARK_TYPES = {"Light", "Dark"} # Add Staff? No, staves don't participate.
 
+# --- Weapon Ranks & EXP ---
+WEAPON_RANKS = ['E', 'D', 'C', 'B', 'A', '*']
+WEXP_THRESHOLDS = { # Total WExp needed to reach the *next* rank
+    'E': 50,
+    'D': 100,
+    'C': 150,
+    'B': 200,
+    'A': 250,
+    '*': float('inf') # Cannot rank up further
+}
+WEXP_PER_USE = 1 # Base WExp gain per combat/staff use
+
 # --- Fatigue Costs ---
 FATIGUE_COST_COMBAT = 1
 FATIGUE_COST_ITEM = 1 # Simplified cost for using items like Vulnerary
@@ -156,6 +168,14 @@ class Potion(Item):
     heal_amount: int = 10 # Standard FE potion heal amount
     weight: int = 3 # Weight as specified in test_steal_commands.txt
 
+# --- Promotion Item ---
+@dataclass
+class MasterSeal(Item):
+    name: str = "Master Seal" # Knight's Proof in some translations
+    uses: int = 1
+    max_uses: int = 1
+    weight: int = 0 # Promotion items usually have no weight
+
 # --- Weapon (inherits from Item for potential uses later) ---
 @dataclass
 class Weapon(Item):
@@ -188,12 +208,16 @@ class Unit:
     # Basic Info
     id: int
     name: str
-    faction: Faction
+    faction: Faction # Moved before fields with defaults
+    cls_name: str = "Unit" # Class name (e.g., "Lord", "Fighter")
     move_type: MoveType = MoveType.INFANTRY # Added movement type
     position: Tuple[int, int] = (0, 0)
     has_acted: bool = False
 
     # Core Stats
+    level: int = 1 # NEW: Unit level
+    exp: int = 0 # Unit experience points
+    growth_rates: Dict[str, int] = field(default_factory=dict) # NEW: Growth rates (e.g., {'hp': 80, 'strength': 30})
     max_hp: int = 1
     hp: int = 1
     strength: int = 0
@@ -212,6 +236,8 @@ class Unit:
     # Equipment & Inventory
     inventory: List[InventoryItem] = field(default_factory=list)
     equipped_weapon_index: Optional[int] = None # Index in inventory, None if unarmed
+    wexp: Dict[str, int] = field(default_factory=dict) # Weapon experience (e.g., {'Sword': 10})
+    weapon_ranks: Dict[str, str] = field(default_factory=dict) # NEW: Current ranks (e.g., {'Sword': 'C'})
 
     # Status
     is_alive: bool = True
@@ -287,6 +313,34 @@ class Unit:
         except ValueError:
             # Item not found in inventory
             pass
+
+    def level_up(self):
+        """Handles level increase and stat gains based on growth rates."""
+        if self.level >= 20: # Simple cap for now
+            print(f"  ({self.name} is already max level!)")
+            return
+
+        self.level += 1
+        self.exp -= 100 # Consume 100 EXP
+        print(f"  LEVEL UP! {self.name} reached Level {self.level}!")
+
+        stats_to_grow = ['max_hp', 'strength', 'magic', 'skill', 'speed', 'luck', 'defense', 'constitution', 'mov']
+        gains_str = []
+        for stat in stats_to_grow:
+            growth_chance = self.growth_rates.get(stat, 0)
+            if random.randint(1, 100) <= growth_chance:
+                current_val = getattr(self, stat, 0)
+                # TODO: Check against class caps later
+                setattr(self, stat, current_val + 1)
+                gains_str.append(f"+1 {stat.capitalize()}")
+                # Special case: Increase current HP if max HP grew
+                if stat == 'max_hp':
+                    self.hp += 1
+
+        if gains_str:
+            print(f"    Stats Increased: {', '.join(gains_str)}")
+        else:
+            print("    (No stats increased)")
 
 
 # --- Map ---
@@ -384,12 +438,29 @@ class GameState:
             print(f"Error: Cannot add unit {unit.name} at {unit.position}")
 
     def reset_player_actions(self):
-        """Resets action flag for Player units. Fatigue is NOT reset here."""
+        """Resets action flag for Player units and applies fatigue restriction."""
         for unit in self.units.values():
-            # Only reset actions for alive, non-captured player units that are not asleep/berserk
             if unit.faction == Faction.PLAYER and unit.is_alive and not unit.is_captured:
+                # Fatigue Check (Thracia: Starts Chapter 8, Leif exempt)
+                # Assuming fatigue is active for testing purposes here.
+                is_fatigued = unit.fatigue >= unit.max_hp
+                is_leif = unit.name == "Leif" # Simple check for the Lord
+
+                if is_fatigued and not is_leif:
+                    print(f"  INFO: {unit.name} is fatigued ({unit.fatigue}/{unit.max_hp}) and cannot act this turn.")
+                    unit.has_acted = True # Mark as acted to prevent selection/action
+                    continue # Skip further checks for this unit
+
+                # Reset action if not fatigued (or is Leif) and not under other disabling status
                 if unit.status_effect not in [StatusEffect.SLEEP, StatusEffect.BERSERK]:
                     unit.has_acted = False
+                else:
+                    # Ensure units with sleep/berserk remain marked as unable to act if needed
+                    # (Current logic might already handle this, but explicit check is safer)
+                    # If they are asleep/berserk, they shouldn't get has_acted reset to False.
+                    # The CLI select logic already prevents selecting them, but this reinforces state.
+                    unit.has_acted = True # Keep them marked as acted/unavailable
+
                 # Fatigue persists across turns within a chapter
                 # Status effects also persist until cleared
 
@@ -435,3 +506,26 @@ class GameState:
         target.hp = 0 # Set HP to 0 for consistency
         attacker.is_capturing = target.id
         self.game_map.remove_unit(target) # Remove captured unit from map tile
+
+
+# --- Promotion Data (Placeholder Structure) ---
+# Structure: PROMOTION_PATHS[base_class] = {'promoted_class': name, 'gains': {stat: bonus, ...}, 'wexp_bonus': {wtype: bonus_rank_letter}}
+# Example gains only, need actual Thracia data
+PROMOTION_PATHS: Dict[str, Dict] = {
+    "Lord": { # Leif promotes via story event, not item, but example structure
+        "promoted_class": "Prince",
+        "gains": {"max_hp": 4, "strength": 2, "magic": 2, "skill": 2, "speed": 2, "luck": 0, "defense": 3, "constitution": 1, "mov": 1},
+        "wexp_bonus": {"Sword": 'A', "Staff": 'C'} # Example: Set ranks to specific letters
+    },
+    "Lance Knight": {
+        "promoted_class": "Duke Knight", # Or Paladin depending on path/game interpretation
+        "gains": {"max_hp": 3, "strength": 2, "magic": 1, "skill": 1, "speed": 1, "luck": 0, "defense": 2, "constitution": 1, "mov": 1},
+        "wexp_bonus": {"Lance": 'A', "Sword": 'B'} # Example
+    },
+    "Fighter": {
+        "promoted_class": "Warrior",
+        "gains": {"max_hp": 5, "strength": 3, "magic": 0, "skill": 1, "speed": 1, "luck": 0, "defense": 2, "constitution": 2, "mov": 0},
+        "wexp_bonus": {"Axe": 'A', "Bow": 'C'} # Gains Bow access
+    },
+    # Add more classes later...
+}
