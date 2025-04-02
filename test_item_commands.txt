@@ -1,0 +1,13 @@
+# Test sequence for item usage (Vulnerary)
+# Leif starts at (1,4), Bandit at (5,4)
+# Turn 1: Leif waits, Bandit moves to (2,4) and attacks Leif
+select 1 4
+wait
+endturn
+# Turn 2: Leif should be damaged. Select Leif and use Vulnerary.
+select 1 4
+info
+item vulnerary
+info
+endturn
+quit

@@ -49,6 +49,34 @@ TERRAIN_COSTS: Dict[MoveType, Dict[TerrainType, Optional[int]]] = {
     # Add other move types later
 }
 
+# --- Terrain Properties (Bonuses) ---
+# Structure: terrain_properties[terrain_type] = {'def': bonus, 'avo': bonus}
+# Based on research.md / Serenes Forest data for Thracia
+TERRAIN_PROPERTIES: Dict[TerrainType, Dict[str, int]] = {
+    TerrainType.PLAIN: {'def': 0, 'avo': 5}, # research.md line 291
+    TerrainType.FOREST: {'def': 2, 'avo': 20}, # research.md line 292
+    TerrainType.MOUNTAIN: {'def': 5, 'avo': 30}, # research.md line 292
+    # Add Fort, Throne, etc. later
+}
+
+# --- Weapon Triangle ---
+WEAPON_TRIANGLE_BONUS = 5
+# Physical Triangle: Attacker type -> Defender type = Advantage (True) or Disadvantage (False)
+PHYSICAL_TRIANGLE: Dict[str, Dict[str, bool]] = {
+    "Sword": {"Axe": True, "Lance": False},
+    "Axe": {"Lance": True, "Sword": False},
+    "Lance": {"Sword": True, "Axe": False},
+}
+# Magic Triangle (Anima): Attacker type -> Defender type = Advantage (True) or Disadvantage (False)
+# Note: Light/Dark are handled separately (advantage vs all Anima)
+ANIMA_TRIANGLE: Dict[str, Dict[str, bool]] = {
+    "Fire": {"Wind": True, "Thunder": False},
+    "Wind": {"Thunder": True, "Fire": False},
+    "Thunder": {"Fire": True, "Wind": False},
+}
+ANIMA_TYPES = {"Fire", "Wind", "Thunder"}
+LIGHT_DARK_TYPES = {"Light", "Dark"} # Add Staff? No, staves don't participate.
+
 # --- Fatigue Costs ---
 FATIGUE_COST_COMBAT = 1
 FATIGUE_COST_ITEM = 1 # Simplified cost for using items like Vulnerary
@@ -85,7 +113,7 @@ class Vulnerary(Item):
     name: str = "Vulnerary"
     uses: int = 3
     max_uses: int = 3
-    heal_amount: int = 10 # Thracia Vulnerary heals 10 HP
+    heal_amount: int = 20 # Thracia Vulnerary heals 20 HP (Corrected based on research.md)
 
 # --- Weapon (inherits from Item for potential uses later) ---
 @dataclass
@@ -95,11 +123,13 @@ class Weapon(Item):
     hit: int = 0
     crit: int = 0
     weight: int = 0
-    wtype: str = "Sword"
+    wtype: str = "Sword" # e.g., Sword, Lance, Axe, Bow, Fire, Thunder, Wind, Light, Dark, Staff
+    damage_type: str = "Physical" # "Physical" or "Magical"
     range_min: int = 1
     range_max: int = 1
     uses: Optional[int] = 50 # Example default uses
     max_uses: Optional[int] = 50
+    effective_against: List[str] = field(default_factory=list) # e.g., ['Armor', 'Cavalry', 'Flying'] - Matches MoveType names
 
 # --- Tile ---
 @dataclass
@@ -133,6 +163,7 @@ class Unit:
     constitution: int = 0
     mov: int = 0
     fatigue: int = 0 # NEW: Fatigue counter
+    pcc: int = 0 # Pursuit Critical Coefficient (FCM)
 
     # Equipment & Inventory
     inventory: List[InventoryItem] = field(default_factory=list)

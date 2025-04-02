@@ -1,0 +1,89 @@
+# test_crit_commands.txt
+# Test critical hit mechanics (PCC, 25% cap, double damage)
+
+# Setup: Leif (pcc=1) vs Bandit (pcc=0)
+# Leif: Str 5, Skl 6, Spd 7, Luk 6, Con 5, Mov 7, HP 20. Iron Sword (Mt 5, Hit 90, Crit 0, Wt 5)
+# Bandit: Str 1, Skl 2, Spd 4, Luk 0, Def 2, Con 10, Mov 4, HP 200. Iron Axe (Mt 8, Hit 75, Crit 0, Wt 10)
+
+# Initial State:
+# Leif AS = 7 - max(0, 5-5) = 7
+# Bandit AS = 4 - max(0, 10-10) = 4
+# Leif doubles Bandit (7 >= 4 + 4 is FALSE -> Leif does NOT double initially)
+# Leif Hit = 90 + 2*6 + 6 = 108 -> 99%
+# Bandit Avoid = 2*4 + 0 = 8
+# Leif Battle Hit = 99 - 8 = 91%
+# Leif Base Crit = 0 + 6 = 6%
+# Bandit Crit Evade = 0 // 2 = 0
+# Leif Battle Crit (1st hit) = max(0, 6 - 0) = 6% (capped at min(25, 6) = 6%)
+# Leif Damage = (5 + 5) - 2 = 8
+
+# Bandit Hit = 75 + 2*2 + 0 = 79%
+# Leif Avoid = 2*7 + 6 = 20
+# Bandit Battle Hit = 79 - 20 = 59%
+# Bandit Base Crit = 0 + 2 = 2%
+# Leif Crit Evade = 6 // 2 = 3
+# Bandit Battle Crit (1st hit) = max(0, 2 - 3) = 0%
+
+# --- Test 1: Basic attack, low crit chance ---
+select 1 4
+info
+# Expected Leif Crit: 6%
+attack 5 4
+# Expect Leif hits for 8 damage. Bandit counters.
+
+# --- Modify Leif for High Crit & Doubling ---
+# Give Leif a Killer Sword (Crit 30) and boost Skl/Spd
+# Need to modify setup or add commands if possible. Assuming setup modification for now.
+# Let's assume Leif now has Skl=20, Spd=15, Killer Sword (Crit 30)
+# Leif AS = 15 - max(0, 5-5) = 15
+# Leif doubles Bandit (15 >= 4 + 4 is TRUE)
+# Leif Base Crit = 30 + 20 = 50%
+# Leif Battle Crit (1st hit) = max(0, 50 - 0) = 50% -> CAPPED at 25%
+# Leif Battle Crit (2nd hit) = max(0, 50 - 0) * pcc(1) = 50% * 1 = 50%
+# Leif Damage = (5 + 5) - 2 = 8. Crit Damage = 16.
+
+# --- Test 2: High Crit, First Hit Cap ---
+# (Requires modified setup - cannot change stats mid-CLI)
+# Assuming Leif starts with high stats/killer weapon for this test file run:
+# select 1 4
+# info
+# attack 5 4
+# Expect: First hit has 25% crit chance. If crit, deals 16 dmg.
+# Expect: Bandit counters (if alive).
+# Expect: Second hit has 50% crit chance. If crit, deals 16 dmg.
+
+# --- Test 3: Modify Bandit for Crit Evade ---
+# Assuming Bandit now has Luck=20
+# Bandit Crit Evade = 20 // 2 = 10
+# Leif Battle Crit (1st hit) = max(0, 50 - 10) = 40% -> CAPPED at 25%
+# Leif Battle Crit (2nd hit) = max(0, 50 - 10) * pcc(1) = 40% * 1 = 40%
+# (Requires modified setup)
+# select 1 4
+# info
+# attack 5 4
+# Expect: Crit chances reduced to 25% (1st) and 40% (2nd).
+
+# --- Test 4: High PCC ---
+# Assuming Leif has PCC=5, Skl=10, Crit=0 weapon
+# Leif Base Crit = 0 + 10 = 10%
+# Leif Battle Crit (1st hit) = max(0, 10 - 0) = 10% (capped at 10%)
+# Leif Battle Crit (2nd hit) = max(0, 10 - 0) * pcc(5) = 10% * 5 = 50%
+# (Requires modified setup)
+# select 1 4
+# info
+# attack 5 4
+# Expect: Crit chances 10% (1st) and 50% (2nd).
+
+# --- Conclusion ---
+# Direct testing via CLI commands is limited without ways to modify unit stats/equipment mid-test.
+# These comments outline the expected calculations.
+# A manual run with modified setup_initial_state() in cli.py would be needed for full verification.
+
+# Run a simple combat to see fatigue/crit output
+select 1 4
+attack 5 4
+info 1 4
+info 5 4
+
+endturn
+quit

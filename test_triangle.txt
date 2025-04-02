@@ -1,0 +1,31 @@
+# test_triangle.txt (Corrected for default setup)
+# Test Weapon Triangle bonuses (+/- 5 Hit) - Sword vs Axe
+
+# Setup: Leif (Sword) at (1,4) vs Bandit (Axe) at (5,4)
+# Leif: Iron Sword (Phys, Mt 5, Hit 90, Crit 0, Wt 5, Type Sword)
+# Bandit: Iron Axe (Phys, Mt 8, Hit 75, Crit 0, Wt 10, Type Axe)
+
+# Base Calculations (Ignoring Triangle):
+# Leif (vs Bandit): Hit 91% (99 - 8)
+# Bandit (vs Leif): Hit 59% (79 - 20)
+
+# --- Test Sword vs Axe (Advantage: Leif +5 Hit) ---
+# Move Leif adjacent to Bandit
+select 1 4
+move 4 4 # Move Leif to (4,4)
+
+# Attack Bandit at (5,4)
+# Expected Leif Hit vs Bandit = 91% + 5% = 96%
+attack 5 4
+# Expect Hit% in combat log to be 96
+
+# --- Check Final State ---
+info 4 4 # Leif
+info 5 4 # Bandit
+
+# --- Test Axe vs Sword (Disadvantage: Bandit -5 Hit) ---
+# Let Bandit counter-attack or attack on Enemy Phase
+# Expected Bandit Hit vs Leif = 59% - 5% = 54%
+endturn
+
+quit

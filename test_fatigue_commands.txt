@@ -1,0 +1,109 @@
+# Test sequence for fatigue mechanic
+# Leif (MaxHP 200) attacks Bandit for 20 turns.
+
+# Turn 1
+select 1 4
+move 4 4
+attack 5 4
+endturn
+
+# Turn 2
+select 4 4
+attack 5 4
+endturn
+
+# Turn 3
+select 4 4
+attack 5 4
+endturn
+
+# Turn 4
+select 4 4
+attack 5 4
+endturn
+
+# Turn 5
+select 4 4
+attack 5 4
+endturn
+
+# Turn 6
+select 4 4
+attack 5 4
+endturn
+
+# Turn 7
+select 4 4
+attack 5 4
+endturn
+
+# Turn 8
+select 4 4
+attack 5 4
+endturn
+
+# Turn 9
+select 4 4
+attack 5 4
+endturn
+
+# Turn 10
+select 4 4
+attack 5 4
+endturn
+
+# Turn 11
+select 4 4
+attack 5 4
+endturn
+
+# Turn 12
+select 4 4
+attack 5 4
+endturn
+
+# Turn 13
+select 4 4
+attack 5 4
+endturn
+
+# Turn 14
+select 4 4
+attack 5 4
+endturn
+
+# Turn 15
+select 4 4
+attack 5 4
+endturn
+
+# Turn 16
+select 4 4
+attack 5 4
+endturn
+
+# Turn 17
+select 4 4
+attack 5 4
+endturn
+
+# Turn 18
+select 4 4
+attack 5 4
+endturn
+
+# Turn 19
+select 4 4
+attack 5 4
+endturn
+
+# Turn 20 - Leif's fatigue should reach 20
+select 4 4
+attack 5 4
+endturn
+
+# Turn 21 - Attempt to select Leif (should fail due to fatigue)
+select 4 4
+info 4 4 # Check info anyway
+
+quit

@@ -1,0 +1,6 @@
+# Test sequence for basic enemy AI
+select 1 4
+wait
+endturn
+# Observe Bandit's actions during Enemy Phase
+quit

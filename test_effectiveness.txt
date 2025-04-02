@@ -1,0 +1,27 @@
+# test_effectiveness.txt
+# Test Weapon Effectiveness (Rapier vs Cavalry)
+
+# Setup: Leif (Cavalry) at (1,4) vs Bandit (Infantry, Rapier) at (2,4)
+# Leif: HP 20, Def 3
+# Bandit: Str 1, Rapier (Mt 5, Hit 95, Crit 0, Wt 3, Type Sword, Eff vs Cavalry)
+
+# Calculation:
+# Bandit Base Damage = Str 1 + Mt 5 = 6
+# Bandit Effective Damage = Str 1 + (Mt 5 * 3) = 1 + 15 = 16
+# Final Damage = Effective Damage 16 - Leif Def 3 = 13
+
+# Test requires Bandit to attack Leif. Need to end player turn.
+# Manually modify setup_initial_state in cli.py to place Bandit at (2,4).
+
+# (Assuming Bandit starts at (2,4) via manual setup modification)
+info 1 4 # Leif
+info 2 4 # Bandit
+
+# End player turn immediately to trigger enemy phase
+endturn
+
+# Expect Bandit at (2,4) to attack Leif at (1,4)
+# Expect combat log to show "(Rapier is effective against Cavalry!)"
+# Expect damage dealt to Leif to be 13.
+
+quit

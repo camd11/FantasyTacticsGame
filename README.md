@@ -11,7 +11,8 @@ The initial Minimum Viable Product (MVP) focusing on foundational map/unit repre
 *   **Phase 1:**
     *   Basic data structures for Game State, Map, Tiles, and Units (`src/game/models.py`).
     *   Text-based map rendering in the CLI (`src/game/display.py`), including showing defeated units ('X').
-    *   Calculation of basic movement range on plain terrain, avoiding other units (`src/game/movement.py`).
+    *   Calculation of movement range considering terrain costs and unit blocking (`src/game/movement.py`).
+    *   Basic terrain types (Plain, Forest, Mountain) and movement costs implemented (`src/game/models.py`).
     *   Core CLI application (`src/cli.py`) supporting basic commands (`select`, `move`, `wait`, `info`, `endturn`, `quit`).
 *   **Phase 2 (Basic Combat):**
     *   Added core combat stats (Str, Skl, Spd, Lck, Def) and basic `Weapon` class to `models.py`.
@@ -24,8 +25,16 @@ The initial Minimum Viable Product (MVP) focusing on foundational map/unit repre
         *   Unit death handling (sets `is_alive=False`, removes from map tile).
     *   Integrated `attack x y` command into `cli.py`.
     *   Updated `info` command to show combat stats.
+*   **Phase 3 (Core Combat Mechanics):**
+    *   Implemented Fatigue tracking (increment on combat/item use) (`src/game/models.py`, `src/game/combat.py`, `src/cli.py`).
+    *   Implemented Critical Hit calculation including Pursuit Critical Coefficient (PCC/FCM), 25% first-hit cap, and double damage (`src/game/combat.py`).
+    *   Implemented Magic Damage calculation using Magic stat for offense/defense and separate Attack Speed calculation (`src/game/models.py`, `src/game/combat.py`).
+    *   Implemented Terrain Combat Bonuses (DEF/AVO) (`src/game/models.py`, `src/game/combat.py`).
+    *   Implemented Weapon Triangle bonuses (+/- 5 Hit) (`src/game/models.py`, `src/game/combat.py`).
+    *   Implemented Weapon Effectiveness (3x Might) (`src/game/models.py`, `src/game/combat.py`).
+    *   Added `equip` command to CLI (`src/cli.py`).
 *   **Testing:**
-    *   Automated testing via command file input (`test_mvp_commands.txt`, `test_combat_commands.txt`).
+    *   Automated testing via command file input (`test_mvp_commands.txt`, `test_combat_commands.txt`, `test_crit_commands.txt`, `test_magic_attack.txt`, `test_triangle.txt`, `test_effectiveness.txt`).
 
 **Design Documents:**
 
@@ -51,22 +60,26 @@ The initial Minimum Viable Product (MVP) focusing on foundational map/unit repre
 
 ## Development Workflow
 
-It's important to maintain good version control practices. After making changes and verifying they work (e.g., by running relevant test files):
+Follow this cycle for development:
 
-1.  **Stage your changes:**
+1.  **Code:** Implement the desired feature or fix.
+2.  **Test:** Create or update test files (e.g., `test_*.txt`) and run them using `cat <test_file> | python3 src/cli.py` to verify the changes work as expected and haven't broken existing functionality.
+3.  **Update Documentation:** Ensure `README.md` (especially "Features Implemented") and any relevant design documents accurately reflect the current state of the project.
+4.  **Commit:** Stage and commit your changes using Git.
+    *   **Stage your changes:**
     ```bash
     # Stage specific files
     git add src/cli.py tests/my_new_test.txt
     # Or stage all tracked changes
     git add .
     ```
-2.  **Commit your changes** with a clear, descriptive message:
-    ```bash
-    git commit -m "Fix: Correctly parse commands with comments in pipe"
+    *   **Commit your changes** with a clear, descriptive message (use conventional commit prefixes like `feat:`, `fix:`, `docs:`, `test:`, `refactor:`):
+        ```bash
+        git commit -m "Fix: Correctly parse commands with comments in pipe"
     # Or for more significant changes:
     git commit -m "Feat: Implement basic fatigue mechanic"
     ```
-3.  **Push your changes** to the remote repository (assuming one is configured):
+5.  **Push:** Push your changes to the remote repository (assuming one is configured):
     ```bash
     git push
     ```

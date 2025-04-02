@@ -1,0 +1,53 @@
+# test_magic_crit_commands.txt
+# Test Magic Damage, AS calculation, and Crit/PCC integration.
+
+# Setup: Leif (pcc=1, mag=5) vs Bandit (pcc=0, mag=0)
+# Leif Inventory: Iron Sword, Fire Tome
+# Iron Sword: Phys, Mt 5, Hit 90, Crit 0, Wt 5
+# Fire Tome: Magic, Mt 6, Hit 85, Crit 0, Wt 4, Rng 1-2
+# Bandit Inventory: Iron Axe
+
+# --- Initial State Info ---
+info 1 4 # Leif
+info 5 4 # Bandit
+
+# --- Test 1: Physical Attack (Check Crit/Fatigue) ---
+# Leif AS = 7 - max(0, 5-5) = 7
+# Bandit AS = 4 - max(0, 10-10) = 4
+# Leif Hit = 99% vs Bandit Avoid 8% -> 91%
+# Leif Base Crit = 0 + 6 = 6% -> Battle Crit (1st hit) = 6% (capped at 6%)
+# Leif Damage = (Str 5 + Mt 5) - Def 2 = 8
+select 1 4
+# Ensure Iron Sword is equipped (should be default)
+info # Check equipped weapon
+attack 5 4
+# Expect: Leif attacks Bandit. Fatigue +1. Low crit chance (6%).
+# Expect: Bandit counters. Fatigue +1.
+info 1 4 # Check Leif HP/Fatigue
+info 5 4 # Check Bandit HP/Fatigue
+
+# --- Test 2: Magical Attack (Check Damage/AS/Fatigue) ---
+# Need to move Leif first if Bandit countered to (4,4) or similar
+# Assuming Bandit is still at (5,4) or reachable
+select 1 4
+# Equip Fire Tome - Need an 'equip' command, which doesn't exist yet.
+# WORKAROUND: Assume Leif can attack from current position or move first.
+# Let's move Leif to (4,4) to be in range 1-2 for Fire Tome vs Bandit at (5,4)
+move 4 4
+# Now attack with Fire Tome (assuming it gets equipped automatically or via a future command)
+# Leif AS (Magic) = Spd 7 - Wt 4 = 3
+# Bandit AS = 4
+# Leif does NOT double (3 < 4+4)
+# Leif Hit = Tome Hit 85 + 2*Skl 6 + Luk 6 = 85 + 12 + 6 = 103 -> 99%
+# Bandit Avoid = 8% (unchanged)
+# Leif Battle Hit = 99 - 8 = 91%
+# Leif Base Crit = Tome Crit 0 + Skl 6 = 6% -> Battle Crit (1st hit) = 6% (capped at 6%)
+# Leif Damage = (Mag 5 + Mt 6) - Bandit Mag 0 = 11
+attack 5 4
+# Expect: Leif attacks Bandit with Fire Tome. Fatigue +1. Deals 11 damage. Low crit chance (6%).
+# Expect: Bandit cannot counter (Range 1 vs Range 1-2).
+info 1 4 # Check Leif HP/Fatigue
+info 5 4 # Check Bandit HP/Fatigue
+
+endturn
+quit

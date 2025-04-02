@@ -55,15 +55,17 @@ def setup_initial_state() -> GameState:
     game_state = GameState(game_map=game_map)
 
     # Weapons & Items
-    iron_sword = Weapon(name="Iron Sword", might=5, hit=90, weight=5, wtype="Sword", range_min=1, range_max=1, uses=50, max_uses=50)
-    iron_axe = Weapon(name="Iron Axe", might=8, hit=75, weight=10, wtype="Axe", range_min=1, range_max=1, uses=50, max_uses=50) # Restore might=8
+    iron_sword = Weapon(name="Iron Sword", might=5, hit=90, weight=5, wtype="Sword", damage_type="Physical", range_min=1, range_max=1, uses=50, max_uses=50)
+    iron_axe = Weapon(name="Iron Axe", might=8, hit=75, weight=10, wtype="Axe", damage_type="Physical", range_min=1, range_max=1, uses=50, max_uses=50) # Restore might=8
+    fire_tome = Weapon(name="Fire Tome", might=6, hit=85, weight=4, wtype="Fire", damage_type="Magical", range_min=1, range_max=2, uses=40, max_uses=40)
+    rapier = Weapon(name="Rapier", might=5, hit=95, weight=3, wtype="Sword", damage_type="Physical", range_min=1, range_max=1, uses=40, max_uses=40, effective_against=[MoveType.CAVALRY, MoveType.ARMOR]) # Effective vs Cavalry/Armor
     # Give enough vulneraries for 20 uses (7 items * 3 uses/item = 21 uses)
-    leif_inventory = [iron_sword] + [Vulnerary() for _ in range(7)]
+    leif_inventory = [iron_sword, fire_tome] + [Vulnerary() for _ in range(5)] # Adjusted vulnerary count (Reverted order)
 
     # Add Leif (Player - Cavalry) - Default setup
     leif = Unit(
         id=1, name="Leif", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 4), # Default start (1,4)
-        max_hp=20, hp=20, strength=5, magic=0, skill=6, speed=7, luck=6, defense=3, constitution=5, mov=7, fatigue=0,
+        max_hp=20, hp=20, strength=5, magic=5, skill=6, speed=7, luck=6, defense=3, constitution=5, mov=7, fatigue=0, pcc=1, # Added pcc=1, set magic=5
         inventory=leif_inventory
     )
     game_state.add_unit(leif)
@@ -72,8 +74,8 @@ def setup_initial_state() -> GameState:
     bandit_inventory = [iron_axe]
     bandit = Unit(
         id=101, name="Bandit", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(5, 4),
-        max_hp=200, hp=200, strength=1, magic=0, skill=2, speed=4, luck=0, defense=2, constitution=10, mov=4, fatigue=0, # Restore skill=2
-        inventory=bandit_inventory
+        max_hp=200, hp=200, strength=1, magic=0, skill=2, speed=4, luck=0, defense=2, constitution=10, mov=4, fatigue=0, pcc=0, # Added pcc=0
+        inventory=[rapier] # Give Bandit Rapier instead of Axe
     )
     game_state.add_unit(bandit)
 
@@ -89,7 +91,7 @@ def run_cli():
     while True:
         render_map(game_state, current_move_range)
         # Update prompt
-        prompt = "Cmds: select|move|attack|capture|item|trade|release|wait|info|endturn|quit: "
+        prompt = "Cmds: select|move|attack|capture|equip|item|trade|release|wait|info|endturn|quit: " # Added equip
         command_str = input(prompt).strip() # Don't lowercase yet
 
         # Ignore empty lines and comments
@@ -239,8 +241,9 @@ def run_cli():
                             defender = game_state.get_unit(defender_id)
                             if defender and defender.is_alive and not defender.is_captured and defender.faction != attacker.faction:
                                 simulate_combat(attacker, defender, game_state, is_capture_attempt=False)
-                                attacker.fatigue += FATIGUE_COST_COMBAT
-                                print(f"  ({attacker.name} fatigue increases to {attacker.fatigue})")
+                                # Fatigue is handled within simulate_combat now
+                                # attacker.fatigue += FATIGUE_COST_COMBAT # REMOVED
+                                # print(f"  ({attacker.name} fatigue increases to {attacker.fatigue})") # REMOVED
                                 attacker.has_acted = True
                                 game_state.selected_unit_id = None
                                 current_move_range = None
@@ -292,8 +295,9 @@ def run_cli():
                             defender = game_state.get_unit(defender_id)
                             if defender and defender.is_alive and not defender.is_captured and defender.faction == Faction.ENEMY:
                                 simulate_combat(attacker, defender, game_state, is_capture_attempt=True)
-                                attacker.fatigue += FATIGUE_COST_COMBAT
-                                print(f"  ({attacker.name} fatigue increases to {attacker.fatigue})")
+                                # Fatigue is handled within simulate_combat now
+                                # attacker.fatigue += FATIGUE_COST_COMBAT # REMOVED
+                                # print(f"  ({attacker.name} fatigue increases to {attacker.fatigue})") # REMOVED
                                 attacker.has_acted = True
                                 current_move_range = None
                                 current_attack_range = None
@@ -310,6 +314,39 @@ def run_cli():
                     else:
                         print(f"Target ({x}, {y}) is out of range for capture attempt.")
 
+                elif command == "equip":
+                    selected_unit = game_state.get_selected_unit()
+                    if not selected_unit:
+                        print("No unit selected.")
+                        continue
+                    if selected_unit.has_acted:
+                         print(f"{selected_unit.name} has already acted, cannot change equipment.")
+                         continue
+                    if not args:
+                        # List available weapons to equip
+                        weapon_list = []
+                        for i, item in enumerate(selected_unit.inventory):
+                            if isinstance(item, Weapon):
+                                equipped_marker = " (E)" if i == selected_unit.equipped_weapon_index else ""
+                                weapon_list.append(f"{i}: {item.name}{equipped_marker}")
+                        print(f"Equippable weapons for {selected_unit.name}: {weapon_list or ['None']}")
+                        continue
+
+                    try:
+                        equip_index = int(args[0])
+                        if 0 <= equip_index < len(selected_unit.inventory):
+                            item_to_equip = selected_unit.inventory[equip_index]
+                            if isinstance(item_to_equip, Weapon):
+                                selected_unit.equipped_weapon_index = equip_index
+                                print(f"{selected_unit.name} equipped {item_to_equip.name}.")
+                                # Equipping doesn't end the turn
+                                current_attack_range = get_attack_range(selected_unit, game_state) # Update attack range display
+                            else:
+                                print(f"Cannot equip '{item_to_equip.name}', it is not a weapon.")
+                        else:
+                            print(f"Invalid inventory index: {equip_index}")
+                    except ValueError:
+                        print("Invalid input. Please provide the inventory index number to equip.")
 
                 elif command == "item":
                     selected_unit = game_state.get_selected_unit()
