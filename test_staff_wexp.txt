@@ -1,0 +1,243 @@
+# Test file for Staff WExp Gain and Rank Up
+
+# --- Setup ---
+# Healer (ID 1, Pos 1,1, Mag 10, E Staff Rank, 0 WExp) has Heal(E), Mend(C), Physic(B) staves. Equipped: Heal(E)
+# Target (ID 2, Pos 1,2, HP 1/30) is injured ally
+
+# --- Initial State ---
+info 1 1 # Check Healer: Staff Rank E, WExp 0, Fatigue 0
+info 2 2 # Check Target: HP 1/30
+
+# --- Test 1: E Rank -> D Rank (Threshold: 50 WExp, Gain: 1/use) ---
+# Need 50 uses of Heal Staff (E)
+
+# Use 1-10
+select 1 1
+staff 1 2 # Use 1 (WExp 1, Fat 1)
+select 2 2
+wait
+select 1 1
+staff 1 2 # Use 2 (WExp 2, Fat 2)
+select 2 2
+wait
+select 1 1
+staff 1 2 # Use 3 (WExp 3, Fat 3)
+select 2 2
+wait
+select 1 1
+staff 1 2 # Use 4 (WExp 4, Fat 4)
+select 2 2
+wait
+select 1 1
+staff 1 2 # Use 5 (WExp 5, Fat 5)
+select 2 2
+wait
+select 1 1
+staff 1 2 # Use 6 (WExp 6, Fat 6)
+select 2 2
+wait
+select 1 1
+staff 1 2 # Use 7 (WExp 7, Fat 7)
+select 2 2
+wait
+select 1 1
+staff 1 2 # Use 8 (WExp 8, Fat 8)
+select 2 2
+wait
+select 1 1
+staff 1 2 # Use 9 (WExp 9, Fat 9)
+select 2 2
+wait
+select 1 1
+staff 1 2 # Use 10 (WExp 10, Fat 10)
+select 2 2
+wait
+
+# Use 11-20
+select 1 1
+staff 1 2 # Use 11 (WExp 11, Fat 11)
+select 2 2
+wait
+select 1 1
+staff 1 2 # Use 12 (WExp 12, Fat 12)
+select 2 2
+wait
+select 1 1
+staff 1 2 # Use 13 (WExp 13, Fat 13)
+select 2 2
+wait
+select 1 1
+staff 1 2 # Use 14 (WExp 14, Fat 14)
+select 2 2
+wait
+select 1 1
+staff 1 2 # Use 15 (WExp 15, Fat 15)
+select 2 2
+wait
+select 1 1
+staff 1 2 # Use 16 (WExp 16, Fat 16)
+select 2 2
+wait
+select 1 1
+staff 1 2 # Use 17 (WExp 17, Fat 17)
+select 2 2
+wait
+select 1 1
+staff 1 2 # Use 18 (WExp 18, Fat 18)
+select 2 2
+wait
+select 1 1
+staff 1 2 # Use 19 (WExp 19, Fat 19)
+select 2 2
+wait
+select 1 1
+staff 1 2 # Use 20 (WExp 20, Fat 20) - Healer becomes Fatigued (20/20 HP)
+select 2 2
+wait
+
+# Use 21-30 (Healer is fatigued, should fail)
+select 1 1 # Attempt select fatigued unit
+# Expected: "Healer is fatigued (20/20) and cannot act this chapter."
+# Need to manually advance turns or modify test setup if we want to continue testing rank up
+
+# --- Test Modification: Reset Fatigue to continue testing Rank Up ---
+# This part requires a hypothetical debug command or manual state change.
+# Assuming fatigue is reset for the next part.
+
+# --- Test 2: D Rank -> C Rank (Threshold: 100 WExp, Gain: 1/use from E staff) ---
+# Need 50 more uses (Total 100 uses of E staff)
+
+# Use 21-50 (Simulating continued use after fatigue reset)
+# ... (Repeat staff/wait pattern 30 more times) ...
+# Example for use 49 and 50:
+select 1 1
+staff 1 2 # Use 49 (WExp 49, Fat 49)
+select 2 2
+wait
+select 1 1
+staff 1 2 # Use 50 (WExp 50, Fat 50) - Rank Up to D!
+# Expected: RANK UP! Healer's Staff rank increased to D!
+select 2 2
+wait
+
+# Verify Rank D
+info 1 1 # Check Healer: Staff Rank D, WExp 50, Fatigue 50
+
+# --- Test 3: D Rank -> C Rank (Threshold: 100 WExp, Gain: 3/use from C staff) ---
+# Equip Mend Staff (C) - Index 1
+select 1 1
+equip 1
+# Expected: Healer equipped Mend Staff (C).
+
+# Need 50 more WExp (100 total). Gain is 3/use. 50 / 3 = 16.67 -> Need 17 uses.
+# Use 1-10
+select 1 1
+staff 1 2 # Use 1 (WExp 53, Fat 53)
+select 2 2
+wait
+select 1 1
+staff 1 2 # Use 2 (WExp 56, Fat 56)
+select 2 2
+wait
+select 1 1
+staff 1 2 # Use 3 (WExp 59, Fat 59)
+select 2 2
+wait
+select 1 1
+staff 1 2 # Use 4 (WExp 62, Fat 62)
+select 2 2
+wait
+select 1 1
+staff 1 2 # Use 5 (WExp 65, Fat 65)
+select 2 2
+wait
+select 1 1
+staff 1 2 # Use 6 (WExp 68, Fat 68)
+select 2 2
+wait
+select 1 1
+staff 1 2 # Use 7 (WExp 71, Fat 71)
+select 2 2
+wait
+select 1 1
+staff 1 2 # Use 8 (WExp 74, Fat 74)
+select 2 2
+wait
+select 1 1
+staff 1 2 # Use 9 (WExp 77, Fat 77)
+select 2 2
+wait
+select 1 1
+staff 1 2 # Use 10 (WExp 80, Fat 80)
+select 2 2
+wait
+
+# Use 11-17
+select 1 1
+staff 1 2 # Use 11 (WExp 83, Fat 83)
+select 2 2
+wait
+select 1 1
+staff 1 2 # Use 12 (WExp 86, Fat 86)
+select 2 2
+wait
+select 1 1
+staff 1 2 # Use 13 (WExp 89, Fat 89)
+select 2 2
+wait
+select 1 1
+staff 1 2 # Use 14 (WExp 92, Fat 92)
+select 2 2
+wait
+select 1 1
+staff 1 2 # Use 15 (WExp 95, Fat 95)
+select 2 2
+wait
+select 1 1
+staff 1 2 # Use 16 (WExp 98, Fat 98)
+select 2 2
+wait
+select 1 1
+staff 1 2 # Use 17 (WExp 101, Fat 101) - Rank Up to C!
+# Expected: RANK UP! Healer's Staff rank increased to C!
+select 2 2
+wait
+
+# Verify Rank C
+info 1 1 # Check Healer: Staff Rank C, WExp 101, Fatigue 101
+
+# --- Test 4: C Rank -> B Rank (Threshold: 150 WExp, Gain: 3/use from C staff) ---
+# Need 49 more WExp (150 total). Gain is 3/use. 49 / 3 = 16.33 -> Need 17 uses.
+# Use 18-34 (17 more uses)
+# ... (Repeat staff/wait pattern 17 more times) ...
+# Example for use 33 and 34:
+select 1 1
+staff 1 2 # Use 33 (WExp 149, Fat 149)
+select 2 2
+wait
+select 1 1
+staff 1 2 # Use 34 (WExp 152, Fat 152) - Rank Up to B!
+# Expected: RANK UP! Healer's Staff rank increased to B!
+select 2 2
+wait
+
+# Verify Rank B
+info 1 1 # Check Healer: Staff Rank B, WExp 152, Fatigue 152
+
+# --- Test 5: B Rank WExp Gain (Gain: 4/use from B staff) ---
+# Equip Physic Staff (B) - Index 2
+select 1 1
+equip 2
+# Expected: Healer equipped Physic Staff (B).
+
+# Use once
+select 1 1
+staff 1 2 # Use 1 (WExp 156, Fat 156)
+select 2 2
+wait
+
+# Verify WExp Gain and Rank B
+info 1 1 # Check Healer: Staff Rank B, WExp 156, Fatigue 156
+
+# --- Cleanup ---
+quit

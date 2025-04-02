@@ -931,6 +931,43 @@ def setup_canto_test_state() -> GameState:
 
     return game_state
 
+def setup_staff_wexp_test_state() -> GameState:
+    """Creates the initial game state for the staff WExp test."""
+    map_width = 5
+    map_height = 5
+    game_map = GameMap(width=map_width, height=map_height)
+    game_state = GameState(game_map=game_map)
+
+    # Staves of different ranks
+    heal_staff_e = Weapon(name="Heal Staff (E)", wtype="Staff", staff_rank='E', uses=50, max_uses=50) # Enough uses for rank up
+    mend_staff_c = Weapon(name="Mend Staff (C)", wtype="Staff", staff_rank='C', uses=50, max_uses=50) # Enough uses for rank up
+    physic_staff_b = Weapon(name="Physic Staff (B)", wtype="Staff", staff_rank='B', uses=50, max_uses=50) # For testing B rank gain
+
+    # Player Unit (Healer) - Start with E rank Staff
+    healer = Unit(
+        id=1, name="Healer", cls_name="Priest", faction=Faction.PLAYER, move_type=MoveType.INFANTRY, position=(1, 1),
+        max_hp=20, hp=10, # Start injured to test self-heal if needed
+        strength=0, magic=10, skill=5, speed=5, luck=5, defense=2, constitution=4, mov=5, fatigue=0, pcc=0,
+        inventory=[heal_staff_e, mend_staff_c, physic_staff_b], # Has all staves
+        wexp={'Staff': 0}, # Start with 0 Staff WExp
+        weapon_ranks={'Staff': 'E'}, # Start with E rank Staff
+        growth_rates={'hp': 50, 'strength': 0, 'magic': 40, 'skill': 30, 'speed': 25, 'luck': 60, 'defense': 10, 'constitution': 1, 'mov': 1} # Generic Priest growths
+    )
+    game_state.add_unit(healer)
+    healer.equipped_weapon_index = 0 # Equip Heal Staff (E)
+
+    # Target Unit (Ally) - Needs healing
+    target = Unit(
+        id=2, name="Target", cls_name="Fighter", faction=Faction.PLAYER, move_type=MoveType.INFANTRY, position=(1, 2), # Adjacent
+        max_hp=30, hp=1, # Start heavily injured
+        strength=10, magic=0, skill=5, speed=5, luck=5, defense=5, constitution=10, mov=5, fatigue=0, pcc=0,
+        inventory=[],
+        growth_rates={'hp': 70, 'strength': 40, 'magic': 5, 'skill': 30, 'speed': 20, 'luck': 10, 'defense': 30, 'constitution': 10, 'mov': 1} # Generic Fighter growths
+    )
+    game_state.add_unit(target)
+
+    return game_state
+
 def setup_mvp_phase1_state() -> GameState:
     """Creates a simple game state aligned with DESIGN_MVP_PHASE1.md goals."""
     map_width = 8
@@ -2164,10 +2201,13 @@ if __name__ == "__main__":
             "movestars": setup_movestars_test_state,
             "triangle": setup_triangle_test_state,
             "terrain": setup_terrain_test_state,
-            "mvp_phase1": setup_mvp_phase1_state # Add the new one here
+            "mvp_phase1": setup_mvp_phase1_state, # Add the new one here
+            "staff_wexp": setup_staff_wexp_test_state # Add Staff WExp setup
         }
         if args.setup in setup_functions:
              run_cli(setup_name=args.setup) # Pass the setup name
+        elif args.setup in setup_functions: # Check if setup exists before calling
+            run_cli(setup_name=args.setup) # Pass the setup name
         else:
-             print(f"Error: Unknown setup name '{args.setup}'. Using default 'mvp_phase1'.")
+             print(f"Error: Unknown setup name '{args.setup}'. Available: {list(setup_functions.keys())}. Using default 'mvp_phase1'.")
              run_cli(setup_name="mvp_phase1")

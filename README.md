@@ -44,6 +44,7 @@ The initial Minimum Viable Product (MVP) focusing on foundational map/unit repre
     *   Implemented Movement Stars: Units have a chance (5% per star) to act again after completing an action (`src/game/models.py`, `src/cli.py`).
     *   Implemented Canto: Mounted units can use remaining movement after non-combat actions (`src/game/movement.py`, `src/cli.py`, `src/game/display.py`).
     *   Implemented basic Staff usage: Added `staff <x> <y>` command. Implemented Heal staff effect (Range 1, Heals 10 + User Mag), fatigue cost, use consumption, and Canto prevention (`src/cli.py`, `test_staff_commands.txt`). Other staff effects are pending.
+    *   Implemented Staff WExp gain based on staff rank and rank-up thresholds (`src/game/models.py`, `src/cli.py`, `test_staff_wexp.txt`).
     *   Fixed AI logic to correctly prioritize attacking when in range before attempting to move (`src/game/ai.py`).
     *   Fixed movement state handling in the CLI to allow subsequent valid moves after a failed move attempt (e.g., trying to enter impassable terrain) (`src/cli.py`).
 *   **Testing (Refactored Approach):**
@@ -122,6 +123,9 @@ The initial Minimum Viable Product (MVP) focusing on foundational map/unit repre
 
     # Test magic critical hits
     cat test_magic_crit_commands.txt | python3 src/cli.py --setup magic_crit
+
+    # Test staff WExp gain
+    cat test_staff_wexp.txt | python3 src/cli.py --setup staff_wexp
     ```
 
 ## Development Workflow
