@@ -32,16 +32,19 @@ The initial Minimum Viable Product (MVP) focusing on foundational map/unit repre
     *   Implemented Terrain Combat Bonuses (DEF/AVO) (`src/game/models.py`, `src/game/combat.py`).
     *   Implemented Weapon Triangle bonuses (+/- 5 Hit) (`src/game/models.py`, `src/game/combat.py`).
     *   Implemented Weapon Effectiveness (3x Might) (`src/game/models.py`, `src/game/combat.py`).
+    *   Implemented Support, Leadership, and Charisma bonuses affecting Hit/Avoid/Crit/CritEvade (`src/game/models.py`, `src/game/combat.py`).
     *   Added `equip` command to CLI (`src/cli.py`).
     *   Added `inventory` command to view unit items (`src/cli.py`).
     *   Added `use <item_index>` command to use consumable items (e.g., Vulnerary) (`src/cli.py`, `src/game/models.py`).
     *   Added `steal <x> <y> [item_index]` command for units with `can_steal=True`, checking AS and Con vs item weight (`src/cli.py`, `src/game/models.py`, `src/game/combat.py`).
-    *   Implemented basic Enemy AI: find closest player, move adjacent, attack if possible (`src/game/ai.py`, `src/cli.py`).
+    *   Implemented basic Enemy AI: find closest player, move adjacent, attack if possible. Added checks to prevent Sleep/Berserk units from acting (`src/game/ai.py`, `src/cli.py`).
     *   Refined Capture mechanics: Added immunity checks (Con>=20, Mounted Target), verified stat penalties (`src/game/combat.py`).
     *   Implemented basic Unit Skills: Wrath (guaranteed counter crit), Adept (extra attack chance), Miracle (avoid boost at low HP), Nihil (negate enemy crits) (`src/game/models.py`, `src/game/combat.py`, `src/cli.py`).
-    *   Implemented basic Status Effects: Poison (damage at turn start), Sleep (prevents action, reduces stats), Silence (prevents magic use). Statuses persist until cured (no auto-recovery implemented yet). (`src/game/models.py`, `src/game/combat.py`, `src/cli.py`).
+    *   Implemented basic Status Effects: Poison (damage at turn start), Silence (prevents magic use). Refined Sleep/Berserk to prevent action and apply combat stat penalties (Str/Mag/Skl/Spd/Def = 0). Statuses persist until cured (no auto-recovery implemented yet). (`src/game/models.py`, `src/game/combat.py`, `src/cli.py`).
+    *   Implemented Movement Stars: Units have a chance (5% per star) to act again after completing an action (`src/game/models.py`, `src/cli.py`).
+    *   Implemented Canto: Mounted units can use remaining movement after non-combat actions (`src/game/movement.py`, `src/cli.py`, `src/game/display.py`).
 *   **Testing:**
-    *   Automated testing via command file input (`test_mvp_commands.txt`, `test_combat_commands.txt`, `test_crit_commands.txt`, `test_magic_attack.txt`, `test_triangle.txt`, `test_effectiveness.txt`, `test_item_commands.txt`, `test_steal_commands.txt`, `test_ai_commands.txt`, `test_capture_commands.txt`, `test_terrain_commands.txt`, `test_fatigue_commands_v2.txt`, `test_skills_commands.txt`, `test_status_commands.txt`).
+    *   Automated testing via command file input (`test_mvp_commands.txt`, `test_combat_commands.txt`, `test_crit_commands.txt`, `test_magic_attack.txt`, `test_triangle.txt`, `test_effectiveness.txt`, `test_item_commands.txt`, `test_steal_commands.txt`, `test_ai_commands.txt`, `test_capture_commands.txt`, `test_terrain_commands.txt`, `test_fatigue_commands_v2.txt`, `test_skills_commands.txt`, `test_status_commands.txt`, `test_bonus_commands.txt`, `test_movestars_commands.txt`, `test_canto_commands.txt`).
 
 **Design Documents:**
 

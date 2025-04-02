@@ -1,0 +1,50 @@
+# Test Support, Leadership, and Charisma Bonuses (Revised)
+
+# Initial state: Leif (1,4) has 1 LS, Nanna (1,3) has Charisma. Bandit (5,4).
+# Leif and Nanna support each other (+10). Nanna is 1 tile away.
+
+# --- TURN 1 ---
+# 1. Select Leif
+select 1 4
+info
+
+# 2. Move Leif away from Nanna to attack Bandit (e.g., move to 4,4)
+move 4 4
+
+# 3. Attack Bandit (Leif at (4,4), Nanna at (1,3) - distance > 3)
+# Expected bonuses for Leif (No Support/Charisma from Nanna): +3 Hit/Avo
+attack 5 4
+# Observe combat forecast (Attack 1)
+
+# 4. Select Nanna
+select 1 3
+
+# 5. Wait with Nanna (stays at 1,3)
+wait
+
+# 6. End Turn
+endturn
+
+# --- TURN 2 ---
+# Bandit likely moved in Enemy Phase. Assume Bandit is now at (3,4) based on AI logic.
+
+# 7. Select Nanna (at 1,3)
+select 1 3
+
+# 8. Move Nanna adjacent to Leif (who is at 4,4). Move Nanna to (3,4).
+move 3 4
+
+# 9. Wait with Nanna
+wait
+
+# 10. Select Leif (at 4,4)
+select 4 4
+
+# 11. Attack Bandit (now assumed at 3,4). Leif at (4,4), Nanna at (3,4) - distance 1.
+# Expected bonuses for Leif: +3 LS, +10 Charisma, +10 Support = +23 Hit/Avo, +10 Crit/CritEvade
+attack 3 4
+# Observe combat forecast (Attack 2) - Compare Hit/Crit to Attack 1
+
+# 12. End Turn (or quit)
+endturn
+quit

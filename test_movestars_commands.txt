@@ -1,0 +1,39 @@
+# Test Movement Stars Activation
+
+# Setup: Leif has 20 movement stars (100% activation chance).
+
+# 1. Select Leif
+select 1 4
+info
+
+# 2. Wait (Action 1)
+wait
+# Expect: Movement Star activation message, Leif deselected but can act again.
+
+# 3. Select Leif again
+select 1 4
+
+# 4. Move Leif
+move 2 4
+# Expect: Movement Star activation message, Leif deselected but can act again.
+
+# 5. Select Leif again
+select 2 4
+
+# 6. Attack Bandit (Action 3)
+# Bandit starts at (5,4), likely moves to (4,4) or (3,4) in Enemy Phase 1.
+# Attack where Bandit is likely to be, e.g., (4,4)
+attack 4 4
+# Expect: Movement Star activation message, Leif deselected but can act again.
+
+# 7. Select Leif again
+select 2 4
+
+# 8. Wait again (Action 4)
+wait
+# Expect: Movement Star activation message.
+
+# 9. End turn to see if state is okay
+endturn
+
+quit

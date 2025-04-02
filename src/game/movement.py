@@ -1,22 +1,26 @@
 # src/game/movement.py (Updated)
 
 import math # Import math
-from typing import Set, Tuple, Optional
+from typing import Set, Tuple, Optional, Dict # Add Dict
 from collections import deque
 # Import MoveType and TERRAIN_COSTS
 from .models import GameState, Unit, MoveType, TERRAIN_COSTS, TerrainType
 
-def calculate_move_range(game_state: GameState, unit: Unit) -> Set[Tuple[int, int]]:
+def calculate_move_range(
+    game_state: GameState,
+    unit: Unit,
+    override_max_move: Optional[int] = None # NEW: Optional parameter for Canto
+) -> Dict[Tuple[int, int], int]:
     """
     Calculates the set of reachable tiles for a given unit using BFS.
-    Considers unit.mov, terrain costs based on unit.move_type, blocking by other units,
-    and movement penalty if capturing.
+    Returns a dictionary mapping {position: cost_to_reach}.
+    Considers unit.mov (or override_max_move), terrain costs, blocking, and capture penalty.
     """
     if not unit.is_alive or unit.has_acted: # Also check if alive
-        return set()
+        return {} # Return empty dict if cannot move
 
     start_pos = unit.position
-    max_move = unit.mov
+    max_move = override_max_move if override_max_move is not None else unit.mov
 
     # --- Apply Capture Movement Penalty ---
     # Thracia: Mov halved if carried unit Con > half rescuer Con (+5 if mounted)
@@ -27,10 +31,12 @@ def calculate_move_range(game_state: GameState, unit: Unit) -> Set[Tuple[int, in
     # ------------------------------------
 
 
-    reachable = {start_pos}
-    # Queue stores tuples of (position, remaining_move)
-    queue = deque([(start_pos, max_move)])
-    visited_costs = {start_pos: max_move} # Store max remaining move to reach a tile
+    # reachable_costs stores {position: cost_to_reach}
+    reachable_costs: Dict[Tuple[int, int], int] = {start_pos: 0}
+    # Queue stores tuples of (position, current_cost)
+    queue = deque([(start_pos, 0)])
+    # visited_min_costs stores {position: min_cost_found} to prune search
+    visited_min_costs = {start_pos: 0}
 
     unit_move_type = unit.move_type
     cost_table = TERRAIN_COSTS.get(unit_move_type)
@@ -39,10 +45,10 @@ def calculate_move_range(game_state: GameState, unit: Unit) -> Set[Tuple[int, in
     if not cost_table:
         print(f"Warning: No terrain cost table found for MoveType '{unit_move_type}'. Movement may be incorrect.")
         # Decide on fallback: treat as Infantry or block movement? Let's block for safety.
-        return {start_pos} # Or maybe return empty set? {start_pos} seems safer.
+        return {start_pos: 0} # Return dict with start pos cost 0
 
     while queue:
-        (current_x, current_y), remaining_move = queue.popleft()
+        (current_x, current_y), current_cost = queue.popleft()
 
         # Explore neighbors (up, down, left, right)
         for dx, dy in [(0, 1), (0, -1), (1, 0), (-1, 0)]:
@@ -68,9 +74,9 @@ def calculate_move_range(game_state: GameState, unit: Unit) -> Set[Tuple[int, in
                 move_cost = 1 # Minimum cost is 1
             # -----------------------------
 
-            next_remaining_move = remaining_move - move_cost
-            if next_remaining_move < 0:
-                continue
+            next_cost = current_cost + move_cost
+            if next_cost > max_move:
+                continue # Exceeds movement points
 
             # Check if tile is occupied by another unit (cannot move through)
             occupying_unit_id = tile.unit_id
@@ -79,10 +85,10 @@ def calculate_move_range(game_state: GameState, unit: Unit) -> Set[Tuple[int, in
             if occupying_unit_id is not None and occupying_unit_id != unit.id:
                  continue # Blocked by another unit
 
-            # Check if we've found a better path or a new path
-            if next_pos not in visited_costs or next_remaining_move > visited_costs[next_pos]:
-                visited_costs[next_pos] = next_remaining_move
-                reachable.add(next_pos)
-                queue.append((next_pos, next_remaining_move))
+            # Check if we've found a cheaper path or a new path
+            if next_pos not in visited_min_costs or next_cost < visited_min_costs[next_pos]:
+                visited_min_costs[next_pos] = next_cost
+                reachable_costs[next_pos] = next_cost # Store the cost to reach this tile
+                queue.append((next_pos, next_cost))
 
-    return reachable
+    return reachable_costs

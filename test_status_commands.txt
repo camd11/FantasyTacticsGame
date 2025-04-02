@@ -24,7 +24,10 @@ info
 move 4 4
 
 # 6. Attack the sleeping Bandit
-# Bandit has Sleep, so Def/Avoid should be 0. Bandit cannot counter.
+# Bandit has Sleep, so Def/Avoid/Mag should be 0. Bandit cannot counter.
+# Leif (Str 5) + Iron Sword (Mt 5) = 10 Atk
+# Bandit (Def 2 -> 0 due to Sleep)
+# Expected Damage: 10 - 0 = 10
 attack 5 4
 
 # 7. End turn again

@@ -2,7 +2,7 @@
 
 import math
 from typing import List, Optional, Tuple
-from .models import Unit, GameState, Faction
+from .models import Unit, GameState, Faction, StatusEffect # NEW: Import StatusEffect
 from .movement import calculate_move_range # Need this to check reachability
 from .combat import simulate_combat
 
@@ -92,6 +92,16 @@ def run_enemy_ai(game_state: GameState):
         # or even by another AI unit's action if AI targeted allies (not applicable yet)
         if not enemy.is_alive or enemy.is_captured:
             continue
+
+        # NEW: Check for status effects that prevent action
+        print(f"  DEBUG: Checking status for {enemy.name}. Status: {enemy.status_effect}") # DEBUG
+        if enemy.status_effect == StatusEffect.SLEEP:
+            print(f"  AI SKIP: {enemy.name} cannot act (Sleeping).") # DEBUG
+            continue
+        if enemy.status_effect == StatusEffect.BERSERK:
+            print(f"  AI SKIP: {enemy.name} cannot act (Berserk - AI control not implemented).") # DEBUG
+            continue
+        print(f"  DEBUG: Status OK for {enemy.name}. Proceeding with AI.") # DEBUG
 
         # Refresh player unit list in case one was defeated *by a previous enemy*
         current_player_units = [p for p in player_units if p.is_alive and not p.is_captured]

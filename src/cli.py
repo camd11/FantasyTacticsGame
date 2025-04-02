@@ -2,7 +2,8 @@
 
 import sys
 import os
-from typing import Optional, Set, Tuple
+import random # NEW: Import random module for Movement Stars
+from typing import Optional, Set, Tuple, Dict # Add Dict
 
 # Ensure the 'src' directory is in the Python path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -10,7 +11,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')
 # Import necessary components
 from game.models import (GameState, GameMap, Unit, Weapon, Faction, MoveType,
                          TerrainType, Vulnerary, Item, StatusEffect, # Added StatusEffect
-                         FATIGUE_COST_COMBAT, FATIGUE_COST_ITEM) # Import fatigue costs
+                         FATIGUE_COST_COMBAT, FATIGUE_COST_ITEM, CHARISMA_SKILL_NAME) # Import fatigue costs, Charisma skill name
 from game.display import render_map
 from game.movement import calculate_move_range
 from game.combat import simulate_combat
@@ -65,7 +66,9 @@ def setup_initial_state() -> GameState:
     # Add Leif (Player - Cavalry) - Default setup
     leif = Unit(
         id=1, name="Leif", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 4), # Default start (1,4)
-        max_hp=20, hp=20, strength=5, magic=5, skill=6, speed=7, luck=6, defense=3, constitution=5, mov=7, fatigue=0, pcc=1, # Added pcc=1, set magic=5
+        max_hp=20, hp=20, strength=5, magic=5, skill=6, speed=7, luck=6, defense=3, constitution=5, mov=7, fatigue=0, pcc=1,
+        leadership_stars=1, # Give Leif 1 leadership star
+        movement_stars=20, # NEW: Give Leif 20 stars (100% chance) for testing
         skills=["Adept", "Nihil"], # Added skills for testing
         status_effect=StatusEffect.POISON, # Added for status test
         inventory=leif_inventory
@@ -76,12 +79,23 @@ def setup_initial_state() -> GameState:
     bandit_inventory = [iron_axe]
     bandit = Unit(
         id=101, name="Bandit", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(5, 4),
-        max_hp=200, hp=10, strength=1, magic=0, skill=2, speed=4, luck=0, defense=2, constitution=10, mov=4, fatigue=0, pcc=0, # Added pcc=0, Lowered HP to test Miracle
-        skills=["Wrath", "Miracle"], # Added skills for testing
-        status_effect=StatusEffect.SLEEP, # Added for status test
-        inventory=[rapier] # Give Bandit Rapier instead of Axe
+        max_hp=200, hp=200, strength=1, magic=0, skill=2, speed=4, luck=0, defense=2, constitution=10, mov=4, fatigue=0, pcc=0, # Added pcc=0, Set HP to max
+        skills=["Miracle"], # REMOVED Wrath skill
+        status_effect=StatusEffect.SLEEP, # RE-ADD Sleep for testing status penalties
+        inventory=[iron_axe] # Give Bandit Iron Axe back
     )
     game_state.add_unit(bandit)
+
+    # Add Nanna (Player - Cavalry) for Support/Charisma testing
+    nanna_inventory = [Weapon(name="Heal Staff", wtype="Staff", staff_rank='E', uses=30, max_uses=30)] # Give her a basic staff
+    nanna = Unit(
+        id=2, name="Nanna", faction=Faction.PLAYER, move_type=MoveType.CAVALRY, position=(1, 3), # Position near Leif
+        max_hp=18, hp=18, strength=3, magic=6, skill=5, speed=8, luck=8, defense=2, constitution=4, mov=7, fatigue=0, pcc=2,
+        leadership_stars=0,
+        skills=[CHARISMA_SKILL_NAME], # Give Nanna Charisma
+        inventory=nanna_inventory
+    )
+    game_state.add_unit(nanna)
 
     return game_state
 
@@ -103,15 +117,49 @@ def apply_turn_start_effects(game_state: GameState):
                     print(f"  {unit.name} succumbed to poison!")
             # Add other start-of-turn effects here (e.g., healing terrain)
 
+# --- Action Completion & Movement Star Check ---
+def complete_action(unit: Unit, game_state: GameState) -> bool:
+    """
+    Handles post-action logic: fatigue, has_acted flag, and Movement Star check.
+    Returns True if the unit gets another action due to Movement Stars, False otherwise.
+    """
+    # Fatigue is handled within specific actions (combat, use, steal, staff)
+
+    # Movement Star Check (Thracia: 5% per star)
+    if unit.movement_stars > 0:
+        chance = unit.movement_stars * 5
+        roll = random.randint(1, 100)
+        print(f"  (Movement Star Check: Roll {roll} vs Chance {chance})") # Debug
+        if roll <= chance:
+            print(f"  Movement Star activated! {unit.name} can act again.")
+            # Reset has_acted flag if it was set by the action
+            unit.has_acted = False
+            # Deselect unit so player must re-select to act again
+            game_state.selected_unit_id = None
+            return True # Unit gets another action
+        else:
+            print(f"  (Movement Star did not activate)")
+
+    # If no movement star activation, mark as acted
+    unit.has_acted = True
+    game_state.selected_unit_id = None # Deselect after action
+    return False # Unit's turn ends
+
 # --- Main CLI Loop (Updated) ---
 def run_cli():
     """Runs the main command-line interface loop."""
     game_state = setup_initial_state()
-    current_move_range: Optional[Set[Tuple[int, int]]] = None
+    # Store move range as {pos: cost}
+    current_move_range: Optional[Dict[Tuple[int, int], int]] = None
     current_attack_range: Optional[Set[Tuple[int, int]]] = None
+    # Store remaining move points after a move for Canto calculation
+    canto_move_points: Optional[int] = None
+    is_canto_active: bool = False # Flag if currently in Canto state
+    current_canto_range: Optional[Dict[Tuple[int, int], int]] = None # Store calculated canto range
 
     while True:
-        render_map(game_state, current_move_range)
+        # Pass canto range to render_map if active
+        render_map(game_state, current_move_range if not is_canto_active else None, current_canto_range if is_canto_active else None)
         # Update prompt
         prompt = "Cmds: select|move|attack|capture|equip|inventory|use|trade|release|wait|info|endturn|quit: " # Added inventory, use
         command_str = input(prompt).strip() # Don't lowercase yet
@@ -163,16 +211,22 @@ def run_cli():
                         elif unit and unit.faction == Faction.PLAYER and unit.is_alive:
                             game_state.selected_unit_id = unit_id
                             if not unit.has_acted:
+                                # Calculate and store move range with costs
                                 current_move_range = calculate_move_range(game_state, unit)
                                 current_attack_range = get_attack_range(unit, game_state)
+                                canto_move_points = None # Reset canto potential
+                                is_canto_active = False
+                                current_canto_range = None
                             else:
                                 current_move_range = None
                                 current_attack_range = None
                             inventory_names = [(f"{item.name}" + (f" ({item.uses}/{item.max_uses})" if item.uses is not None else "")) for item in unit.inventory]
                             capture_status = f" | Capturing: {game_state.units.get(unit.is_capturing).name}" if unit.is_capturing is not None else ""
                             acted_status = " [Acted]" if unit.has_acted else ""
+                            canto_status = " [Canto]" if is_canto_active else ""
                             fatigue_status = f" | Fatigue: {unit.fatigue}/{unit.max_hp}"
-                            print(f"Selected {unit.name}{acted_status}. Move(*). Items: {inventory_names or ['None']}{capture_status}{fatigue_status}")
+                            move_display = "Move(+)" if is_canto_active else "Move(*)"
+                            print(f"Selected {unit.name}{acted_status}{canto_status}. {move_display}. Items: {inventory_names or ['None']}{capture_status}{fatigue_status}")
                         elif unit and unit.faction != Faction.PLAYER:
                             print("Cannot select non-player units.")
                             game_state.selected_unit_id = None
@@ -218,13 +272,60 @@ def run_cli():
                          print(f"Cannot move {selected_unit.name} (already acted or no range calculated).")
                          continue
 
-                    if target_pos in current_move_range:
+                    # Check if target_pos is in the keys of the move range dict
+                    # Check if target_pos is in the current move/canto range
+                    active_range = current_canto_range if is_canto_active else current_move_range
+                    if active_range and target_pos in active_range:
+                        move_cost = active_range[target_pos]
                         if game_state.game_map.move_unit(selected_unit, x, y):
-                            print(f"Moved {selected_unit.name} to ({x}, {y}).")
-                            current_move_range = None
-                            current_attack_range = get_attack_range(selected_unit, game_state)
-                            inventory_names = [(f"{item.name}" + (f" ({item.uses}/{item.max_uses})" if item.uses is not None else "")) for item in selected_unit.inventory]
-                            print(f"Items: {inventory_names or ['None']}")
+                            print(f"Moved {selected_unit.name} to ({x}, {y}) (Cost: {move_cost}).")
+
+                            # --- Canto Logic ---
+                            is_mounted = selected_unit.move_type in [MoveType.CAVALRY, MoveType.FLYING]
+                            # Calculate remaining move based on original move allowance before capture penalty
+                            base_remaining_move = selected_unit.mov - move_cost
+                            # Apply capture penalty *after* calculating base remaining
+                            canto_mov = base_remaining_move
+                            if selected_unit.is_capturing is not None:
+                                canto_mov = math.floor(base_remaining_move / 2)
+
+                            # If this was the *initial* move (not a Canto move)
+                            if not is_canto_active:
+                                if is_mounted and canto_mov > 0:
+                                    print(f"  {selected_unit.name} has {canto_mov} movement remaining (Canto).")
+                                    # Calculate and store Canto range
+                                    current_canto_range = calculate_move_range(game_state, selected_unit, override_max_move=canto_mov)
+                                    current_move_range = None # Clear normal move range
+                                    current_attack_range = get_attack_range(selected_unit, game_state)
+                                    canto_move_points = canto_mov # Store remaining points
+                                    is_canto_active = True # Set Canto flag
+                                    # Keep unit selected, don't set has_acted yet
+                                    print(f"  (Select Canto move (+), action, or wait)")
+                                else:
+                                    # Not mounted or no move left after initial move, end action
+                                    canto_move_points = None
+                                    is_canto_active = False
+                                    current_canto_range = None
+                                    if not complete_action(selected_unit, game_state):
+                                        current_move_range = None
+                                        current_attack_range = None
+                                    else:
+                                        current_move_range = None
+                                        current_attack_range = None
+                            else:
+                                # This was a Canto move, always end the turn now
+                                print(f"  (Canto move completed)")
+                                canto_move_points = None
+                                is_canto_active = False
+                                current_canto_range = None
+                                if not complete_action(selected_unit, game_state):
+                                    current_move_range = None
+                                    current_attack_range = None
+                                else:
+                                    current_move_range = None
+                                    current_attack_range = None
+                            # -----------------
+
                         else:
                             print(f"Cannot move to ({x}, {y}) - tile might be occupied or invalid.")
                     else:
@@ -264,12 +365,17 @@ def run_cli():
                             if defender and defender.is_alive and not defender.is_captured and defender.faction != attacker.faction:
                                 simulate_combat(attacker, defender, game_state, is_capture_attempt=False)
                                 # Fatigue is handled within simulate_combat now
-                                # attacker.fatigue += FATIGUE_COST_COMBAT # REMOVED
-                                # print(f"  ({attacker.name} fatigue increases to {attacker.fatigue})") # REMOVED
-                                attacker.has_acted = True
-                                game_state.selected_unit_id = None
-                                current_move_range = None
-                                current_attack_range = None
+                                # Attack prevents Canto, always end action
+                                canto_move_points = None
+                                is_canto_active = False
+                                current_canto_range = None
+                                if not complete_action(attacker, game_state):
+                                    current_move_range = None
+                                    current_attack_range = None
+                                else:
+                                    # Movement star activated, clear ranges
+                                    current_move_range = None
+                                    current_attack_range = None
                             elif defender and defender.faction == attacker.faction:
                                 print("Cannot attack allied units.")
                             elif defender and not defender.is_alive:
@@ -318,11 +424,17 @@ def run_cli():
                             if defender and defender.is_alive and not defender.is_captured and defender.faction == Faction.ENEMY:
                                 simulate_combat(attacker, defender, game_state, is_capture_attempt=True)
                                 # Fatigue is handled within simulate_combat now
-                                # attacker.fatigue += FATIGUE_COST_COMBAT # REMOVED
-                                # print(f"  ({attacker.name} fatigue increases to {attacker.fatigue})") # REMOVED
-                                attacker.has_acted = True
-                                current_move_range = None
-                                current_attack_range = None
+                                # Capture prevents Canto, always end action
+                                canto_move_points = None
+                                is_canto_active = False
+                                current_canto_range = None
+                                if not complete_action(attacker, game_state):
+                                    current_move_range = None
+                                    current_attack_range = None
+                                else:
+                                    # Movement star activated, clear ranges
+                                    current_move_range = None
+                                    current_attack_range = None
                             elif defender and defender.faction != Faction.ENEMY:
                                 print("Cannot capture non-enemy units.")
                             elif defender and not defender.is_alive:
@@ -448,12 +560,29 @@ def run_cli():
                         print(f"Item type '{item_to_use.name}' use effect not implemented yet.")
 
                     if item_used_successfully:
-                        selected_unit.fatigue += FATIGUE_COST_ITEM
-                        print(f"  ({selected_unit.name} fatigue increases to {selected_unit.fatigue})")
-                        selected_unit.has_acted = True
-                        game_state.selected_unit_id = None
-                        current_move_range = None
-                        current_attack_range = None
+                        # Fatigue handled in action
+                        # Item use allows Canto
+                        is_mounted = selected_unit.move_type in [MoveType.CAVALRY, MoveType.FLYING]
+                        if is_mounted and canto_move_points is not None and canto_move_points > 0:
+                             print(f"  {selected_unit.name} can Canto with {canto_move_points} movement.")
+                             # Recalculate Canto range (position hasn't changed)
+                             current_canto_range = calculate_move_range(game_state, selected_unit, override_max_move=canto_move_points)
+                             current_move_range = None # Clear normal move range display
+                             current_attack_range = get_attack_range(selected_unit, game_state)
+                             is_canto_active = True
+                             # Keep unit selected, don't call complete_action yet
+                             print(f"  (Select Canto move (+), another action, or wait)")
+                        else:
+                             # End action if not mounted or no Canto points left
+                             canto_move_points = None
+                             is_canto_active = False
+                             current_canto_range = None
+                             if not complete_action(selected_unit, game_state):
+                                 current_move_range = None
+                                 current_attack_range = None
+                             else:
+                                 current_move_range = None
+                                 current_attack_range = None
 
 
                 elif command == "trade":
@@ -481,11 +610,25 @@ def run_cli():
                              print(f"Error: Captive unit ID {captive_id} not found.")
 
                         selected_unit.is_capturing = None
-                        selected_unit.fatigue += FATIGUE_COST_ITEM # Placeholder fatigue cost
-                        print(f"  ({selected_unit.name} fatigue increases to {selected_unit.fatigue})")
-                        selected_unit.has_acted = True
-                        current_move_range = None
-                        current_attack_range = None
+                        # Fatigue handled in action
+                        # Check Canto after releasing
+                        is_mounted = selected_unit.move_type in [MoveType.CAVALRY, MoveType.FLYING]
+                        if is_mounted and canto_move_points is not None and canto_move_points > 0:
+                             print(f"  {selected_unit.name} can Canto with {canto_move_points} movement.")
+                             current_move_range = calculate_move_range(game_state, selected_unit, override_max_move=canto_move_points)
+                             current_attack_range = get_attack_range(selected_unit, game_state)
+                             is_canto_active = True
+                             # Keep unit selected
+                        else:
+                             # End action if no Canto possible
+                             canto_move_points = None
+                             is_canto_active = False
+                             if not complete_action(selected_unit, game_state):
+                                 current_move_range = None
+                                 current_attack_range = None
+                             else:
+                                 current_move_range = None
+                                 current_attack_range = None
                     else:
                         print(f"{selected_unit.name} is not capturing anyone.")
 
@@ -599,13 +742,25 @@ def run_cli():
                              # Adjust equipped index if it was after the stolen item
                              target.equipped_weapon_index -= 1
 
-                        # Apply fatigue and end action
-                        thief.fatigue += FATIGUE_COST_STEAL
-                        print(f"  ({thief.name} fatigue increases to {thief.fatigue})")
-                        thief.has_acted = True
-                        game_state.selected_unit_id = None
-                        current_move_range = None
-                        current_attack_range = None
+                        # Fatigue handled in action
+                        # Check Canto after stealing
+                        is_mounted = thief.move_type in [MoveType.CAVALRY, MoveType.FLYING]
+                        if is_mounted and canto_move_points is not None and canto_move_points > 0:
+                             print(f"  {thief.name} can Canto with {canto_move_points} movement.")
+                             current_move_range = calculate_move_range(game_state, thief, override_max_move=canto_move_points)
+                             current_attack_range = get_attack_range(thief, game_state)
+                             is_canto_active = True
+                             # Keep unit selected
+                        else:
+                             # End action if no Canto possible
+                             canto_move_points = None
+                             is_canto_active = False
+                             if not complete_action(thief, game_state):
+                                 current_move_range = None
+                                 current_attack_range = None
+                             else:
+                                 current_move_range = None
+                                 current_attack_range = None
 
                 elif command == "staff": # NEW command
                     caster = game_state.get_selected_unit()
@@ -651,11 +806,17 @@ def run_cli():
                             if equipped_item.uses == 0:
                                 print(f"  {equipped_item.name} broke.")
                                 # TODO: Handle removing/replacing broken item
-
-                        caster.has_acted = True
-                        game_state.selected_unit_id = None
-                        current_move_range = None
-                        current_attack_range = None
+    
+                            # Staff use prevents Canto, always end action
+                            canto_move_points = None
+                            is_canto_active = False
+                            if not complete_action(caster, game_state):
+                                current_move_range = None
+                                current_attack_range = None
+                            else:
+                                # Movement star activated, clear ranges
+                                current_move_range = None
+                                current_attack_range = None
 
                     except ValueError:
                         print("Invalid coordinates.")
@@ -672,11 +833,17 @@ def run_cli():
                     if selected_unit.has_acted:
                          print(f"{selected_unit.name} has already acted.")
                          continue
-                    selected_unit.has_acted = True
                     print(f"{selected_unit.name} waits.")
-                    game_state.selected_unit_id = None
-                    current_move_range = None
-                    current_attack_range = None
+                    # Wait always ends the turn, regardless of Canto potential
+                    canto_move_points = None
+                    is_canto_active = False
+                    if not complete_action(selected_unit, game_state):
+                        current_move_range = None
+                        current_attack_range = None
+                    else:
+                        # Movement star activated, clear ranges
+                        current_move_range = None
+                        current_attack_range = None
 
                 elif command == "info":
                     target_unit = None # Initialize target_unit here

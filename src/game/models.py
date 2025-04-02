@@ -100,7 +100,18 @@ FATIGUE_COST_STAFF = {
 }
 # Add cost for Dance later
 
+# --- Supports Data ---
+# Structure: SUPPORTS[giver_name][receiver_name] = bonus
+# Based on research.md / Serenes Forest data
+SUPPORTS: Dict[str, Dict[str, int]] = {
+    "Nanna": {"Leif": 10}, # Nanna gives Leif +10
+    "Leif": {"Nanna": 10}, # Leif gives Nanna +10
+    "Galzus": {"Mareeta": 20}, # Example: Galzus gives Mareeta +20
+    # Add more pairs as needed
+}
 
+# --- Charisma Skill Name ---
+CHARISMA_SKILL_NAME = "Charisma" # Define constant for the skill name
 # --- Item Base Class ---
 @dataclass
 class Item:
@@ -183,8 +194,9 @@ class Unit:
     mov: int = 0
     fatigue: int = 0 # NEW: Fatigue counter
     pcc: int = 0 # Pursuit Critical Coefficient (FCM)
-    skills: List[str] = field(default_factory=list) # NEW: List of skill names (e.g., ["Wrath", "Adept"])
-
+    leadership_stars: int = 0 # NEW: Leadership stars for global bonus
+    movement_stars: int = 0 # NEW: For extra action chance (5% per star)
+    skills: List[str] = field(default_factory=list) # List of skill names (e.g., ["Wrath", "Adept", "Charisma"])
     # Equipment & Inventory
     inventory: List[InventoryItem] = field(default_factory=list)
     equipped_weapon_index: Optional[int] = None # Index in inventory, None if unarmed

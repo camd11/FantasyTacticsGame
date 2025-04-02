@@ -1,16 +1,23 @@
 # src/game/display.py (Updated)
 
-from typing import Set, Tuple, Optional
+from typing import Set, Tuple, Optional, Dict # Add Dict
 from .models import GameState, Unit, Faction, TerrainType # Import Faction, TerrainType
 
-def render_map(game_state: GameState, move_range: Optional[Set[Tuple[int, int]]] = None):
+def render_map(
+    game_state: GameState,
+    move_range: Optional[Dict[Tuple[int, int], int]] = None, # Changed to Dict
+    canto_range: Optional[Dict[Tuple[int, int], int]] = None # NEW: Add canto_range
+):
     """Renders the current game map and state to the console."""
     print(f"\n--- Turn {game_state.turn} - {game_state.active_faction} Phase ---")
 
     selected_unit = game_state.get_selected_unit()
     selected_pos = selected_unit.position if selected_unit else None
+    # Default ranges to empty dicts if not provided
     if move_range is None:
-        move_range = set() # Default to empty set if no range provided
+        move_range = {}
+    if canto_range is None:
+        canto_range = {}
 
     # Header row (X coordinates)
     header = "   " + " ".join(f"{str(i):<2}" for i in range(game_state.game_map.width))
@@ -68,11 +75,14 @@ def render_map(game_state: GameState, move_range: Optional[Set[Tuple[int, int]]]
                     display_char = "E"
                 elif unit.faction == Faction.ALLY:
                     display_char = "A"
-            elif current_pos in move_range: # Check move_range only if tile is empty/passable terrain
-                 # Show move range only if no unit is present
-                 if display_char == terrain_char: # Only overlay if it's just terrain
-                    display_char = "*" # Reachable tile for selected unit
-            # TODO: Add display for attack range ('+') later
+            # Check Canto range first, then normal move range
+            elif current_pos in canto_range:
+                 if display_char == terrain_char:
+                    display_char = "+" # Canto range tile
+            elif current_pos in move_range:
+                 if display_char == terrain_char:
+                    display_char = "*" # Normal move range tile
+            # TODO: Add display for attack range ('x'?) later
 
             row_str += f" {display_char} " # Add spacing around character
         row_str += "|" # Right border

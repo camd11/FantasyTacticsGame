@@ -6,10 +6,68 @@ from typing import Optional, Tuple
 from .models import (Unit, GameState, Weapon, MoveType, FATIGUE_COST_COMBAT, # Existing
                       TERRAIN_PROPERTIES, TerrainType, # Terrain
                       WEAPON_TRIANGLE_BONUS, PHYSICAL_TRIANGLE, ANIMA_TRIANGLE, # Triangle
-                      ANIMA_TYPES, LIGHT_DARK_TYPES, Faction, StatusEffect) # Triangle helpers, ADDED Faction, StatusEffect
+                      ANIMA_TYPES, LIGHT_DARK_TYPES, Faction, StatusEffect, # Triangle helpers, ADDED Faction, StatusEffect
+                      SUPPORTS, CHARISMA_SKILL_NAME) # NEW: Import support data and charisma skill name
+
+# --- Bonus Calculation Helpers ---
+
+def get_distance(unit1: Unit, unit2: Unit) -> int:
+    """Calculates Manhattan distance between two units."""
+    return abs(unit1.position[0] - unit2.position[0]) + abs(unit1.position[1] - unit2.position[1])
+
+def calculate_support_bonus(unit: Unit, game_state: GameState) -> Tuple[int, int, int, int]:
+    """Calculates total support bonus (Hit, Avo, Crit, CritEvade) for a unit."""
+    # Thracia: Supports are within 3 tiles, stack up to +30 total.
+    total_bonus = 0
+    receiver_name = unit.name
+    for other_unit in game_state.units.values():
+        if other_unit.id == unit.id or not other_unit.is_alive or other_unit.faction != unit.faction:
+            continue # Skip self, dead units, or different factions
+
+        giver_name = other_unit.name
+        if giver_name in SUPPORTS and receiver_name in SUPPORTS[giver_name]:
+            distance = get_distance(unit, other_unit)
+            if distance <= 3:
+                bonus = SUPPORTS[giver_name][receiver_name]
+                total_bonus += bonus
+                # print(f"  DEBUG: {unit.name} receives +{bonus} support from {giver_name} (Dist: {distance})") # Debug
+
+    # Cap bonus at +30
+    capped_bonus = min(total_bonus, 30)
+    # Thracia: Support bonus applies equally to Hit, Avo, Crit, CritEvade
+    return capped_bonus, capped_bonus, capped_bonus, capped_bonus
+
+def calculate_leadership_bonus(unit: Unit, game_state: GameState) -> Tuple[int, int]:
+    """Calculates total leadership bonus (Hit, Avo) for a unit."""
+    # Thracia: Leadership stars * 3, global bonus from all leaders of the same faction.
+    total_stars = 0
+    for leader_unit in game_state.units.values():
+        if leader_unit.faction == unit.faction and leader_unit.is_alive and leader_unit.leadership_stars > 0:
+            total_stars += leader_unit.leadership_stars
+
+    bonus = total_stars * 3
+    # print(f"  DEBUG: {unit.name} receives +{bonus} leadership bonus (Total Stars: {total_stars})") # Debug
+    # Leadership applies to Hit and Avoid
+    return bonus, bonus
+
+def calculate_charisma_bonus(unit: Unit, game_state: GameState) -> Tuple[int, int]:
+    """Calculates total charisma bonus (Hit, Avo) for a unit."""
+    # Thracia: +10 Hit/Avo for each ally with Charisma within 3 tiles. Stacks.
+    total_bonus = 0
+    for char_unit in game_state.units.values():
+        if char_unit.id == unit.id or not char_unit.is_alive or char_unit.faction != unit.faction:
+            continue
+
+        if CHARISMA_SKILL_NAME in char_unit.skills:
+            distance = get_distance(unit, char_unit)
+            if distance <= 3:
+                total_bonus += 10
+                # print(f"  DEBUG: {unit.name} receives +10 charisma bonus from {char_unit.name} (Dist: {distance})") # Debug
+
+    # Charisma applies to Hit and Avoid
+    return total_bonus, total_bonus
 
 # --- Combat Calculation Helpers ---
-
 def calculate_attack_speed(unit: Unit, game_state: GameState) -> int: # Add game_state
     """Calculates Attack Speed (AS)."""
     # Thracia: AS = Speed – max( (Weapon Weight – Con), 0 ) for physical
@@ -36,17 +94,26 @@ def calculate_attack_speed(unit: Unit, game_state: GameState) -> int: # Add game
     return max(0, attack_speed)
 
 def calculate_hit_rate(unit: Unit, game_state: GameState) -> int: # Add game_state
-    """Calculates Hit Rate. Simplified: Weapon Hit + (2 * Skill) + Luck."""
+    """Calculates Hit Rate including bonuses."""
     # Thracia: Hit = Weapon Hit + (2 * Skill) + Luck + Support + Leadership + Charisma + WTriangle
     if not unit.is_alive: return 0
     if unit.status_effect == StatusEffect.SLEEP:
         return 0 # Sleeping units have 0 effective skill/luck for hit calc
+
     weapon_hit = unit.equipped_weapon.hit if unit.equipped_weapon else 0
-    # Ensure base hit isn't negative if stats are low
-    return max(0, weapon_hit + (2 * unit.skill) + unit.luck)
+    base_hit = max(0, weapon_hit + (2 * unit.skill) + unit.luck)
+
+    # Calculate bonuses
+    support_hit, _, _, _ = calculate_support_bonus(unit, game_state)
+    leadership_hit, _ = calculate_leadership_bonus(unit, game_state)
+    charisma_hit, _ = calculate_charisma_bonus(unit, game_state)
+
+    # Add bonuses
+    total_hit = base_hit + support_hit + leadership_hit + charisma_hit
+    return max(0, total_hit) # Ensure final hit isn't negative
 
 def calculate_avoid(unit: Unit, game_state: GameState) -> int: # Add game_state
-    """Calculates Avoid Rate. Includes terrain bonus."""
+    """Calculates Avoid Rate including bonuses and terrain."""
     # Thracia: Avoid = (2 * Attack Speed) + Luck + Support + Leadership + Charisma + Terrain
     if not unit.is_alive: return 0
     if unit.status_effect == StatusEffect.SLEEP:
@@ -55,7 +122,12 @@ def calculate_avoid(unit: Unit, game_state: GameState) -> int: # Add game_state
     attack_speed = calculate_attack_speed(unit, game_state) # Pass game_state
     base_avoid = max(0, (2 * attack_speed) + unit.luck)
 
-    # Add terrain bonus (skip for Flying)
+    # Calculate bonuses
+    _, support_avo, _, _ = calculate_support_bonus(unit, game_state)
+    _, leadership_avo = calculate_leadership_bonus(unit, game_state)
+    _, charisma_avo = calculate_charisma_bonus(unit, game_state)
+
+    # Calculate terrain bonus (skip for Flying)
     terrain_avo_bonus = 0
     if unit.move_type != MoveType.FLYING:
         tile = game_state.game_map.get_tile(unit.position[0], unit.position[1])
@@ -63,7 +135,9 @@ def calculate_avoid(unit: Unit, game_state: GameState) -> int: # Add game_state
             terrain_props = TERRAIN_PROPERTIES.get(tile.terrain_type, {})
             terrain_avo_bonus = terrain_props.get('avo', 0)
 
-    return base_avoid + terrain_avo_bonus
+    # Add bonuses
+    total_avoid = base_avoid + support_avo + leadership_avo + charisma_avo + terrain_avo_bonus
+    return max(0, total_avoid) # Ensure final avoid isn't negative
 
 def calculate_damage(
     attacker_stat: int, # Can be Str or Mag
@@ -77,15 +151,33 @@ def calculate_damage(
     return max(0, attack_power - defense_power)
 
 def calculate_crit_rate(unit: Unit, game_state: GameState) -> int: # Add game_state
-    """Calculates base Critical Rate. Simplified: Weapon Crit + Skill."""
+    """Calculates base Critical Rate including support bonus."""
+    # Thracia: Crit = Weapon Crit + Skill + Support bonus
     if not unit.is_alive: return 0
+    if unit.status_effect == StatusEffect.SLEEP: return 0 # No crits while sleeping
+
     weapon_crit = unit.equipped_weapon.crit if unit.equipped_weapon else 0
-    return max(0, weapon_crit + unit.skill)
+    base_crit = max(0, weapon_crit + unit.skill)
+
+    # Calculate support bonus
+    _, _, support_crit, _ = calculate_support_bonus(unit, game_state)
+
+    total_crit = base_crit + support_crit
+    return max(0, total_crit)
 
 def calculate_crit_evade(unit: Unit, game_state: GameState) -> int: # Add game_state
-    """Calculates Critical Evade (Dodge). Simplified: Luck / 2."""
+    """Calculates Critical Evade (Dodge) including support bonus."""
+    # Thracia: Crit Evade = (Luck / 2) + support bonus
     if not unit.is_alive: return 0
-    return max(0, unit.luck // 2)
+    if unit.status_effect == StatusEffect.SLEEP: return 0 # No crit evade while sleeping
+
+    base_crit_evade = max(0, unit.luck // 2)
+
+    # Calculate support bonus
+    _, _, _, support_crit_evade = calculate_support_bonus(unit, game_state)
+
+    total_crit_evade = base_crit_evade + support_crit_evade
+    return max(0, total_crit_evade)
 
 def does_double(attacker: Unit, defender: Unit, game_state: GameState) -> bool: # Add game_state
     """Checks if the attacker doubles the defender (using base stats)."""
@@ -111,16 +203,20 @@ def resolve_attack(
 
     # Apply capture penalties temporarily if needed for *this* attack
     temp_str = attacker.strength
+    temp_str = attacker.strength
+    temp_mag = attacker.magic # Get base magic
     temp_skl = attacker.skill
     temp_spd = attacker.speed
     temp_def = attacker.defense # Base defense before status/penalty
 
-    # Apply Attacker Status Effects (Sleep affects Skl, Spd, Def)
-    if attacker.status_effect == StatusEffect.SLEEP:
+    # Apply Attacker Status Effects (Sleep/Berserk sets Str, Mag, Skl, Spd, Def to 0)
+    if attacker.status_effect in [StatusEffect.SLEEP, StatusEffect.BERSERK]:
+        print(f"  DEBUG: {attacker.name} is {attacker.status_effect}, combat stats set to 0.") # Debug
+        temp_str = 0
+        temp_mag = 0
         temp_skl = 0
         temp_spd = 0
         temp_def = 0
-        print(f"  DEBUG: {attacker.name} is Asleep, stats reduced.") # Debug
 
     # Thracia: Str, Mag, Skl, Spd, Def halved (floor?) during capture attempt/carry
     if capture_penalty_active:
@@ -142,20 +238,40 @@ def resolve_attack(
              effective_weight = max(0, weapon_weight - attacker.constitution) # Con is NOT halved
     temp_as = max(0, temp_spd - effective_weight)
 
-    # Hit Rate (uses temp_skl) - Base calculation before Miracle/Triangle
+    # Hit Rate (uses temp_skl) - Base calculation before bonuses/Miracle/Triangle
+    # Note: calculate_hit_rate already includes bonuses, but we need the base here
+    # to apply triangle/miracle correctly before capping.
     weapon_hit = attacker.equipped_weapon.hit if attacker.equipped_weapon else 0
-    attacker_base_hit = max(0, weapon_hit + (2 * temp_skl) + attacker.luck) # Luck is NOT halved
+    attacker_stat_hit = max(0, weapon_hit + (2 * temp_skl) + attacker.luck) # Luck is NOT halved
+
+    # Calculate attacker bonuses separately for clarity in final hit calc
+    attacker_support_hit, _, _, _ = calculate_support_bonus(attacker, game_state)
+    attacker_leadership_hit, _ = calculate_leadership_bonus(attacker, game_state)
+    attacker_charisma_hit, _ = calculate_charisma_bonus(attacker, game_state)
+    attacker_total_bonus_hit = attacker_support_hit + attacker_leadership_hit + attacker_charisma_hit
 
     # --- Defender's Stats ---
     defender_penalty_active = defender.is_capturing is not None
     defender_def_base = defender.defense # Base defense before status/terrain/penalty
-    defender_avoid_base = calculate_avoid(defender, game_state) # Base avoid before penalty/status
+    # Defender Avoid (Base calculation before bonuses/penalty/status)
+    # Note: calculate_avoid includes bonuses, but we need the base here for final calc
+    defender_as_for_avoid = calculate_attack_speed(defender, game_state) # Use current AS
+    defender_stat_avoid = max(0, (2 * defender_as_for_avoid) + defender.luck)
 
-    # Apply Defender Status Effects (Sleep affects Def, Avoid)
-    if defender.status_effect == StatusEffect.SLEEP:
+    # Calculate defender bonuses separately
+    _, defender_support_avo, _, _ = calculate_support_bonus(defender, game_state)
+    _, defender_leadership_avo = calculate_leadership_bonus(defender, game_state)
+    _, defender_charisma_avo = calculate_charisma_bonus(defender, game_state)
+    defender_total_bonus_avoid = defender_support_avo + defender_leadership_avo + defender_charisma_avo
+
+    # Apply Defender Status Effects (Sleep/Berserk affects Def, Mag, Avoid)
+    defender_magic_base = defender.magic # Get base magic before status
+    if defender.status_effect in [StatusEffect.SLEEP, StatusEffect.BERSERK]:
+        print(f"  DEBUG: {defender.name} is {defender.status_effect}, defensive stats set to 0.") # Debug
         defender_def_base = 0
-        defender_avoid_base = 0 # Avoid is calculated directly, so set to 0
-        print(f"  DEBUG: {defender.name} is Asleep, Def/Avoid reduced.") # Debug
+        defender_magic_base = 0 # Magic (resistance) also becomes 0
+        defender_stat_avoid = 0 # Base avoid from stats becomes 0
+        defender_total_bonus_avoid = 0 # Bonuses also negated while status'd
 
     defender_def_final = defender_def_base # Start with potentially status-modified defense
 
@@ -176,8 +292,9 @@ def resolve_attack(
          def_weapon_weight = defender.equipped_weapon.weight if defender.equipped_weapon else 0
          def_effective_weight = max(0, def_weapon_weight - defender.constitution)
          def_temp_as = max(0, def_temp_spd - def_effective_weight)
-         # Recalculate avoid using penalized AS, but keep terrain bonus separate for clarity
-         defender_avoid_base = max(0, (2 * def_temp_as) + defender.luck) # Recalculate base avoid
+         # Recalculate avoid using penalized AS
+         defender_stat_avoid = max(0, (2 * def_temp_as) + defender.luck) # Recalculate base avoid from stats
+         # Bonuses are NOT halved when carrying, only base stats
          # Note: Terrain avoid bonus is added later in the final hit chance calculation
 
     # --- Weapon Triangle Bonus ---
@@ -207,10 +324,20 @@ def resolve_attack(
             triangle_bonus = -WEAPON_TRIANGLE_BONUS # Anima loses to Light/Dark
 
     # --- Final Hit Calculation ---
-    final_hit_rate = attacker_base_hit
-    final_hit_rate -= defender_avoid_base # Subtract base avoid (potentially penalized/status)
+    # --- Final Hit Calculation (incorporating all bonuses) ---
+    # Start with attacker's base hit from stats + weapon
+    final_hit_rate = attacker_stat_hit
+    # Add attacker's bonuses
+    final_hit_rate += attacker_total_bonus_hit
+    # Add weapon triangle bonus
+    final_hit_rate += triangle_bonus
 
-    # Add defender terrain avoid bonus (subtract from hit rate)
+    # Subtract defender's base avoid from stats (potentially penalized/status)
+    final_hit_rate -= defender_stat_avoid
+    # Subtract defender's bonuses (not penalized when carrying)
+    final_hit_rate -= defender_total_bonus_avoid
+
+    # Subtract defender terrain avoid bonus
     defender_terrain_avo_bonus = 0
     # Sleeping units don't benefit from terrain avoid
     if defender.move_type != MoveType.FLYING and defender.status_effect != StatusEffect.SLEEP:
@@ -219,8 +346,6 @@ def resolve_attack(
             def_terrain_props = TERRAIN_PROPERTIES.get(def_tile.terrain_type, {})
             defender_terrain_avo_bonus = def_terrain_props.get('avo', 0)
     final_hit_rate -= defender_terrain_avo_bonus
-
-    final_hit_rate += triangle_bonus
 
     # --- Miracle Check (Defender) ---
     if "Miracle" in defender.skills and defender.hp <= 10:
@@ -250,9 +375,10 @@ def resolve_attack(
             is_critical = True # Wrath guarantees crit
         else:
             # Normal critical calculation
-            attacker_crit_rate = calculate_crit_rate(attacker, game_state) # Pass game_state
-            defender_crit_evade = calculate_crit_evade(defender, game_state) # Pass game_state
-            battle_crit_chance = max(0, attacker_crit_rate - defender_crit_evade)
+            # Use the full calculation functions which include support bonuses
+            attacker_crit_rate_with_bonus = calculate_crit_rate(attacker, game_state)
+            defender_crit_evade_with_bonus = calculate_crit_evade(defender, game_state)
+            battle_crit_chance = max(0, attacker_crit_rate_with_bonus - defender_crit_evade_with_bonus)
 
             # Apply PCC and 25% cap
             if is_follow_up:
@@ -294,11 +420,11 @@ def resolve_attack(
                 temp_mag = math.floor(attacker.magic / 2)
             attacker_offensive_stat = temp_mag
 
-        # Select defender resistance stat (Def/Mag) - Use final penalized/status def if applicable
-        defender_resistance_stat = defender_def_final # Default to final physical defense
+        # Select defender resistance stat (Def/Mag) - Use potentially status-modified stats
+        defender_resistance_stat = defender_def_final # Default to final physical defense (already includes status effect if applicable)
         if is_magical:
-            # Use base magic for resistance, assuming Sleep/Penalty don't affect it
-            defender_resistance_stat = defender.magic
+            # Use magic_base which includes status effect if applicable
+            defender_resistance_stat = defender_magic_base
 
         damage = calculate_damage(
             attacker_offensive_stat,
