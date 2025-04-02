@@ -46,6 +46,7 @@ The initial Minimum Viable Product (MVP) focusing on foundational map/unit repre
     *   Implemented basic Staff usage: Added `staff <x> <y>` command. Implemented Heal staff effect (Range 1, Heals 10 + User Mag), fatigue cost, use consumption, and Canto prevention (`src/cli.py`, `test_staff_commands.txt`). Other staff effects are pending.
     *   Implemented Staff WExp gain based on staff rank and rank-up thresholds (`src/game/models.py`, `src/cli.py`, `test_staff_wexp.txt`).
     *   Implemented Restore staff effect to cure negative status conditions (Poison, Sleep, Silence, Berserk) (`src/cli.py`, `test_restore_staff.txt`).
+    *   Added core logic for status-inflicting staves (Sleep, Silence, Berserk) including hit calculation and status application (`src/cli.py`). **Note:** Dedicated test files/setups for these specific staves were not created in this cycle.
     *   Fixed AI logic to correctly prioritize attacking when in range before attempting to move (`src/game/ai.py`).
     *   Fixed movement state handling in the CLI to allow subsequent valid moves after a failed move attempt (e.g., trying to enter impassable terrain) (`src/cli.py`).
 *   **Testing (Refactored Approach):**
