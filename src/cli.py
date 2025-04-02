@@ -1125,6 +1125,127 @@ def setup_restore_staff_test_state() -> GameState:
     game_state.add_unit(enemy_unit)
 
     return game_state
+def setup_status_staves_test_state() -> GameState:
+    """Creates the initial game state for the status staves test."""
+    map_width = 6
+    map_height = 6
+    game_map = GameMap(width=map_width, height=map_height)
+    game_state = GameState(game_map=game_map)
+
+    # Staves
+    sleep_staff = Weapon(name="Sleep Staff", wtype="Staff", staff_rank='C', uses=5, max_uses=5) # Assume C rank
+    silence_staff = Weapon(name="Silence Staff", wtype="Staff", staff_rank='C', uses=5, max_uses=5) # Assume C rank
+    berserk_staff = Weapon(name="Berserk Staff", wtype="Staff", staff_rank='B', uses=3, max_uses=3) # Assume B rank
+
+    # Player Units
+    caster = Unit(
+        id=1, name="Caster", cls_name="Bishop", faction=Faction.PLAYER, move_type=MoveType.INFANTRY, position=(1, 1),
+        max_hp=25, hp=25, strength=2, magic=10, skill=10, speed=8, luck=5, defense=5, constitution=5, mov=5, fatigue=0, pcc=0,
+        inventory=[sleep_staff, silence_staff, berserk_staff],
+        weapon_ranks={'Staff': 'B'}, # Needs B rank for Berserk
+        growth_rates={'hp': 55, 'strength': 5, 'magic': 45, 'skill': 40, 'speed': 35, 'luck': 20, 'defense': 15, 'constitution': 3, 'mov': 1}
+    )
+    game_state.add_unit(caster)
+    caster.equipped_weapon_index = 0 # Equip Sleep Staff
+
+    # Enemy Units
+    target1 = Unit(
+        id=101, name="Target1", cls_name="Fighter", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(1, 2), # Adjacent
+        max_hp=30, hp=30, strength=10, magic=0, skill=5, speed=5, luck=5, defense=5, constitution=10, mov=5, fatigue=0, pcc=0,
+        inventory=[],
+        growth_rates={'hp': 70, 'strength': 40, 'magic': 5, 'skill': 30, 'speed': 20, 'luck': 10, 'defense': 30, 'constitution': 10, 'mov': 1}
+    )
+    game_state.add_unit(target1)
+
+    target2 = Unit(
+        id=102, name="Target2", cls_name="Mage", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(2, 1), # Adjacent
+        max_hp=20, hp=20, strength=1, magic=8, skill=8, speed=7, luck=6, defense=2, constitution=3, mov=5, fatigue=0, pcc=0,
+        inventory=[],
+        growth_rates={'hp': 45, 'strength': 5, 'magic': 50, 'skill': 40, 'speed': 45, 'luck': 35, 'defense': 10, 'constitution': 2, 'mov': 1}
+    )
+    game_state.add_unit(target2)
+
+    target3 = Unit(
+        id=103, name="Target3", cls_name="Mercenary", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(2, 2), # Adjacent
+        max_hp=28, hp=28, strength=9, magic=2, skill=10, speed=9, luck=3, defense=4, constitution=8, mov=5, fatigue=0, pcc=0,
+        inventory=[],
+        growth_rates={'hp': 75, 'strength': 45, 'magic': 15, 'skill': 50, 'speed': 55, 'luck': 25, 'defense': 20, 'constitution': 7, 'mov': 1}
+    )
+    game_state.add_unit(target3)
+
+    # Ally unit to pass turn
+    ally = Unit(
+        id=201, name="Ally", cls_name="Soldier", faction=Faction.ALLY, move_type=MoveType.INFANTRY, position=(0,0),
+        max_hp=20, hp=20, strength=5, magic=0, skill=5, speed=5, luck=5, defense=5, constitution=10, mov=5, fatigue=0, pcc=0,
+        inventory=[],
+        growth_rates={'hp': 50, 'strength': 20, 'magic': 0, 'skill': 10, 'speed': 10, 'luck': 0, 'defense': 20, 'constitution': 5, 'mov': 0}
+    )
+    game_state.add_unit(ally)
+
+
+    return game_state
+
+
+
+def setup_status_staves_test_state() -> GameState:
+    """Creates the initial game state for the status staves test."""
+    map_width = 6
+    map_height = 6
+    game_map = GameMap(width=map_width, height=map_height)
+    game_state = GameState(game_map=game_map)
+
+    # Staves
+    sleep_staff = Weapon(name="Sleep Staff", wtype="Staff", staff_rank='C', uses=5, max_uses=5) # Assume C rank
+    silence_staff = Weapon(name="Silence Staff", wtype="Staff", staff_rank='C', uses=5, max_uses=5) # Assume C rank
+    berserk_staff = Weapon(name="Berserk Staff", wtype="Staff", staff_rank='B', uses=3, max_uses=3) # Assume B rank
+
+    # Player Units
+    caster = Unit(
+        id=1, name="Caster", cls_name="Bishop", faction=Faction.PLAYER, move_type=MoveType.INFANTRY, position=(1, 1),
+        max_hp=25, hp=25, strength=2, magic=10, skill=10, speed=8, luck=5, defense=5, constitution=5, mov=5, fatigue=0, pcc=0,
+        inventory=[sleep_staff, silence_staff, berserk_staff],
+        weapon_ranks={'Staff': 'B'}, # Needs B rank for Berserk
+        growth_rates={'hp': 55, 'strength': 5, 'magic': 45, 'skill': 40, 'speed': 35, 'luck': 20, 'defense': 15, 'constitution': 3, 'mov': 1}
+    )
+    game_state.add_unit(caster)
+    caster.equipped_weapon_index = 0 # Equip Sleep Staff
+
+    # Enemy Units
+    target1 = Unit(
+        id=101, name="Target1", cls_name="Fighter", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(1, 2), # Adjacent
+        max_hp=30, hp=30, strength=10, magic=0, skill=5, speed=5, luck=5, defense=5, constitution=10, mov=5, fatigue=0, pcc=0,
+        inventory=[],
+        growth_rates={'hp': 70, 'strength': 40, 'magic': 5, 'skill': 30, 'speed': 20, 'luck': 10, 'defense': 30, 'constitution': 10, 'mov': 1}
+    )
+    game_state.add_unit(target1)
+
+    target2 = Unit(
+        id=102, name="Target2", cls_name="Mage", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(2, 1), # Adjacent
+        max_hp=20, hp=20, strength=1, magic=8, skill=8, speed=7, luck=6, defense=2, constitution=3, mov=5, fatigue=0, pcc=0,
+        inventory=[],
+        growth_rates={'hp': 45, 'strength': 5, 'magic': 50, 'skill': 40, 'speed': 45, 'luck': 35, 'defense': 10, 'constitution': 2, 'mov': 1}
+    )
+    game_state.add_unit(target2)
+
+    target3 = Unit(
+        id=103, name="Target3", cls_name="Mercenary", faction=Faction.ENEMY, move_type=MoveType.INFANTRY, position=(2, 2), # Adjacent
+        max_hp=28, hp=28, strength=9, magic=2, skill=10, speed=9, luck=3, defense=4, constitution=8, mov=5, fatigue=0, pcc=0,
+        inventory=[],
+        growth_rates={'hp': 75, 'strength': 45, 'magic': 15, 'skill': 50, 'speed': 55, 'luck': 25, 'defense': 20, 'constitution': 7, 'mov': 1}
+    )
+    game_state.add_unit(target3)
+
+    # Ally unit to pass turn
+    ally = Unit(
+        id=201, name="Ally", cls_name="Soldier", faction=Faction.ALLY, move_type=MoveType.INFANTRY, position=(0,0),
+        max_hp=20, hp=20, strength=5, magic=0, skill=5, speed=5, luck=5, defense=5, constitution=10, mov=5, fatigue=0, pcc=0,
+        inventory=[],
+        growth_rates={'hp': 50, 'strength': 20, 'magic': 0, 'skill': 10, 'speed': 10, 'luck': 0, 'defense': 20, 'constitution': 5, 'mov': 0}
+    )
+    game_state.add_unit(ally)
+
+
+    return game_state
 
 
 def setup_mvp_phase1_state() -> GameState:
@@ -2078,14 +2199,56 @@ def run_cli(setup_name: str = "effectiveness"): # MODIFIED: Accept setup name
                             print(f"{caster.name} used {equipped_staff.name} on {target_unit.name}, curing {old_status.value}.") # Use .value for enum display
                             staff_used_successfully = True
 
-                        # --- Mend Staff Logic (Example) ---
+                        # --- Status Staff Logic (Sleep, Silence, Berserk) ---
+                        elif staff_name in ["sleep staff", "silence staff", "berserk staff"]:
+                            if not target_unit:
+                                print(f"No unit at ({target_x}, {target_y}).")
+                                continue
+                            if target_unit.faction == caster.faction:
+                                print(f"Cannot use {staff_name} on allied unit {target_unit.name}.")
+                                continue
+                            if not target_unit.is_alive or target_unit.is_captured:
+                                print(f"Cannot target defeated or captured unit {target_unit.name}.")
+                                continue
+                            # TODO: Add check for status immunity later (e.g., Nihil or specific bosses)
+
+                            # Calculate Staff Hit Chance (Base 60 + 4*Skill, capped 1-99)
+                            base_hit = 60 # Base for most status staves
+                            staff_hit_chance = min(99, max(1, base_hit + (4 * caster.skill)))
+                            print(f"  (Staff Hit Chance: {staff_hit_chance}%)")
+
+                            # Roll for hit
+                            hit_roll = random.randint(1, 100)
+                            print(f"  (Hit Roll: {hit_roll})")
+
+                            if hit_roll <= staff_hit_chance:
+                                # Determine status to apply
+                                status_to_apply = StatusEffect.NONE
+                                if staff_name == "sleep staff":
+                                    status_to_apply = StatusEffect.SLEEP
+                                elif staff_name == "silence staff":
+                                    status_to_apply = StatusEffect.SILENCE
+                                elif staff_name == "berserk staff":
+                                    status_to_apply = StatusEffect.BERSERK
+
+                                if status_to_apply != StatusEffect.NONE:
+                                    target_unit.status_effect = status_to_apply
+                                    print(f"  Success! {target_unit.name} is now afflicted with {status_to_apply.value}.")
+                                    staff_used_successfully = True
+                                else:
+                                    print(f"  Error: Could not determine status for {staff_name}.") # Should not happen
+                            else:
+                                print(f"  Miss! {equipped_staff.name} failed to affect {target_unit.name}.")
+                                # Staff use is still consumed on miss, fatigue/wexp applied
+                                staff_used_successfully = True # Mark as successful use for cost/fatigue
+
+                        # --- Mend Staff Logic (Example - Keep as is) ---
                         elif staff_name == "mend staff":
                             if not target_unit:
                                 print(f"No unit at ({target_x}, {target_y}).")
                                 continue
-
-                            # Calculate Heal Amount (10 + User's Magic)
-                            heal_amount = 10 + caster.magic
+                            # (Existing Mend logic...)
+                            heal_amount = 10 + caster.magic # Example heal amount
                             actual_healed = min(heal_amount, target_unit.max_hp - target_unit.hp)
                             target_unit.hp += actual_healed
                             print(f"{caster.name} used {equipped_staff.name} on {target_unit.name}, recovering {actual_healed} HP. (HP: {target_unit.hp}/{target_unit.max_hp})")
@@ -2095,7 +2258,7 @@ def run_cli(setup_name: str = "effectiveness"): # MODIFIED: Accept setup name
                              print(f"{caster.name} uses {equipped_staff.name} (Rank {equipped_staff.staff_rank}) on ({target_x}, {target_y})... (Effect for this staff not implemented yet)")
                              # Assume success for fatigue/use consumption for now if target exists
                              if target_unit:
-                                 staff_used_successfully = True # Allow fatigue/use for unimplemented staves if target valid
+                                 staff_used_successfully = True
 
                         # --- Apply WExp, Fatigue & Consume Use (if successful) ---
                         if staff_used_successfully:
@@ -2364,7 +2527,8 @@ if __name__ == "__main__":
             "terrain": setup_terrain_test_state,
             "mvp_phase1": setup_mvp_phase1_state, # Add the new one here
             "staff_wexp": setup_staff_wexp_test_state, # Add Staff WExp setup
-            "restore_staff": setup_restore_staff_test_state # Add Restore Staff setup
+            "restore_staff": setup_restore_staff_test_state, # Add Restore Staff setup
+            "status_staves": setup_status_staves_test_state # Add Status Staves setup
         }
         if args.setup in setup_functions:
              run_cli(setup_name=args.setup) # Pass the setup name
