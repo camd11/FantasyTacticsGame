@@ -1,0 +1,54 @@
+{
+  "plain": {
+    "type": "PLAIN",
+    "def_bonus": 0,
+    "avo_bonus": 0,
+    "movement_costs": {
+      "INFANTRY": 1,
+      "CAVALRY": 1,
+      "ARMOR": 1,
+      "FLIER": 1
+    },
+    "blocks_vision": false,
+    "is_impassable": false
+  },
+  "forest": {
+    "type": "FOREST",
+    "def_bonus": 1,
+    "avo_bonus": 20,
+    "movement_costs": {
+      "INFANTRY": 2,
+      "CAVALRY": 3,
+      "ARMOR": 2,
+      "FLIER": 1
+    },
+    "blocks_vision": true,
+    "is_impassable": false
+  },
+  "mountain": {
+    "type": "MOUNTAIN",
+    "def_bonus": 2,
+    "avo_bonus": 30,
+    "movement_costs": {
+      "INFANTRY": 4,
+      "CAVALRY": 99,
+      "ARMOR": 99,
+      "FLIER": 1
+    },
+    "blocks_vision": true,
+    "is_impassable": false
+  },
+  "wall": {
+    "type": "WALL",
+    "def_bonus": 0,
+    "avo_bonus": 0,
+    "movement_costs": {
+      "INFANTRY": 99,
+      "CAVALRY": 99,
+      "ARMOR": 99,
+      "FLIER": 99
+    },
+    "blocks_vision": true,
+    "is_impassable": true
+  }
+}
