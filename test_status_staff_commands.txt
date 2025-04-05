@@ -1,0 +1,80 @@
+# test_status_staff_commands.txt
+
+# Setup: Caster (ID 1, Pos 1,1, B Staff) has Sleep(C), Silence(C), Berserk(B) staves.
+# Target1 (Enemy Fighter, ID 101, Pos 1,2)
+# Target2 (Enemy Mage, ID 102, Pos 2,1)
+# Target3 (Enemy Mercenary, ID 103, Pos 2,2)
+# Ally (ID 201, Pos 0,0)
+
+# --- Initial State ---
+info 1 1 # Check Caster (Skill 10, B Staff)
+info 1 2 # Check Target1
+info 2 1 # Check Target2
+info 2 2 # Check Target3
+
+# --- Test 1: Use Sleep Staff (C Rank) ---
+select 1 1 # Select Caster
+equip 0 # Equip Sleep Staff (Index 0)
+info # Confirm Sleep Staff equipped
+staff 1 2 # Target Target1 (Adjacent)
+# Expected: Hit Chance = 60 + 4*10 = 99%. Should hit.
+# Target1 status becomes Sleep. Caster fatigue +3 (C rank), WExp +3, Sleep Staff uses -1.
+info 1 2 # Verify Target1 status is Sleep
+info 1 1 # Verify Caster fatigue, WExp, staff uses
+
+# --- Test 2: Use Silence Staff (C Rank) ---
+# Caster should have acted. Need to end turn.
+# Assume no movement stars.
+endturn # Enemy/Ally phase runs (Targets are enemies, should not act if asleep)
+# Turn 2 starts. Caster action resets.
+info 1 1 # Verify Caster state (Fatigue 3, Not Acted)
+select 1 1 # Select Caster
+equip 1 # Equip Silence Staff (Index 1)
+info # Confirm Silence Staff equipped
+staff 2 1 # Target Target2 (Adjacent Mage)
+# Expected: Hit Chance = 99%. Should hit.
+# Target2 status becomes Silence. Caster fatigue +3 (Total 6), WExp +3, Silence Staff uses -1.
+info 2 1 # Verify Target2 status is Silence
+info 1 1 # Verify Caster state
+
+# --- Test 3: Use Berserk Staff (B Rank) ---
+# Caster should have acted. Need to end turn.
+endturn # Enemy/Ally phase runs
+# Turn 3 starts. Caster action resets.
+info 1 1 # Verify Caster state (Fatigue 6, Not Acted)
+select 1 1 # Select Caster
+equip 2 # Equip Berserk Staff (Index 2)
+info # Confirm Berserk Staff equipped
+staff 2 2 # Target Target3 (Adjacent Mercenary)
+# Expected: Hit Chance = 99%. Should hit.
+# Target3 status becomes Berserk. Caster fatigue +4 (B rank, Total 10), WExp +4, Berserk Staff uses -1.
+info 2 2 # Verify Target3 status is Berserk
+info 1 1 # Verify Caster state
+
+# --- Test 4: Target Ally (Should Fail) ---
+# Caster should have acted. Need to end turn.
+endturn # Enemy/Ally phase runs
+# Turn 4 starts. Caster action resets.
+info 1 1 # Verify Caster state (Fatigue 10, Not Acted)
+select 1 1 # Select Caster
+equip 0 # Equip Sleep Staff again
+info # Confirm Sleep Staff equipped
+staff 0 0 # Target Ally (ID 201)
+# Expected: Error message "Cannot use Sleep Staff on allied unit Ally." Caster not acted.
+info 0 0 # Verify Ally status is still None
+info 1 1 # Verify Caster state (Fatigue 10, Not Acted)
+
+# --- Test 5: Target Out of Range (Should Fail) ---
+# Move Target1 further away
+# Need to end turn first to let enemies potentially move (though they are statused)
+endturn
+# Turn 5 starts. Caster action resets.
+# Manually move Target1 (assuming debug/test capability or just setting position conceptually)
+# For the test file, we assume Target1 is now at (3,3)
+# select 1 1 # Select Caster (already selected from previous failed attempt?)
+staff 3 3 # Target Target1 at (3,3) - Range > 1
+# Expected: Error message "Target (3, 3) is out of range for Sleep Staff (Range: 1)." Caster not acted.
+info 1 1 # Verify Caster state (Fatigue 10, Not Acted)
+
+# --- Cleanup ---
+quit

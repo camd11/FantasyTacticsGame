@@ -13,7 +13,8 @@ class TerrainType:
     PLAIN = "Plain"
     FOREST = "Forest"
     MOUNTAIN = "Mountain"
-    # Add more later: Fort, Peak, Water, etc.
+    FORT = "Fort" # NEW
+    # Add more later: Peak, Water, etc.
 
 class MoveType:
     INFANTRY = "Infantry"
@@ -38,21 +39,25 @@ TERRAIN_COSTS: Dict[MoveType, Dict[TerrainType, Optional[int]]] = {
         TerrainType.PLAIN: 1,
         TerrainType.FOREST: 2,
         TerrainType.MOUNTAIN: 2, # Thracia infantry can cross mountains
+        TerrainType.FORT: 1, # Forts are usually easy to walk on
     },
     MoveType.ARMOR: {
         TerrainType.PLAIN: 1,
         TerrainType.FOREST: 2,
         TerrainType.MOUNTAIN: 1, # Thracia armor good on mountains? Check data again later. Defaulting to 1 based on research.md note.
+        TerrainType.FORT: 1,
     },
     MoveType.CAVALRY: {
         TerrainType.PLAIN: 1,
         TerrainType.FOREST: 3,
         TerrainType.MOUNTAIN: None, # Impassable
+        TerrainType.FORT: 1,
     },
     MoveType.FLYING: {
         TerrainType.PLAIN: 1,
         TerrainType.FOREST: 1,
         TerrainType.MOUNTAIN: 1, # Fliers ignore most costs
+        TerrainType.FORT: 1, # Fliers ignore most costs
     },
     # Add other move types later
 }
@@ -64,7 +69,8 @@ TERRAIN_PROPERTIES: Dict[TerrainType, Dict[str, int]] = {
     TerrainType.PLAIN: {'def': 0, 'avo': 5}, # research.md line 291
     TerrainType.FOREST: {'def': 2, 'avo': 20}, # research.md line 292
     TerrainType.MOUNTAIN: {'def': 5, 'avo': 30}, # research.md line 292
-    # Add Fort, Throne, etc. later
+    TerrainType.FORT: {'def': 10, 'avo': 20, 'heal': 10}, # research.md line 292 (Heal amount is example, Thracia might vary)
+    # Add Throne, etc. later
 }
 
 # --- Weapon Triangle ---
@@ -192,6 +198,22 @@ class Weapon(Item):
     max_uses: Optional[int] = 50
     effective_against: List[str] = field(default_factory=list) # e.g., ['Armor', 'Cavalry', 'Flying'] - Matches MoveType names
     staff_rank: Optional[str] = None # NEW: Rank ('E', 'D', 'C', 'B', 'A', '*') if it's a staff
+
+# --- Standard Bow Example ---
+@dataclass
+class IronBow(Weapon):
+    name: str = "Iron Bow"
+    might: int = 6
+    hit: int = 85
+    crit: int = 0
+    weight: int = 5
+    wtype: str = "Bow"
+    damage_type: str = "Physical"
+    range_min: int = 2 # Bows attack at range 2
+    range_max: int = 2
+    uses: int = 45
+    max_uses: int = 45
+    effective_against: List[str] = field(default_factory=lambda: [MoveType.FLYING]) # Effective vs Flying
 
 # --- Tile ---
 @dataclass
@@ -438,10 +460,21 @@ class GameState:
             print(f"Error: Cannot add unit {unit.name} at {unit.position}")
 
     def reset_player_actions(self):
-        """Resets action flag for Player units and applies fatigue restriction."""
+        """
+        Resets action flag for Player units, applies fatigue restriction,
+        and clears status effects (simulating end-of-chapter recovery).
+        """
         for unit in self.units.values():
             if unit.faction == Faction.PLAYER and unit.is_alive and not unit.is_captured:
-                # Fatigue Check (Thracia: Starts Chapter 8, Leif exempt)
+                # --- Status Effect Recovery (End of Chapter Simulation) ---
+                # In Thracia, statuses clear between chapters. We simulate this
+                # when resetting actions for a new player turn.
+                if unit.status_effect != StatusEffect.NONE:
+                    print(f"  INFO: {unit.name}'s {unit.status_effect.value} status recovered.")
+                    unit.status_effect = StatusEffect.NONE
+                # ---------------------------------------------------------
+
+                # --- Fatigue Check (Thracia: Starts Chapter 8, Leif exempt) ---
                 # Assuming fatigue is active for testing purposes here.
                 is_fatigued = unit.fatigue >= unit.max_hp
                 is_leif = unit.name == "Leif" # Simple check for the Lord
@@ -450,19 +483,18 @@ class GameState:
                     print(f"  INFO: {unit.name} is fatigued ({unit.fatigue}/{unit.max_hp}) and cannot act this turn.")
                     unit.has_acted = True # Mark as acted to prevent selection/action
                     continue # Skip further checks for this unit
+                # ---------------------------------------------------------
 
-                # Reset action if not fatigued (or is Leif) and not under other disabling status
+                # --- Reset Action Flag ---
+                # Reset action only if not fatigued (or is Leif) and not under a status
+                # that inherently prevents action (like Sleep/Berserk - though these should be cleared above now).
+                # The check for Sleep/Berserk might be redundant now but kept for safety.
                 if unit.status_effect not in [StatusEffect.SLEEP, StatusEffect.BERSERK]:
-                    unit.has_acted = False
+                     unit.has_acted = False
                 else:
-                    # Ensure units with sleep/berserk remain marked as unable to act if needed
-                    # (Current logic might already handle this, but explicit check is safer)
-                    # If they are asleep/berserk, they shouldn't get has_acted reset to False.
-                    # The CLI select logic already prevents selecting them, but this reinforces state.
-                    unit.has_acted = True # Keep them marked as acted/unavailable
-
-                # Fatigue persists across turns within a chapter
-                # Status effects also persist until cleared
+                     # This case should ideally not be reached if status recovery works.
+                     unit.has_acted = True # Keep marked as acted if somehow still has disabling status.
+                # -------------------------
 
     def get_units_by_faction(self, faction: Faction) -> List[Unit]:
         # Return only alive, non-captured units with HP > 0
@@ -528,4 +560,9 @@ PROMOTION_PATHS: Dict[str, Dict] = {
         "wexp_bonus": {"Axe": 'A', "Bow": 'C'} # Gains Bow access
     },
     # Add more classes later...
+    "Archer": {
+        "promoted_class": "Sniper",
+        "gains": {"max_hp": 4, "strength": 2, "magic": 0, "skill": 3, "speed": 2, "luck": 0, "defense": 2, "constitution": 1, "mov": 1},
+        "wexp_bonus": {"Bow": 'A'} # Example
+    },
 }

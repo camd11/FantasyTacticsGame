@@ -12,7 +12,7 @@ The initial Minimum Viable Product (MVP) focusing on foundational map/unit repre
     *   Basic data structures for Game State, Map, Tiles, and Units (`src/game/models.py`).
     *   Text-based map rendering in the CLI (`src/game/display.py`), including showing defeated units ('X').
     *   Calculation of movement range considering terrain costs and unit blocking (`src/game/movement.py`).
-    *   Basic terrain types (Plain, Forest, Mountain) and movement costs implemented (`src/game/models.py`).
+    *   Basic terrain types (Plain, Forest, Mountain, **Fort**) and movement costs implemented (`src/game/models.py`). Fort healing effect added (`src/cli.py`).
     *   Core CLI application (`src/cli.py`) supporting basic commands (`select`, `move`, `wait`, `info`, `endturn`, `quit`).
 *   **Phase 2 (Basic Combat):**
     *   Added core combat stats (Str, Skl, Spd, Lck, Def) and basic `Weapon` class to `models.py`.
@@ -44,16 +44,16 @@ The initial Minimum Viable Product (MVP) focusing on foundational map/unit repre
     *   Implemented Movement Stars: Units have a chance (5% per star) to act again after completing an action (`src/game/models.py`, `src/cli.py`).
     *   Implemented Canto: Mounted units can use remaining movement after non-combat actions (`src/game/movement.py`, `src/cli.py`, `src/game/display.py`).
     *   Implemented basic Staff usage: Added `staff <x> <y>` command. Implemented Heal staff effect (Range 1, Heals 10 + User Mag), fatigue cost, use consumption, and Canto prevention (`src/cli.py`, `test_staff_commands.txt`). Other staff effects are pending.
-    *   Implemented Staff WExp gain based on staff rank and rank-up thresholds (`src/game/models.py`, `src/cli.py`, `test_staff_wexp.txt`).
-    *   Implemented Restore staff effect to cure negative status conditions (Poison, Sleep, Silence, Berserk) (`src/cli.py`, `test_restore_staff.txt`).
-    *   Added core logic for status-inflicting staves (Sleep, Silence, Berserk) including hit calculation and status application (`src/cli.py`). **Note:** Dedicated test files/setups for these specific staves were not created in this cycle.
+    *   Implemented and tested Staff WExp gain based on staff rank and rank-up thresholds (`src/game/models.py`, `src/cli.py`, `test_staff_wexp.txt`).
+    *   Implemented and tested Restore staff effect to cure negative status conditions (Poison, Sleep, Silence, Berserk) (`src/cli.py`, `test_restore_staff.txt`).
+    *   Implemented and tested core logic for status-inflicting staves (Sleep, Silence, Berserk) including hit calculation and status application (`src/cli.py`, `test_status_staff_commands.txt`).
     *   Fixed AI logic to correctly prioritize attacking when in range before attempting to move (`src/game/ai.py`).
     *   Fixed movement state handling in the CLI to allow subsequent valid moves after a failed move attempt (e.g., trying to enter impassable terrain) (`src/cli.py`).
 *   **Testing (Refactored Approach):**
     *   Automated testing uses command file input piped to `src/cli.py`.
     *   `src/cli.py` now accepts a `--setup <setup_name>` argument to load specific initial game states defined within `cli.py` (e.g., `setup_combat_test_state()`). This isolates test setups from the core CLI logic, improving stability.
     *   The random number generator is seeded (`random.seed(42)`) at the start of `run_cli` for deterministic test results.
-    *   Test files (`test_*.txt`) cover various mechanics: `mvp`, `combat`, `crit`, `magic_attack`, `effectiveness`, `item`, `fatigue`, `staff`, `ai`, `bonus`, `canto`, `capture`, `steal`, `terrain`, `skills`, `status`, `movestars`, `triangle`, `magic_crit`. All tests now use the `--setup` argument in `src/cli.py`.
+    *   Test files (`test_*.txt`) cover various mechanics: `mvp`, `combat`, `crit`, `magic_attack`, `effectiveness`, `item`, `fatigue`, `staff`, `ai`, `bonus`, `canto`, `capture`, `steal`, `terrain`, `skills`, `status`, `movestars`, `triangle`, `magic_crit`, `staff_wexp`, `restore_staff`, `status_staves`. All tests now use the `--setup` argument in `src/cli.py`.
 **Design Documents:**
 
 *   Phase 1 plan: `DESIGN_MVP_PHASE1.md`.
@@ -131,6 +131,9 @@ The initial Minimum Viable Product (MVP) focusing on foundational map/unit repre
 
     # Test Restore staff
     cat test_restore_staff.txt | python3 src/cli.py --setup restore_staff
+
+    # Test status-inflicting staves
+    cat test_status_staff_commands.txt | python3 src/cli.py --setup status_staves
     ```
 
 ## Development Workflow
@@ -163,9 +166,8 @@ Commit frequently with focused changes to make tracking history easier.
 
 ## Next Steps (Potential)
 
-*   Implement remaining Staff effects (Restore, status staves, utility staves like Torch/Repair).
-*   Implement Staff WExp gain.
-*   Implement Status Effect recovery (Restore staff, potentially map end clearing).
-*   Refine AI to use staves effectively.
-*   Add more complex map scenarios and unit types.
+*   Implement remaining utility Staff effects (e.g., Torch, Warp). **[Repair Staff implemented, testing pending resolution of setup issue]**
+*   Implement Status Effect recovery at map end. **[Implemented: Statuses cleared in `GameState.reset_player_actions`]**
+*   Refine AI to use staves effectively. **[Basic Heal/Status staff usage implemented in Enemy AI]**
+*   Add more complex map scenarios and unit types. **[Added Fort terrain, Archer class, Iron Bow]**
 *   Address potential bug observed in initial Heal staff test output.

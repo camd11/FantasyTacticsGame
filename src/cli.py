@@ -20,7 +20,9 @@ from game.display import render_map
 from game.movement import calculate_move_range
 from game.combat import simulate_combat, calculate_attack_speed # Import AS calc
 from game.ai import run_enemy_ai, run_npc_ai # Import AI functions
-from game.ai import run_enemy_ai
+# Import staff actions from the new module
+from game.staff_actions import (_validate_staff_target, _apply_staff_costs, _handle_heal_staff,
+                              _handle_restore_staff, _handle_status_staff, _handle_repair_staff)
 
 # --- Helper Function ---
 def get_attack_range(unit: Unit, game_state: GameState) -> Set[Tuple[int, int]]:
@@ -45,6 +47,7 @@ def get_attack_range(unit: Unit, game_state: GameState) -> Set[Tuple[int, int]]:
                 attack_range.add((x, y))
     return attack_range
 
+# Staff helper functions moved to src/game/staff_actions.py
 
 # --- Test Setup Functions ---
 def setup_effectiveness_test_state() -> GameState: # RENAMED
@@ -328,8 +331,10 @@ def setup_steal_test_state() -> GameState:
 
     return game_state
 
+from game.models import IronBow # Import IronBow
+
 def setup_terrain_test_state() -> GameState:
-    """Creates the initial game state for the terrain movement test."""
+    """Creates the initial game state for the terrain movement test, including Fort and Archer."""
     map_width = 6
     map_height = 7 # Need enough height for cavalry test
     game_map = GameMap(width=map_width, height=map_height)
@@ -340,13 +345,14 @@ def setup_terrain_test_state() -> GameState:
     game_map.set_tile_terrain(4, 1, TerrainType.FOREST)
     game_map.set_tile_terrain(3, 5, TerrainType.MOUNTAIN)
     game_map.set_tile_terrain(4, 5, TerrainType.MOUNTAIN)
-    # Add another forest for cavalry test pathing
     game_map.set_tile_terrain(3, 2, TerrainType.FOREST) # Added based on test commands
+    game_map.set_tile_terrain(0, 3, TerrainType.FORT) # NEW: Add a Fort
 
     # Player Infantry Unit (Fighter)
     infantry = Unit(
         id=1, name="Infantry", cls_name="Fighter", faction=Faction.PLAYER, move_type=MoveType.INFANTRY, position=(1, 1),
-        max_hp=20, hp=20, strength=5, magic=0, skill=5, speed=5, luck=5, defense=5, constitution=10,
+        max_hp=20, hp=10, # Start injured to test Fort healing
+        strength=5, magic=0, skill=5, speed=5, luck=5, defense=5, constitution=10,
         mov=5, # As per test assumption
         fatigue=0, pcc=0,
         inventory=[], # No items needed
@@ -364,6 +370,18 @@ def setup_terrain_test_state() -> GameState:
         growth_rates={'hp': 75, 'strength': 35, 'magic': 5, 'skill': 30, 'speed': 25, 'luck': 15, 'defense': 30, 'constitution': 8, 'mov': 1} # Generic Knight growths
     )
     game_state.add_unit(cavalry)
+
+    # NEW: Player Archer Unit
+    archer = Unit(
+        id=3, name="Archer", cls_name="Archer", faction=Faction.PLAYER, move_type=MoveType.INFANTRY, position=(4, 3),
+        max_hp=18, hp=18, strength=6, magic=0, skill=7, speed=6, luck=4, defense=3, constitution=5,
+        mov=5,
+        fatigue=0, pcc=0,
+        inventory=[IronBow()], # Give Archer an Iron Bow
+        weapon_ranks={'Bow': 'E'}, # Start with E Bows
+        growth_rates={'hp': 60, 'strength': 35, 'magic': 10, 'skill': 45, 'speed': 40, 'luck': 30, 'defense': 15, 'constitution': 4, 'mov': 1} # Example Archer growths
+    )
+    game_state.add_unit(archer)
 
     return game_state
 
@@ -1248,6 +1266,42 @@ def setup_status_staves_test_state() -> GameState:
     return game_state
 
 
+def setup_repair_staff_test_state() -> GameState:
+    """Creates the initial game state for the Repair staff test."""
+    map_width = 5
+    map_height = 5
+    game_map = GameMap(width=map_width, height=map_height)
+    game_state = GameState(game_map=game_map)
+
+    # Items & Staves
+    repair_staff = Weapon(name="Repair Staff", wtype="Staff", staff_rank='B', uses=5, max_uses=5) # Assume B rank, 5 uses
+    iron_sword = Weapon(name="Iron Sword", might=5, hit=90, weight=5, wtype="Sword", uses=5, max_uses=50) # Damaged
+    heal_staff_e = Weapon(name="Heal Staff (E)", wtype="Staff", staff_rank='E', uses=1, max_uses=30) # Damaged
+    steel_sword = Weapon(name="Steel Sword", might=8, hit=80, weight=9, wtype="Sword", uses=50, max_uses=50) # Full uses
+    vulnerary = Vulnerary() # Non-repairable
+
+    # Player Units
+    healer = Unit(
+        id=1, name="Healer", cls_name="Priest", faction=Faction.PLAYER, move_type=MoveType.INFANTRY, position=(1, 1),
+        max_hp=20, hp=20, strength=0, magic=8, skill=6, speed=5, luck=5, defense=2, constitution=4, mov=5, fatigue=0, pcc=0,
+        inventory=[repair_staff],
+        weapon_ranks={'Staff': 'B'}, # Needs B rank to use Repair
+        growth_rates={'hp': 50, 'strength': 0, 'magic': 40, 'skill': 30, 'speed': 25, 'luck': 60, 'defense': 10, 'constitution': 1, 'mov': 1}
+    )
+    game_state.add_unit(healer)
+    healer.equipped_weapon_index = 0 # Equip Repair Staff
+
+    target = Unit(
+        id=2, name="Target", cls_name="Fighter", faction=Faction.PLAYER, move_type=MoveType.INFANTRY, position=(1, 2), # Adjacent
+        max_hp=25, hp=25, strength=10, magic=0, skill=5, speed=5, luck=5, defense=5, constitution=10, mov=5, fatigue=0, pcc=0,
+        inventory=[iron_sword, heal_staff_e, steel_sword, vulnerary], # Specific inventory for testing
+        growth_rates={'hp': 70, 'strength': 40, 'magic': 5, 'skill': 30, 'speed': 20, 'luck': 10, 'defense': 30, 'constitution': 10, 'mov': 1}
+    )
+    game_state.add_unit(target)
+
+    return game_state
+
+
 def setup_mvp_phase1_state() -> GameState:
     """Creates a simple game state aligned with DESIGN_MVP_PHASE1.md goals."""
     map_width = 8
@@ -1280,6 +1334,41 @@ def setup_mvp_phase1_state() -> GameState:
 
     return game_state
 
+def setup_repair_staff_test_state() -> GameState:
+    """Creates the initial game state for the Repair staff test."""
+    map_width = 5
+    map_height = 5
+    game_map = GameMap(width=map_width, height=map_height)
+    game_state = GameState(game_map=game_map)
+
+    # Items & Staves
+    repair_staff = Weapon(name="Repair Staff", wtype="Staff", staff_rank='B', uses=5, max_uses=5) # Assume B rank, 5 uses
+    iron_sword = Weapon(name="Iron Sword", might=5, hit=90, weight=5, wtype="Sword", uses=5, max_uses=50) # Damaged
+    heal_staff_e = Weapon(name="Heal Staff (E)", wtype="Staff", staff_rank='E', uses=1, max_uses=30) # Damaged
+    steel_sword = Weapon(name="Steel Sword", might=8, hit=80, weight=9, wtype="Sword", uses=50, max_uses=50) # Full uses
+    vulnerary = Vulnerary() # Non-repairable
+
+    # Player Units
+    healer = Unit(
+        id=1, name="Healer", cls_name="Priest", faction=Faction.PLAYER, move_type=MoveType.INFANTRY, position=(1, 1),
+        max_hp=20, hp=20, strength=0, magic=8, skill=6, speed=5, luck=5, defense=2, constitution=4, mov=5, fatigue=0, pcc=0,
+        inventory=[repair_staff],
+        weapon_ranks={'Staff': 'B'}, # Needs B rank to use Repair
+        growth_rates={'hp': 50, 'strength': 0, 'magic': 40, 'skill': 30, 'speed': 25, 'luck': 60, 'defense': 10, 'constitution': 1, 'mov': 1}
+    )
+    game_state.add_unit(healer)
+    healer.equipped_weapon_index = 0 # Equip Repair Staff
+
+    target = Unit(
+        id=2, name="Target", cls_name="Fighter", faction=Faction.PLAYER, move_type=MoveType.INFANTRY, position=(1, 2), # Adjacent
+        max_hp=25, hp=25, strength=10, magic=0, skill=5, speed=5, luck=5, defense=5, constitution=10, mov=5, fatigue=0, pcc=0,
+        inventory=[iron_sword, heal_staff_e, steel_sword, vulnerary], # Specific inventory for testing
+        growth_rates={'hp': 70, 'strength': 40, 'magic': 5, 'skill': 30, 'speed': 20, 'luck': 10, 'defense': 30, 'constitution': 10, 'mov': 1}
+    )
+    game_state.add_unit(target)
+
+    return game_state
+
 # --- Turn Start Effects ---
 # --- Turn Start Effects ---
 def apply_turn_start_effects(game_state: GameState):
@@ -1297,7 +1386,18 @@ def apply_turn_start_effects(game_state: GameState):
                 if unit.hp == 0:
                     game_state.handle_unit_death(unit)
                     print(f"  {unit.name} succumbed to poison!")
-            # Add other start-of-turn effects here (e.g., healing terrain)
+            # --- Healing Terrain Check ---
+            unit_tile = game_state.game_map.get_tile(unit.position[0], unit.position[1])
+            if unit_tile:
+                 terrain_props = TERRAIN_PROPERTIES.get(unit_tile.terrain_type, {})
+                 heal_amount = terrain_props.get('heal', 0)
+                 if heal_amount > 0 and unit.hp < unit.max_hp:
+                     actual_healed = min(heal_amount, unit.max_hp - unit.hp)
+                     unit.hp += actual_healed
+                     print(f"  {unit.name} recovers {actual_healed} HP from {unit_tile.terrain_type.value} terrain.")
+                     print(f"  (HP: {unit.hp}/{unit.max_hp})")
+            # ---------------------------
+            # Add other start-of-turn effects here
 
 # --- Action Completion & Movement Star Check ---
 def complete_action(unit: Unit, game_state: GameState) -> bool:
@@ -1330,53 +1430,68 @@ def complete_action(unit: Unit, game_state: GameState) -> bool:
     return False # Unit's turn ends
 
 # --- Main CLI Loop (Updated) ---
-def run_cli(setup_name: str = "effectiveness"): # MODIFIED: Accept setup name
+def run_cli(setup_name: Optional[str] = None, game_state: Optional[GameState] = None): # MODIFIED: Accept optional game_state
     """Runs the main command-line interface loop."""
     random.seed(42) # Seed RNG for deterministic tests
 
-    # Select the setup function based on the name
-    if setup_name == "effectiveness":
-        game_state = setup_effectiveness_test_state()
-    # Add other setup functions here later
-    elif setup_name == "combat":
-        game_state = setup_combat_test_state()
-    elif setup_name == "fatigue": # ADDED
-        game_state = setup_fatigue_test_state() # ADDED
-    elif setup_name == "staff":
-        game_state = setup_staff_test_state()
-    elif setup_name == "item":
-        game_state = setup_item_test_state()
-    elif setup_name == "ai": # ADDED
-        game_state = setup_ai_test_state() # ADDED
-    elif setup_name == "bonus":
-        game_state = setup_bonus_test_state()
-    elif setup_name == "canto":
-        game_state = setup_canto_test_state()
-    elif setup_name == "capture": # ADDED
-        game_state = setup_capture_test_state() # ADDED
-    elif setup_name == "crit":
-        game_state = setup_crit_test_state()
-    elif setup_name == "magic_attack":
-        game_state = setup_magic_attack_test_state()
-    elif setup_name == "magic_crit": # ADDED
-        game_state = setup_magic_crit_test_state() # ADDED
-    elif setup_name == "mvp": # ADDED
-        game_state = setup_mvp_test_state() # ADDED
-    elif setup_name == "steal": # ADDED
-        game_state = setup_steal_test_state() # ADDED
-    elif setup_name == "skills": # ADDED
-        game_state = setup_skills_test_state() # ADDED
-    elif setup_name == "status": # ADDED
-        game_state = setup_status_test_state() # ADDED
-    elif setup_name == "movestars": # ADDED
-        game_state = setup_movestars_test_state() # ADDED
-    elif setup_name == "triangle": # ADDED
-        game_state = setup_triangle_test_state() # ADDED
-    elif setup_name == "terrain": # ADDED
-        game_state = setup_terrain_test_state() # ADDED
+    # If game_state is not provided, initialize it based on setup_name
+    if game_state is None:
+        effective_setup_name = setup_name if setup_name else "mvp_phase1" # Use default if setup_name is None
+        print(f"DEBUG (run_cli): Initializing game state using setup_name='{effective_setup_name}'") # DEBUG
+        # Select the setup function based on the name
+        if effective_setup_name == "effectiveness":
+            game_state = setup_effectiveness_test_state()
+        # Add other setup functions here later
+        elif effective_setup_name == "combat":
+            game_state = setup_combat_test_state()
+        elif effective_setup_name == "fatigue": # ADDED
+            game_state = setup_fatigue_test_state() # ADDED
+        elif effective_setup_name == "staff":
+            game_state = setup_staff_test_state()
+        elif effective_setup_name == "item":
+            game_state = setup_item_test_state()
+        elif effective_setup_name == "ai": # ADDED
+            game_state = setup_ai_test_state() # ADDED
+        elif effective_setup_name == "bonus":
+            game_state = setup_bonus_test_state()
+        elif effective_setup_name == "canto":
+            game_state = setup_canto_test_state()
+        elif effective_setup_name == "capture": # ADDED
+            game_state = setup_capture_test_state() # ADDED
+        elif effective_setup_name == "crit":
+            game_state = setup_crit_test_state()
+        elif effective_setup_name == "magic_attack":
+            game_state = setup_magic_attack_test_state()
+        elif effective_setup_name == "magic_crit": # ADDED
+            game_state = setup_magic_crit_test_state() # ADDED
+        elif effective_setup_name == "mvp": # ADDED
+            game_state = setup_mvp_test_state() # ADDED
+        elif effective_setup_name == "steal": # ADDED
+            game_state = setup_steal_test_state() # ADDED
+        elif effective_setup_name == "skills": # ADDED
+            game_state = setup_skills_test_state() # ADDED
+        elif effective_setup_name == "status": # ADDED
+            game_state = setup_status_test_state() # ADDED
+        elif effective_setup_name == "movestars": # ADDED
+            game_state = setup_movestars_test_state() # ADDED
+        elif effective_setup_name == "triangle": # ADDED
+            game_state = setup_triangle_test_state() # ADDED
+        elif effective_setup_name == "terrain": # ADDED
+            game_state = setup_terrain_test_state() # ADDED
+        elif effective_setup_name == "status_staves": # ADDED
+            game_state = setup_status_staves_test_state() # ADDED
+        elif effective_setup_name == "restore_staff": # ADDED
+            game_state = setup_restore_staff_test_state() # ADDED
+        elif effective_setup_name == "staff_wexp": # ADDED
+             game_state = setup_staff_wexp_test_state() # ADDED
+        elif effective_setup_name == "repair_staff": # ADDED
+             game_state = setup_repair_staff_test_state() # ADDED
+        else:
+            print(f"Error: Unknown setup name '{effective_setup_name}'. Defaulting to mvp_phase1.") # Corrected default name in message
+            game_state = setup_mvp_phase1_state() # Default to new MVP setup
     else:
-        print(f"Error: Unknown setup name '{setup_name}'. Defaulting to effectiveness.")
-        game_state = setup_mvp_phase1_state() # Default to new MVP setup
+         print("DEBUG (run_cli): Using pre-initialized game_state.") # DEBUG
+
     # Store move range as {pos: cost}
     current_move_range: Optional[Dict[Tuple[int, int], int]] = None
     current_attack_range: Optional[Set[Tuple[int, int]]] = None
@@ -1816,7 +1931,7 @@ def run_cli(setup_name: str = "effectiveness"): # MODIFIED: Accept setup name
                     seal_index = -1
                     for i, item in enumerate(selected_unit.inventory):
                         # Need to import MasterSeal from models
-                        from .models import MasterSeal
+                        from game.models import MasterSeal
                         if isinstance(item, MasterSeal):
                             master_seal_item = item
                             seal_index = i
@@ -1828,7 +1943,7 @@ def run_cli(setup_name: str = "effectiveness"): # MODIFIED: Accept setup name
 
                     # Check if promotion path exists
                     # Need to import PROMOTION_PATHS from models
-                    from .models import PROMOTION_PATHS
+                    from game.models import PROMOTION_PATHS
                     current_class = selected_unit.cls_name # Assuming cls_name attribute exists - NEED TO ADD THIS TO UNIT MODEL
                     if current_class not in PROMOTION_PATHS:
                         print(f"No promotion path defined for class '{current_class}'.")
@@ -1867,7 +1982,7 @@ def run_cli(setup_name: str = "effectiveness"): # MODIFIED: Accept setup name
                     print("  Updating weapon ranks:")
                     for wtype, new_rank_letter in wexp_bonus.items():
                         # Need WEAPON_RANKS from models
-                        from .models import WEAPON_RANKS
+                        from game.models import WEAPON_RANKS
                         if new_rank_letter in WEAPON_RANKS:
                              current_rank = selected_unit.weapon_ranks.get(wtype, 'E')
                              # Only update if the new rank is higher
@@ -2103,8 +2218,9 @@ def run_cli(setup_name: str = "effectiveness"): # MODIFIED: Accept setup name
                                  current_move_range = None
                                  current_attack_range = None
 
-                elif command == "staff": # NEW command
+                elif command == "staff":
                     caster = game_state.get_selected_unit()
+                    # --- Initial Checks ---
                     if not caster:
                         print("No unit selected.")
                         continue
@@ -2122,186 +2238,82 @@ def run_cli(setup_name: str = "effectiveness"): # MODIFIED: Accept setup name
                     if not equipped_staff or not isinstance(equipped_staff, Weapon) or equipped_staff.wtype != "Staff":
                         print(f"{caster.name} does not have a staff equipped.")
                         continue
-                    # Ensure it has a rank for fatigue calculation later
                     if not equipped_staff.staff_rank:
                          print(f"Error: Equipped staff '{equipped_staff.name}' has no rank defined.")
                          continue
+                    if not equipped_staff.is_usable():
+                         print(f"Cannot use {equipped_staff.name}, no uses left.")
+                         continue
 
-                    # Basic command structure, no actual effect yet
-                    if len(args) != 2:
-                        print("Usage: staff <target_x> <target_y>")
-                        continue
+                    # --- Get Target Coords & Optional Item Index ---
+                    staff_name_lower = equipped_staff.name.lower()
+                    is_repair_staff = "repair staff" in staff_name_lower # Check if it's a repair staff
 
-                    try:
-                        target_x, target_y = int(args[0]), int(args[1])
-                        target_pos = (target_x, target_y)
-
-                        # --- Staff Range Check ---
-                        # Basic Heal staff is range 1
-                        staff_range = 1 # Default for Heal/Mend
-                        # TODO: Add logic for other staff ranges later (e.g., Physic, status staves)
-                        dist_x = abs(caster.position[0] - target_x)
-                        dist_y = abs(caster.position[1] - target_y)
-                        distance = dist_x + dist_y
-
-                        if distance > staff_range:
-                            print(f"Target ({target_x}, {target_y}) is out of range for {equipped_staff.name} (Range: {staff_range}).")
+                    if is_repair_staff:
+                        if len(args) != 3:
+                            print("Usage: staff <target_x> <target_y> <item_index_to_repair>")
+                            continue
+                        try:
+                            target_x, target_y = int(args[0]), int(args[1])
+                            item_index_to_repair = int(args[2])
+                            target_pos = (target_x, target_y)
+                        except ValueError:
+                            print("Invalid coordinates or item index.")
+                            continue
+                    else: # Normal staff usage
+                        if len(args) != 2:
+                            print("Usage: staff <target_x> <target_y>")
+                            continue
+                        try:
+                            target_x, target_y = int(args[0]), int(args[1])
+                            target_pos = (target_x, target_y)
+                            item_index_to_repair = None # Not needed for other staves
+                        except ValueError:
+                            print("Invalid coordinates.")
                             continue
 
-                        # --- Target Validation ---
-                        target_unit_id = game_state.game_map.get_unit_id_at(target_x, target_y)
-                        target_unit = game_state.get_unit(target_unit_id) if target_unit_id is not None else None
+                    # --- Range Check ---
+                    min_r = equipped_staff.range_min
+                    max_r = equipped_staff.range_max
+                    dist_x = abs(caster.position[0] - target_x)
+                    dist_y = abs(caster.position[1] - target_y)
+                    distance = dist_x + dist_y
 
-                        staff_used_successfully = False
-                        staff_name = equipped_staff.name.lower() # Use lowercase for comparison
-                        # --- Heal Staff Logic ---
-                        if staff_name == "heal staff": # Check specifically for Heal staff
-                            if not target_unit:
-                                print(f"No unit at ({target_x}, {target_y}).")
-                                continue
-                            if target_unit.faction != caster.faction:
-                                print(f"Cannot heal non-allied unit {target_unit.name}.")
-                                continue
-                            if not target_unit.is_alive or target_unit.is_captured:
-                                print(f"Cannot heal defeated or captured unit {target_unit.name}.")
-                                continue
-                            if target_unit.hp >= target_unit.max_hp:
-                                print(f"{target_unit.name} is already at full HP.")
-                                continue
+                    if not (min_r <= distance <= max_r):
+                        print(f"Target ({target_x}, {target_y}) is out of range for {equipped_staff.name} (Range: {min_r}-{max_r}).")
+                        continue
 
-                            # Calculate Heal Amount (10 + User's Magic)
-                            heal_amount = 10 + caster.magic
-                            actual_healed = min(heal_amount, target_unit.max_hp - target_unit.hp)
-                            target_unit.hp += actual_healed
-                            print(f"{caster.name} used {equipped_staff.name} on {target_unit.name}, recovering {actual_healed} HP. (HP: {target_unit.hp}/{target_unit.max_hp})")
-                            staff_used_successfully = True
+                    # --- Get Target Unit ---
+                    target_unit_id = game_state.game_map.get_unit_id_at(target_x, target_y)
+                    target_unit = game_state.get_unit(target_unit_id) if target_unit_id is not None else None
 
-                        # --- Restore Staff Logic ---
-                        elif staff_name == "restore staff": # Assuming name is exactly "restore staff"
-                            if not target_unit:
-                                print(f"No unit at ({target_x}, {target_y}).")
-                                continue
-                            if target_unit.faction != caster.faction:
-                                print(f"Cannot restore non-allied unit {target_unit.name}.")
-                                continue
-                            if not target_unit.is_alive or target_unit.is_captured:
-                                print(f"Cannot restore defeated or captured unit {target_unit.name}.")
-                                continue
-                            if target_unit.status_effect == StatusEffect.NONE:
-                                print(f"{target_unit.name} has no status condition to restore.")
-                                # Technically, using Restore on a healthy target might still consume a use/fatigue?
-                                # For now, let's prevent action if no status.
-                                continue
+                    # --- Dispatch to Handlers ---
+                    staff_effect_applied = False # Tracks if the staff's primary effect happened
 
-                            # Cure the status
-                            old_status = target_unit.status_effect
-                            target_unit.status_effect = StatusEffect.NONE
-                            print(f"{caster.name} used {equipped_staff.name} on {target_unit.name}, curing {old_status.value}.") # Use .value for enum display
-                            staff_used_successfully = True
+                    if staff_name_lower in ["heal staff", "mend staff"]:
+                        if _validate_staff_target(caster, target_unit, target_pos, required_faction=caster.faction):
+                            staff_effect_applied = _handle_heal_staff(caster, target_unit, equipped_staff)
+                    elif staff_name_lower == "restore staff":
+                        if _validate_staff_target(caster, target_unit, target_pos, required_faction=caster.faction, allow_no_status=False):
+                             staff_effect_applied = _handle_restore_staff(caster, target_unit, equipped_staff)
+                    elif staff_name_lower in ["sleep staff", "silence staff", "berserk staff"]:
+                        # Status staves target enemies
+                        if _validate_staff_target(caster, target_unit, target_pos, required_faction=Faction.ENEMY, allow_no_status=True):
+                             staff_effect_applied = _handle_status_staff(caster, target_unit, equipped_staff, staff_name_lower)
+                    elif is_repair_staff:
+                         # Repair staff targets allies
+                         if _validate_staff_target(caster, target_unit, target_pos, required_faction=caster.faction, allow_no_status=True): # Allow targeting healthy allies
+                              staff_effect_applied = _handle_repair_staff(caster, target_unit, equipped_staff, item_index_to_repair)
+                    else:
+                         # Placeholder for other staves (e.g., Torch, Warp)
+                         print(f"{caster.name} uses {equipped_staff.name} (Rank {equipped_staff.staff_rank}) on ({target_x}, {target_y})... (Effect not implemented yet)")
+                         # Assume success for cost application if target exists (or if it's a self-target/area staff later)
+                         if target_unit: # Basic check, might need refinement for area staves
+                             staff_effect_applied = True
 
-                        # --- Status Staff Logic (Sleep, Silence, Berserk) ---
-                        elif staff_name in ["sleep staff", "silence staff", "berserk staff"]:
-                            if not target_unit:
-                                print(f"No unit at ({target_x}, {target_y}).")
-                                continue
-                            if target_unit.faction == caster.faction:
-                                print(f"Cannot use {staff_name} on allied unit {target_unit.name}.")
-                                continue
-                            if not target_unit.is_alive or target_unit.is_captured:
-                                print(f"Cannot target defeated or captured unit {target_unit.name}.")
-                                continue
-                            # TODO: Add check for status immunity later (e.g., Nihil or specific bosses)
-
-                            # Calculate Staff Hit Chance (Base 60 + 4*Skill, capped 1-99)
-                            base_hit = 60 # Base for most status staves
-                            staff_hit_chance = min(99, max(1, base_hit + (4 * caster.skill)))
-                            print(f"  (Staff Hit Chance: {staff_hit_chance}%)")
-
-                            # Roll for hit
-                            hit_roll = random.randint(1, 100)
-                            print(f"  (Hit Roll: {hit_roll})")
-
-                            if hit_roll <= staff_hit_chance:
-                                # Determine status to apply
-                                status_to_apply = StatusEffect.NONE
-                                if staff_name == "sleep staff":
-                                    status_to_apply = StatusEffect.SLEEP
-                                elif staff_name == "silence staff":
-                                    status_to_apply = StatusEffect.SILENCE
-                                elif staff_name == "berserk staff":
-                                    status_to_apply = StatusEffect.BERSERK
-
-                                if status_to_apply != StatusEffect.NONE:
-                                    target_unit.status_effect = status_to_apply
-                                    print(f"  Success! {target_unit.name} is now afflicted with {status_to_apply.value}.")
-                                    staff_used_successfully = True
-                                else:
-                                    print(f"  Error: Could not determine status for {staff_name}.") # Should not happen
-                            else:
-                                print(f"  Miss! {equipped_staff.name} failed to affect {target_unit.name}.")
-                                # Staff use is still consumed on miss, fatigue/wexp applied
-                                staff_used_successfully = True # Mark as successful use for cost/fatigue
-
-                        # --- Mend Staff Logic (Example - Keep as is) ---
-                        elif staff_name == "mend staff":
-                            if not target_unit:
-                                print(f"No unit at ({target_x}, {target_y}).")
-                                continue
-                            # (Existing Mend logic...)
-                            heal_amount = 10 + caster.magic # Example heal amount
-                            actual_healed = min(heal_amount, target_unit.max_hp - target_unit.hp)
-                            target_unit.hp += actual_healed
-                            print(f"{caster.name} used {equipped_staff.name} on {target_unit.name}, recovering {actual_healed} HP. (HP: {target_unit.hp}/{target_unit.max_hp})")
-                            staff_used_successfully = True
-                        else:
-                             # Placeholder for other staves
-                             print(f"{caster.name} uses {equipped_staff.name} (Rank {equipped_staff.staff_rank}) on ({target_x}, {target_y})... (Effect for this staff not implemented yet)")
-                             # Assume success for fatigue/use consumption for now if target exists
-                             if target_unit:
-                                 staff_used_successfully = True
-
-                        # --- Apply WExp, Fatigue & Consume Use (if successful) ---
-                        if staff_used_successfully:
-
-                           # --- Grant Staff WExp ---
-                           from .models import WEXP_THRESHOLDS, WEAPON_RANKS # Import WExp constants
-                           staff_rank_wexp_gain = {'E': 1, 'D': 2, 'C': 3, 'B': 4, 'A': 5, '*': 5}
-                           rank = equipped_staff.staff_rank
-                           wexp_gain = staff_rank_wexp_gain.get(rank, 1) # Default to 1 if rank unknown
-                           wtype = "Staff" # Staff WExp type
-                           current_wexp = caster.wexp.get(wtype, 0)
-                           new_total_wexp = current_wexp + wexp_gain
-                           caster.wexp[wtype] = new_total_wexp
-                           print(f"  ({caster.name} gained +{wexp_gain} WExp for {wtype}. Total: {new_total_wexp})")
-
-                           # --- Check for Staff Rank Increase ---
-                           current_staff_rank = caster.weapon_ranks.get(wtype, 'E') # Default to E
-                           current_rank_index = WEAPON_RANKS.index(current_staff_rank) if current_staff_rank in WEAPON_RANKS else 0
-                           if current_staff_rank != '*':
-                               threshold_for_next_rank = WEXP_THRESHOLDS.get(current_staff_rank)
-                               if threshold_for_next_rank is not None and new_total_wexp >= threshold_for_next_rank:
-                                   next_rank_index = current_rank_index + 1
-                                   if next_rank_index < len(WEAPON_RANKS):
-                                       new_rank = WEAPON_RANKS[next_rank_index]
-                                       caster.weapon_ranks[wtype] = new_rank
-                                       print(f"  RANK UP! {caster.name}'s {wtype} rank increased to {new_rank}!")
-
-                           # --- Apply Fatigue ---
-                           from game.models import FATIGUE_COST_STAFF
-                           cost = FATIGUE_COST_STAFF.get(rank, 1) # Default to 1 if rank not found
-                           caster.fatigue += cost
-                           print(f"  ({caster.name} fatigue increases by {cost} to {caster.fatigue})")
-
-                           # Consume staff use
-                           if equipped_staff.use(): # Use the item's use method
-                               if equipped_staff.uses == 0:
-                                   print(f"  {equipped_staff.name} broke.")
-                                   caster.remove_item(equipped_staff) # Remove the broken staff
-                           else:
-                               # This case should ideally not be reached if is_usable was checked, but handle defensively
-                               print(f"  Error: Failed to consume use for {equipped_staff.name}.")
-                               continue # Skip action completion if use failed unexpectedly
-                            # TODO: Add WExp gain for staff use (Already added above)
+                    # --- Apply Costs & Complete Action ---
+                    if staff_effect_applied:
+                        _apply_staff_costs(caster, equipped_staff, game_state)
 
                         # Staff use prevents Canto, always end action
                         canto_move_points = None
@@ -2313,8 +2325,9 @@ def run_cli(setup_name: str = "effectiveness"): # MODIFIED: Accept setup name
                             # Movement star activated, clear ranges
                             current_move_range = None
                             current_attack_range = None
+                    # else: Staff effect didn't apply (e.g., healing full HP), don't consume use/fatigue/action
 
-                    except ValueError:
+                elif command == "wait":
                         print("Invalid coordinates.")
                         continue
 
@@ -2483,6 +2496,9 @@ def run_cli(setup_name: str = "effectiveness"): # MODIFIED: Accept setup name
         except Exception as e:
             print(f"An unexpected error occurred: {e}")
 
+
+# _handle_repair_staff moved to src/game/staff_actions.py
+
 if __name__ == "__main__":
     # --- Argument Parsing ---
     parser = argparse.ArgumentParser(description="Run Fantasy Tactics CLI with specific test setup.")
@@ -2501,38 +2517,38 @@ if __name__ == "__main__":
         open(os.path.join(game_dir, "__init__.py"), 'a').close()
 
     # Map the new default name to the function
-    if args.setup == "mvp_phase1":
-        run_cli(setup_name="mvp_phase1")
+    # Add the new setup to the existing logic
+    setup_functions = {
+        "effectiveness": setup_effectiveness_test_state,
+        "combat": setup_combat_test_state,
+        "fatigue": setup_fatigue_test_state,
+        "staff": setup_staff_test_state,
+        "item": setup_item_test_state,
+        "ai": setup_ai_test_state,
+        "bonus": setup_bonus_test_state,
+        "canto": setup_canto_test_state,
+        "capture": setup_capture_test_state,
+        "crit": setup_crit_test_state,
+        "magic_attack": setup_magic_attack_test_state,
+        "magic_crit": setup_magic_crit_test_state,
+        "mvp": setup_mvp_test_state, # Keep old 'mvp' test setup distinct
+        "steal": setup_steal_test_state,
+        "skills": setup_skills_test_state,
+        "status": setup_status_test_state,
+        "movestars": setup_movestars_test_state,
+        "triangle": setup_triangle_test_state,
+        "terrain": setup_terrain_test_state,
+        "mvp_phase1": setup_mvp_phase1_state, # Add the new one here
+        "staff_wexp": setup_staff_wexp_test_state, # Add Staff WExp setup
+        "restore_staff": setup_restore_staff_test_state, # Add Restore Staff setup
+        "status_staves": setup_status_staves_test_state, # Add Status Staves setup
+        "repair_staff": setup_repair_staff_test_state # Add Repair Staff setup
+    }
+    # Strip whitespace from the input argument before checking
+    setup_key = args.setup.strip()
+    if setup_key in setup_functions.keys(): # Explicitly check against keys
+         run_cli(setup_name=setup_key) # Pass the setup name (for other setups)
     else:
-        # Add the new setup to the existing logic
-        setup_functions = {
-            "effectiveness": setup_effectiveness_test_state,
-            "combat": setup_combat_test_state,
-            "fatigue": setup_fatigue_test_state,
-            "staff": setup_staff_test_state,
-            "item": setup_item_test_state,
-            "ai": setup_ai_test_state,
-            "bonus": setup_bonus_test_state,
-            "canto": setup_canto_test_state,
-            "capture": setup_capture_test_state,
-            "crit": setup_crit_test_state,
-            "magic_attack": setup_magic_attack_test_state,
-            "magic_crit": setup_magic_crit_test_state,
-            "mvp": setup_mvp_test_state, # Keep old 'mvp' test setup distinct
-            "steal": setup_steal_test_state,
-            "skills": setup_skills_test_state,
-            "status": setup_status_test_state,
-            "movestars": setup_movestars_test_state,
-            "triangle": setup_triangle_test_state,
-            "terrain": setup_terrain_test_state,
-            "mvp_phase1": setup_mvp_phase1_state, # Add the new one here
-            "staff_wexp": setup_staff_wexp_test_state, # Add Staff WExp setup
-            "restore_staff": setup_restore_staff_test_state, # Add Restore Staff setup
-            "status_staves": setup_status_staves_test_state # Add Status Staves setup
-        }
-        if args.setup in setup_functions:
-             run_cli(setup_name=args.setup) # Pass the setup name
-        else:
-             available_setups = list(setup_functions.keys())
-             print(f"Error: Unknown setup name '{args.setup}'. Available: {available_setups}. Using default 'mvp_phase1'.")
-             run_cli(setup_name="mvp_phase1")
+         available_setups = list(setup_functions.keys())
+         print(f"Error: Unknown setup name '{args.setup}'. Available: {available_setups}. Using default 'mvp_phase1'.")
+         run_cli(setup_name="mvp_phase1")

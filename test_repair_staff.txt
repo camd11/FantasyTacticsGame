@@ -1,0 +1,38 @@
+# Test Repair Staff Functionality
+
+# Initial state:
+# Healer (1,1) has Repair Staff (B rank, 5 uses)
+# Target (1,2) has:
+#   0: Iron Sword (5/50 uses) - Damaged Weapon
+#   1: Heal Staff (E) (1/30 uses) - Damaged Staff
+#   2: Steel Sword (50/50 uses) - Full Use Weapon
+#   3: Vulnerary (3/3 uses) - Non-repairable Item
+
+# --- Test Case 1: Attempt to repair non-repairable item (Vulnerary) ---
+select 1 1
+info 1 2 # Check target inventory before
+staff 1 2 3 # Attempt to repair Vulnerary (index 3) - Should fail
+info 1 2 # Check target inventory again (should be unchanged)
+
+# --- Test Case 2: Attempt to repair full-use item (Steel Sword) ---
+select 1 1
+staff 1 2 2 # Attempt to repair Steel Sword (index 2) - Should fail
+info 1 2 # Check target inventory again (should be unchanged)
+
+# --- Test Case 3: Successfully repair damaged weapon (Iron Sword) ---
+select 1 1
+staff 1 2 0 # Repair Iron Sword (index 0) - Should succeed
+info 1 2 # Check target inventory (Iron Sword should be 50/50)
+info 1 1 # Check Healer info (Repair Staff uses should be 4/5, fatigue increased)
+
+# --- Test Case 4: Successfully repair damaged staff (Heal Staff) ---
+select 1 1
+staff 1 2 1 # Repair Heal Staff (index 1) - Should succeed
+info 1 2 # Check target inventory (Heal Staff should be 30/30)
+info 1 1 # Check Healer info (Repair Staff uses should be 3/5, fatigue increased again)
+
+# --- Test Case 5: Attempt to repair item at invalid index ---
+select 1 1
+staff 1 2 99 # Attempt to repair invalid index - Should fail
+
+quit

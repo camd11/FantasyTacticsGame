@@ -74,8 +74,10 @@ def get_simple_move_target(enemy_unit: Unit, target_unit: Unit, game_state: Game
     return result_pos
 
 
+from .staff_actions import _handle_heal_staff, _handle_status_staff, _apply_staff_costs # Import staff handlers and cost application
+
 def run_enemy_ai(game_state: GameState):
-    """Runs the AI logic for all enemy units."""
+    """Runs the AI logic for all enemy units, including basic staff usage."""
     print("\n--- Enemy Phase ---")
     # Get lists of units at the start of the phase
     # Use the function that already filters correctly
@@ -127,20 +129,60 @@ def run_enemy_ai(game_state: GameState):
         # --- AI Action Decision ---
         action_taken = False
 
-        # 1. Check if can attack from current position
-        if enemy.equipped_weapon:
+        # --- Staff Usage Check (Priority 1) ---
+        equipped_item = enemy.equipped_weapon # Use property for equipped item
+        if equipped_item and isinstance(equipped_item, Weapon) and equipped_item.wtype == "Staff":
+            staff_name = equipped_item.name.lower()
+            # TODO: Add more sophisticated target selection and priority
+            # Simple Heal AI: Find closest injured enemy within range
+            if staff_name in ["heal staff", "mend staff"]:
+                 # Find injured allies within staff range
+                 potential_heal_targets = []
+                 min_r, max_r = equipped_item.range_min, equipped_item.range_max
+                 for other_enemy in enemy_units:
+                     if other_enemy.id != enemy.id and other_enemy.is_alive and not other_enemy.is_captured and other_enemy.hp < other_enemy.max_hp:
+                         dist = abs(enemy.position[0] - other_enemy.position[0]) + abs(enemy.position[1] - other_enemy.position[1])
+                         if min_r <= dist <= max_r:
+                             potential_heal_targets.append(other_enemy)
+                 # Heal the most injured ally in range (simplistic)
+                 if potential_heal_targets:
+                     potential_heal_targets.sort(key=lambda u: u.hp / u.max_hp) # Sort by lowest HP percentage
+                     heal_target = potential_heal_targets[0]
+                     print(f"  AI STAFF: {enemy.name} attempting to heal {heal_target.name}.")
+                     if _handle_heal_staff(enemy, heal_target, equipped_item):
+                         _apply_staff_costs(enemy, equipped_item, game_state)
+                         action_taken = True
+
+            # Simple Status Staff AI: Target closest player if in range
+            elif staff_name in ["sleep staff", "silence staff", "berserk staff"]:
+                 if target_player: # Ensure a player target exists
+                     dist = abs(enemy.position[0] - target_player.position[0]) + abs(enemy.position[1] - target_player.position[1])
+                     min_r, max_r = equipped_item.range_min, equipped_item.range_max
+                     if min_r <= dist <= max_r:
+                         print(f"  AI STAFF: {enemy.name} attempting to use {staff_name} on {target_player.name}.")
+                         # _handle_status_staff returns True even on miss, indicating an attempt was made
+                         if _handle_status_staff(enemy, target_player, equipped_item, staff_name):
+                              _apply_staff_costs(enemy, equipped_item, game_state)
+                              action_taken = True
+            # Add other staff AI logic here (Repair, Torch, etc.)
+
+        # --- Attack Check (Priority 2, if staff not used) ---
+        if not action_taken and equipped_item and isinstance(equipped_item, Weapon) and equipped_item.wtype != "Staff":
+            # Check if can attack from current position
             dist = abs(enemy.position[0] - target_player.position[0]) + abs(enemy.position[1] - target_player.position[1])
-            weapon = enemy.equipped_weapon
-            if weapon.range_min <= dist <= weapon.range_max:
+            if equipped_item.range_min <= dist <= equipped_item.range_max:
                 print(f"  {enemy.name} is in range. Attacking.")
                 simulate_combat(enemy, target_player, game_state)
                 action_taken = True
                 # Check if target player was defeated
                 if not target_player.is_alive:
-                    player_units.remove(target_player) # Update list for subsequent AI
+                    # Check if target_player is still in the list before removing
+                    if target_player in player_units:
+                         player_units.remove(target_player) # Update list for subsequent AI
 
         # 2. If couldn't attack from current position, try to move and attack
-        elif not action_taken: # Use elif to ensure this only runs if attack wasn't possible initially
+        # --- Movement Check (Priority 3, if staff/attack not used) ---
+        if not action_taken:
             # Ensure enemy can move (not capturing)
             if enemy.is_capturing is not None:
                  print(f"  {enemy.name} cannot move (is capturing).")
