@@ -342,10 +342,10 @@ class InventorySystem:
         unit2_filled_slots = set(range(len(unit2_inventory_copy)))
         captive_filled_slots = set(range(len(captive_inventory_copy)))
         
-        # Track items to move
+        # Track items to move and their destinations
         items_to_move = []
         
-        # Validate transfers
+        # First pass: validate all transfers
         for source_unit_id, source_index, dest_unit_id, dest_index in item_transfers:
             # Get source inventory
             source_inventory = None
@@ -389,12 +389,12 @@ class InventorySystem:
                 logging.warning(f"Invalid destination index: {dest_index}")
                 return False
             
-            # Check if destination slot is available
+            # Check if destination slot is available or within inventory bounds
             if dest_index >= len(dest_inventory) and dest_index > len(dest_filled_slots):
                 logging.warning(f"Invalid destination index: {dest_index}")
                 return False
             
-            # Mark source slot as empty
+            # Mark source slot as empty (unless it's involved in a swap)
             if source_index in source_filled_slots:
                 source_filled_slots.remove(source_index)
             
@@ -409,7 +409,10 @@ class InventorySystem:
             # Add to items to move
             items_to_move.append((source_unit_id, source_index, dest_unit_id, dest_index))
         
-        # Execute transfers
+        # Second pass: create a temporary storage for all items being moved
+        temp_storage = {}  # (unit_id, index) -> item
+        
+        # Store all source items in temporary storage
         for source_unit_id, source_index, dest_unit_id, dest_index in items_to_move:
             # Get source unit
             source_unit = None
@@ -420,6 +423,14 @@ class InventorySystem:
             elif source_unit_id == "CAPTIVE":
                 source_unit = captive_unit
             
+            # Store the item
+            temp_storage[(source_unit_id, source_index)] = source_unit.inventory[source_index]
+            
+            # Mark the source slot as empty
+            source_unit.inventory[source_index] = None
+        
+        # Third pass: move items from temporary storage to destinations
+        for source_unit_id, source_index, dest_unit_id, dest_index in items_to_move:
             # Get destination unit
             dest_unit = None
             if dest_unit_id == unit1_id:
@@ -429,8 +440,8 @@ class InventorySystem:
             elif dest_unit_id == "CAPTIVE":
                 dest_unit = captive_unit
             
-            # Get the item to move
-            item_to_move = source_unit.inventory[source_index]
+            # Get the item from temporary storage
+            item_to_move = temp_storage[(source_unit_id, source_index)]
             
             # Check if we need to extend the destination inventory
             while len(dest_unit.inventory) <= dest_index:
@@ -438,14 +449,28 @@ class InventorySystem:
             
             # Move the item
             dest_unit.inventory[dest_index] = item_to_move
-            source_unit.inventory[source_index] = None
             
             # Update equipped weapon indices if needed
-            if source_unit.equipped_weapon_index == source_index:
-                source_unit.equipped_weapon_index = -1
-            
-            # Remove None entries from source inventory
-            source_unit.inventory = [item for item in source_unit.inventory if item is not None]
+            if source_unit_id == dest_unit_id and dest_unit.equipped_weapon_index == source_index:
+                dest_unit.equipped_weapon_index = dest_index
+            elif dest_unit.equipped_weapon_index == dest_index:
+                # If we're overwriting an equipped weapon, unequip it
+                dest_unit.equipped_weapon_index = -1
+        
+        # Final pass: clean up inventories by removing None entries
+        unit1.inventory = [item for item in unit1.inventory if item is not None]
+        if not captive_unit:
+            unit2.inventory = [item for item in unit2.inventory if item is not None]
+        if captive_unit:
+            captive_unit.inventory = [item for item in captive_unit.inventory if item is not None]
+        
+        # Adjust equipped weapon indices if they're now invalid
+        if unit1.equipped_weapon_index >= len(unit1.inventory):
+            unit1.equipped_weapon_index = -1
+        if unit2.equipped_weapon_index >= len(unit2.inventory):
+            unit2.equipped_weapon_index = -1
+        if captive_unit and captive_unit.equipped_weapon_index >= len(captive_unit.inventory):
+            captive_unit.equipped_weapon_index = -1
         
         logging.info(f"Executed trade between {unit1_id} and {unit2_id}")
         return True
@@ -483,14 +508,30 @@ class InventorySystem:
             # Apply consumable effect
             effect_applied = self._apply_item_effect(unit_id, item_data.effects, target_id)
             if effect_applied:
-                success = not self.decrement_item_durability(unit_id, item_index)
+                # decrement_item_durability returns False when item breaks or is removed
+                # but that's actually a success for consumable usage
+                self.decrement_item_durability(unit_id, item_index)
+                success = True
         
         elif item_data.type == KEY:
             # Use key on lock
             if target_tile and self._is_tile_lock(target_tile):
                 lock_opened = self._open_lock(target_tile, getattr(item_data, 'key_type', None))
                 if lock_opened:
-                    success = not self.decrement_item_durability(unit_id, item_index)
+                    # decrement_item_durability returns False when item breaks or is removed
+                    # but that's actually a success for key usage
+                    self.decrement_item_durability(unit_id, item_index)
+                    success = True
+        
+        elif item_data.type == SCROLL:
+            # Scrolls are passive items that don't get "used" actively
+            logging.info(f"Scrolls are passive items and cannot be actively used")
+            return False
+        
+        elif item_data.type == STAFF:
+            # Staves are handled by the combat system, not directly through use_item
+            logging.info(f"Staves are used through the combat system, not directly")
+            return False
         
         # Set unit as acted if item was used successfully
         if success:
@@ -647,8 +688,22 @@ class InventorySystem:
         Returns:
             True if the tile contains a lock, False otherwise
         """
-        # This would be implemented based on MapSystem/GameStateManager
-        # For now, return False
+        # Check if the tile has a door or chest object
+        terrain_type = self.gameStateManager.get_terrain_type(position)
+        
+        # Check if it's a door or a chest (based on terrain type)
+        if terrain_type in [TerrainTypeEnum.DOOR, TerrainTypeEnum.GATE]:
+            return True
+            
+        # Check if there's a chest object at this position
+        # This would typically be stored in map_state.object_states
+        # For now, we'll check if there's an object state for this position
+        if position in self.gameStateManager.current_game_state.map_state.object_states:
+            object_state = self.gameStateManager.current_game_state.map_state.object_states[position]
+            # If it's not already opened/looted, it's a valid lock
+            if object_state not in [ObjectStateEnum.OPENED, ObjectStateEnum.LOOTED]:
+                return True
+                
         return False
     
     def _open_lock(self, position: Tuple[int, int], key_type: Optional[str] = None) -> bool:
@@ -662,6 +717,36 @@ class InventorySystem:
         Returns:
             True if the lock was opened successfully, False otherwise
         """
-        # This would be implemented based on MapSystem/GameStateManager
-        # For now, return False
+        # Check if the tile has a lock
+        if not self._is_tile_lock(position):
+            return False
+            
+        terrain_type = self.gameStateManager.get_terrain_type(position)
+        
+        # Handle doors
+        if terrain_type in [TerrainTypeEnum.DOOR, TerrainTypeEnum.GATE]:
+            # Check if the key type matches (if specified)
+            # For simplicity, we'll assume any key can open any door for now
+            # In a full implementation, we'd check key_type against door type
+            
+            # Update the terrain to an open door/floor
+            # This would typically be handled by the MapSystem
+            # For now, we'll just update the object state
+            self.gameStateManager.current_game_state.map_state.object_states[position] = ObjectStateEnum.OPENED
+            logging.info(f"Door at {position} opened")
+            return True
+            
+        # Handle chests
+        if position in self.gameStateManager.current_game_state.map_state.object_states:
+            # Check if the key type matches (if specified)
+            # For simplicity, we'll assume any key can open any chest for now
+            
+            # Update the chest state to looted
+            self.gameStateManager.current_game_state.map_state.object_states[position] = ObjectStateEnum.LOOTED
+            
+            # In a full implementation, we'd also give the player the chest's contents
+            # This would involve adding an item to the unit's inventory
+            logging.info(f"Chest at {position} opened")
+            return True
+            
         return False

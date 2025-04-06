@@ -69,13 +69,13 @@ def main():
     inventory_system = InventorySystem()
     
     # Input handler (set interactive=True to enable user input prompts)
-    input_handler = CommandLineInputHandler(interactive=False)
+    input_handler = CommandLineInputHandler(interactive=True)
 
     # --- Initialize systems with dependencies ---
     # Order might matter depending on specific initialize implementations
     logging.info("Initializing system dependencies...")
     # GameStateManager takes dependencies in __init__, no initialize method needed here
-    turn_manager.initialize(game_state_manager, event_handler) # Assuming TurnManager needs these
+    turn_manager.initialize(game_state_manager, data_provider, event_handler) # Pass data_provider as second parameter
     action_handler.initialize(
         gameStateManager_instance=game_state_manager,
         unitSystem_instance=unit_system,
@@ -123,6 +123,16 @@ def main():
         mapSystem_instance=map_system,
         inventorySystem_instance=inventory_system
     )
+    
+    # Initialize the input handler
+    input_handler.initialize(
+        game_state_manager=game_state_manager,
+        unit_system=unit_system,
+        movement_system=movement_system,
+        map_system=map_system,
+        inventory_system=inventory_system,
+        data_provider=data_provider
+    )
     logging.info("System dependencies initialized.")
 
     # Create the engine core
@@ -140,7 +150,7 @@ def main():
     )
     
     # Default chapter ID
-    chapter_id = "chapter1"
+    chapter_id = "test_chapter"
     # Initialize the engine with the default chapter
     logging.info(f"Initializing chapter: {chapter_id}")
     engine.initialize_chapter(chapter_id)

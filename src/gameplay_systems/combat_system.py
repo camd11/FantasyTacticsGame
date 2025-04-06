@@ -389,7 +389,7 @@ class CombatSystem:
             actual_dmg = base_dmg
             is_crit = False
             
-            # Roll for critical hit
+            # Roll for critical hit - check Nihil first
             if base_dmg > 0 and not self._unit_has_skill(target.id, NIHIL):
                 if force_crit or (random.randint(1, 100) <= crit_chance):
                     is_crit = True
@@ -397,7 +397,7 @@ class CombatSystem:
                     strike_log['crit'] = True
                     logging.info("Critical Hit!")
             
-            # Check for Sol/Luna activation
+            # Check for Sol/Luna activation - check Nihil first
             if base_dmg > 0 and not self._unit_has_skill(target.id, NIHIL):
                 if self._unit_has_skill(striker.id, LUNA):
                     # Roll for Luna activation (Skill%)
@@ -431,6 +431,27 @@ class CombatSystem:
         # Decrement weapon durability
         if striker.equipped_weapon_index >= 0:
             self.inventorySystem.decrement_item_durability(striker.id, striker.equipped_weapon_index)
+            
+        # Check for Adept (Continue) skill activation
+        if (strike_log['hit'] and
+            striker.current_hp > 0 and
+            target.current_hp > 0 and
+            self._unit_has_skill(striker.id, ADEPT) and
+            not self._unit_has_skill(target.id, NIHIL)):
+            
+            # Roll for Adept activation (Skill%)
+            if random.randint(1, 100) <= striker_stats.get('SKL', 0):
+                logging.info(f"{striker.name}'s Adept activated! Extra attack!")
+                # Recursive call for extra attack, using follow-up rules for PCC
+                adept_strike = self._perform_strike(
+                    striker, striker_stats, striker_weapon,
+                    target, target_stats, target_weapon,
+                    is_follow_up=True, force_crit=force_crit
+                )
+                # Add Adept to skills activated in the original strike
+                strike_log['skills_activated'].append(ADEPT)
+                # Return both strikes as a list
+                return [strike_log, adept_strike]
         
         return strike_log
     
@@ -599,7 +620,7 @@ class CombatSystem:
     
     def _calculate_exp(self, unit, opponent, damage_dealt, defeated_opponent, is_capture=False) -> int:
         """
-        Calculate experience gained from combat.
+        Calculate experience gained from combat based on Fire Emblem standards.
         
         Args:
             unit: The unit gaining experience
@@ -611,30 +632,70 @@ class CombatSystem:
         Returns:
             Amount of experience gained
         """
-        # Base EXP
-        base_exp = 10
+        # Base EXP for combat participation
+        base_exp = 1
+        
+        # Base EXP for hitting an enemy
+        hit_exp = 10 if damage_dealt > 0 else 0
         
         # Level difference modifier
+        # Higher bonus when defeating higher level enemies, penalty for lower level
         level_diff = opponent.level - unit.level
-        level_modifier = max(0, min(20, level_diff * 2))
+        level_modifier = max(-10, min(20, level_diff * 2))
         
-        # Damage modifier
+        # Damage modifier - reward for dealing more damage
         damage_modifier = min(10, damage_dealt)
         
-        # Defeat bonus
+        # Defeat bonus - significant reward for defeating an enemy
         defeat_bonus = 30 if defeated_opponent else 0
         
-        # Capture bonus
+        # Capture bonus - extra reward for successful capture
         capture_bonus = 20 if is_capture and defeated_opponent else 0
         
-        # Class bonus (boss, etc.) - would be implemented based on class data
-        class_bonus = 0
+        # Boss bonus - check if opponent is a boss class
+        is_boss = self._is_boss_unit(opponent)
+        boss_bonus = 20 if is_boss and defeated_opponent else 0
         
-        # Total EXP
-        total_exp = base_exp + level_modifier + damage_modifier + defeat_bonus + capture_bonus + class_bonus
+        # Class bonus - some classes like thieves get less EXP
+        class_modifier = self._get_class_exp_modifier(unit)
+        
+        # Total EXP calculation
+        total_exp = (base_exp + hit_exp + level_modifier + damage_modifier +
+                    defeat_bonus + capture_bonus + boss_bonus) * class_modifier
         
         # Cap at 100 EXP
-        return min(100, total_exp)
+        return min(100, max(1, int(total_exp)))
+    
+    def _is_boss_unit(self, unit) -> bool:
+        """
+        Check if a unit is considered a boss for EXP calculation.
+        
+        Args:
+            unit: The unit to check
+            
+        Returns:
+            True if the unit is a boss, False otherwise
+        """
+        # Check if the unit has boss flag or is a boss class
+        # This would typically be stored in the unit data or class data
+        boss_classes = ["Baron", "Emperor", "King", "Queen", "Overlord"]
+        return hasattr(unit, 'is_boss') and unit.is_boss or unit.class_name in boss_classes
+    
+    def _get_class_exp_modifier(self, unit) -> float:
+        """
+        Get the EXP modifier based on unit class.
+        
+        Args:
+            unit: The unit to check
+            
+        Returns:
+            EXP modifier (1.0 for normal classes, less for special classes)
+        """
+        # Some classes like Thieves might get less EXP
+        low_exp_classes = ["Thief", "Dancer", "Bard"]
+        if unit.class_name in low_exp_classes:
+            return 0.8
+        return 1.0
     
     def _apply_experience(self, unit_id: str, exp_amount: int) -> None:
         """
@@ -662,7 +723,7 @@ class CombatSystem:
     
     def _apply_weapon_exp(self, unit_id: str, weapon_type, wexp_amount: int) -> None:
         """
-        Apply weapon experience to a unit.
+        Apply weapon experience to a unit based on Thracia 776 rules.
         
         Args:
             unit_id: ID of the unit
@@ -680,16 +741,36 @@ class CombatSystem:
         if weapon_type not in unit.weapon_exp:
             return
         
+        # In Thracia, WExp gain is based on weapon/staff rank
+        # For weapons: +1 WExp per hit
+        # For staves: varies by rank (E: +1, D: +2, C: +3, B: +4, A: +5)
+        adjusted_wexp = wexp_amount
+        
+        # If it's a staff, adjust WExp based on rank
+        if self._is_staff_type(weapon_type):
+            rank = unit.weapon_ranks.get(weapon_type, 'E')
+            rank_multipliers = {'E': 1, 'D': 2, 'C': 3, 'B': 4, 'A': 5, '*': 5}
+            adjusted_wexp = wexp_amount * rank_multipliers.get(rank, 1)
+        
         # Add weapon experience
-        unit.weapon_exp[weapon_type] += wexp_amount
-        logging.info(f"{unit.name} gained {wexp_amount} WExp in {weapon_type}")
+        unit.weapon_exp[weapon_type] += adjusted_wexp
+        logging.info(f"{unit.name} gained {adjusted_wexp} WExp in {weapon_type}")
         
-        # Check for rank up
-        current_rank = unit.weapon_ranks.get(weapon_type)
-        current_wexp = unit.weapon_exp.get(weapon_type, 0)
-        
-        # Trigger rank up check
+        # Check for rank up and trigger it
         self.unitSystem.trigger_weapon_rank_up(unit_id, weapon_type)
+    
+    def _is_staff_type(self, weapon_type) -> bool:
+        """
+        Check if a weapon type is a staff.
+        
+        Args:
+            weapon_type: Type of weapon to check
+            
+        Returns:
+            True if the weapon type is a staff, False otherwise
+        """
+        # This would depend on how weapon types are defined in your system
+        return weapon_type == WeaponTypeEnum.STAFF
     
     def _apply_staff_effect(self, caster_id: str, target_id: str, staff_data) -> None:
         """
@@ -880,9 +961,8 @@ class CombatSystem:
         Returns:
             True if the unit has the skill, False otherwise
         """
-        # This would typically call DataProvider's method
-        # For now, return False as a placeholder
-        return False
+        # Use DataProvider to check if the unit has the skill
+        return self.dataProvider.unit_has_skill(unit_id, skill_id)
     
     def _unit_has_item_type(self, unit_id: str, item_type) -> bool:
         """
@@ -933,9 +1013,9 @@ class CombatSystem:
         Returns:
             Effectiveness multiplier (typically 1 or 3)
         """
-        # This would typically call DataProvider's method
-        # For now, return 1 as a placeholder
-        return 1
+        # Use DataProvider to check weapon effectiveness against class
+        # In Thracia 776, effective weapons deal 3x might
+        return self.dataProvider.get_effectiveness_multiplier(weapon_id, class_id)
     
     def _is_weapon_physical(self, weapon_type) -> bool:
         """

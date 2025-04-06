@@ -19,7 +19,7 @@ class TurnPhase(Enum):
     PLAYER_PHASE = auto()
     ENEMY_PHASE = auto()
     NPC_PHASE = auto()
-    EVENT_PHASE = auto()
+    # EVENT_PHASE removed as per clarification - not part of standard phase sequence
 
 
 class TurnManager:
@@ -42,10 +42,11 @@ class TurnManager:
         self.unit_fatigue = {}  # unit_id -> fatigue value
         self.unit_actions = {}  # unit_id -> list of actions performed this turn
         self.movement_star_rates = {}  # unit_id -> movement star rate (0-5)
-        self.pursuit_star_rates = {}  # unit_id -> pursuit star rate (0-5)
+        self.fatigue_enabled = False  # Set to True from Chapter 8 onwards
+        # Removed pursuit_star_rates as PCC is handled in CombatSystem
     
-    def initialize(self, gameStateManager_instance, eventHandler_instance=None,
-                  unitSystem_instance=None, aiManager_instance=None):
+    def initialize(self, gameStateManager_instance, dataProvider_instance=None, eventHandler_instance=None,
+                  unitSystem_instance=None, mapSystem_instance=None, aiManager_instance=None):
         """
         Initialize the TurnManager with the necessary dependencies.
         
@@ -56,10 +57,19 @@ class TurnManager:
             aiManager_instance: Instance of the AIManager (optional)
         """
         self.gameStateManager = gameStateManager_instance
+        self.dataProvider = dataProvider_instance
         self.eventHandler = eventHandler_instance
         self.unitSystem = unitSystem_instance
+        self.mapSystem = mapSystem_instance
         self.aiManager = aiManager_instance
         
+        # Check if fatigue is enabled based on chapter
+        if self.gameStateManager and self.dataProvider:
+            current_chapter_id = self.gameStateManager.current_game_state.chapter_id if self.gameStateManager.current_game_state else None
+            if current_chapter_id:
+                fatigue_start_chapter = self.dataProvider.get_config("fatigue_start_chapter", default=8)
+                chapter_number = int(current_chapter_id.replace("CH", "").split("_")[0]) if current_chapter_id.startswith("CH") else 0
+                self.fatigue_enabled = chapter_number >= fatigue_start_chapter
         # Initialize state from game state
         if self.gameStateManager and self.gameStateManager.current_game_state:
             self.current_turn = self.gameStateManager.current_game_state.current_turn
@@ -95,6 +105,15 @@ class TurnManager:
         if self.gameStateManager and self.gameStateManager.current_game_state:
             self.gameStateManager.current_game_state.current_turn = self.current_turn
             self.gameStateManager.current_game_state.current_phase = self._convert_to_phase_enum(self.current_phase)
+            
+            # Initialize fatigue status based on chapter
+            if self.dataProvider:
+                current_chapter_id = self.gameStateManager.current_game_state.chapter_id
+                if current_chapter_id:
+                    fatigue_start_chapter = self.dataProvider.get_config("fatigue_start_chapter", default=8)
+                    chapter_number = int(current_chapter_id.replace("CH", "").split("_")[0]) if current_chapter_id.startswith("CH") else 0
+                    self.fatigue_enabled = chapter_number >= fatigue_start_chapter
+                    logging.info(f"Fatigue system {'enabled' if self.fatigue_enabled else 'disabled'} for chapter {current_chapter_id}")
         
         # Initialize unit stats
         if self.unitSystem and self.gameStateManager and self.gameStateManager.current_game_state:
@@ -148,6 +167,9 @@ class TurnManager:
         # Reset unit states for the current faction
         self._reset_faction_units(self._get_faction_for_phase(phase))
         
+        # Apply start-of-phase effects (poison, terrain healing, status upkeep)
+        self._apply_start_of_phase_effects(phase)
+        
         # Trigger phase start events
         if self.eventHandler:
             self.eventHandler.check_turn_events(self.current_turn, self._convert_to_phase_enum(phase))
@@ -186,7 +208,7 @@ class TurnManager:
         if self.eventHandler:
             self.eventHandler.check_phase_end_events(self.current_turn, self._convert_to_phase_enum(self.current_phase))
         
-        # Determine next phase
+        # Determine next phase (EVENT_PHASE removed from sequence)
         next_phase = self._get_next_phase(self.current_phase)
         
         # Log the current phase ending
@@ -260,14 +282,23 @@ class TurnManager:
             unit_id: ID of the unit
             action_type: Type of action performed
         """
+        # Skip if fatigue is not enabled or if unit is Leif (exempt)
+        if not self.fatigue_enabled:
+            return
+            
+        # Check if unit is Leif (exempt from fatigue)
+        unit = self.gameStateManager.get_unit(unit_id)
+        if unit and unit.id == "LEIF":  # Assuming Leif's ID is "LEIF"
+            return
+            
         # Record the action
         if unit_id not in self.unit_actions:
             self.unit_actions[unit_id] = []
         
         self.unit_actions[unit_id].append(action_type)
         
-        # Update fatigue
-        fatigue_value = self._get_fatigue_for_action(action_type)
+        # Update fatigue based on action type
+        fatigue_value = self._get_fatigue_for_action(action_type, unit_id)
         
         if unit_id not in self.unit_fatigue:
             self.unit_fatigue[unit_id] = 0
@@ -304,34 +335,12 @@ class TurnManager:
         
         if activated:
             logging.info(f"Unit {unit_id} Movement Star activated! (Roll: {roll}, Chance: {activation_chance}%)")
-        
-        return activated
-    
-    def check_pursuit_star(self, unit_id: str) -> bool:
-        """
-        Check if a unit's Pursuit Star activates, allowing a follow-up attack.
-        
-        Args:
-            unit_id: ID of the unit
             
-        Returns:
-            True if the Pursuit Star activates, False otherwise
-        """
-        # Get the unit's Pursuit Star rate
-        star_rate = self.pursuit_star_rates.get(unit_id, 0)
-        
-        if star_rate <= 0:
-            return False
-        
-        # Calculate activation chance (star_rate * 5%)
-        activation_chance = star_rate * 5
-        
-        # Roll for activation
-        roll = random.randint(1, 100)
-        activated = roll <= activation_chance
-        
-        if activated:
-            logging.info(f"Unit {unit_id} Pursuit Star activated! (Roll: {roll}, Chance: {activation_chance}%)")
+            # Reset the unit's action state to allow another action
+            unit = self.gameStateManager.get_unit(unit_id)
+            if unit:
+                unit.has_acted = False
+                logging.info(f"Unit {unit_id} can act again due to Movement Star!")
         
         return activated
     
@@ -407,6 +416,127 @@ class TurnManager:
     
     # --- Helper Methods ---
     
+    def finalize_chapter_fatigue(self, deployed_unit_ids: list):
+        """
+        Apply end-of-chapter fatigue effects.
+        
+        Args:
+            deployed_unit_ids: List of unit IDs that were deployed in the chapter
+            
+        Returns:
+            Dictionary mapping unit_ids to their fatigue status (True if fatigued)
+        """
+        if not self.fatigue_enabled:
+            logging.info("Fatigue system not enabled for this chapter.")
+            return {}
+            
+        fatigue_results = {}
+        
+        # Process all player units
+        player_units = self.gameStateManager.get_units_by_faction(FactionEnum.PLAYER)
+        for unit in player_units:
+            # Skip Leif (exempt from fatigue)
+            if unit.id == "LEIF":
+                continue
+                
+            if unit.id in deployed_unit_ids:
+                # Check if fatigue >= max HP
+                if self.unit_fatigue.get(unit.id, 0) >= unit.max_hp:
+                    # Set FATIGUED status
+                    unit.disposition = "FATIGUED"  # Assuming disposition is a string field
+                    fatigue_results[unit.id] = True
+                    logging.info(f"Unit {unit.id} is fatigued and must rest next chapter.")
+                else:
+                    # Not fatigued, but fatigue carries over
+                    fatigue_results[unit.id] = False
+            else:
+                # Unit was benched, reset fatigue
+                self.unit_fatigue[unit.id] = 0
+                # Clear any FATIGUED status
+                if unit.disposition == "FATIGUED":
+                    unit.disposition = "ACTIVE"
+                fatigue_results[unit.id] = False
+                logging.info(f"Unit {unit.id} was benched and fatigue reset to 0.")
+                
+        return fatigue_results
+    
+    def _apply_start_of_phase_effects(self, phase: TurnPhase):
+        """
+        Apply start-of-phase effects for the active faction.
+        
+        Args:
+            phase: The current phase
+        """
+        faction = self._get_faction_for_phase(phase)
+        units = self._get_units_for_faction(faction)
+        
+        for unit in units:
+            # 1. Apply Poison damage
+            if self._has_status(unit, "POISON"):
+                poison_damage = 1  # Default poison damage
+                if self.dataProvider:
+                    poison_damage = self.dataProvider.get_status_effect_param("POISON", "damage", default=1)
+                
+                self.gameStateManager.apply_damage(unit.id, poison_damage)
+                logging.info(f"Unit {unit.id} took {poison_damage} poison damage.")
+                
+                # Check if unit died from poison
+                if unit.current_hp <= 0:
+                    logging.info(f"Unit {unit.id} succumbed to poison!")
+                    # Death handling is done by apply_damage
+            
+            # 2. Apply Terrain Healing
+            if self.mapSystem:
+                terrain_props = self.mapSystem.get_terrain_properties(unit.position)
+                if terrain_props and terrain_props.get('is_healing', False):
+                    healing_amount = 5  # Default healing amount
+                    if self.dataProvider:
+                        healing_amount = self.dataProvider.get_terrain_healing_amount(terrain_props['type'], default=5)
+                    
+                    self.gameStateManager.apply_healing(unit.id, healing_amount)
+                    logging.info(f"Unit {unit.id} healed {healing_amount} HP from terrain.")
+            
+            # 3. Process status upkeep (e.g., M_UP decay)
+            self._process_status_upkeep(unit)
+    
+    def _process_status_upkeep(self, unit):
+        """
+        Process status effect upkeep for a unit.
+        
+        Args:
+            unit: The unit to process
+        """
+        # Example: M_UP decay (temporary magic boost)
+        if hasattr(unit, 'status_effects'):
+            for status in unit.status_effects[:]:  # Copy to avoid modification during iteration
+                if status.type == "M_UP" and status.duration > 0:
+                    # Reduce duration by 1
+                    status.duration -= 1
+                    if status.duration <= 0:
+                        # Remove status if duration expired
+                        unit.status_effects.remove(status)
+                        logging.info(f"Unit {unit.id}'s M_UP status expired.")
+                    else:
+                        # Reduce bonus by 1 (assuming magnitude field)
+                        if hasattr(status, 'magnitude'):
+                            status.magnitude = max(0, status.magnitude - 1)
+                            logging.info(f"Unit {unit.id}'s M_UP bonus reduced to {status.magnitude}.")
+    
+    def _has_status(self, unit, status_type: str) -> bool:
+        """
+        Check if a unit has a specific status effect.
+        
+        Args:
+            unit: The unit to check
+            status_type: The type of status to check for
+            
+        Returns:
+            True if the unit has the status, False otherwise
+        """
+        if hasattr(unit, 'status_effects'):
+            return any(status.type == status_type for status in unit.status_effects)
+        return False
+    
     def _initialize_unit_stats(self):
         """Initialize unit stats from the UnitSystem."""
         for unit_id, unit in self.gameStateManager.current_game_state.unit_states.items():
@@ -418,7 +548,6 @@ class TurnManager:
             unit_data = self.unitSystem.get_unit_data(unit_id)
             if unit_data:
                 self.movement_star_rates[unit_id] = unit_data.get('movement_stars', 0)
-                self.pursuit_star_rates[unit_id] = unit_data.get('pursuit_stars', 0)
     
     def _get_next_phase(self, current_phase: TurnPhase) -> TurnPhase:
         """
@@ -435,8 +564,7 @@ class TurnManager:
         elif current_phase == TurnPhase.ENEMY_PHASE:
             return TurnPhase.NPC_PHASE
         elif current_phase == TurnPhase.NPC_PHASE:
-            return TurnPhase.EVENT_PHASE
-        elif current_phase == TurnPhase.EVENT_PHASE:
+            # EVENT_PHASE removed, go directly to PLAYER_PHASE
             return TurnPhase.PLAYER_PHASE
         else:
             return TurnPhase.PLAYER_PHASE
@@ -513,21 +641,48 @@ class TurnManager:
         
         return True
     
-    def _get_fatigue_for_action(self, action_type: str) -> int:
+    def _get_fatigue_for_action(self, action_type: str, unit_id: str = None) -> int:
         """
         Get the fatigue value for an action.
         
         Args:
             action_type: Type of action
+            unit_id: ID of the unit (needed for staff rank lookup)
             
         Returns:
             Fatigue value
         """
-        # In Thracia 776, most actions add 1 fatigue
-        # Combat adds 2 fatigue
+        # Correct Thracia 776 fatigue costs:
+        # Combat/Capture = 1, Steal/Dance = 1
+        # Staves: E=1, D=2, C=3, B=4, A/S=5
+        
         if action_type in ['ATTACK', 'CAPTURE']:
-            return 2
+            return 1
+        elif action_type in ['STEAL', 'DANCE']:
+            return 1
+        elif action_type == 'STAFF' and unit_id and self.gameStateManager:
+            # Get the equipped staff and its rank
+            unit = self.gameStateManager.get_unit(unit_id)
+            if unit and unit.equipped_weapon_index >= 0 and unit.equipped_weapon_index < len(unit.inventory):
+                item_instance = unit.inventory[unit.equipped_weapon_index]
+                if self.dataProvider:
+                    item_data = self.dataProvider.get_item_data(item_instance.item_id)
+                    if item_data and item_data.type == 'STAFF':
+                        rank = item_data.required_rank
+                        # Convert rank to fatigue cost
+                        rank_to_cost = {
+                            'E': 1,
+                            'D': 2,
+                            'C': 3,
+                            'B': 4,
+                            'A': 5,
+                            'S': 5
+                        }
+                        return rank_to_cost.get(rank, 1)
+            # Default staff cost if we can't determine rank
+            return 1
         else:
+            # Default for other actions
             return 1
     
     def _convert_phase_enum(self, phase_enum: PhaseEnum) -> TurnPhase:
@@ -540,6 +695,7 @@ class TurnManager:
         Returns:
             Corresponding TurnPhase
         """
+        # EVENT_PHASE removed from standard sequence
         if phase_enum == PhaseEnum.PLAYER:
             return TurnPhase.PLAYER_PHASE
         elif phase_enum == PhaseEnum.ENEMY:
@@ -547,7 +703,8 @@ class TurnManager:
         elif phase_enum == PhaseEnum.NPC:
             return TurnPhase.NPC_PHASE
         else:
-            return TurnPhase.EVENT_PHASE
+            # Default to PLAYER_PHASE instead of EVENT_PHASE
+            return TurnPhase.PLAYER_PHASE
     
     def _convert_to_phase_enum(self, turn_phase: TurnPhase) -> PhaseEnum:
         """
@@ -566,4 +723,5 @@ class TurnManager:
         elif turn_phase == TurnPhase.NPC_PHASE:
             return PhaseEnum.NPC
         else:
-            return PhaseEnum.EVENT
+            # Default to PLAYER phase instead of EVENT
+            return PhaseEnum.PLAYER

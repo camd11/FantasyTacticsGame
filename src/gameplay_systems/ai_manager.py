@@ -195,220 +195,624 @@ class AIManager:
     
     # --- AI Decision Making ---
     
-    def process_ai_turn(self, faction: FactionEnum):
+    def process_phase(self, phase):
         """
-        Process the AI turn for a faction.
+        Process the AI phase for a faction.
         
         Args:
-            faction: Faction to process
+            phase: The current phase (ENEMY or NPC)
             
         Returns:
             True if all units acted, False otherwise
         """
-        # Get all units for the faction
-        units = self._get_units_for_faction(faction)
+        logging.info(f"AI Manager processing phase: {phase}")
+        ai_faction = FactionEnum.ENEMY if phase == PhaseEnum.ENEMY else FactionEnum.NPC
         
-        # Sort units by priority (e.g., bosses first, then normal units)
-        units = self._sort_units_by_priority(units)
+        # Get all active units for the faction in activation order
+        active_ai_units = self.unitSystem.get_units_by_faction(ai_faction)
         
-        # Process each unit
-        for unit in units:
-            if not unit.has_acted:
-                # Determine the best action for the unit
-                action = self.determine_best_action(unit.id)
-                
-                if action:
-                    # Execute the action
-                    self._execute_ai_action(action)
+        for unit_id in active_ai_units:
+            # Check if unit can act (not dead, slept, etc.)
+            if self.unitSystem.can_act(unit_id) and not self.unitSystem.has_acted(unit_id):
+                self.process_unit_turn(unit_id)
+                # Small delay for visual pacing could be added here
         
+        logging.info(f"AI Manager finished phase: {phase}")
         return True
     
-    def determine_best_action(self, unit_id: str) -> Optional[AIAction]:
+    def process_unit_turn(self, unit_id: str):
         """
-        Determine the best action for an AI unit.
+        Process the turn for a single AI unit.
         
         Args:
             unit_id: ID of the unit
-            
-        Returns:
-            AIAction or None if no action is possible
         """
-        unit = self.gameStateManager.get_unit(unit_id)
-        if not unit:
-            return None
+        unit = self.unitSystem.get_unit(unit_id)
+        ai_profile = self.unit_ai_profiles.get(unit_id)
         
-        profile = self.unit_ai_profiles.get(unit_id)
-        if not profile:
-            return None
+        if not unit or not ai_profile:
+            logging.warning(f"Cannot process AI turn for unit {unit_id}: Unit or AI profile not found")
+            return
         
-        # Get possible actions based on behavior type
-        if profile.behavior_type == AIBehaviorType.AGGRESSIVE:
-            return self._determine_aggressive_action(unit_id, profile)
-        elif profile.behavior_type == AIBehaviorType.DEFENSIVE:
-            return self._determine_defensive_action(unit_id, profile)
-        elif profile.behavior_type == AIBehaviorType.CAUTIOUS:
-            return self._determine_cautious_action(unit_id, profile)
-        elif profile.behavior_type == AIBehaviorType.PASSIVE:
-            return self._determine_passive_action(unit_id, profile)
-        elif profile.behavior_type == AIBehaviorType.STATIONARY:
-            return self._determine_stationary_action(unit_id, profile)
-        elif profile.behavior_type == AIBehaviorType.HEALER:
-            return self._determine_healer_action(unit_id, profile)
-        elif profile.behavior_type == AIBehaviorType.THIEF:
-            return self._determine_thief_action(unit_id, profile)
-        elif profile.behavior_type == AIBehaviorType.BOSS:
-            return self._determine_boss_action(unit_id, profile)
-        elif profile.behavior_type == AIBehaviorType.FLEE:
-            return self._determine_flee_action(unit_id, profile)
-        elif profile.behavior_type == AIBehaviorType.PROTECT:
-            return self._determine_protect_action(unit_id, profile)
-        elif profile.behavior_type == AIBehaviorType.PATROL:
-            return self._determine_patrol_action(unit_id, profile)
+        logging.info(f"Processing AI turn for: {unit.name} (AI: {ai_profile.behavior_type.name})")
+        
+        # Find possible actions for this unit
+        possible_actions = self.find_possible_actions(unit_id, ai_profile)
+        
+        # Select the best action
+        best_action = self.select_best_action(unit_id, possible_actions, ai_profile)
+        
+        if best_action:
+            logging.info(f"AI {unit.name} chose action: {best_action.action_type} Target: {best_action.target_data}")
+            
+            # Execute Move first if needed
+            if best_action.target_data.get('move_path'):
+                move_outcome = self.actionHandler.perform_action(
+                    unit_id,
+                    'MOVE',
+                    {'path': best_action.target_data.get('move_path')}
+                )
+                
+                if not move_outcome.success:
+                    logging.warning(f"AI move failed for {unit.name}")
+                    # Fallback to Wait
+                    self.actionHandler.perform_action(unit_id, 'WAIT', {})
+                    return
+            
+            # Execute the main action
+            action_outcome = self.actionHandler.perform_action(
+                unit_id,
+                best_action.action_type,
+                {k: v for k, v in best_action.target_data.items() if k != 'move_path'}
+            )
+            
+            if not action_outcome.success:
+                logging.warning(f"AI action failed for {unit.name}: {action_outcome.message}")
+                # If action failed after move, unit might just wait there
+                if not self.unitSystem.has_acted(unit_id):  # Check if move already marked acted
+                    self.actionHandler.perform_action(unit_id, 'WAIT', {})  # Explicit wait if action failed
         else:
-            # Default to aggressive
-            return self._determine_aggressive_action(unit_id, profile)
+            # No viable action found, just wait
+            logging.info(f"AI {unit.name} found no action, waiting.")
+            self.actionHandler.perform_action(unit_id, 'WAIT', {})
     
-    # --- Behavior-Specific Action Determination ---
-    
-    def _determine_aggressive_action(self, unit_id: str, profile: AIProfile) -> Optional[AIAction]:
+    def find_possible_actions(self, unit_id: str, ai_profile: AIProfile) -> List[Dict]:
         """
-        Determine the best action for an aggressive unit.
+        Find all possible actions for an AI unit.
         
         Args:
             unit_id: ID of the unit
-            profile: AI profile
+            ai_profile: AI profile for the unit
             
         Returns:
-            AIAction or None if no action is possible
+            List of potential actions with scores
         """
-        # Find potential targets based on priority
-        targets = self._find_targets(unit_id, profile.target_priority, profile.specific_target_id)
-        
-        if not targets:
-            # No targets, just wait
-            return AIAction("WAIT", unit_id, {})
-        
-        # Sort targets by priority
-        targets = self._sort_targets(targets, unit_id, profile.target_priority)
-        
-        # Try to attack a target
-        for target in targets:
-            # Check if we can attack the target from current position
-            if self._can_attack_target(unit_id, target.id):
-                return AIAction("ATTACK", unit_id, {"target_unit_id": target.id})
+        actions = []
+        unit = self.unitSystem.get_unit(unit_id)
+        if not unit:
+            return actions
             
-            # If not, try to move within attack range
-            path = self._find_path_to_attack(unit_id, target.id)
-            if path:
-                # Move to attack position
-                return AIAction("MOVE", unit_id, {"path": path})
+        current_pos = unit.position
         
-        # If we can't attack any target, move towards the highest priority target
-        if targets:
-            path = self._find_path_to_position(unit_id, targets[0].position, profile.movement_range)
-            if path:
-                return AIAction("MOVE", unit_id, {"path": path})
+        # Get reachable tiles from the movement system
+        movement_range = self.movementSystem.get_reachable_tiles(unit_id)
         
-        # If all else fails, wait
-        return AIAction("WAIT", unit_id, {})
+        # Consider actions from current position
+        actions.extend(self.evaluate_actions_from_tile(
+            unit_id, current_pos, ai_profile, is_current_pos=True
+        ))
+        
+        # Consider actions after moving to each reachable tile
+        for tile in movement_range:
+            if tile != current_pos:
+                tile_actions = self.evaluate_actions_from_tile(
+                    unit_id, tile, ai_profile, is_current_pos=False
+                )
+                actions.extend(tile_actions)
+        
+        # Add Wait action as a fallback with lowest priority
+        actions.append({
+            'type': 'WAIT',
+            'score': 0,
+            'target_info': {},
+            'move_path': None,
+            'is_current_pos': True
+        })
+        
+        return actions
     
-    def _determine_defensive_action(self, unit_id: str, profile: AIProfile) -> Optional[AIAction]:
-        """Simplified defensive action determination."""
-        # Find potential targets within attack range
-        targets = self._find_targets_in_range(unit_id)
+    def evaluate_actions_from_tile(self, unit_id: str, tile: Tuple[int, int],
+                                  ai_profile: AIProfile, is_current_pos: bool) -> List[Dict]:
+        """
+        Evaluate all possible actions from a specific tile.
         
-        if targets:
-            # Attack the highest priority target
-            return AIAction("ATTACK", unit_id, {"target_unit_id": targets[0].id})
+        Args:
+            unit_id: ID of the unit
+            tile: Coordinate (x, y) to evaluate actions from
+            ai_profile: AI profile for the unit
+            is_current_pos: Whether this is the unit's current position
+            
+        Returns:
+            List of potential actions with scores
+        """
+        evaluated_actions = []
+        unit = self.unitSystem.get_unit(unit_id)
+        if not unit:
+            return evaluated_actions
+            
+        # Get units that could potentially be targeted from this tile
+        potential_targets = self.unitSystem.get_units_in_range(unit_id, tile)
         
-        # If no targets in range, just wait
-        return AIAction("WAIT", unit_id, {})
+        # Get move path if not current position
+        move_path = None if is_current_pos else self.movementSystem.find_path(unit_id, tile)
+        
+        # Evaluate Attack actions
+        weapon = self.inventorySystem.get_equipped_weapon(unit_id)
+        if weapon:
+            weapon_data = self.dataProvider.get_item_data(weapon)
+            if weapon_data:
+                for target_unit_id in potential_targets:
+                    target_unit = self.unitSystem.get_unit(target_unit_id)
+                    if not target_unit:
+                        continue
+                        
+                    # Check if target is an enemy
+                    if self.unitSystem.is_enemy(unit.faction, target_unit.faction):
+                        # Check if target is in weapon range
+                        distance = self.mapSystem.calculate_distance(tile, target_unit.position)
+                        if weapon_data.min_range <= distance <= weapon_data.max_range:
+                            # Score the attack action
+                            score = self.score_attack_action(unit_id, target_unit_id, tile, weapon, ai_profile)
+                            
+                            evaluated_actions.append({
+                                'type': 'ATTACK',
+                                'score': score,
+                                'target_info': {'target_unit_id': target_unit_id},
+                                'move_path': move_path,
+                                'is_current_pos': is_current_pos
+                            })
+        
+        # Evaluate Capture actions (if AI profile allows)
+        if hasattr(ai_profile, 'can_capture') and ai_profile.can_capture:
+            weapon = self.inventorySystem.get_equipped_weapon(unit_id)
+            if weapon:
+                weapon_data = self.dataProvider.get_item_data(weapon)
+                if weapon_data:
+                    for target_unit_id in potential_targets:
+                        target_unit = self.unitSystem.get_unit(target_unit_id)
+                        if not target_unit:
+                            continue
+                            
+                        # Check if target is an enemy
+                        if self.unitSystem.is_enemy(unit.faction, target_unit.faction):
+                            # Check if target is in weapon range
+                            distance = self.mapSystem.calculate_distance(tile, target_unit.position)
+                            if weapon_data.min_range <= distance <= weapon_data.max_range:
+                                # Check if capture is possible (Con, target immunity, etc.)
+                                if self.unitSystem.can_capture(unit_id, target_unit_id):
+                                    # Score the capture action
+                                    score = self.score_capture_action(unit_id, target_unit_id, tile, ai_profile)
+                                    
+                                    evaluated_actions.append({
+                                        'type': 'CAPTURE',
+                                        'score': score,
+                                        'target_info': {'target_unit_id': target_unit_id},
+                                        'move_path': move_path,
+                                        'is_current_pos': is_current_pos
+                                    })
     
-    def _determine_cautious_action(self, unit_id: str, profile: AIProfile) -> Optional[AIAction]:
-        """Simplified cautious action determination."""
-        # Similar to aggressive but only attack if advantage is good
-        return self._determine_aggressive_action(unit_id, profile)
+        # Evaluate Staff/Item actions
+        usable_items = self.inventorySystem.get_usable_items(unit_id)
+        for item_id in usable_items:
+            item_data = self.dataProvider.get_item_data(item_id)
+            if not item_data:
+                continue
+                
+            if item_data.is_staff or item_data.is_usable_item:
+                # Find potential targets for this item/staff
+                item_targets = self.find_item_targets(unit_id, tile, item_id, item_data, potential_targets)
+                
+                for target_unit_id in item_targets:
+                    # Score the item/staff action
+                    score = self.score_item_action(unit_id, target_unit_id, tile, item_id, item_data, ai_profile)
+                    
+                    evaluated_actions.append({
+                        'type': 'ITEM',
+                        'score': score,
+                        'target_info': {'item_id': item_id, 'target_unit_id': target_unit_id},
+                        'move_path': move_path,
+                        'is_current_pos': is_current_pos
+                    })
+        
+        return evaluated_actions
+        
+    def find_item_targets(self, unit_id: str, from_tile: Tuple[int, int], item_id: str,
+                         item_data, potential_targets: List[str]) -> List[str]:
+        """
+        Find potential targets for an item or staff.
+        
+        Args:
+            unit_id: ID of the unit using the item
+            from_tile: Coordinate to use the item from
+            item_id: ID of the item
+            item_data: Data for the item
+            potential_targets: List of potential target unit IDs
+            
+        Returns:
+            List of valid target unit IDs
+        """
+        targets = []
+        unit = self.unitSystem.get_unit(unit_id)
+        if not unit:
+            return targets
+            
+        # Get item range
+        item_range = (item_data.min_range, item_data.max_range)
+        
+        for target_unit_id in potential_targets:
+            target_unit = self.unitSystem.get_unit(target_unit_id)
+            if not target_unit:
+                continue
+                
+            # Check if target is in range
+            distance = self.mapSystem.calculate_distance(from_tile, target_unit.position)
+            if item_data.min_range <= distance <= item_data.max_range:
+                # Check if item targets allies or enemies
+                is_ally = not self.unitSystem.is_enemy(unit.faction, target_unit.faction)
+                
+                # Healing items/staves target allies
+                if item_data.heals_hp and is_ally and target_unit.current_hp < target_unit.max_hp:
+                    targets.append(target_unit_id)
+                    
+                # Status staves target enemies
+                elif item_data.inflicts_status and not is_ally and not self.unitSystem.has_status(target_unit_id, item_data.status_effect):
+                    targets.append(target_unit_id)
+                    
+                # Add other item target conditions as needed
+                
+        return targets
     
-    def _determine_passive_action(self, unit_id: str, profile: AIProfile) -> Optional[AIAction]:
-        """Simplified passive action determination."""
-        # Only attack if we were attacked last turn
-        if self._was_attacked_last_turn(unit_id):
-            attacker_id = self._get_last_attacker(unit_id)
-            if attacker_id and self._can_attack_target(unit_id, attacker_id):
-                return AIAction("ATTACK", unit_id, {"target_unit_id": attacker_id})
+    def select_best_action(self, unit_id: str, possible_actions: List[Dict], ai_profile: AIProfile) -> Optional[AIAction]:
+        """
+        Select the best action from a list of possible actions.
         
-        # If not attacked or can't attack back, just wait
-        return AIAction("WAIT", unit_id, {})
+        Args:
+            unit_id: ID of the unit
+            possible_actions: List of possible actions with scores
+            ai_profile: AI profile for the unit
+            
+        Returns:
+            The best AIAction or None if no valid action is found
+        """
+        if not possible_actions:
+            return None
+            
+        # Filter out invalid actions (e.g., path not found for move-actions)
+        valid_actions = [a for a in possible_actions if a['type'] == 'WAIT' or
+                         a['is_current_pos'] or a['move_path'] is not None]
+        
+        if not valid_actions:
+            return None
+            
+        # Sort actions by score (descending)
+        valid_actions.sort(key=lambda a: a['score'], reverse=True)
+        
+        # Apply AI profile specifics (e.g., Guard AI might prefer Wait if no threat)
+        if ai_profile.behavior_type == AIBehaviorType.STATIONARY or ai_profile.behavior_type == AIBehaviorType.DEFENSIVE:
+            # For stationary/defensive AI, only act if a good opportunity arises
+            # or if threatened
+            if not self._is_threatened(unit_id) and valid_actions[0]['score'] < 20:
+                wait_action = next((a for a in valid_actions if a['type'] == 'WAIT'), None)
+                if wait_action:
+                    return AIAction('WAIT', unit_id, {})
+        
+        # Create AIAction from the highest scoring valid action
+        best_action = valid_actions[0]
+        target_data = best_action['target_info'].copy()
+        
+        # Add move path to target data if needed
+        if best_action['move_path']:
+            target_data['move_path'] = best_action['move_path']
+            
+        return AIAction(best_action['type'], unit_id, target_data)
     
-    def _determine_stationary_action(self, unit_id: str, profile: AIProfile) -> Optional[AIAction]:
-        """Simplified stationary action determination."""
-        # Find potential targets within attack range
-        targets = self._find_targets_in_range(unit_id)
-        
-        if targets:
-            # Attack the highest priority target
-            return AIAction("ATTACK", unit_id, {"target_unit_id": targets[0].id})
-        
-        # If no targets in range, just wait
-        return AIAction("WAIT", unit_id, {})
+    # --- Scoring Functions ---
     
-    def _determine_healer_action(self, unit_id: str, profile: AIProfile) -> Optional[AIAction]:
-        """Simplified healer action determination."""
-        # Find allies that need healing
-        allies_needing_healing = self._find_allies_needing_healing(unit_id)
+    def score_attack_action(self, unit_id: str, target_id: str, from_tile: Tuple[int, int],
+                           weapon: str, ai_profile: AIProfile) -> float:
+        """
+        Score an attack action.
         
-        if allies_needing_healing:
-            # Check if we can heal any ally from current position
-            for ally in allies_needing_healing:
-                if self._can_heal_target(unit_id, ally.id):
-                    # Find the appropriate healing item or staff
-                    healing_item = self._find_healing_item(unit_id)
-                    if healing_item:
-                        return AIAction("ITEM", unit_id, {"item_id": healing_item, "target_unit_id": ally.id})
+        Args:
+            unit_id: ID of the attacking unit
+            target_id: ID of the target unit
+            from_tile: Coordinate to attack from
+            weapon: Weapon to use
+            ai_profile: AI profile for the unit
+            
+        Returns:
+            Score for the attack action
+        """
+        # Use CombatSystem to predict combat outcome
+        prediction = self.combatSystem.simulate_combat(unit_id, target_id, is_capture=False)
+        if not prediction:
+            return 0.0
+            
+        score = 0.0
         
-        # If no healing to do, just wait
-        return AIAction("WAIT", unit_id, {})
+        # Extract relevant data from prediction
+        attacker_dmg = prediction['attacker']['dmg']
+        attacker_hit = prediction['attacker']['hit'] / 100.0  # Convert to probability
+        attacker_crit = prediction['attacker']['crit'] / 100.0  # Convert to probability
+        attacker_doubles = prediction['attacker']['doubles']
+        
+        defender_dmg = prediction['defender']['dmg']
+        defender_hit = prediction['defender']['hit'] / 100.0  # Convert to probability
+        defender_crit = prediction['defender']['crit'] / 100.0  # Convert to probability
+        defender_doubles = prediction['defender']['doubles']
+        
+        # Get current HP values
+        target_unit = self.unitSystem.get_unit(target_id)
+        unit = self.unitSystem.get_unit(unit_id)
+        if not target_unit or not unit:
+            return 0.0
+            
+        target_hp = target_unit.current_hp
+        unit_hp = unit.current_hp
+        
+        # Calculate expected damage
+        expected_damage = attacker_dmg * attacker_hit
+        if attacker_doubles:
+            expected_damage += attacker_dmg * attacker_hit
+            
+        # Add critical hit bonus
+        expected_damage += attacker_dmg * attacker_hit * attacker_crit
+        
+        # Calculate expected damage taken
+        expected_damage_taken = defender_dmg * defender_hit
+        if defender_doubles:
+            expected_damage_taken += defender_dmg * defender_hit
+            
+        # Add critical hit bonus for defender
+        expected_damage_taken += defender_dmg * defender_hit * defender_crit
+        
+        # Base score on expected damage
+        score += expected_damage * 2
+        
+        # Bonus for potential kill
+        if expected_damage >= target_hp:
+            score += 50
+            
+            # Extra bonus for killing high-value targets
+            if self._is_high_value_target(target_id):
+                score += 25
+                
+        # Penalty for taking damage
+        score -= expected_damage_taken
+        
+        # Severe penalty if we might die
+        if expected_damage_taken >= unit_hp:
+            score -= 75
+            
+        # Adjust based on AI profile
+        if ai_profile.behavior_type == AIBehaviorType.AGGRESSIVE:
+            score *= 1.2  # Aggressive AI values damage more
+        elif ai_profile.behavior_type == AIBehaviorType.CAUTIOUS:
+            # Cautious AI values survival more
+            if expected_damage_taken > unit_hp / 3:
+                score *= 0.5
+                
+        # Terrain considerations
+        defender_terrain = self.mapSystem.get_terrain_at(target_unit.position)
+        if defender_terrain and hasattr(defender_terrain, 'defense_bonus') and defender_terrain.defense_bonus > 20:
+            # Penalty for attacking units on high-defense terrain
+            score *= 0.8
+            
+        return score
+        
+    def score_capture_action(self, unit_id: str, target_id: str, from_tile: Tuple[int, int],
+                            ai_profile: AIProfile) -> float:
+        """
+        Score a capture action.
+        
+        Args:
+            unit_id: ID of the capturing unit
+            target_id: ID of the target unit
+            from_tile: Coordinate to capture from
+            ai_profile: AI profile for the unit
+            
+        Returns:
+            Score for the capture action
+        """
+        # Capture is high priority in Thracia AI if possible
+        # Use CombatSystem to predict combat outcome with capture
+        prediction = self.combatSystem.simulate_combat(unit_id, target_id, is_capture=True)
+        if not prediction:
+            return 0.0
+            
+        score = 0.0
+        
+        # Extract relevant data from prediction
+        attacker_dmg = prediction['attacker']['dmg']
+        attacker_hit = prediction['attacker']['hit'] / 100.0  # Convert to probability
+        attacker_doubles = prediction['attacker']['doubles']
+        
+        defender_dmg = prediction['defender']['dmg']
+        defender_hit = prediction['defender']['hit'] / 100.0  # Convert to probability
+        defender_doubles = prediction['defender']['doubles']
+        
+        # Get current HP values
+        target_unit = self.unitSystem.get_unit(target_id)
+        unit = self.unitSystem.get_unit(unit_id)
+        if not target_unit or not unit:
+            return 0.0
+            
+        target_hp = target_unit.current_hp
+        unit_hp = unit.current_hp
+        
+        # Calculate expected damage
+        expected_damage = attacker_dmg * attacker_hit
+        if attacker_doubles:
+            expected_damage += attacker_dmg * attacker_hit
+            
+        # Calculate expected damage taken
+        expected_damage_taken = defender_dmg * defender_hit
+        if defender_doubles:
+            expected_damage_taken += defender_dmg * defender_hit
+        
+        # Base score - capture is high priority in Thracia
+        score = 80
+        
+        # Bonus if we can secure the capture this turn
+        if expected_damage >= target_hp:
+            score += 50
+            
+            # Bonus if target has valuable items
+            target_items = self.inventorySystem.get_inventory(target_id)
+            if target_items:
+                # Simple heuristic: more items = more value
+                score += len(target_items) * 5
+                
+                # Could be more sophisticated by checking item rarity/value
+        
+        # Penalty for damage taken during capture attempt (stats are halved)
+        score -= expected_damage_taken * 1.5  # Higher penalty due to vulnerability during capture
+        
+        # Severe penalty if we might die
+        if expected_damage_taken >= unit_hp:
+            score -= 100
+            
+        return score
+        
+    def score_item_action(self, unit_id: str, target_id: str, from_tile: Tuple[int, int],
+                         item_id: str, item_data, ai_profile: AIProfile) -> float:
+        """
+        Score an item/staff action.
+        
+        Args:
+            unit_id: ID of the unit using the item
+            target_id: ID of the target unit
+            from_tile: Coordinate to use the item from
+            item_id: ID of the item
+            item_data: Data for the item
+            ai_profile: AI profile for the unit
+            
+        Returns:
+            Score for the item action
+        """
+        score = 0.0
+        
+        target_unit = self.unitSystem.get_unit(target_id)
+        unit = self.unitSystem.get_unit(unit_id)
+        if not target_unit or not unit:
+            return 0.0
+            
+        # Healing items/staves
+        if hasattr(item_data, 'heals_hp') and item_data.heals_hp:
+            hp_missing = target_unit.max_hp - target_unit.current_hp
+            hp_to_restore = min(hp_missing, item_data.heal_amount)
+            
+            # Base score on HP restored
+            score += hp_to_restore * 2
+            
+            # Bonus for critically wounded allies
+            if target_unit.current_hp / target_unit.max_hp < 0.3:
+                score += 30
+                
+            # Bonus for healing high-value allies
+            if self._is_high_value_ally(target_id):
+                score += 20
+                
+        # Status staves
+        elif hasattr(item_data, 'inflicts_status') and item_data.inflicts_status:
+            # Base score for status effects
+            score += 20
+            
+            # Bonus for high-threat targets
+            if self._is_high_threat_target(target_id):
+                score += 30
+                
+            # Adjust based on hit chance
+            hit_chance = self._calculate_staff_hit_chance(unit_id, target_id, item_id)
+            score *= (hit_chance / 100.0)
+            
+        # Other items (buffs, etc.)
+        # Add scoring for other item types as needed
+            
+        return score
     
-    def _determine_thief_action(self, unit_id: str, profile: AIProfile) -> Optional[AIAction]:
-        """Simplified thief action determination."""
-        # Default to aggressive behavior
-        return self._determine_aggressive_action(unit_id, profile)
+    # --- Additional Helper Methods ---
     
-    def _determine_boss_action(self, unit_id: str, profile: AIProfile) -> Optional[AIAction]:
-        """Simplified boss action determination."""
-        # Find potential targets within attack range
-        targets = self._find_targets_in_range(unit_id)
+    def _is_threatened(self, unit_id: str) -> bool:
+        """Check if a unit is threatened by enemy units."""
+        unit = self.unitSystem.get_unit(unit_id)
+        if not unit:
+            return False
+            
+        # Simple implementation: check if any enemy unit can attack this unit
+        for enemy_id, enemy in self.gameStateManager.current_game_state.unit_states.items():
+            if self.unitSystem.is_enemy(unit.faction, enemy.faction):
+                if self._can_attack_target(enemy_id, unit_id):
+                    return True
+                    
+        return False
         
-        if targets:
-            # Attack the highest priority target
-            return AIAction("ATTACK", unit_id, {"target_unit_id": targets[0].id})
+    def _is_high_value_target(self, unit_id: str) -> bool:
+        """Check if a unit is a high-value target."""
+        unit = self.unitSystem.get_unit(unit_id)
+        if not unit:
+            return False
+            
+        # Lord units are high value
+        if hasattr(unit, 'is_lord') and unit.is_lord:
+            return True
+            
+        # Units with low HP are high value
+        if unit.current_hp / unit.max_hp < 0.3:
+            return True
+            
+        # Units with powerful weapons or items could be high value
+        # Add more conditions as needed
+            
+        return False
         
-        # If no targets in range, just wait
-        return AIAction("WAIT", unit_id, {})
-    
-    def _determine_flee_action(self, unit_id: str, profile: AIProfile) -> Optional[AIAction]:
-        """Simplified flee action determination."""
-        # Find the nearest escape point
-        escape_point = self._find_nearest_escape_point(unit_id)
+    def _is_high_value_ally(self, unit_id: str) -> bool:
+        """Check if a unit is a high-value ally."""
+        unit = self.unitSystem.get_unit(unit_id)
+        if not unit:
+            return False
+            
+        # Boss units are high value
+        if hasattr(unit, 'is_boss') and unit.is_boss:
+            return True
+            
+        # Units with leadership stars are high value
+        if hasattr(unit, 'leadership_stars') and unit.leadership_stars > 0:
+            return True
+            
+        return False
         
-        if escape_point:
-            # Move towards escape point
-            path = self._find_path_to_position(unit_id, escape_point, profile.movement_range)
-            if path:
-                return AIAction("MOVE", unit_id, {"path": path})
+    def _is_high_threat_target(self, unit_id: str) -> bool:
+        """Check if a unit is a high-threat target."""
+        unit = self.unitSystem.get_unit(unit_id)
+        if not unit:
+            return False
+            
+        # Units with high attack power are high threat
+        if hasattr(unit, 'attack') and unit.attack > 15:
+            return True
+            
+        # Units that can attack multiple times are high threat
+        if hasattr(unit, 'attack_speed') and unit.attack_speed > 15:
+            return True
+            
+        return False
         
-        # If no escape point or can't move towards it, just wait
-        return AIAction("WAIT", unit_id, {})
-    
-    def _determine_protect_action(self, unit_id: str, profile: AIProfile) -> Optional[AIAction]:
-        """Simplified protect action determination."""
-        # Default to aggressive behavior
-        return self._determine_aggressive_action(unit_id, profile)
-    
-    def _determine_patrol_action(self, unit_id: str, profile: AIProfile) -> Optional[AIAction]:
-        """Simplified patrol action determination."""
-        # Default to aggressive behavior
-        return self._determine_aggressive_action(unit_id, profile)
+    def _calculate_staff_hit_chance(self, user_id: str, target_id: str, staff_id: str) -> int:
+        """Calculate the hit chance for a staff."""
+        # This would be more sophisticated in a real implementation
+        # For now, return a default value
+        return 70
     
     # --- Helper Methods ---
     

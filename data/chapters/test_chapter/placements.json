@@ -1,0 +1,105 @@
+{
+  "chapter_id": "test_chapter",
+  "placements": [
+    {
+      "unit_id": "LEIF",
+      "faction": "PLAYER",
+      "position": [
+        1,
+        1
+      ],
+      "level": 1,
+      "start_inventory": [
+        "IRON_SWORD",
+        "LIGHT_BRAND",
+        "VULNERARY"
+      ]
+    },
+    {
+      "unit_id": "HALVAN",
+      "faction": "PLAYER",
+      "position": [
+        1,
+        2
+      ],
+      "level": 1,
+      "start_inventory": [
+        "IRON_AXE"
+      ]
+    },
+    {
+      "unit_id": "LIFIS",
+      "faction": "PLAYER",
+      "position": [
+        2,
+        1
+      ],
+      "level": 1,
+      "start_inventory": [
+        "IRON_SWORD",
+        "LOCKPICK"
+      ]
+    },
+    {
+      "unit_id": "ASBEL",
+      "faction": "PLAYER",
+      "position": [
+        2,
+        2
+      ],
+      "level": 1,
+      "start_inventory": [
+        "FIRE_TOME"
+      ]
+    },
+    {
+      "unit_id": "ENEMY_SOLDIER_1",
+      "faction": "ENEMY",
+      "position": [
+        8,
+        8
+      ],
+      "level": 1,
+      "start_inventory": [
+        "IRON_LANCE",
+        "VULNERARY"
+      ]
+    },
+    {
+      "unit_id": "ENEMY_SOLDIER_2",
+      "faction": "ENEMY",
+      "position": [
+        7,
+        8
+      ],
+      "level": 1,
+      "start_inventory": [
+        "IRON_AXE"
+      ]
+    },
+    {
+      "unit_id": "ENEMY_ARCHER_1",
+      "faction": "ENEMY",
+      "position": [
+        8,
+        7
+      ],
+      "level": 1,
+      "start_inventory": [
+        "IRON_BOW"
+      ]
+    },
+    {
+      "unit_id": "ENEMY_GUARD_1",
+      "faction": "ENEMY",
+      "position": [
+        9,
+        8
+      ],
+      "level": 2,
+      "start_inventory": [
+        "STEEL_SWORD"
+      ]
+    }
+  ]
+}

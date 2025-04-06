@@ -1,0 +1,60 @@
+{
+  "chapter_id": "test_chapter",
+  "events": [
+    {
+      "id": "victory_seize",
+      "trigger": "ACTION_SEIZE",
+      "trigger_params": {
+        "location": [
+          9,
+          9
+        ]
+      },
+      "conditions": [],
+      "actions": [
+        {
+          "type": "END_CHAPTER",
+          "params": {
+            "outcome": "victory"
+          }
+        }
+      ],
+      "priority": 10,
+      "is_repeatable": false
+    },
+    {
+      "id": "visit_village_1",
+      "trigger": "ACTION_VISIT",
+      "trigger_params": {
+        "location": [
+          4,
+          4
+        ]
+      },
+      "conditions": [],
+      "actions": [
+        {
+          "type": "GIVE_ITEM",
+          "params": {
+            "recipient_unit_id": "CONTEXT_UNIT",
+            "item_id": "VULNERARY"
+          }
+        },
+        {
+          "type": "SHOW_DIALOGUE",
+          "params": {
+            "dialogue_id": "TEST_VILLAGE_MSG"
+          }
+        },
+        {
+          "type": "SET_FLAG",
+          "params": {
+            "flag_name": "village_1_visited"
+          }
+        }
+      ],
+      "priority": 0,
+      "is_repeatable": false
+    }
+  ]
+}

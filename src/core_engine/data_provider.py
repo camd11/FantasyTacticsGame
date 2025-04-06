@@ -501,6 +501,21 @@ class DataProvider:
             SkillData object or None if not found
         """
         return self._skill_data.get(skill_id)
+        
+    def get_config(self, config_key: str, default: Any = None) -> Any:
+        """
+        Get a configuration value with a default fallback.
+        
+        Args:
+            config_key: The key for the configuration value
+            default: The default value to return if the key is not found
+            
+        Returns:
+            The configuration value or the default if not found
+        """
+        # For now, just return the default value since we don't have actual config data
+        # In a real implementation, this would look up values from a config file or database
+        return default
 
     def get_map_data(self, chapter_id: str) -> Optional[MapData]:
         """
@@ -531,13 +546,18 @@ class DataProvider:
             List of UnitPlacement objects (empty list if none found)
         """
         filepath = os.path.join("data", "chapters", chapter_id, "placements.json")
-        placements_list = self._load_yaml_or_json(filepath) # Expecting a list
+        placements_data = self._load_yaml_or_json(filepath)
         
-        if isinstance(placements_list, list):
-             # Convert list of dicts to list of UnitPlacement objects
-            return [UnitPlacement(p) for p in placements_list]
-        elif placements_list:
-             logging.warning(f"Expected a list in {filepath}, but got {type(placements_list)}")
+        # Handle both formats: direct list or dictionary with "placements" key
+        if isinstance(placements_data, dict) and "placements" in placements_data:
+            placements_list = placements_data["placements"]
+            if isinstance(placements_list, list):
+                return [UnitPlacement(p) for p in placements_list]
+        elif isinstance(placements_data, list):
+            return [UnitPlacement(p) for p in placements_data]
+        
+        if placements_data:
+            logging.warning(f"Expected a list or dict with 'placements' key in {filepath}, but got {type(placements_data)}")
         
         return []
 

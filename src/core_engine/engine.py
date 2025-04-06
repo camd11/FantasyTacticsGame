@@ -187,13 +187,13 @@ class EngineCore:
                 
                 player_input = self.input_handler.get_input() # Blocking call? Needs clarification
                 
-                if player_input.type == "INPUT_END_TURN":
+                if player_input['type'] == "END_TURN":
                     break  # Player chose to end phase early
-                elif player_input.type == "INPUT_ACTION":
+                elif player_input['type'] in ["MOVE", "WAIT", "ATTACK", "CAPTURE", "ITEM", "TRADE", "VISIT", "SEIZE"]:
                     # Delegate action processing to ActionHandler
                     self.action_handler.process_action(
-                        player_input.unit_id,
-                        player_input.action_data,
+                        player_input['unit_id'],
+                        player_input,
                         # Pass necessary dependencies to ActionHandler if needed
                         # game_state_manager=self.game_state_manager,
                         # combat_system=self.combat_system,
