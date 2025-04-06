@@ -197,7 +197,7 @@ class GameStateManager:
             unit = UnitState()
             unit.id = unit_id
             unit.name = base_data.name
-            unit.class_id = base_data.class_id
+            unit.class_id = base_data.base_class_id
             unit.faction = placement.faction
             unit.position = placement.position
             

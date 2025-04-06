@@ -1,480 +1,755 @@
-# Specification: Combat System
-
-**Version:** 1.0
-**Date:** 2025-04-05
+# Combat System Specification
 
 ## 1. Overview
 
-The Combat System orchestrates battles between units. It calculates the outcome of attacks based on unit stats, equipment, skills, terrain, and support bonuses, following the specific mechanics of Thracia 776. It determines hit rates, damage, critical hits, follow-up attacks (doubling), and applies the results, including HP changes, status effects, fatigue gain, and experience/weapon experience gain. It also handles the unique Capture combat mechanics. This system interacts heavily with `GameStateManager`, `DataProvider`, `UnitSystem`, `MapSystem`, and `InventorySystem`.
+The Combat System manages all direct confrontations between units on the map. It calculates the outcome of attacks, including hit rates, damage, critical hits, follow-up attacks, and incorporates special mechanics like the weapon triangle, skills, terrain effects, support bonuses, leadership, fatigue, and the unique Capture mechanic from Thracia 776.
 
-## 2. Functional Requirements
+## 2. Dependencies
 
-### 2.1. Combat Initiation
-    - Triggered when a unit selects the "Attack" or "Capture" command targeting an adjacent or in-range enemy unit.
-    - Triggered when a unit uses an offensive staff targeting another unit.
-    - Triggered when an enemy unit attacks during the Enemy Phase.
+*   **Unit System (`unit_system.spec.md`):** Provides unit stats (HP, Str, Mag, Skl, Spd, Luk, Def, Con, Mov), skills, status effects, fatigue level, weapon ranks, PCC (FCM), leadership stars, and inventory.
+*   **Item System (`item_system.spec.md`):** Provides weapon stats (Mt, Hit, Crit, Wt, Rng, Durability, Rank, Type, Effectiveness), scroll effects (crit negation), and staff properties.
+*   **Map System (`map_system.spec.md`):** Provides terrain information (Avoid bonus, Defense bonus, movement costs affecting positioning).
+*   **AI Manager (`ai_manager.spec.md`):** Determines enemy target selection and action choices (Attack, Capture, Staff).
+*   **Event System (`event_handler.spec.md`):** May trigger specific combat scenarios or apply unique effects based on map events.
+*   **Game State Manager (`game_state_manager.spec.md`):** Provides access to the overall game state, including unit positions, turn count, and active bonuses.
 
-### 2.2. Combat Simulation (Forecast)
-    - Provide a function `simulate_combat(attacker_id, defender_id, is_capture=False)` that predicts the outcome without applying changes.
-    - Calculate and return:
-        - Attacker's predicted Damage per hit (DMG).
-        - Attacker's predicted Hit Rate (HIT) against the defender (capped 1-99%).
-        - Attacker's predicted Critical Rate (CRT) against the defender (considering PCC rules and 25% cap on first hit).
-        - Defender's predicted Damage per hit (DMG).
-        - Defender's predicted Hit Rate (HIT) against the attacker (capped 1-99%).
-        - Defender's predicted Critical Rate (CRT) against the attacker (considering PCC rules and 25% cap on first hit).
-        - Indication if attacker/defender will perform a follow-up attack (double).
-    - This simulation uses the detailed calculation formulas (see Section 4).
+## 3. Core Combat Flow
 
-### 2.3. Combat Execution
-    - Provide a function `execute_combat(attacker_id, defender_id, is_capture=False)` that performs the combat round step-by-step.
-    - **Order of Operations:** (Ref: `research.md`, Sec 1, 5.4)
-        1.  **Attacker's First Strike:**
-            - Roll for hit (1 RN vs calculated Hit Rate).
-            - If hit, roll for critical (vs calculated Crit Rate, capped at 25%).
-            - If hit, calculate damage (apply crit bonus if applicable).
-            - Apply damage to defender (`GameStateManager.apply_damage`).
-            - Check for skill activations (e.g., Sol, Luna, Pavise on hit/defense). Apply effects.
-            - Check if defender is defeated. If so, end combat sequence early.
-        2.  **Defender's Counterattack:** (If defender survived and is in range)
-            - Roll for hit.
-            - If hit, roll for critical (vs calculated Crit Rate, capped at 25%; Wrath skill overrides).
-            - If hit, calculate damage.
-            - Apply damage to attacker.
-            - Check for skill activations.
-            - Check if attacker is defeated. If so, end combat sequence early.
-        3.  **Attacker's Follow-Up Strike:** (If attacker's AS >= defender's AS + 4)
-            - Roll for hit.
-            - If hit, roll for critical (vs calculated Crit Rate * PCC, no 25% cap).
-            - If hit, calculate damage.
-            - Apply damage to defender.
-            - Check for skill activations.
-            - Check if defender is defeated.
-        4.  **Defender's Follow-Up Strike:** (If defender's AS >= attacker's AS + 4 and defender survived previous hits)
-            - Roll for hit.
-            - If hit, roll for critical (vs calculated Crit Rate * PCC, no 25% cap; Wrath overrides).
-            - If hit, calculate damage.
-            - Apply damage to attacker.
-            - Check for skill activations.
-            - Check if attacker is defeated.
-        *Note: Brave weapons add an immediate second strike during the attacker's first action phase. Adept skill can add extra strikes.*
-    - **Post-Combat Updates:**
-        - Decrement weapon durability for attacker/defender for each strike made (`InventorySystem.decrement_item_durability`).
-        - Award EXP/WExp (`GameStateManager.apply_exp`, `GameStateManager.apply_wexp`).
-        - Apply status effects from weapons/skills (`GameStateManager.add_status_effect`).
-        - Update fatigue for participants (`GameStateManager.update_fatigue`).
-        - Handle unit death/capture state changes (`GameStateManager`).
+Combat is initiated when a unit selects the "Attack" or "Capture" command against a valid target in range.
 
-### 2.4. Capture Combat
-    - If `is_capture=True` during initiation:
-        - Apply stat penalties to the *attacker* for the duration of the combat simulation/execution: Str, Mag, Skl, Spd, Def are halved (Ref: `research.md`, Sec 5.5). Luck, Con, Mov are unaffected.
-        - Execute combat sequence as normal using the penalized stats for the attacker.
-        - If the defender's HP reaches 0 during the capture attempt, the defender is marked as captured (`GameStateManager` sets state, attacker starts carrying). They are not marked as dead.
+1.  **Initiation:** The initiating unit attacks first.
+2.  **Counterattack:** If the defending unit survives the initial attack(s) and has a weapon capable of attacking back at the engagement range, they counterattack.
+3.  **Follow-up Attacks (Doubling):**
+    *   If the initiator's Attack Speed (AS) is 4 or more points higher than the defender's AS, the initiator performs a follow-up attack after the counterattack (if any).
+    *   If the defender's AS is 4 or more points higher than the initiator's AS, the defender performs a follow-up attack after their initial counterattack (if they initiated one).
+    *   Brave weapons grant an immediate second attack *before* any counterattack. If the wielder also meets the AS threshold for doubling, they can potentially attack four times (Initial Hit -> Brave Hit -> Counterattack -> Follow-up Hit -> Follow-up Brave Hit).
 
-### 2.5. Staff Combat (Offensive)
-    - Provide `execute_staff_attack(caster_id, target_id, staff_item_index)`.
-    - Calculate Staff Hit Rate (Base + 4*Skill, capped 99%) (Ref: `research.md`, Sec 5.1).
-    - Roll for hit (1 RN).
-    - If hit, apply the staff's effect (e.g., status via `GameStateManager.add_status_effect`). Target's Magic/Resistance does not affect hit chance in Thracia.
-    - Decrement staff durability (`InventorySystem.decrement_item_durability`).
-    - Update caster's fatigue based on staff rank (`GameStateManager.update_fatigue`).
-    - Award WExp to caster (`GameStateManager.apply_wexp`).
+**Combat Sequence Example (Attacker Doubles):**
 
-## 4. Combat Calculation Formulas (Thracia 776 Specific)
+1.  Attacker's First Strike
+2.  Defender's Counterattack (if possible and survives)
+3.  Attacker's Follow-up Strike
 
-*References primarily from `research.md` Sections 2, 4, 5, 12.*
+**Combat Sequence Example (Attacker with Brave Weapon, also Doubles):**
+
+1.  Attacker's First Strike
+2.  Attacker's Brave Strike
+3.  Defender's Counterattack (if possible and survives)
+4.  Attacker's Follow-up Strike
+5.  Attacker's Follow-up Brave Strike
+
+## 4. Combat Calculations
+
+These calculations determine the outcome of each individual strike within a combat round.
 
 ### 4.1. Attack Speed (AS)
-    - `AS = Speed – Effective_Weapon_Weight`
-    - `Effective_Weapon_Weight (Physical) = max(0, Weapon_Weight – Constitution)`
-    - `Effective_Weapon_Weight (Magic Tome) = Weapon_Weight` (Con does not offset tome weight)
-    - *Source: `research.md`, Sec 2*
 
-### 4.2. Hit Rate (Displayed)
-    - `Attacker_Base_Hit = Weapon_Hit + (2 * Skill) + Luck + Support_Bonus + Leadership_Bonus + Charisma_Bonus`
-    - `Defender_Avoid = (2 * Defender_AS) + Defender_Luck + Support_Bonus + Leadership_Bonus + Charisma_Bonus + Terrain_Avoid_Bonus` (Terrain bonus only if applicable based on unit type/state)
-    - `Weapon_Triangle_Bonus = +5 (Advantage), -5 (Disadvantage), 0 (Neutral)`
-        - Swords > Axes > Lances > Swords
-        - Fire > Wind > Thunder > Fire
-        - Light/Dark > Anima (Effectively +5 vs Fire/Wind/Thunder)
-    - `Displayed_Hit_Rate = Attacker_Base_Hit - Defender_Avoid + Weapon_Triangle_Bonus`
-    - **Result capped between 1% and 99%.**
-    - *Source: `research.md`, Sec 5.1*
+*   **Purpose:** Determines follow-up attacks and contributes to Avoid.
+*   **Formula:**
+    *   For Physical Weapons: `AS = Unit_Speed - MAX(0, Weapon_Weight - Unit_Constitution)`
+    *   For Magical Weapons (Tomes): `AS = Unit_Speed - Weapon_Weight` (Con does not offset tome weight in Thracia 776)
+*   **Inputs:** Unit Speed (Spd), Unit Constitution (Con), Weapon Weight (Wt).
+*   **Output:** Attack Speed value (integer).
 
-### 4.3. Damage (DMG)
-    - `Effective_Might = Weapon_Might * Effectiveness_Multiplier`
-        - `Effectiveness_Multiplier = 3` if weapon is effective vs target type (e.g., Rapier vs Armor/Cav), else `1`.
-    - `Physical_Damage = (Attacker_Strength + Effective_Might) - Defender_Physical_Defense`
-        - `Defender_Physical_Defense = Defender_Defense + Terrain_Defense_Bonus`
-    - `Magical_Damage = (Attacker_Magic + Effective_Might) - Defender_Magical_Defense`
-        - `Defender_Magical_Defense = Defender_Magic + Terrain_Magic_Bonus + Temporary_Magic_Bonuses` (e.g., M Up/Holy Water)
-    - Magic Swords (e.g., Light Brand) use Magical Damage formula when attacking at range 2. Melee usage might still use Magic stat (needs verification, assume Magic for now based on research note).
-    - Minimum damage is 0.
-    - *Source: `research.md`, Sec 5.2*
+### 4.2. Hit Rate (Accuracy)
 
-### 4.4. Critical Rate (CRT)
-    - `Attacker_Base_Crit = Weapon_Crit + Attacker_Skill + Support_Bonus`
-    - `Defender_Crit_Evade (Ddg) = floor(Defender_Luck / 2) + Support_Bonus`
-    - `Calculated_Crit_Rate = Attacker_Base_Crit - Defender_Crit_Evade`
-    - **Combat Critical Rate (First Hit):** `min(25, max(0, Calculated_Crit_Rate))`
-    - **Combat Critical Rate (Follow-Up/Adept/Brave Hits > 1):** `min(100, max(0, Calculated_Crit_Rate * Attacker_PCC))` (PCC = Pursuit Critical Coefficient / FCM)
-    - **Wrath Skill:** If active (defender counterattacking), CRT = 100%, overrides PCC and 25% cap.
-    - **Scrolls:** If defender holds a scroll, Attacker's CRT becomes 0 (unless attacker has Wrath).
-    - **Nihil Skill:** If defender has Nihil, Attacker's CRT becomes 0 (needs confirmation if Nihil blocks crits in FE5, assume yes for now).
-    - *Source: `research.md`, Sec 5.3*
+*   **Purpose:** Base chance for an attack to connect before considering enemy evasion.
+*   **Formula:** `Hit = Weapon_Hit + (2 * Unit_Skill) + Unit_Luck + Support_Bonus + Leadership_Bonus + Charisma_Bonus + Weapon_Triangle_Bonus`
+*   **Inputs:** Weapon Hit, Unit Skill (Skl), Unit Luck (Luk), Sum of active Support Bonuses (capped at +30), Total Allied Leadership Stars * 3, Sum of active Charisma Bonuses (+10 per source within 3 tiles), Weapon Triangle Bonus (+5 advantage, -5 disadvantage, 0 neutral).
+*   **Output:** Base Hit Rate (integer).
 
-### 4.5. Critical Damage Bonus
-    - If a critical hit occurs: `Final_Damage = Calculated_Damage * 2`
-    - Damage is doubled *after* defense mitigation.
-    - *Source: `research.md`, Sec 5.2, 5.3*
+### 4.3. Avoid Rate (Evasion)
 
-### 4.6. Follow-Up Attack (Doubling)
-    - Attacker doubles if `Attacker_AS >= Defender_AS + 4`.
-    - Defender doubles if `Defender_AS >= Attacker_AS + 4`.
-    - Only one follow-up attack per unit per round from AS difference.
-    - *Source: `research.md`, Sec 2, 5.4*
+*   **Purpose:** Base chance for a unit to evade an incoming attack.
+*   **Formula:** `Avoid = (2 * Unit_Attack_Speed) + Unit_Luck + Support_Bonus + Leadership_Bonus + Charisma_Bonus + Terrain_Avoid_Bonus`
+*   **Inputs:** Unit Attack Speed (AS), Unit Luck (Luk), Sum of active Support Bonuses (capped at +30), Total Allied Leadership Stars * 3, Sum of active Charisma Bonuses (+10 per source within 3 tiles), Terrain Avoid Bonus (%).
+*   **Note:** Mounted units only gain terrain bonuses when dismounted. Flying units gain 0 terrain bonus.
+*   **Output:** Base Avoid Rate (integer).
 
-### 4.7. Staff Accuracy (Offensive)
-    - `Staff_Hit_Rate = Base_Staff_Hit + (4 * Caster_Skill)`
-    - Base_Staff_Hit = 60% for most, 100% for Torch.
-    - **Result capped between 1% and 99%.**
-    - Target's Magic/Resistance does *not* affect hit chance.
-    - *Source: `research.md`, Sec 5.1*
+### 4.4. Battle Hit Chance
 
-## 5. Skill Integration
+*   **Purpose:** The actual displayed chance for an attack to hit in combat.
+*   **Formula:** `Battle_Hit_Chance = Attacker_Hit_Rate - Defender_Avoid_Rate`
+*   **Constraints:** Capped between 1% and 99%. Thracia 776 uses 1 RN system (displayed = actual).
+*   **Inputs:** Attacker's calculated Hit Rate, Defender's calculated Avoid Rate.
+*   **Output:** Final Hit Chance percentage (1-99).
 
-- **Wrath:** Check if defender has Wrath during counterattack phase. If so, force critical hit.
-- **Adept (Continue):** After a unit completes their normal attack(s), roll `Skill%` chance for an extra attack. This extra attack uses follow-up critical rules (PCC applies). Can potentially trigger multiple times.
-- **Miracle (Prayer):** Before applying damage, check if defender has Miracle and HP is below threshold (e.g., <= 10). If active, set attacker's hit chance to 0 for that strike. (Needs clarification on exact activation trigger/limit).
-- **Nihil:** Check if defender has Nihil. If so, negate attacker's combat skills (Sol, Luna, etc.) and critical hits for that engagement.
-- **Sol/Luna:** Check if attacker has skill. Roll activation chance (e.g., Skill%?). If Sol activates, heal attacker for damage dealt. If Luna activates, ignore defender's Def/Res for that strike.
-- **Pavise:** Check if defender has skill. Roll activation chance (e.g., Level%?). If active, negate all damage from that hit.
-- **Astra (Mareeta's Sword):** Special case. If attacker uses Mareeta's Sword, trigger 5 consecutive hits. Apply PCC rules after the first hit.
-- **Scrolls (Passive):** Check defender's inventory. If scroll present, negate attacker's critical chance (unless attacker has Wrath). Growth boosts handled by UnitSystem/Level Up.
-- **Charisma/Supports/Leadership:** Bonuses are factored directly into Hit/Avoid/Crit/Ddg calculations (see Section 4).
+### 4.5. Damage
 
-## 6. Post-Combat Updates
+*   **Purpose:** Calculates HP reduction upon a successful hit.
+*   **Physical Damage Formula:** `Damage = (Attacker_Strength + (Weapon_Might * Effective_Bonus)) - Defender_Physical_Defense`
+    *   `Defender_Physical_Defense = Defender_Defense + Terrain_Defense_Bonus`
+*   **Magical Damage Formula:** `Damage = (Attacker_Magic + (Weapon_Might * Effective_Bonus)) - Defender_Magical_Defense`
+    *   `Defender_Magical_Defense = Defender_Magic + Terrain_Defense_Bonus + Temporary_Magic_Bonuses` (e.g., M Up/Pure Water)
+*   **Effective Bonus:** 3 if the weapon is effective against the defender's class/type, 1 otherwise.
+*   **Magic Swords (e.g., Light Brand, Flame Sword):**
+    *   At Range 1: Typically uses **Physical Damage** formula (Attacker_Strength vs Defender_Defense). *[Needs confirmation if some use Magic stat at Range 1]*.
+    *   At Range 2: Uses **Magical Damage** formula (Attacker_Magic vs Defender_Magic).
+*   **Minimum Damage:** Damage cannot be less than 0. If calculation results in negative, damage is 0.
+*   **Inputs:** Attacker Str/Mag, Weapon Mt, Effective Bonus multiplier, Defender Def/Mag, Terrain Def Bonus, Temporary Magic Bonuses.
+*   **Output:** Damage value (integer, >= 0).
 
-- **HP:** Update `current_hp` for attacker and defender via `GameStateManager.apply_damage`. Check for death/capture.
-- **Durability:** Call `InventorySystem.decrement_item_durability` for weapons/staves used by attacker/defender.
-- **Fatigue:** Call `GameStateManager.update_fatigue(unit_id, 1)` for both participants (attacker/defender) for each combat round they participated in (attacking or counterattacking). Staff usage fatigue handled separately. (Ref: `research.md`, Sec 7).
-- **EXP:** Calculate and award EXP via `GameStateManager.apply_exp`. Base EXP depends on killing blow, damage dealt, level difference.
-- **WExp:** Calculate and award WExp via `GameStateManager.apply_wexp`. Typically +1 WExp per hit landed with weapon/staff (staff WExp varies by rank). Trigger rank up checks via `UnitSystem`. (Ref: `research.md`, Sec 4).
-- **Status:** Apply status effects from weapons (e.g., Poison Bow) via `GameStateManager.add_status_effect`.
+### 4.6. Critical Rate (Base)
 
-## 7. Pseudocode (combat_system.py)
+*   **Purpose:** Base chance for an attack to be a critical hit before considering PCC and enemy evasion.
+*   **Formula:** `Base_Crit_Rate = Weapon_Crit + Unit_Skill + Support_Bonus`
+*   **Inputs:** Weapon Critical (%), Unit Skill (Skl), Sum of active Support Bonuses (capped at +30).
+*   **Output:** Base Critical Rate (integer).
 
-```python
-# --- combat_system.py ---
+### 4.7. Critical Evade (Dodge / Ddg)
 
-import random # For RN rolls
+*   **Purpose:** Reduces the enemy's chance to land a critical hit.
+*   **Formula:** `Crit_Evade = FLOOR(Unit_Luck / 2) + Support_Bonus`
+*   **Inputs:** Unit Luck (Luk), Sum of active Support Bonuses (capped at +30).
+*   **Output:** Critical Evade value (integer).
 
-# Import necessary modules (GameStateManager, DataProvider, UnitSystem, MapSystem, InventorySystem)
-# Import enums, CombatResult data structure
+### 4.8. Battle Critical Chance
 
-class CombatSystem:
-    gameStateManager = null
-    dataProvider = null
-    unitSystem = null
-    mapSystem = null
-    inventorySystem = null
+*   **Purpose:** The actual chance for an attack to be a critical hit in combat.
+*   **Formula:**
+    1.  Calculate Potential Crit: `Potential_Crit = Attacker_Base_Crit_Rate - Defender_Crit_Evade`
+    2.  Apply PCC and Caps:
+        *   **First Attack in Round:** `Battle_Crit_Chance = MIN(25, MAX(0, Potential_Crit))` (Capped at 25%)
+        *   **Subsequent Attacks (Follow-up, Brave, Adept):** `Battle_Crit_Chance = MIN(100, MAX(0, Potential_Crit * Attacker_PCC))` (PCC multiplier applied, capped at 100%)
+*   **Special Cases:**
+    *   **Wrath Skill:** If active (counterattacking/enemy phase), `Battle_Crit_Chance = 100`. Overrides Scrolls.
+    *   **Scrolls:** If the defender holds a Crusader Scroll, `Battle_Crit_Chance = 0` (unless Wrath is active).
+    *   **Nihil Skill:** If the defender has Nihil, `Battle_Crit_Chance = 0`.
+*   **Inputs:** Attacker Base Crit Rate, Defender Crit Evade, Attacker PCC (FCM value 0-5), Attack sequence position (first or subsequent), Defender holding Scroll, Defender has Nihil, Attacker has Wrath.
+*   **Output:** Final Critical Chance percentage (0-100).
 
-    function initialize(gs_manager, d_provider, u_system, m_system, i_system):
-        gameStateManager = gs_manager
-        dataProvider = d_provider
-        unitSystem = u_system
-        mapSystem = m_system
-        inventorySystem = i_system
-        log("CombatSystem initialized.")
+### 4.9. Critical Damage
 
-    # --- Combat Simulation (Forecast) ---
+*   **Purpose:** Calculates damage dealt on a successful critical hit.
+*   **Formula:** `Critical_Damage = Calculated_Normal_Damage * 2`
+*   **Note:** Doubles the final damage *after* defense mitigation. If normal damage is 0 or 1, crit damage is 0 or 2 respectively.
+*   **Inputs:** Calculated Normal Damage.
+*   **Output:** Critical Damage value (integer).
 
-    # TDD: Test simulate_combat predicts correct Hit/Dmg/Crit/Double for various scenarios (WT, skills, terrain, stats)
-    function simulate_combat(attacker_id, defender_id, is_capture=False):
-        attacker = gameStateManager.get_unit(attacker_id)
-        defender = gameStateManager.get_unit(defender_id)
-        if not attacker or not defender: return None
+## 5. Special Combat Mechanics
 
-        # Calculate stats for both units, considering capture penalty if applicable
-        attacker_stats = unitSystem.calculate_current_combat_stats(attacker_id)
-        defender_stats = unitSystem.calculate_current_combat_stats(defender_id)
+### 5.1. Weapon Triangle
 
-        if is_capture:
-            # Apply capture penalty to attacker's relevant stats for simulation
-            # (Modify a copy of attacker_stats for the simulation)
-            apply_capture_penalty_to_stats(attacker_stats) # Helper function
+*   **Physical:** Swords > Axes > Lances > Swords (+5 Hit advantage, -5 Hit disadvantage).
+*   **Anima Magic:** Fire > Wind > Thunder > Fire (+5 Hit advantage, -5 Hit disadvantage).
+*   **Light/Dark Magic:** Strong against Anima (effectively +5 Hit vs Fire/Wind/Thunder). No specific Light vs Dark interaction.
+*   **Implementation:** Apply bonus/penalty to Attacker's Hit Rate based on Attacker's and Defender's equipped weapon types.
 
-        # Get weapon data
-        attacker_weapon = get_equipped_weapon_data(attacker)
-        defender_weapon = get_equipped_weapon_data(defender) # Check if defender can counter
+### 5.2. Effective Damage
 
-        # Calculate Attacker -> Defender forecast
-        atk_hit, atk_dmg, atk_crit = calculate_single_attack_outcome(
-            attacker, attacker_stats, attacker_weapon, 
-            defender, defender_stats, defender_weapon, 
-            is_first_hit=True, pcc_multiplier=attacker_stats['FCM']
-        )
+*   **Mechanic:** Certain weapons deal bonus damage to specific unit types (e.g., Rapier vs Armor/Cavalry, Hammer vs Armor, Horseslayer vs Cavalry).
+*   **Calculation:** Weapon Might is multiplied by 3 (`Effective_Bonus = 3`) before adding Attacker's Str/Mag in the damage formula.
+*   **Implementation:** Check weapon's effectiveness list against defender's class tags.
 
-        # Calculate Defender -> Attacker forecast (if defender can counter)
-        def_hit, def_dmg, def_crit = (0, 0, 0)
-        if defender_can_counter(attacker, defender, defender_weapon):
-             def_hit, def_dmg, def_crit = calculate_single_attack_outcome(
-                 defender, defender_stats, defender_weapon, 
-                 attacker, attacker_stats, attacker_weapon, 
-                 is_first_hit=True, pcc_multiplier=defender_stats['FCM']
-             )
-        
-        # Check doubling
-        attacker_doubles = attacker_stats['AS'] >= defender_stats['AS'] + 4
-        defender_doubles = defender_stats['AS'] >= attacker_stats['AS'] + 4
+### 5.3. Brave Weapons
 
-        forecast = {
-            'attacker': {'dmg': atk_dmg, 'hit': atk_hit, 'crit': atk_crit, 'doubles': attacker_doubles},
-            'defender': {'dmg': def_dmg, 'hit': def_hit, 'crit': def_crit, 'doubles': defender_doubles}
-        }
-        return forecast
+*   **Mechanic:** Weapons like Brave Sword/Lance/Axe/Bow grant an immediate second attack on initiation, before the enemy counterattacks.
+*   **Interaction with Doubling:** If the wielder also meets the AS threshold (>= 4 AS difference), they attack four times in total (Hit1, Hit2(Brave), Counter, Hit3(Follow-up), Hit4(Follow-up Brave)).
+*   **Interaction with PCC:** The second Brave hit (and subsequent follow-up hits) benefit from the PCC multiplier.
+*   **Implementation:** Modify the combat sequence generator to insert the extra Brave strike(s).
 
-    # --- Combat Execution ---
+### 5.4. Combat Skills
 
-    # TDD: Test execute_combat applies correct damage, handles death/capture, updates fatigue/exp/wexp, decrements durability
-    # TDD: Test combat flow respects doubling, skills (Wrath, Adept), brave weapons
-    function execute_combat(attacker_id, defender_id, is_capture=False):
-        attacker = gameStateManager.get_unit(attacker_id)
-        defender = gameStateManager.get_unit(defender_id)
-        if not attacker or not defender: return None
+*   **Wrath:** Guarantees a critical hit (100% Crit Chance) when counterattacking or attacking during the enemy phase. Overrides Scrolls/Nihil.
+*   **Adept (Continue):** Grants a chance (`Unit_Skill %` or `Unit_AS %` - *confirm exact Thracia formula*) to perform an additional attack immediately after a normal attack/follow-up. Can trigger multiple times. Subsequent Adept hits benefit from PCC.
+*   **Miracle (Prayer):** If unit HP <= 10, grants massive Avoid boost (effectively 100% Avoid, making enemy Hit = 0%). *[Confirm activation limit/conditions]*.
+*   **Nihil:** Negates enemy combat skills (Sol, Luna, Pavise, etc.) and prevents the enemy from landing critical hits on the Nihil user.
+*   **Sol:** Chance on attack to heal HP equal to damage dealt.
+*   **Luna:** Chance on attack to ignore enemy Def/Res.
+*   **Pavise:** Chance on being hit to negate all damage from that attack.
+*   **Astra (Mareeta's Sword):** Guarantees 5 consecutive attacks on initiation. PCC applies after the first hit.
+*   **Implementation:** Check for skills on both units before and during combat simulation. Apply effects based on trigger conditions (e.g., HP threshold, % chance, attack sequence).
 
-        log(f"Executing combat: {attacker.name} vs {defender.name} {'(Capture)' if is_capture else ''}")
+### 5.5. Scrolls (Crusader Scrolls)
 
-        # Store initial state for EXP calculation etc.
-        initial_attacker_hp = attacker.current_hp
-        initial_defender_hp = defender.current_hp
+*   **Mechanic:** Holding a scroll in inventory negates all enemy critical hits against the holder (sets enemy `Battle_Crit_Chance` to 0). Does not stack (one scroll is enough). Does not prevent criticals from Wrath. Also boosts growth rates (handled by Level Up system).
+*   **Implementation:** Check defender's inventory for any item flagged as a "Scroll" before calculating final Battle Critical Chance.
 
-        # Get base stats and weapon data
-        attacker_stats_base = unitSystem.calculate_current_combat_stats(attacker_id)
-        defender_stats_base = unitSystem.calculate_current_combat_stats(defender_id)
-        attacker_weapon = get_equipped_weapon_data(attacker)
-        defender_weapon = get_equipped_weapon_data(defender)
+### 5.6. Support Bonuses
 
-        # Apply capture penalty if needed (modify a working copy of stats)
-        attacker_stats = dict(attacker_stats_base)
-        defender_stats = dict(defender_stats_base)
-        if is_capture:
-            apply_capture_penalty_to_stats(attacker_stats)
+*   **Mechanic:** Predefined character pairs grant bonuses (+10 or +20) to Hit, Avoid, Crit, and Crit Evade when within 3 tiles. Bonuses can be one-way or mutual. Total bonus capped at +30 per stat.
+*   **Implementation:** Before combat calculations, check relative positions of all allied units. Look up support pairs in a data table and sum applicable bonuses for the attacker and defender, applying the +30 cap.
 
-        # Determine combat sequence parameters
-        attacker_doubles = attacker_stats['AS'] >= defender_stats['AS'] + 4
-        defender_doubles = defender_stats['AS'] >= attacker_stats['AS'] + 4
-        defender_can_ctr = defender_can_counter(attacker, defender, defender_weapon)
-        
-        # --- Combat Round ---
-        combat_log = [] # Store events for display/result processing
+### 5.7. Leadership Bonuses (Authority Stars)
 
-        # 1. Attacker's First Strike(s)
-        num_attacker_hits = 1
-        if attacker_weapon and attacker_weapon.is_brave: num_attacker_hits = 2 # Check for brave effect
-        
-        for i in range(num_attacker_hits):
-             if attacker.current_hp > 0 and defender.current_hp > 0:
-                  strike_result = perform_strike(attacker, attacker_stats, attacker_weapon, defender, defender_stats, defender_weapon, is_follow_up=(i > 0))
-                  combat_log.append(strike_result)
-                  if defender.current_hp <= 0: break # Stop if defender falls
+*   **Mechanic:** Each Leadership star (★) on a deployed allied leader grants +3 Hit and +3 Avoid to *all* units on their side, globally. Stars from multiple leaders stack.
+*   **Implementation:** Before combat calculations, sum the Leadership stars of all active leaders on each side. Multiply the total by 3 to get the bonus, applied in Hit/Avoid formulas.
 
-        # 2. Defender's Counterattack(s)
-        if defender.current_hp > 0 and attacker.current_hp > 0 and defender_can_ctr:
-             num_defender_hits = 1 # Check for brave on counter? Unlikely. Check for Adept?
-             # Check for Wrath activation
-             has_wrath = dataProvider.unit_has_skill(defender_id, WRATH) # Need skill check
+### 5.8. Charisma Bonuses (Charm Skill)
 
-             for i in range(num_defender_hits):
-                  if attacker.current_hp > 0 and defender.current_hp > 0:
-                       strike_result = perform_strike(defender, defender_stats, defender_weapon, attacker, attacker_stats, attacker_weapon, is_follow_up=(i > 0), force_crit=has_wrath)
-                       combat_log.append(strike_result)
-                       if attacker.current_hp <= 0: break # Stop if attacker falls
+*   **Mechanic:** Units with the Charisma skill grant +10 Hit and +10 Avoid to all allies within a 3-tile radius. Effects from multiple Charisma units stack.
+*   **Implementation:** Before combat calculations, check distance from attacker/defender to any allies with Charisma. Add +10 for each applicable source to Hit/Avoid formulas.
 
-        # 3. Attacker's Follow-Up Strike
-        if attacker.current_hp > 0 and defender.current_hp > 0 and attacker_doubles:
-             strike_result = perform_strike(attacker, attacker_stats, attacker_weapon, defender, defender_stats, defender_weapon, is_follow_up=True)
-             combat_log.append(strike_result)
+### 5.9. Terrain Effects
 
-        # 4. Defender's Follow-Up Strike
-        if defender.current_hp > 0 and attacker.current_hp > 0 and defender_can_ctr and defender_doubles:
-             has_wrath = dataProvider.unit_has_skill(defender_id, WRATH) # Check Wrath again? Or assume it applies to all counters? Assume applies if countering.
-             strike_result = perform_strike(defender, defender_stats, defender_weapon, attacker, attacker_stats, attacker_weapon, is_follow_up=True, force_crit=has_wrath)
-             combat_log.append(strike_result)
-             
-        # --- Post-Combat Updates ---
-        attacker_participated = any(r['attacker_id'] == attacker_id for r in combat_log if r['did_attack'])
-        defender_participated = any(r['attacker_id'] == defender_id for r in combat_log if r['did_attack'])
+*   **Mechanic:** Standing on certain tiles grants bonuses to Avoid (%) and/or Defense (+flat value).
+*   **Implementation:** Fetch terrain bonuses from the Map System based on the defender's current tile. Apply `Terrain_Avoid_Bonus` in the Avoid formula and `Terrain_Defense_Bonus` in the Damage formula. Remember mount/flyer exceptions.
 
-        # Fatigue
-        if attacker_participated: gameStateManager.update_fatigue(attacker_id, 1)
-        if defender_participated: gameStateManager.update_fatigue(defender_id, 1)
+## 6. Capture Mechanic
 
-        # Check final death/capture state
-        attacker_survived = attacker.current_hp > 0
-        defender_survived = defender.current_hp > 0
+*   **Initiation:** Player selects "Capture" command instead of "Attack".
+*   **Conditions:**
+    *   Attacker must be able to initiate combat (have a weapon, target in range).
+    *   Attacker's Con > Target's Con, **OR** Attacker is mounted.
+    *   Target is not mounted.
+    *   Target's Con < 20.
+    *   Target is not immune to capture (e.g., specific bosses).
+*   **Capture Battle:** Combat proceeds as normal, BUT the **initiator's Str, Mag, Skl, Spd, and Def are halved** (rounded down) for the duration of the capture battle. Luck, Con, Mov, HP are unaffected.
+*   **Outcome:**
+    *   If initiator reduces target's HP to 0: Target is Captured. Initiator enters "Carrying" state with the captured unit. Target's inventory becomes accessible via Trade.
+    *   If target survives or initiator is defeated: Capture fails, combat ends.
+    *   If target is unarmed or incapacitated (e.g., Sleep): Capture succeeds automatically without combat.
+*   **Post-Capture:**
+    *   **Carrying State:** Unit carrying a captive suffers the same stat halving (Str, Mag, Skl, Spd, Def halved) and potential Mov penalty as rescuing.
+    *   **Trade:** Allies can trade with the carrying unit to access the captive's inventory and take items.
+    *   **Release:** Carrying unit can use "Release" command (uses action) to remove the captive from the map permanently (no EXP gained for release). Unit exits Carrying state.
+    *   **Take/Drop:** Allies can "Take" the captive from the carrier, or the carrier can "Drop" the captive onto an adjacent tile (like rescue).
+*   **Enemy Capture:** Enemies with appropriate AI and meeting Con/Mount conditions may attempt to capture player units (especially if unarmed/weak). Captured player units are carried; if the enemy escapes, the player unit is lost until Ch 21x. Enemy AI may immediately trade captured unit's items to other enemies.
+*   **EXP:** EXP is gained for the damage dealt during the capture battle, same as a normal kill if HP reaches 0. No extra EXP for the act of capturing or releasing.
 
-        if not defender_survived:
-            if is_capture:
-                 gameStateManager.set_unit_captured(defender_id, attacker_id)
-                 log(f"{defender.name} captured by {attacker.name}!")
-            else:
-                 gameStateManager.set_unit_dead(defender_id)
-                 log(f"{defender.name} defeated!")
-        
-        if not attacker_survived:
-             # Can attacker be captured? Check rules. Assume death for now.
-             gameStateManager.set_unit_dead(attacker_id)
-             log(f"{attacker.name} defeated!")
+## 7. Staff Usage
 
-        # Award EXP/WExp (based on combat_log, initial HPs, final states)
-        award_exp_wexp(combat_log, initial_attacker_hp, initial_defender_hp, attacker_survived, defender_survived, is_capture)
+*   **Accuracy Formula:** `Staff_Hit = Base_Staff_Hit + (4 * User_Skill)` (Capped at 99%).
+    *   Base_Staff_Hit is typically 60% for status staves, 100% for Torch staff.
+    *   Target's Magic/Resistance does *not* affect staff hit chance in Thracia 776.
+*   **Effects:**
+    *   **Healing:** Restore HP (e.g., Heal, Mend). Typically 1-range.
+    *   **Status:** Inflict Poison, Sleep, Silence, Berserk. Range varies. Statuses persist until cured by Restore staff or chapter end. Petrify requires Kia staff.
+    *   **Utility:** Torch (increase FoW vision), Repair (restore weapon durability), Warp/Rescue (teleport units).
+*   **Fatigue:** Using a staff increases user's fatigue based on staff rank (E:+1, D:+2, C:+3, B:+4, A:+5).
+*   **Implementation:** Requires dedicated handler for staff targeting, accuracy check, effect application, and fatigue update.
 
-        log(f"Combat finished between {attacker.name} and {defender.name}.")
-        return combat_log # Return detailed log of events
+## 8. Fatigue Interaction
 
-    # --- Helper: Perform Single Strike ---
-    function perform_strike(striker, striker_stats, striker_weapon, target, target_stats, target_weapon, is_follow_up, force_crit=False):
-        strike_log = {'attacker_id': striker.id, 'target_id': target.id, 'did_attack': True, 'hit': False, 'crit': False, 'damage': 0, 'skills_activated': []}
+*   **Gain:**
+    *   Participating in any combat round (attacking or defending): +1 Fatigue.
+    *   Using a staff: +1 to +5 Fatigue based on rank.
+    *   Stealing: +1 Fatigue per successful steal.
+    *   Dancing: +1 Fatigue per dance.
+*   **Threshold:** If `Unit_Fatigue >= Unit_Max_HP` at chapter end, unit cannot be deployed next chapter (unless Leif or S-Drink used).
+*   **Implementation:** Increment fatigue counter on relevant actions. Check threshold during deployment phase.
 
-        if not striker_weapon: 
-             strike_log['did_attack'] = False
-             return strike_log # Cannot attack without weapon
+## 9. Experience Gain
 
-        # Calculate Hit/Dmg/Crit for this specific strike
-        hit_chance, base_dmg, crit_chance = calculate_single_attack_outcome(
-            striker, striker_stats, striker_weapon, 
-            target, target_stats, target_weapon, 
-            is_first_hit=(not is_follow_up), pcc_multiplier=striker_stats['FCM']
-        )
-        
-        # Check defender skills (Miracle, Pavise) before hit roll? Assume Miracle checked here.
-        if dataProvider.unit_has_skill(target.id, MIRACLE) and target.current_hp <= 10: # Check Miracle
-             # Roll Miracle activation? Or assume it works? Assume works for now.
-             log(f"{target.name}'s Miracle activated!")
-             strike_log['skills_activated'].append(MIRACLE)
-             hit_chance = 0 # Negates hit
+*   Combat actions (hitting, defeating an enemy, staff usage) grant EXP.
+*   The exact EXP formula depends on relative levels, damage dealt, kill bonus, staff type, etc. (Refer to specific EXP formula documentation/research).
+*   Capturing provides EXP equivalent to defeating the enemy.
+*   Escaping an escape map grants a small EXP bonus (e.g., 10 EXP).
+*   *Note: Detailed EXP calculation is likely handled by a separate EXP/Level Up System, but triggered by Combat System events.*
 
-        # Roll Hit (1 RN)
-        if random.randint(1, 100) <= hit_chance:
-            strike_log['hit'] = True
-            
-            # Check defender skills (Pavise) before damage calc
-            if dataProvider.unit_has_skill(target.id, PAVISE):
-                 # Roll Pavise activation (Level%?)
-                 if random.randint(1, 100) <= target.level: # Placeholder activation
-                      log(f"{target.name}'s Pavise activated!")
-                      strike_log['skills_activated'].append(PAVISE)
-                      base_dmg = 0 # Negates damage
+## 10. Pseudocode Modules
 
-            actual_dmg = base_dmg
-            is_crit = False
-            
-            # Roll Crit (1 RN) - check Nihil first
-            if base_dmg > 0 and not dataProvider.unit_has_skill(target.id, NIHIL):
-                 if force_crit or random.randint(1, 100) <= crit_chance:
-                      is_crit = True
-                      actual_dmg *= 2 # Apply crit bonus
-                      strike_log['crit'] = True
-                      log("Critical Hit!")
+```pseudocode
+MODULE CombatResolver
 
-            # Check attacker skills (Sol, Luna) - check Nihil first
-            if base_dmg > 0 and not dataProvider.unit_has_skill(target.id, NIHIL):
-                 if dataProvider.unit_has_skill(striker.id, LUNA):
-                      # Roll Luna activation (Skill%?)
-                      if random.randint(1, 100) <= striker_stats['SKL']: # Placeholder activation
-                           log(f"{striker.name}'s Luna activated!")
-                           strike_log['skills_activated'].append(LUNA)
-                           # Recalculate damage ignoring defense
-                           actual_dmg = calculate_damage_ignoring_defense(striker, striker_stats, striker_weapon, target, target_stats, is_crit)
-                 
-                 if dataProvider.unit_has_skill(striker.id, SOL):
-                      # Roll Sol activation (Skill%?)
-                      if random.randint(1, 100) <= striker_stats['SKL']: # Placeholder activation
-                           log(f"{striker.name}'s Sol activated!")
-                           strike_log['skills_activated'].append(SOL)
-                           gameStateManager.apply_healing(striker.id, actual_dmg) # Heal for damage dealt
+  // --- Main Entry Point ---
+  FUNCTION resolve_combat(attacker_unit, defender_unit, is_capture_attempt = FALSE):
+    // 1. Initialization
+    combat_log = CREATE CombatLog()
+    attacker_stats = GET_combat_stats(attacker_unit, defender_unit, is_capture_attempt)
+    defender_stats = GET_combat_stats(defender_unit, attacker_unit, FALSE) // Defender never initiates capture
 
-            # Apply final damage
-            gameStateManager.apply_damage(target.id, actual_dmg)
-            strike_log['damage'] = actual_dmg
-            
-            # Apply weapon status effects (e.g., Poison)
-            apply_weapon_status_effects(striker_weapon, target.id)
+    // 2. Determine Combat Sequence (Handles Brave, Doubling)
+    sequence = DETERMINE_combat_sequence(attacker_stats, defender_stats)
+    combat_log.add_sequence(sequence)
 
-        else: # Miss
-            log("Attack missed.")
-            strike_log['hit'] = False
+    // 3. Execute Combat Sequence
+    current_attacker = attacker_unit
+    current_defender = defender_unit
+    attacker_hp = attacker_unit.current_hp
+    defender_hp = defender_unit.current_hp
+    round_num = 0
 
-        # Decrement weapon durability
-        inventorySystem.decrement_item_durability(striker.id, striker.equipped_weapon_index)
+    FOR each action_type IN sequence:
+      round_num += 1
+      round_result = CREATE RoundResult(round_num, action_type)
 
-        return strike_log
+      // Determine who is attacking this round
+      IF action_type involves attacker:
+        active_attacker_unit = attacker_unit
+        active_defender_unit = defender_unit
+        active_attacker_stats = attacker_stats
+        active_defender_stats = defender_stats
+        attacker_current_hp_ref = &attacker_hp
+        defender_current_hp_ref = &defender_hp
+      ELSE: // action_type involves defender (counter-attack)
+        active_attacker_unit = defender_unit
+        active_defender_unit = attacker_unit
+        active_attacker_stats = defender_stats
+        active_defender_stats = attacker_stats
+        attacker_current_hp_ref = &defender_hp
+        defender_current_hp_ref = &attacker_hp
 
-    # --- Helper: Calculate Single Attack Outcome ---
-    # TDD: Test calculation reflects formulas for Hit/Dmg/Crit accurately
-    function calculate_single_attack_outcome(striker, striker_stats, striker_weapon, target, target_stats, target_weapon, is_first_hit, pcc_multiplier):
-        if not striker_weapon: return 0, 0, 0
+      // Check if attacker can act (not dead)
+      IF *attacker_current_hp_ref <= 0:
+        round_result.set_skipped("Attacker defeated")
+        combat_log.add_round(round_result)
+        CONTINUE // Skip this action
 
-        # 1. Calculate Base Hit vs Avoid
-        base_hit = striker_stats['hit'] # Already calculated by UnitSystem
-        target_avo = target_stats['avo'] # Already calculated by UnitSystem
-        
-        # 2. Weapon Triangle
-        wt_bonus = dataProvider.get_weapon_triangle_bonus(striker_weapon.weapon_type, target_weapon.weapon_type if target_weapon else None)
-        
-        # 3. Final Hit Chance (Capped 1-99)
-        hit_chance = max(1, min(99, base_hit - target_avo + wt_bonus))
+      // Check if defender can be attacked (not dead)
+      IF *defender_current_hp_ref <= 0:
+         // If capture attempt, check if capture succeeds now
+         IF is_capture_attempt AND active_attacker_unit == attacker_unit:
+             CaptureHandler.process_capture_success(attacker_unit, defender_unit, combat_log)
+             BREAK // Combat ends on successful capture
+         ELSE:
+             round_result.set_skipped("Defender already defeated")
+             combat_log.add_round(round_result)
+             CONTINUE // Skip this action
 
-        # 4. Calculate Base Damage
-        effectiveness_mult = dataProvider.get_effectiveness_multiplier(striker_weapon.id, target.class_id) # Need DP helper
-        effective_might = striker_weapon.might * effectiveness_mult
-        
-        target_def = 0
-        if dataProvider.is_weapon_physical(striker_weapon.weapon_type):
-             target_def = target_stats['DEF'] + mapSystem.get_terrain_bonus(target.position).get('def', 0) # Use calculated DEF + terrain
-        else: # Magical
-             target_def = target_stats['MAG'] # Use calculated MAG (includes MUp etc.) + terrain
-             # Need to refine target_stats calculation in UnitSystem to include temp boosts
 
-        base_dmg = max(0, (striker_stats['atk'] - target_def)) # Use calculated Atk
+      // Calculate Hit Chance
+      hit_chance = CombatCalculator.calculate_battle_hit_chance(active_attacker_stats, active_defender_stats)
+      round_result.set_hit_chance(hit_chance)
 
-        # 5. Calculate Crit Chance
-        base_crit = striker_stats['crit'] # From UnitSystem calc
-        target_ddg = target_stats['ddg'] # From UnitSystem calc
-        calculated_crit = max(0, base_crit - target_ddg)
+      // Roll for Hit
+      hit_roll = ROLL_RN(1, 100)
+      IF hit_roll > hit_chance:
+        round_result.set_outcome("Miss")
+        combat_log.add_round(round_result)
+        // Apply Fatigue for participating
+        APPLY_fatigue(active_attacker_unit, "combat")
+        APPLY_fatigue(active_defender_unit, "combat")
+        CONTINUE // Attack missed
 
-        # Apply PCC / First Hit Cap / Scroll / Nihil rules
-        crit_chance = 0
-        if not dataProvider.unit_has_item_type(target.id, SCROLL) and not dataProvider.unit_has_skill(target.id, NIHIL):
-             if is_first_hit:
-                  crit_chance = min(25, calculated_crit)
-             else: # Follow-up
-                  crit_chance = min(100, calculated_crit * pcc_multiplier)
-        
-        # Wrath override handled in perform_strike
+      // Calculate Damage
+      damage = CombatCalculator.calculate_damage(active_attacker_stats, active_defender_stats)
+      round_result.set_potential_damage(damage)
 
-        return hit_chance, base_dmg, crit_chance
+      // Check for Pavise Skill on Defender
+      IF CombatCalculator.check_skill_activation(active_defender_unit, "Pavise", active_defender_stats):
+          round_result.set_outcome("Hit (Pavise Negated)")
+          round_result.set_damage_dealt(0)
+          combat_log.add_round(round_result)
+          // Apply Fatigue
+          APPLY_fatigue(active_attacker_unit, "combat")
+          APPLY_fatigue(active_defender_unit, "combat")
+          CONTINUE // Damage negated
 
-    # ... other helpers: apply_capture_penalty_to_stats, get_equipped_weapon_data, defender_can_counter, award_exp_wexp, apply_weapon_status_effects etc.
+      // Calculate Critical Chance
+      is_first_attack = (round_num == 1) // Or more complex logic for Brave
+      crit_chance = CombatCalculator.calculate_battle_crit_chance(active_attacker_stats, active_defender_stats, is_first_attack)
+      round_result.set_crit_chance(crit_chance)
 
+      // Roll for Critical
+      is_crit = FALSE
+      IF crit_chance > 0:
+        crit_roll = ROLL_RN(1, 100)
+        IF crit_roll <= crit_chance:
+          is_crit = TRUE
+          damage = CombatCalculator.calculate_crit_damage(damage)
+          round_result.set_outcome("Critical Hit")
+        ELSE:
+          round_result.set_outcome("Hit")
+      ELSE:
+          round_result.set_outcome("Hit")
+
+
+      // Apply Damage
+      actual_damage = MIN(damage, *defender_current_hp_ref) // Damage cannot exceed current HP
+      *defender_current_hp_ref -= actual_damage
+      round_result.set_damage_dealt(actual_damage)
+
+      // Check for Sol Skill on Attacker
+      IF CombatCalculator.check_skill_activation(active_attacker_unit, "Sol", active_attacker_stats):
+          heal_amount = MIN(actual_damage, active_attacker_unit.max_hp - *attacker_current_hp_ref)
+          *attacker_current_hp_ref += heal_amount
+          round_result.add_effect("Sol activated, healed " + heal_amount)
+
+      combat_log.add_round(round_result)
+
+      // Apply Fatigue
+      APPLY_fatigue(active_attacker_unit, "combat")
+      APPLY_fatigue(active_defender_unit, "combat")
+
+      // Check if defender was defeated or captured
+      IF *defender_current_hp_ref <= 0:
+        IF is_capture_attempt AND active_attacker_unit == attacker_unit:
+          CaptureHandler.process_capture_success(attacker_unit, defender_unit, combat_log)
+          BREAK // Combat ends on successful capture
+        ELSE:
+          // Mark defender as defeated (handled by caller?)
+          combat_log.set_defender_defeated()
+          // Check if combat should end (e.g., defender defeated before counter/follow-up)
+          IF action_type prevents further actions (e.g. defender defeated before counter):
+              BREAK
+
+
+    // 4. Finalize Combat
+    // Apply final HP changes, grant EXP (handled by caller using combat_log), update weapon durability
+    UPDATE_unit_hp(attacker_unit, attacker_hp)
+    UPDATE_unit_hp(defender_unit, defender_hp)
+    UPDATE_weapon_durability(attacker_unit, combat_log.get_attacker_hits())
+    UPDATE_weapon_durability(defender_unit, combat_log.get_defender_hits())
+    // Grant WEXP (handled by caller?)
+
+    RETURN combat_log
+  END FUNCTION
+
+  // --- Helper Functions ---
+  FUNCTION GET_combat_stats(unit, opponent, is_capture_attempt):
+    // Fetch base stats, weapon stats, terrain bonuses, support, leadership, charisma
+    // Apply capture penalties if applicable
+    stats = CREATE CombatStats()
+    // ... populate stats object ...
+    stats.AS = CombatCalculator.calculate_attack_speed(unit, unit.equipped_weapon)
+    stats.Hit = CombatCalculator.calculate_hit_rate(unit, unit.equipped_weapon, opponent)
+    stats.Avoid = CombatCalculator.calculate_avoid_rate(unit, opponent)
+    stats.BaseCrit = CombatCalculator.calculate_base_crit_rate(unit, unit.equipped_weapon)
+    stats.CritEvade = CombatCalculator.calculate_crit_evade(unit)
+    stats.PCC = unit.pcc
+    stats.HasScroll = CHECK_inventory_for_scroll(unit)
+    stats.Skills = unit.skills
+
+    IF is_capture_attempt:
+        stats.Str = FLOOR(stats.Str / 2)
+        stats.Mag = FLOOR(stats.Mag / 2)
+        stats.Skl = FLOOR(stats.Skl / 2)
+        stats.Spd = FLOOR(stats.Spd / 2)
+        stats.Def = FLOOR(stats.Def / 2)
+        // Recalculate AS based on halved Spd if capture penalty applies
+        stats.AS = CombatCalculator.calculate_attack_speed(unit, unit.equipped_weapon, stats.Spd, stats.Con) // Pass potentially halved Spd
+
+    RETURN stats
+  END FUNCTION
+
+  FUNCTION DETERMINE_combat_sequence(attacker_stats, defender_stats):
+    sequence = []
+    attacker_AS = attacker_stats.AS
+    defender_AS = defender_stats.AS
+    attacker_weapon = attacker_stats.weapon
+    defender_weapon = defender_stats.weapon
+
+    can_attacker_double = (attacker_AS - defender_AS >= 4)
+    can_defender_double = (defender_AS - attacker_AS >= 4)
+    attacker_is_brave = attacker_weapon.is_brave
+    defender_is_brave = defender_weapon.is_brave // Relevant if defender initiates? Less common.
+
+    // Attacker's first hit(s)
+    sequence.append("Attacker_Hit1")
+    IF attacker_is_brave:
+      sequence.append("Attacker_BraveHit")
+
+    // Defender's counter-attack(s)
+    IF defender_can_attack_back(defender_weapon, attacker_weapon.range):
+      sequence.append("Defender_Counter1")
+      // Brave counter? Very rare, but possible.
+      // IF defender_is_brave: sequence.append("Defender_BraveCounter")
+      IF can_defender_double:
+        sequence.append("Defender_FollowUp")
+        // IF defender_is_brave: sequence.append("Defender_FollowUpBrave")
+
+    // Attacker's follow-up hit(s)
+    IF can_attacker_double:
+      sequence.append("Attacker_FollowUp1")
+      IF attacker_is_brave:
+        sequence.append("Attacker_FollowUpBrave")
+
+    RETURN sequence
+  END FUNCTION
+
+  FUNCTION APPLY_fatigue(unit, action_type):
+      IF GameState.current_chapter >= 8 AND unit != GameState.main_lord:
+          fatigue_gain = 0
+          IF action_type == "combat":
+              fatigue_gain = 1
+          ELSE IF action_type == "staff":
+              // Determine gain based on staff rank (1-5)
+              fatigue_gain = GET_staff_fatigue_cost(unit.equipped_staff)
+          ELSE IF action_type == "steal":
+              fatigue_gain = 1
+          ELSE IF action_type == "dance":
+              fatigue_gain = 1
+          // ... other actions ...
+
+          unit.fatigue += fatigue_gain
+  END FUNCTION
+
+END MODULE
+
+MODULE CombatCalculator
+
+  FUNCTION calculate_attack_speed(unit, weapon, override_spd = NULL, override_con = NULL):
+      spd = override_spd IF override_spd IS NOT NULL ELSE unit.spd
+      con = override_con IF override_con IS NOT NULL ELSE unit.con
+      wt = weapon.weight
+      IF weapon.type IS Magical:
+          RETURN spd - wt
+      ELSE:
+          RETURN spd - MAX(0, wt - con)
+      // TEST_CASE: Physical weapon, Wt > Con
+      // TEST_CASE: Physical weapon, Wt <= Con
+      // TEST_CASE: Magical weapon
+      // TEST_CASE: Capture penalty halving Spd
+  END FUNCTION
+
+  FUNCTION calculate_hit_rate(unit, weapon, opponent):
+      support_bonus = GET_support_bonus(unit, "Hit") // Capped at 30
+      leadership_bonus = GET_leadership_bonus(unit.faction) // Stars * 3
+      charisma_bonus = GET_charisma_bonus(unit, "Hit")
+      triangle_bonus = GET_weapon_triangle_bonus(weapon, opponent.equipped_weapon)
+      RETURN weapon.hit + (2 * unit.skl) + unit.luk + support_bonus + leadership_bonus + charisma_bonus + triangle_bonus
+      // TEST_CASE: Base calculation, no bonuses
+      // TEST_CASE: With max support bonus
+      // TEST_CASE: With leadership bonus
+      // TEST_CASE: With charisma bonus
+      // TEST_CASE: With weapon triangle advantage
+      // TEST_CASE: With weapon triangle disadvantage
+  END FUNCTION
+
+  FUNCTION calculate_avoid_rate(unit, opponent):
+      support_bonus = GET_support_bonus(unit, "Avoid") // Capped at 30
+      leadership_bonus = GET_leadership_bonus(unit.faction) // Stars * 3
+      charisma_bonus = GET_charisma_bonus(unit, "Avoid")
+      terrain_bonus = GET_terrain_avoid_bonus(unit) // Check mount/flyer status
+
+      // Need AS first
+      unit_as = calculate_attack_speed(unit, unit.equipped_weapon)
+
+      RETURN (2 * unit_as) + unit.luk + support_bonus + leadership_bonus + charisma_bonus + terrain_bonus
+      // TEST_CASE: Base calculation, no bonuses, no terrain
+      // TEST_CASE: High AS contribution
+      // TEST_CASE: With max support bonus
+      // TEST_CASE: With leadership bonus
+      // TEST_CASE: With charisma bonus
+      // TEST_CASE: With terrain bonus (infantry on forest)
+      // TEST_CASE: Mounted unit on forest (should get 0 terrain bonus)
+      // TEST_CASE: Flying unit on forest (should get 0 terrain bonus)
+  END FUNCTION
+
+  FUNCTION calculate_battle_hit_chance(attacker_stats, defender_stats):
+      raw_hit = attacker_stats.Hit - defender_stats.Avoid
+      // Apply Miracle skill effect if defender HP is low
+      IF defender_stats.Skills contains "Miracle" AND defender_stats.current_hp <= 10: // Assuming current HP is in stats
+          RETURN 1 // Miracle makes hit chance effectively 0, but game shows 1% min
+      RETURN MAX(1, MIN(99, raw_hit))
+      // TEST_CASE: High hit, low avoid -> 99
+      // TEST_CASE: Low hit, high avoid -> 1
+      // TEST_CASE: Moderate hit/avoid -> calculated value
+      // TEST_CASE: Defender Miracle active -> 1
+  END FUNCTION
+
+  FUNCTION calculate_damage(attacker_stats, defender_stats):
+      weapon = attacker_stats.weapon
+      effective_bonus = GET_effective_bonus(weapon, defender_stats.unit_type_tags) // 1 or 3
+
+      IF weapon.type IS Magical OR (weapon.is_magic_sword AND attacker_stats.attack_range == 2):
+          defender_magic_defense = defender_stats.Mag + defender_stats.TerrainDefBonus // + Temp bonuses
+          damage = (attacker_stats.Mag + (weapon.might * effective_bonus)) - defender_magic_defense
+      ELSE: // Physical or Magic Sword at Range 1
+          defender_physical_defense = defender_stats.Def + defender_stats.TerrainDefBonus
+          damage = (attacker_stats.Str + (weapon.might * effective_bonus)) - defender_physical_defense
+
+      // Apply Luna skill effect if attacker has Luna
+      IF attacker_stats.Skills contains "Luna" AND check_skill_activation(attacker_stats.unit, "Luna", attacker_stats):
+          // Rerun calculation ignoring defense (or apply effect post-hoc)
+          IF weapon.type IS Magical OR (weapon.is_magic_sword AND attacker_stats.attack_range == 2):
+              damage = (attacker_stats.Mag + (weapon.might * effective_bonus)) // Ignore defender Mag
+          ELSE:
+              damage = (attacker_stats.Str + (weapon.might * effective_bonus)) // Ignore defender Def
+          // Add flag that Luna activated
+
+      RETURN MAX(0, damage)
+      // TEST_CASE: Physical damage, no effectiveness, no terrain
+      // TEST_CASE: Magical damage, no effectiveness, no terrain
+      // TEST_CASE: Physical effective (x3 Mt)
+      // TEST_CASE: Magical effective (x3 Mt)
+      // TEST_CASE: Defender on Fort (+Def)
+      // TEST_CASE: Damage calculation results in < 0 -> 0
+      // TEST_CASE: Attacker Luna activates vs high Def enemy
+      // TEST_CASE: Magic Sword Range 1 (confirm Str vs Def)
+      // TEST_CASE: Magic Sword Range 2 (Mag vs Mag)
+  END FUNCTION
+
+  FUNCTION calculate_base_crit_rate(unit, weapon):
+      support_bonus = GET_support_bonus(unit, "Crit") // Capped at 30
+      RETURN weapon.crit + unit.skl + support_bonus
+      // TEST_CASE: Base calculation
+      // TEST_CASE: With support bonus
+  END FUNCTION
+
+  FUNCTION calculate_crit_evade(unit):
+      support_bonus = GET_support_bonus(unit, "CritEvade") // Capped at 30
+      RETURN FLOOR(unit.luk / 2) + support_bonus
+      // TEST_CASE: Base calculation
+      // TEST_CASE: With support bonus
+  END FUNCTION
+
+  FUNCTION calculate_battle_crit_chance(attacker_stats, defender_stats, is_first_attack):
+      // Check defender immunities first
+      IF defender_stats.HasScroll: RETURN 0
+      IF defender_stats.Skills contains "Nihil": RETURN 0
+
+      // Check attacker guarantees
+      IF attacker_stats.Skills contains "Wrath" AND attacker_stats.is_countering_or_enemy_phase: RETURN 100
+
+      potential_crit = attacker_stats.BaseCrit - defender_stats.CritEvade
+
+      IF is_first_attack:
+          RETURN MAX(0, MIN(25, potential_crit))
+      ELSE: // Subsequent attack
+          RETURN MAX(0, MIN(100, potential_crit * attacker_stats.PCC))
+      // TEST_CASE: Base crit > evade, first attack -> MIN(25, result)
+      // TEST_CASE: Base crit > evade, second attack, PCC=3 -> result * 3 (capped 100)
+      // TEST_CASE: Base crit <= evade -> 0
+      // TEST_CASE: Defender has Scroll -> 0
+      // TEST_CASE: Defender has Nihil -> 0
+      // TEST_CASE: Attacker has Wrath (on counter) -> 100
+      // TEST_CASE: Attacker has Wrath (on initiation) -> Normal calc
+      // TEST_CASE: High potential crit * high PCC > 100 -> 100
+      // TEST_CASE: High potential crit > 25, first attack -> 25
+  END FUNCTION
+
+  FUNCTION calculate_crit_damage(normal_damage):
+      RETURN normal_damage * 2
+      // TEST_CASE: Normal damage > 1
+      // TEST_CASE: Normal damage = 1 -> 2
+      // TEST_CASE: Normal damage = 0 -> 0
+  END FUNCTION
+
+  FUNCTION check_skill_activation(unit, skill_name, unit_stats):
+      // Check % chance based on skill (e.g., Adept=Skl%, Sol/Luna=Skl%?, Pavise=Lvl%?)
+      // Check conditions (e.g., Miracle HP threshold)
+      // Return TRUE if skill activates, FALSE otherwise
+      // TEST_CASE: Adept activation roll success/fail
+      // TEST_CASE: Miracle HP threshold met/not met
+      // TEST_CASE: Pavise activation roll success/fail
+      RETURN FALSE // Placeholder
+  END FUNCTION
+
+END MODULE
+
+MODULE CaptureHandler
+
+  FUNCTION check_capture_conditions(attacker_unit, target_unit):
+      IF target_unit.is_mounted OR target_unit.con >= 20 OR target_unit.is_capture_immune:
+          RETURN FALSE
+      IF attacker_unit.con > target_unit.con OR attacker_unit.is_mounted:
+          RETURN TRUE
+      RETURN FALSE
+      // TEST_CASE: Attacker Con > Target Con -> TRUE
+      // TEST_CASE: Attacker Con <= Target Con, Attacker Mounted -> TRUE
+      // TEST_CASE: Attacker Con <= Target Con, Attacker Not Mounted -> FALSE
+      // TEST_CASE: Target Mounted -> FALSE
+      // TEST_CASE: Target Con >= 20 -> FALSE
+  END FUNCTION
+
+  FUNCTION process_capture_success(attacker_unit, captured_unit, combat_log):
+      attacker_unit.set_state("Carrying", captured_unit)
+      captured_unit.set_state("Captured", by=attacker_unit)
+      // Make captured unit's inventory accessible
+      captured_unit.inventory.set_accessible(TRUE)
+      combat_log.set_capture_success()
+      // Grant EXP for the "kill" (handled by caller)
+  END FUNCTION
+
+  FUNCTION release_captive(carrier_unit):
+      IF carrier_unit.state IS "Carrying":
+          captive = carrier_unit.carried_unit
+          captive.remove_from_map() // Or set state to "Released"
+          carrier_unit.set_state("Idle")
+          // Apply fatigue for action? (Check if Release costs action/fatigue)
+          RETURN TRUE
+      RETURN FALSE
+  END FUNCTION
+
+END MODULE
+
+MODULE StaffHandler
+
+  FUNCTION resolve_staff_use(staff_user, target_unit_or_tile, staff_item):
+      // 1. Check Range, Target Validity, Staff Rank vs User WEXP
+      // 2. Calculate Staff Hit Chance
+      hit_chance = calculate_staff_hit_chance(staff_user, staff_item)
+      // 3. Roll for Hit
+      IF ROLL_RN(1, 100) <= hit_chance:
+          // 4. Apply Staff Effect (Heal, Status, Utility)
+          APPLY_staff_effect(staff_user, target_unit_or_tile, staff_item)
+          // 5. Apply Fatigue
+          APPLY_fatigue(staff_user, "staff")
+          // 6. Update Staff Durability
+          staff_item.uses -= 1
+          // 7. Grant WEXP
+          GRANT_wexp(staff_user, staff_item.rank)
+          RETURN "Success"
+      ELSE:
+          // Apply Fatigue even on miss? Check Thracia rules. Assume yes for now.
+          APPLY_fatigue(staff_user, "staff")
+          staff_item.uses -= 1 // Durability used even on miss
+          // Grant WEXP on miss? Check Thracia rules. Assume no for now.
+          RETURN "Miss"
+      // TEST_CASE: Heal staff success
+      // TEST_CASE: Sleep staff success
+      // TEST_CASE: Sleep staff miss
+      // TEST_CASE: Restore staff curing status
+      // TEST_CASE: Repair staff restoring durability
+      // TEST_CASE: Torch staff increasing vision
+      // TEST_CASE: Fatigue gain matches staff rank
+  END FUNCTION
+
+  FUNCTION calculate_staff_hit_chance(staff_user, staff_item):
+      base_hit = staff_item.base_hit // e.g., 60 or 100
+      hit = base_hit + (4 * staff_user.skl)
+      RETURN MAX(1, MIN(99, hit)) // Staff hit also capped 1-99? Assume yes.
+      // TEST_CASE: Base calculation
+      // TEST_CASE: High skill -> 99
+  END FUNCTION
+
+END MODULE
 ```
 
-## 8. Integration Points
+## 11. TDD Anchors
 
-- **GameStateManager:** Reads unit states (HP, stats, position, status, fatigue, inventory, skills). Writes updates to HP, status, fatigue, EXP, WExp, unit disposition (dead/captured).
-- **DataProvider:** Reads static data: item stats (Mt, Hit, Crit, Wt, Rng, Dur, Type, Rank, Effects, Effectiveness), class data (skills, movement type), terrain bonuses, skill effects, weapon triangle rules, support bonuses, leadership stars, PCC values.
-- **UnitSystem:** Provides calculated base combat stats (`calculate_current_combat_stats`) considering equipment, status, terrain, supports etc. Handles level ups and rank ups triggered by EXP/WExp gain.
-- **MapSystem:** Provides terrain bonus information (`get_terrain_bonus`) and adjacency checks (`are_units_adjacent`). Provides line-of-sight checks if needed.
-- **InventorySystem:** Called to decrement weapon/staff durability (`decrement_item_durability`) and handle item breaking. Reads equipped weapon data.
-- **EngineCore/ActionHandler:** Initiates combat simulation (`simulate_combat`) for forecasts and execution (`execute_combat`, `execute_staff_attack`) based on player/AI actions.
+*   **CombatCalculator:**
+    *   `TEST_CASE(calculate_attack_speed)`: Physical Wt > Con, Wt <= Con, Magical Wt, Capture penalty applied.
+    *   `TEST_CASE(calculate_hit_rate)`: Base, Support, Leadership, Charisma, Triangle+, Triangle-.
+    *   `TEST_CASE(calculate_avoid_rate)`: Base, High AS, Support, Leadership, Charisma, Terrain (Infantry, Mount, Flyer).
+    *   `TEST_CASE(calculate_battle_hit_chance)`: Cap 99, Cap 1, Mid-range, Miracle active.
+    *   `TEST_CASE(calculate_damage)`: Physical, Magical, Effective (Phys/Mag), Terrain Def, Negative Dmg -> 0, Luna activation, Magic Sword R1/R2.
+    *   `TEST_CASE(calculate_base_crit_rate)`: Base, Support.
+    *   `TEST_CASE(calculate_crit_evade)`: Base, Support.
+    *   `TEST_CASE(calculate_battle_crit_chance)`: First attack (cap 25), Subsequent attack (PCC applied, cap 100), Crit < Evade -> 0, Scroll -> 0, Nihil -> 0, Wrath (counter) -> 100, Wrath (initiation) -> normal.
+    *   `TEST_CASE(calculate_crit_damage)`: Dmg > 1, Dmg = 1, Dmg = 0.
+    *   `TEST_CASE(check_skill_activation)`: Adept, Miracle, Pavise, Sol, Luna (ensure % chance logic).
+*   **CombatResolver:**
+    *   `TEST_CASE(resolve_combat)`: Simple attack-counter.
+    *   `TEST_CASE(resolve_combat)`: Attacker doubles.
+    *   `TEST_CASE(resolve_combat)`: Defender doubles.
+    *   `TEST_CASE(resolve_combat)`: Both double (verify sequence).
+    *   `TEST_CASE(resolve_combat)`: Attacker Brave weapon.
+    *   `TEST_CASE(resolve_combat)`: Attacker Brave + Doubles.
+    *   `TEST_CASE(resolve_combat)`: Attacker misses first hit.
+    *   `TEST_CASE(resolve_combat)`: Defender misses counter.
+    *   `TEST_CASE(resolve_combat)`: Attacker lands critical (first hit vs subsequent).
+    *   `TEST_CASE(resolve_combat)`: Defender lands critical.
+    *   `TEST_CASE(resolve_combat)`: Attacker kills defender on first hit (no counter/follow-up).
+    *   `TEST_CASE(resolve_combat)`: Attacker kills defender on brave hit (no counter/follow-up).
+    *   `TEST_CASE(resolve_combat)`: Attacker kills defender on follow-up hit.
+    *   `TEST_CASE(resolve_combat)`: Defender kills attacker on counter (no follow-up).
+    *   `TEST_CASE(resolve_combat)`: Pavise negates damage.
+    *   `TEST_CASE(resolve_combat)`: Sol heals attacker.
+    *   `TEST_CASE(resolve_combat)`: Fatigue applied correctly per combat round participation.
+    *   `TEST_CASE(resolve_combat)`: Capture attempt success (combat).
+    *   `TEST_CASE(resolve_combat)`: Capture attempt failure (combat).
+    *   `TEST_CASE(resolve_combat)`: Capture attempt success (no combat - sleep/unarmed).
+    *   `TEST_CASE(resolve_combat)`: Capture penalties applied correctly.
+*   **CaptureHandler:**
+    *   `TEST_CASE(check_capture_conditions)`: All condition variations (Con, Mount, Target state).
+    *   `TEST_CASE(process_capture_success)`: Verify state changes, inventory access.
+    *   `TEST_CASE(release_captive)`: Verify state changes, captive removal.
+*   **StaffHandler:**
+    *   `TEST_CASE(resolve_staff_use)`: Heal success, Status success/miss, Utility success, Fatigue applied, Durability update, WEXP gain (on success).
+    *   `TEST_CASE(calculate_staff_hit_chance)`: Base, High skill -> 99.
 
-## 9. Open Questions/Future Considerations
+## 12. Edge Cases and Considerations
 
-- Finalize activation chances/conditions for skills (Adept, Miracle, Luna, Sol, Pavise).
-- Confirm if Nihil negates critical hits in Thracia 776.
-- Confirm exact EXP/WExp award formulas.
-- Confirm if/how Magic Swords use Magic stat in melee.
-- Refine `calculate_single_attack_outcome` to handle edge cases like 0 damage crits (should still be 0).
-- Implement detailed EXP/WExp awarding logic in `award_exp_wexp`.
-- Implement helper functions (`apply_capture_penalty...`, `get_equipped_weapon...`, `defender_can_counter...`, etc.).
+*   **Stat Caps:** Ensure calculations respect Thracia's stat caps (mostly 20).
+*   **Temporary Stat Boosts:** How are temporary boosts (like M Up/Pure Water) tracked and applied, especially their decay?
+*   **Simultaneous Effects:** How are multiple skill activations handled in one round (e.g., Adept + Crit)?
+*   **Range Ambiguity:** Confirm damage type for magic swords at Range 1.
+*   **Skill Formulae:** Verify exact activation rates for skills like Adept, Sol, Luna, Pavise in Thracia 776.
+*   **Fatigue on Miss/No Damage:** Does combat participation grant fatigue even if the attack misses or deals 0 damage? (Assume yes). Does staff use grant fatigue/WEXP on miss? (Assume yes for fatigue/durability, no for WEXP).
+*   **Capture Immunity:** Maintain a list of specific units/classes immune to capture.
+*   **Broken Weapons:** How are broken weapons represented and used (1 Mt, low Hit)? Can they trigger skills?
+*   **RNG:** Ensure use of a 1 RN system for all chance-based events (Hit, Crit, Skills).
+*   **Integration:** How does the Combat Resolver receive all necessary context (support bonuses, leadership, terrain) efficiently? How does it report results (HP changes, EXP gain triggers, status changes, state changes like capture)?

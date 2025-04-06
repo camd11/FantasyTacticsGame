@@ -178,14 +178,18 @@ class EngineCore:
         current_phase = self.turn_manager.get_current_phase()
 
         if current_phase == PHASE_PLAYER:
-            # Player control loop
             # Player control loop - wait for input
             while not self._all_player_units_acted() and not self.game_over and not self.victory:
                 if not self.input_handler:
                     logging.error("Input handler not initialized for Player Phase")
                     break # Cannot proceed without input
                 
-                player_input = self.input_handler.get_input() # Blocking call? Needs clarification
+                # Display the current map state before getting input
+                if hasattr(self.input_handler, 'display'):
+                    self.input_handler.display.display_map()
+                
+                # Get player input (this will pause and wait for user command)
+                player_input = self.input_handler.get_input() # Blocking call
                 
                 if player_input['type'] == "END_TURN":
                     break  # Player chose to end phase early
@@ -194,13 +198,11 @@ class EngineCore:
                     self.action_handler.process_action(
                         player_input['unit_id'],
                         player_input,
-                        # Pass necessary dependencies to ActionHandler if needed
-                        # game_state_manager=self.game_state_manager,
-                        # combat_system=self.combat_system,
-                        # event_handler=self.event_handler,
-                        # movement_system=self.movement_system
                     )
-                # ... handle other input types (select unit, view map, open menu etc.)
+                    
+                    # After each action, pause to let the player see the result
+                    # and prepare for the next action
+                    logging.info("Action completed. Waiting for next command...")
                 
                 self.check_game_end_conditions()  # Action might trigger game end
         

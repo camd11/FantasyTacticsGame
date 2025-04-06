@@ -1,0 +1,193 @@
+# Items data for Fantasy Tactics Game
+# Based on Fire Emblem: Thracia 776 items
+
+IRON_SWORD:
+  id: "IRON_SWORD"
+  name: "Iron Sword"
+  type: "WEAPON"
+  weapon_type: "SWORD"
+  might: 5
+  hit: 90
+  crit: 0
+  weight: 5
+  range_min: 1
+  range_max: 1
+  max_durability: 46
+  required_rank: "E"
+  effects: []
+
+LIGHT_BRAND:
+  id: "LIGHT_BRAND"
+  name: "Light Brand"
+  type: "WEAPON"
+  weapon_type: "SWORD"
+  might: 9
+  hit: 70
+  crit: 0
+  weight: 9
+  range_min: 1
+  range_max: 2
+  max_durability: 60
+  required_rank: "C"
+  effects: ["MAGIC_DAMAGE_AT_RANGE"]
+
+IRON_LANCE:
+  id: "IRON_LANCE"
+  name: "Iron Lance"
+  type: "WEAPON"
+  weapon_type: "LANCE"
+  might: 6
+  hit: 80
+  crit: 0
+  weight: 8
+  range_min: 1
+  range_max: 1
+  max_durability: 45
+  required_rank: "E"
+  effects: []
+
+JAVELIN:
+  id: "JAVELIN"
+  name: "Javelin"
+  type: "WEAPON"
+  weapon_type: "LANCE"
+  might: 4
+  hit: 65
+  crit: 0
+  weight: 11
+  range_min: 1
+  range_max: 2
+  max_durability: 20
+  required_rank: "E"
+  effects: []
+
+BRAVE_LANCE:
+  id: "BRAVE_LANCE"
+  name: "Brave Lance"
+  type: "WEAPON"
+  weapon_type: "LANCE"
+  might: 10
+  hit: 70
+  crit: 0
+  weight: 14
+  range_min: 1
+  range_max: 1
+  max_durability: 30
+  required_rank: "B"
+  effects: ["BRAVE"]
+
+IRON_AXE:
+  id: "IRON_AXE"
+  name: "Iron Axe"
+  type: "WEAPON"
+  weapon_type: "AXE"
+  might: 8
+  hit: 70
+  crit: 0
+  weight: 10
+  range_min: 1
+  range_max: 1
+  max_durability: 45
+  required_rank: "E"
+  effects: []
+
+IRON_BOW:
+  id: "IRON_BOW"
+  name: "Iron Bow"
+  type: "WEAPON"
+  weapon_type: "BOW"
+  might: 5
+  hit: 85
+  crit: 0
+  weight: 5
+  range_min: 2
+  range_max: 2
+  max_durability: 45
+  required_rank: "E"
+  effects: []
+
+FIRE_TOME:
+  id: "FIRE_TOME"
+  name: "Fire"
+  type: "WEAPON"
+  weapon_type: "FIRE"
+  might: 5
+  hit: 90
+  crit: 0
+  weight: 4
+  range_min: 1
+  range_max: 2
+  max_durability: 40
+  required_rank: "E"
+  effects: []
+
+VULNERARY:
+  id: "VULNERARY"
+  name: "Vulnerary"
+  type: "CONSUMABLE"
+  weight: 1
+  max_durability: 3
+  effects: ["HEAL_20"]
+
+DOOR_KEY:
+  id: "DOOR_KEY"
+  name: "Door Key"
+  type: "KEY"
+  weight: 1
+  max_durability: 1
+  effects: ["OPEN_DOOR"]
+
+LOCKPICK:
+  id: "LOCKPICK"
+  name: "Lockpick"
+  type: "KEY"
+  weight: 1
+  max_durability: 10
+  effects: ["OPEN_DOOR", "OPEN_CHEST"]
+  required_rank: "E"
+  required_skill: "STEAL"
+
+FLAME_SWORD:
+  id: "FLAME_SWORD"
+  name: "Flame Sword"
+  type: "WEAPON"
+  weapon_type: "SWORD"
+  might: 9
+  hit: 80
+  crit: 0
+  weight: 7
+  range_min: 1
+  range_max: 2
+  max_durability: 40
+  required_rank: "B"
+  effects: ["MAGIC_DAMAGE_AT_RANGE"]
+
+IRON_BLADE:
+  id: "IRON_BLADE"
+  name: "Iron Blade"
+  type: "WEAPON"
+  weapon_type: "SWORD"
+  might: 9
+  hit: 70
+  crit: 0
+  weight: 12
+  range_min: 1
+  range_max: 1
+  max_durability: 35
+  required_rank: "D"
+  effects: []
+
+VOUGE:
+  id: "VOUGE"
+  name: "Vouge"
+  type: "WEAPON"
+  weapon_type: "AXE"
+  might: 11
+  hit: 75
+  crit: 0
+  weight: 14
+  range_min: 1
+  range_max: 1
+  max_durability: 30
+  required_rank: "B"
+  effects: ["EFFECTIVE_CAVALRY"]

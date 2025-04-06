@@ -133,6 +133,11 @@ def main():
         inventory_system=inventory_system,
         data_provider=data_provider
     )
+    
+    # Update the display module with combat_system after it's initialized
+    if hasattr(input_handler, 'display') and hasattr(input_handler.display, 'combat_system'):
+        input_handler.display.combat_system = combat_system
+        
     logging.info("System dependencies initialized.")
 
     # Create the engine core

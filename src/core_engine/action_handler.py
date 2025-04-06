@@ -109,6 +109,113 @@ class ActionHandler:
         
         logging.info("ActionHandler initialized.")
     
+    def process_action(self, unit_id: str, action_data: Dict[str, Any]) -> bool:
+        """
+        Process an action for a unit based on the action data.
+        
+        Args:
+            unit_id: ID of the unit performing the action
+            action_data: Dictionary containing action type and parameters
+            
+        Returns:
+            True if the action was processed successfully, False otherwise
+        """
+        action_type_str = action_data.get('type', '')
+        
+        # Convert string action type to ActionType enum
+        try:
+            # Handle combined actions like MOVE_AND_WAIT
+            if action_type_str == 'MOVE_AND_WAIT':
+                # Process move action
+                move_data = action_data.get('move_data', {})
+                move_result = self.handle_move(unit_id, move_data.get('path', []))
+                
+                if not move_result or not move_result.success:
+                    logging.error(f"Move action failed: {move_result.message if move_result else 'Unknown error'}")
+                    return False
+                
+                # Process wait action
+                wait_result = self.handle_wait(unit_id)
+                
+                if not wait_result or not wait_result.success:
+                    logging.error(f"Wait action failed: {wait_result.message if wait_result else 'Unknown error'}")
+                    return False
+                
+                # Mark unit as having acted
+                unit = self.gameStateManager.get_unit(unit_id)
+                if unit:
+                    unit.has_acted = True
+                
+                return True
+                
+            elif action_type_str == 'MOVE_AND_ATTACK':
+                # Process move action
+                move_data = action_data.get('move_data', {})
+                move_result = self.handle_move(unit_id, move_data.get('path', []))
+                
+                if not move_result or not move_result.success:
+                    logging.error(f"Move action failed: {move_result.message if move_result else 'Unknown error'}")
+                    return False
+                
+                # Process attack action
+                attack_data = action_data.get('action_data', {})
+                target_info = attack_data.get('target_info', {})
+                attack_result = self.handle_attack(unit_id, target_info.get('target_unit_id'))
+                
+                if not attack_result or not attack_result.success:
+                    logging.error(f"Attack action failed: {attack_result.message if attack_result else 'Unknown error'}")
+                    return False
+                
+                # Mark unit as having acted
+                unit = self.gameStateManager.get_unit(unit_id)
+                if unit:
+                    unit.has_acted = True
+                
+                return True
+            
+            # Handle simple actions
+            elif action_type_str in ['MOVE', 'WAIT', 'ATTACK', 'CAPTURE', 'ITEM', 'TRADE', 'VISIT', 'SEIZE']:
+                # Map string action type to enum
+                action_type_map = {
+                    'MOVE': ActionType.MOVE,
+                    'WAIT': ActionType.WAIT,
+                    'ATTACK': ActionType.ATTACK,
+                    'CAPTURE': ActionType.CAPTURE,
+                    'ITEM': ActionType.ITEM,
+                    'TRADE': ActionType.TRADE,
+                    'VISIT': ActionType.VISIT,
+                    'SEIZE': ActionType.SEIZE
+                }
+                
+                action_type = action_type_map.get(action_type_str)
+                if not action_type:
+                    logging.error(f"Unknown action type: {action_type_str}")
+                    return False
+                
+                # Extract target data
+                target_data = action_data.get('target_info', {})
+                
+                # For move actions, extract path
+                if action_type == ActionType.MOVE:
+                    target_data = {'path': action_data.get('path', [])}
+                
+                # Process the action
+                result = self.perform_action(unit_id, action_type, target_data)
+                
+                if not result or not result.success:
+                    logging.error(f"Action failed: {result.message if result else 'Unknown error'}")
+                    return False
+                
+                return True
+            
+            else:
+                logging.error(f"Unsupported action type: {action_type_str}")
+                return False
+                
+        except Exception as e:
+            logging.error(f"Error processing action: {e}")
+            return False
+    
     def perform_action(self, unit_id: str, action_type: ActionType, target_data: Dict) -> ActionOutcome:
         """
         Process an action request for a unit.

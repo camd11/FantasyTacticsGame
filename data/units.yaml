@@ -1,0 +1,97 @@
+# Units data for Fantasy Tactics Game
+# Based on Fire Emblem: Thracia 776 characters
+
+LEIF:
+  id: "LEIF"
+  name: "Leif"
+  base_class_id: "LORD"
+  stats:
+    HP: 20
+    STR: 5
+    MAG: 2
+    SKL: 6
+    SPD: 7
+    LUK: 5
+    DEF: 4
+    CON: 5
+    MOV: 5
+    MOV_STARS: 1
+  growths:
+    HP: 70
+    STR: 35
+    MAG: 15
+    SKL: 40
+    SPD: 45
+    LUK: 40
+    DEF: 25
+    CON: 5
+    MOV: 5
+  base_weapon_ranks:
+    SWORD: "C"
+    LANCE: "E"
+  skills: ["LEADERSHIP"]
+  leadership_stars: 1
+  pcc: 1
+
+FINN:
+  id: "FINN"
+  name: "Finn"
+  base_class_id: "LANCE_KNIGHT"
+  stats:
+    HP: 22
+    STR: 6
+    MAG: 1
+    SKL: 8
+    SPD: 8
+    LUK: 4
+    DEF: 5
+    CON: 7
+    MOV: 7
+    MOV_STARS: 0
+  growths:
+    HP: 60
+    STR: 30
+    MAG: 5
+    SKL: 35
+    SPD: 35
+    LUK: 30
+    DEF: 20
+    CON: 5
+    MOV: 5
+  base_weapon_ranks:
+    LANCE: "B"
+    SWORD: "C"
+  skills: ["CANTO"]
+  leadership_stars: 1
+  pcc: 2
+
+EYVEL:
+  id: "EYVEL"
+  name: "Eyvel"
+  base_class_id: "SWORDMASTER"
+  stats:
+    HP: 28
+    STR: 8
+    MAG: 3
+    SKL: 12
+    SPD: 14
+    LUK: 8
+    DEF: 6
+    CON: 6
+    MOV: 6
+    MOV_STARS: 0
+  growths:
+    HP: 55
+    STR: 25
+    MAG: 10
+    SKL: 30
+    SPD: 40
+    LUK: 25
+    DEF: 15
+    CON: 5
+    MOV: 5
+  base_weapon_ranks:
+    SWORD: "A"
+  skills: ["WRATH"]
+  leadership_stars: 1
+  pcc: 3

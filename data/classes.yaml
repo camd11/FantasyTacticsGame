@@ -1,0 +1,283 @@
+# Classes data for Fantasy Tactics Game
+# Based on Fire Emblem: Thracia 776 classes
+
+LORD:
+  id: "LORD"
+  name: "Lord"
+  base_stats:
+    HP: 0
+    STR: 0
+    MAG: 0
+    SKL: 0
+    SPD: 0
+    LUK: 0
+    DEF: 0
+    CON: 0
+    MOV: 5
+  max_stats:
+    HP: 60
+    STR: 20
+    MAG: 20
+    SKL: 20
+    SPD: 20
+    LUK: 30
+    DEF: 20
+    CON: 20
+    MOV: 7
+  max_weapon_ranks:
+    SWORD: "A"
+    LANCE: "B"
+  movement_type: "INFANTRY"
+  promotion_options: ["MASTER_KNIGHT"]
+  class_skills: []
+  dismount_class_id: "LORD_DISMOUNTED"
+  is_mounted: true
+
+LORD_DISMOUNTED:
+  id: "LORD_DISMOUNTED"
+  name: "Lord (Dismounted)"
+  base_stats:
+    HP: 0
+    STR: 0
+    MAG: 0
+    SKL: 0
+    SPD: 0
+    LUK: 0
+    DEF: 0
+    CON: 0
+    MOV: 4
+  max_stats:
+    HP: 60
+    STR: 20
+    MAG: 20
+    SKL: 20
+    SPD: 20
+    LUK: 30
+    DEF: 20
+    CON: 20
+    MOV: 6
+  max_weapon_ranks:
+    SWORD: "A"
+  movement_type: "INFANTRY"
+  promotion_options: ["MASTER_KNIGHT"]
+  class_skills: []
+  dismount_class_id: null
+  is_mounted: false
+
+LANCE_KNIGHT:
+  id: "LANCE_KNIGHT"
+  name: "Lance Knight"
+  base_stats:
+    HP: 0
+    STR: 0
+    MAG: 0
+    SKL: 0
+    SPD: 0
+    LUK: 0
+    DEF: 0
+    CON: 0
+    MOV: 7
+  max_stats:
+    HP: 60
+    STR: 20
+    MAG: 20
+    SKL: 20
+    SPD: 20
+    LUK: 30
+    DEF: 20
+    CON: 20
+    MOV: 9
+  max_weapon_ranks:
+    LANCE: "A"
+    SWORD: "C"
+  movement_type: "CAVALRY"
+  promotion_options: ["PALADIN"]
+  class_skills: ["CANTO"]
+  dismount_class_id: "LANCE_KNIGHT_DISMOUNTED"
+  is_mounted: true
+
+LANCE_KNIGHT_DISMOUNTED:
+  id: "LANCE_KNIGHT_DISMOUNTED"
+  name: "Lance Knight (Dismounted)"
+  base_stats:
+    HP: 0
+    STR: 0
+    MAG: 0
+    SKL: 0
+    SPD: 0
+    LUK: 0
+    DEF: 0
+    CON: 0
+    MOV: 5
+  max_stats:
+    HP: 60
+    STR: 20
+    MAG: 20
+    SKL: 20
+    SPD: 20
+    LUK: 30
+    DEF: 20
+    CON: 20
+    MOV: 7
+  max_weapon_ranks:
+    SWORD: "C"
+  movement_type: "INFANTRY"
+  promotion_options: ["PALADIN"]
+  class_skills: []
+  dismount_class_id: null
+  is_mounted: false
+
+SWORDMASTER:
+  id: "SWORDMASTER"
+  name: "Swordmaster"
+  base_stats:
+    HP: 0
+    STR: 0
+    MAG: 0
+    SKL: 0
+    SPD: 0
+    LUK: 0
+    DEF: 0
+    CON: 0
+    MOV: 6
+  max_stats:
+    HP: 60
+    STR: 20
+    MAG: 20
+    SKL: 20
+    SPD: 20
+    LUK: 30
+    DEF: 20
+    CON: 20
+    MOV: 7
+  max_weapon_ranks:
+    SWORD: "A"
+  movement_type: "INFANTRY"
+  promotion_options: []
+  class_skills: []
+  dismount_class_id: null
+  is_mounted: false
+
+FIGHTER:
+  id: "FIGHTER"
+  name: "Fighter"
+  base_stats:
+    HP: 0
+    STR: 0
+    MAG: 0
+    SKL: 0
+    SPD: 0
+    LUK: 0
+    DEF: 0
+    CON: 0
+    MOV: 5
+  max_stats:
+    HP: 60
+    STR: 20
+    MAG: 20
+    SKL: 20
+    SPD: 20
+    LUK: 30
+    DEF: 20
+    CON: 20
+    MOV: 7
+  max_weapon_ranks:
+    AXE: "A"
+  movement_type: "INFANTRY"
+  promotion_options: ["WARRIOR", "HERO"]
+  class_skills: []
+  dismount_class_id: null
+  is_mounted: false
+
+ARCHER:
+  id: "ARCHER"
+  name: "Archer"
+  base_stats:
+    HP: 0
+    STR: 0
+    MAG: 0
+    SKL: 0
+    SPD: 0
+    LUK: 0
+    DEF: 0
+    CON: 0
+    MOV: 5
+  max_stats:
+    HP: 60
+    STR: 20
+    MAG: 20
+    SKL: 20
+    SPD: 20
+    LUK: 30
+    DEF: 20
+    CON: 20
+    MOV: 7
+  max_weapon_ranks:
+    BOW: "A"
+  movement_type: "INFANTRY"
+  promotion_options: ["SNIPER", "BOW_KNIGHT"]
+  class_skills: []
+  dismount_class_id: null
+  is_mounted: false
+
+BRIGAND:
+  id: "BRIGAND"
+  name: "Brigand"
+  base_stats:
+    HP: 0
+    STR: 0
+    MAG: 0
+    SKL: 0
+    SPD: 0
+    LUK: 0
+    DEF: 0
+    CON: 0
+    MOV: 5
+  max_stats:
+    HP: 60
+    STR: 20
+    MAG: 20
+    SKL: 20
+    SPD: 20
+    LUK: 30
+    DEF: 20
+    CON: 20
+    MOV: 7
+  max_weapon_ranks:
+    AXE: "A"
+  movement_type: "INFANTRY"
+  promotion_options: ["WARRIOR", "BERSERKER"]
+  class_skills: []
+  dismount_class_id: null
+  is_mounted: false
+
+SOLDIER:
+  id: "SOLDIER"
+  name: "Soldier"
+  base_stats:
+    HP: 0
+    STR: 0
+    MAG: 0
+    SKL: 0
+    SPD: 0
+    LUK: 0
+    DEF: 0
+    CON: 0
+    MOV: 5
+  max_stats:
+    HP: 60
+    STR: 20
+    MAG: 20
+    SKL: 20
+    SPD: 20
+    LUK: 30
+    DEF: 20
+    CON: 20
+    MOV: 7
+  max_weapon_ranks:
+    LANCE: "A"
+  movement_type: "INFANTRY"
+  promotion_options: ["HALBERDIER"]
+  class_skills: []
+  dismount_class_id: null
+  is_mounted: false
