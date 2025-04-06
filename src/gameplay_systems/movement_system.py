@@ -1,0 +1,273 @@
+"""
+Movement System Module
+
+This module handles the process of moving units across the game map. It determines the range of
+movement available to a unit, validates proposed moves, and updates the unit's position in the
+game state. It also plays a role in enabling Canto movement after certain actions.
+"""
+
+import logging
+from typing import Dict, List, Set, Tuple, Optional, Any
+
+# Import necessary modules/classes
+from src.core_engine.game_state import GameStateManager
+from src.gameplay_systems.map_system import MapSystem
+
+# Constants
+IMPASSABLE = float('inf')
+MOV = "MOV"  # Movement stat key
+
+
+class MovementSystem:
+    """
+    Handles the process of moving units across the game map.
+    """
+    
+    def __init__(self):
+        """Initialize the MovementSystem."""
+        self.gameStateManager = None
+        self.mapSystem = None
+        
+        # Store temporary data for the current unit's move calculation
+        self._current_unit_id = None
+        self._reachable_tiles = set()
+        self._path_costs = {}  # Store cost to reach each tile {pos: cost}
+    
+    def initialize(self, gameStateManager_instance: GameStateManager, mapSystem_instance: MapSystem) -> None:
+        """
+        Initialize the MovementSystem with the necessary dependencies.
+        
+        Args:
+            gameStateManager_instance: Instance of the GameStateManager
+            mapSystem_instance: Instance of the MapSystem
+        """
+        self.gameStateManager = gameStateManager_instance
+        self.mapSystem = mapSystem_instance
+        logging.info("MovementSystem initialized.")
+    
+    # --- Movement Calculation ---
+    
+    def calculate_movement_range(self, unit_id: str) -> Set[Tuple[int, int]]:
+        """
+        Calculate the set of tiles that a unit can reach with its movement points.
+        
+        Args:
+            unit_id: ID of the unit
+            
+        Returns:
+            Set of reachable positions
+        """
+        self._current_unit_id = unit_id
+        # Delegate pathfinding to MapSystem
+        self._reachable_tiles = self.mapSystem.get_reachable_tiles(unit_id)
+        # Optionally store costs if MapSystem provides them, needed for Canto
+        # self._path_costs = self.mapSystem.get_path_costs(unit_id)
+        logging.info(f"Calculated movement range for {unit_id}: {len(self._reachable_tiles)} tiles.")
+        return self._reachable_tiles
+    
+    def get_current_range(self) -> Set[Tuple[int, int]]:
+        """
+        Get the set of reachable tiles calculated by the last call to calculate_movement_range.
+        
+        Returns:
+            Set of reachable positions
+        """
+        return self._reachable_tiles
+    
+    # --- Move Validation ---
+    
+    def is_valid_destination(self, unit_id: str, target_pos: Tuple[int, int]) -> bool:
+        """
+        Check if a target position is a valid destination for a unit.
+        
+        Args:
+            unit_id: ID of the unit
+            target_pos: Target position (x, y)
+            
+        Returns:
+            True if the target position is a valid destination, False otherwise
+        """
+        if unit_id != self._current_unit_id:
+            logging.warning("Warning: Validating move for unit different from last calculation.")
+            # Recalculate range
+            self.calculate_movement_range(unit_id)
+        
+        if target_pos not in self._reachable_tiles:
+            logging.info(f"Move validation failed: {target_pos} not in reachable tiles for {unit_id}.")
+            return False
+        
+        # Additional check: Ensure target tile isn't blocked *right now* (e.g., by an ally who just moved there)
+        occupying_unit_id = self._get_unit_at(target_pos)
+        if occupying_unit_id and occupying_unit_id != unit_id:
+            logging.info(f"Move validation failed: {target_pos} is currently occupied by {occupying_unit_id}.")
+            return False  # Cannot end move on an occupied tile
+        
+        return True
+    
+    # --- Move Execution ---
+    
+    def execute_move(self, unit_id: str, path: List[Tuple[int, int]]) -> bool:
+        """
+        Execute a move for a unit.
+        
+        Args:
+            unit_id: ID of the unit
+            path: List of positions representing the path [start_pos, ..., end_pos]
+            
+        Returns:
+            True if the move was successful, False otherwise
+        """
+        if not path:
+            logging.error("Error: Cannot execute move with empty path.")
+            return False
+        
+        target_pos = path[-1]
+        
+        # Re-validate just in case state changed? Or rely on EngineCore sequence. Assume valid for now.
+        # if not self.is_valid_destination(unit_id, target_pos): return False
+        
+        unit = self.gameStateManager.get_unit(unit_id)
+        if not unit:
+            return False
+        
+        logging.info(f"Executing move for {unit_id} to {target_pos}.")
+        self.gameStateManager.move_unit(unit_id, target_pos)
+        unit.has_moved = True  # Set flag via GameStateManager if direct access isn't allowed
+        
+        # Store path taken cost if needed for Canto
+        # path_cost = self.calculate_path_cost(path, unit_id)
+        # self.gameStateManager.set_unit_last_move_cost(unit_id, path_cost)  # Store temporarily
+        
+        # Clear cached range for the moved unit
+        if unit_id == self._current_unit_id:
+            self._current_unit_id = None
+            self._reachable_tiles = set()
+            self._path_costs = {}
+        
+        return True
+    
+    # --- Canto Handling ---
+    
+    def calculate_canto_range(self, unit_id: str) -> Set[Tuple[int, int]]:
+        """
+        Calculate the Canto movement range for a unit.
+        
+        Args:
+            unit_id: ID of the unit
+            
+        Returns:
+            Set of reachable positions for Canto movement
+        """
+        unit = self.gameStateManager.get_unit(unit_id)
+        if not unit:
+            return set()
+        
+        # Retrieve the cost of the initial move (needs to be stored after execute_move)
+        # initial_move_cost = self.gameStateManager.get_unit_last_move_cost(unit_id)
+        initial_move_cost = self.get_cost_to_reach(unit.position)  # Use stored costs if available
+        
+        total_movement = unit.base_stats.get(MOV, 0)
+        remaining_movement = total_movement - initial_move_cost
+        
+        if remaining_movement <= 0:
+            return set()
+        
+        # Calculate reachable tiles from current position with remaining movement
+        # Use MapSystem's pathfinder again
+        canto_reachable_nodes = self.mapSystem.pathfinder.find_reachable(unit.position, remaining_movement, unit_id)
+        canto_tiles = set(canto_reachable_nodes.keys())
+        
+        # Store this temporarily if needed for validation/execution
+        self._current_unit_id = unit_id  # Reuse cache for Canto move
+        self._reachable_tiles = canto_tiles
+        # self._path_costs = canto_reachable_nodes  # Store costs if needed
+        
+        logging.info(f"Calculated Canto range for {unit_id} with {remaining_movement} points: {len(canto_tiles)} tiles.")
+        return canto_tiles
+    
+    def execute_canto_move(self, unit_id: str, path: List[Tuple[int, int]]) -> bool:
+        """
+        Execute a Canto move for a unit.
+        
+        Args:
+            unit_id: ID of the unit
+            path: List of positions representing the path [start_pos, ..., end_pos]
+            
+        Returns:
+            True if the Canto move was successful, False otherwise
+        """
+        if not path:
+            return False
+        
+        target_pos = path[-1]
+        
+        # Validate Canto destination (check against _reachable_tiles calculated by calculate_canto_range)
+        if not self.is_valid_destination(unit_id, target_pos):  # Reuse validation logic
+            logging.info(f"Invalid Canto destination {target_pos}")
+            return False
+        
+        logging.info(f"Executing Canto move for {unit_id} to {target_pos}.")
+        self.gameStateManager.move_unit(unit_id, target_pos)
+        # Do NOT set has_acted = True here, Canto happens after the action is done.
+        # Do NOT reset has_moved = False, the unit *has* moved this turn.
+        
+        # Clear cached range
+        if unit_id == self._current_unit_id:
+            self._current_unit_id = None
+            self._reachable_tiles = set()
+            self._path_costs = {}
+        
+        return True
+    
+    # --- Helpers ---
+    
+    def get_cost_to_reach(self, position: Tuple[int, int]) -> int:
+        """
+        Get the cost to reach a position.
+        
+        Args:
+            position: Position (x, y)
+            
+        Returns:
+            Cost to reach the position
+        """
+        # Requires _path_costs to be populated by calculate_movement_range
+        return self._path_costs.get(position, IMPASSABLE)
+    
+    # def calculate_path_cost(self, path: List[Tuple[int, int]], unit_id: str) -> int:
+    #     """
+    #     Calculate the total movement cost of a given path.
+    #     
+    #     Args:
+    #         path: List of positions representing the path [start_pos, ..., end_pos]
+    #         unit_id: ID of the unit
+    #         
+    #     Returns:
+    #         Total movement cost
+    #     """
+    #     cost = 0
+    #     for i in range(1, len(path)):
+    #         tile_cost = self.mapSystem.get_movement_cost(path[i], unit_id)
+    #         if tile_cost == IMPASSABLE:
+    #             return IMPASSABLE  # Should not happen for valid path
+    #         cost += tile_cost
+    #     return cost
+    
+    # --- Private Helper Methods ---
+    
+    def _get_unit_at(self, position: Tuple[int, int]) -> Optional[str]:
+        """
+        Get the ID of the unit at a position.
+        
+        Args:
+            position: Position (x, y)
+            
+        Returns:
+            Unit ID or None if no unit is present
+        """
+        # This is a placeholder. The actual implementation would depend on how
+        # the GameStateManager tracks unit positions.
+        for unit_id, unit in self.gameStateManager.current_game_state.unit_states.items():
+            if unit.position == position:
+                return unit_id
+        return None

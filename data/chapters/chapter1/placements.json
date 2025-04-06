@@ -1,0 +1,32 @@
+[
+  {
+    "unit_id": "LEIF",
+    "faction": "PLAYER",
+    "position": [1, 1],
+    "level": 1,
+    "start_inventory": ["IRON_SWORD", "VULNERARY"],
+    "starting_fatigue": 0,
+    "needs_autolevel": false,
+    "target_level": 1
+  },
+  {
+    "unit_id": "FINN",
+    "faction": "PLAYER",
+    "position": [2, 1],
+    "level": 3,
+    "start_inventory": ["IRON_LANCE", "SLIM_LANCE"],
+    "starting_fatigue": 0,
+    "needs_autolevel": false,
+    "target_level": 3
+  },
+  {
+    "unit_id": "ENEMY_SOLDIER_1",
+    "faction": "ENEMY",
+    "position": [8, 7],
+    "level": 1,
+    "start_inventory": ["IRON_LANCE"],
+    "starting_fatigue": 0,
+    "needs_autolevel": false,
+    "target_level": 1
+  }
+]

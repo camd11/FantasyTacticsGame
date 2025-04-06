@@ -1,0 +1,58 @@
+{
+  "chapter1": [
+    {
+      "id": "chapter_start",
+      "type": "TURN",
+      "trigger_conditions": {
+        "turn": 1,
+        "phase": "PLAYER"
+      },
+      "actions": [
+        {
+          "type": "DIALOGUE",
+          "speaker": "LEIF",
+          "text": "We need to seize the throne to complete this chapter."
+        },
+        {
+          "type": "DIALOGUE",
+          "speaker": "FINN",
+          "text": "I'll help you, Lord Leif."
+        }
+      ]
+    },
+    {
+      "id": "enemy_defeated",
+      "type": "UNIT_DEFEATED",
+      "trigger_conditions": {
+        "unit_id": "ENEMY_SOLDIER_1"
+      },
+      "actions": [
+        {
+          "type": "DIALOGUE",
+          "speaker": "LEIF",
+          "text": "The enemy has been defeated!"
+        }
+      ]
+    },
+    {
+      "id": "victory_condition",
+      "type": "VICTORY",
+      "trigger_conditions": {
+        "type": "SEIZE",
+        "position": [9, 8],
+        "unit_id": "LEIF"
+      },
+      "actions": [
+        {
+          "type": "DIALOGUE",
+          "speaker": "LEIF",
+          "text": "We've captured the throne! Victory is ours!"
+        },
+        {
+          "type": "END_CHAPTER",
+          "next_chapter": "chapter2"
+        }
+      ]
+    }
+  ]
+}

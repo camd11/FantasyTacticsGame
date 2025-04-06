@@ -1,0 +1,19 @@
+{
+  "id": "chapter1",
+  "name": "The Beginning",
+  "dimensions": [10, 10],
+  "terrain_grid": [
+    ["PLAIN", "PLAIN", "PLAIN", "PLAIN", "PLAIN", "PLAIN", "PLAIN", "PLAIN", "PLAIN", "PLAIN"],
+    ["PLAIN", "PLAIN", "PLAIN", "PLAIN", "FOREST", "FOREST", "PLAIN", "PLAIN", "PLAIN", "PLAIN"],
+    ["PLAIN", "PLAIN", "FOREST", "FOREST", "FOREST", "FOREST", "FOREST", "PLAIN", "PLAIN", "PLAIN"],
+    ["PLAIN", "PLAIN", "FOREST", "PLAIN", "PLAIN", "PLAIN", "FOREST", "PLAIN", "PLAIN", "PLAIN"],
+    ["PLAIN", "PLAIN", "PLAIN", "PLAIN", "HOUSE", "PLAIN", "PLAIN", "PLAIN", "PLAIN", "PLAIN"],
+    ["PLAIN", "PLAIN", "PLAIN", "PLAIN", "PLAIN", "PLAIN", "PLAIN", "PLAIN", "PLAIN", "PLAIN"],
+    ["PLAIN", "PLAIN", "MOUNTAIN", "MOUNTAIN", "PLAIN", "PLAIN", "PLAIN", "PLAIN", "PLAIN", "PLAIN"],
+    ["PLAIN", "MOUNTAIN", "MOUNTAIN", "MOUNTAIN", "PLAIN", "PLAIN", "PLAIN", "PLAIN", "PLAIN", "PLAIN"],
+    ["PLAIN", "PLAIN", "PLAIN", "PLAIN", "PLAIN", "PLAIN", "PLAIN", "CASTLE", "CASTLE", "CASTLE"],
+    ["PLAIN", "PLAIN", "PLAIN", "PLAIN", "PLAIN", "PLAIN", "PLAIN", "CASTLE", "THRONE", "CASTLE"]
+  ],
+  "seize_point": [9, 8],
+  "escape_points": [[0, 0], [0, 9]]
+}
