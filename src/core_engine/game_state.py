@@ -170,7 +170,47 @@ class GameStateManager:
         state.map_state = MapState()
         state.map_state.map_id = map_data.id
         state.map_state.dimensions = map_data.dimensions
-        state.map_state.terrain_grid = map_data.terrain_grid
+        
+        # Convert string terrain codes to TerrainTypeEnum values
+        terrain_grid = []
+        for row in map_data.terrain_grid:
+            terrain_row = []
+            for terrain_code in row:
+                # Try to convert the string code to TerrainTypeEnum
+                try:
+                    # If it's already a TerrainTypeEnum, use it directly
+                    if isinstance(terrain_code, TerrainTypeEnum):
+                        terrain_row.append(terrain_code)
+                    else:
+                        # Map string codes to TerrainTypeEnum values
+                        code_to_enum = {
+                            'P': TerrainTypeEnum.PLAIN,
+                            'F': TerrainTypeEnum.FOREST,
+                            'W': TerrainTypeEnum.RIVER,
+                            'D': TerrainTypeEnum.BRIDGE,
+                            'V': TerrainTypeEnum.VILLAGE,
+                            'S': TerrainTypeEnum.THRONE,  # Seize point is represented as throne
+                            'M': TerrainTypeEnum.MOUNTAIN,
+                            'H': TerrainTypeEnum.CASTLE,
+                            'T': TerrainTypeEnum.THRONE
+                        }
+                        
+                        if terrain_code in code_to_enum:
+                            terrain_row.append(code_to_enum[terrain_code])
+                        else:
+                            # If code not found in mapping, try direct enum lookup
+                            try:
+                                terrain_row.append(TerrainTypeEnum[terrain_code])
+                            except (KeyError, ValueError):
+                                # If all conversion attempts fail, use INVALID as fallback
+                                logging.warning(f"Invalid terrain code '{terrain_code}', using INVALID")
+                                terrain_row.append(TerrainTypeEnum.INVALID)
+                except Exception as e:
+                    logging.warning(f"Error converting terrain code '{terrain_code}': {str(e)}, using INVALID")
+                    terrain_row.append(TerrainTypeEnum.INVALID)
+            terrain_grid.append(terrain_row)
+            
+        state.map_state.terrain_grid = terrain_grid
         state.map_state.unit_positions = {}
         state.map_state.object_states = {}
         state.unit_states = {}

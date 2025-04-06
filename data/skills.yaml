@@ -112,3 +112,14 @@ MOVEMENT_STARS:
         chance_per_star: 5
   activation_condition: "END_OF_ACTION"
   activation_chance: "STARS_BASED"
+
+VANTAGE:
+  id: "VANTAGE"
+  name: "Vantage"
+  description: "Unit attacks first when being attacked, even during enemy phase."
+  effects:
+    - type: "ATTACK_FIRST"
+      params:
+        condition: "WHEN_ATTACKED"
+  activation_condition: "COMBAT"
+  activation_chance: 100

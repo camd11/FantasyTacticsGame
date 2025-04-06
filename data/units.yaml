@@ -191,6 +191,99 @@ ASBEL:
   leadership_stars: 0
   pcc: 1
 
+OTHIN:
+  id: "OTHIN"
+  name: "Othin"
+  base_class_id: "FIGHTER"
+  stats:
+    HP: 26
+    STR: 8
+    MAG: 0
+    SKL: 4
+    SPD: 7
+    LUK: 2
+    DEF: 4
+    CON: 9
+    MOV: 5
+    MOV_STARS: 0
+  growths:
+    HP: 70
+    STR: 45
+    MAG: 5
+    SKL: 25
+    SPD: 35
+    LUK: 15
+    DEF: 20
+    CON: 5
+    MOV: 5
+  base_weapon_ranks:
+    AXE: "C"
+  skills: ["WRATH"]
+  leadership_stars: 0
+  pcc: 3
+
+DAGDAR:
+  id: "DAGDAR"
+  name: "Dagdar"
+  base_class_id: "FIGHTER"
+  stats:
+    HP: 32
+    STR: 10
+    MAG: 0
+    SKL: 7
+    SPD: 6
+    LUK: 3
+    DEF: 7
+    CON: 12
+    MOV: 5
+    MOV_STARS: 0
+  growths:
+    HP: 60
+    STR: 35
+    MAG: 5
+    SKL: 25
+    SPD: 25
+    LUK: 15
+    DEF: 30
+    CON: 5
+    MOV: 5
+  base_weapon_ranks:
+    AXE: "B"
+  skills: ["PURSUIT"]
+  leadership_stars: 0
+  pcc: 1
+
+TANYA:
+  id: "TANYA"
+  name: "Tanya"
+  base_class_id: "ARCHER"
+  stats:
+    HP: 18
+    STR: 4
+    MAG: 0
+    SKL: 5
+    SPD: 8
+    LUK: 6
+    DEF: 2
+    CON: 5
+    MOV: 5
+    MOV_STARS: 0
+  growths:
+    HP: 55
+    STR: 30
+    MAG: 5
+    SKL: 35
+    SPD: 45
+    LUK: 40
+    DEF: 15
+    CON: 5
+    MOV: 5
+  base_weapon_ranks:
+    BOW: "D"
+  skills: ["ADEPT"]
+  leadership_stars: 0
+  pcc: 2
+
 ENEMY_SOLDIER_1:
   id: "ENEMY_SOLDIER_1"
   name: "Soldier"

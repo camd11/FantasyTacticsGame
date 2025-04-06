@@ -355,7 +355,7 @@ class DataProvider:
         Returns:
             TerrainData object or None if not found
         """
-        return self._terrain_data.get(terrain_type)
+        return self._terrain_data.get(terrain_type.name)
     
     def get_terrain_cost(self, terrain_type: TerrainTypeEnum, movement_type: MovementTypeEnum) -> int:
         """
@@ -368,7 +368,7 @@ class DataProvider:
         Returns:
             Movement cost (IMPASSABLE if terrain is impassable for the movement type)
         """
-        terrain_info = self._terrain_data.get(terrain_type)
+        terrain_info = self._terrain_data.get(terrain_type.name)
         if terrain_info:
             return terrain_info.movement_costs.get(movement_type, IMPASSABLE)
         return IMPASSABLE
@@ -383,7 +383,7 @@ class DataProvider:
         Returns:
             Dictionary of bonuses (e.g., {'def': 0, 'avo': 5})
         """
-        terrain_info = self._terrain_data.get(terrain_type)
+        terrain_info = self._terrain_data.get(terrain_type.name)
         if terrain_info:
             return terrain_info.bonuses
         return {'def': 0, 'avo': 0}
@@ -398,7 +398,7 @@ class DataProvider:
         Returns:
             True if the terrain provides healing, False otherwise
         """
-        terrain_info = self._terrain_data.get(terrain_type)
+        terrain_info = self._terrain_data.get(terrain_type.name)
         if terrain_info:
             return terrain_info.is_healing
         return False
@@ -413,7 +413,7 @@ class DataProvider:
         Returns:
             Healing amount (0 if the terrain doesn't provide healing)
         """
-        terrain_info = self._terrain_data.get(terrain_type)
+        terrain_info = self._terrain_data.get(terrain_type.name)
         if terrain_info and terrain_info.is_healing:
             # Default to 10% healing if not specified
             return terrain_info.get('heal_amount', 10)
@@ -429,7 +429,7 @@ class DataProvider:
         Returns:
             True if the terrain is indoors, False otherwise
         """
-        terrain_info = self._terrain_data.get(terrain_type)
+        terrain_info = self._terrain_data.get(terrain_type.name)
         if terrain_info:
             return terrain_info.is_indoor
         return False

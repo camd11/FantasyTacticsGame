@@ -412,11 +412,11 @@ class TestDataProvider(unittest.TestCase):
         }
         
         # Call the method under test
-        # We need to use the string keys instead of enum values
-        infantry_plain_cost = self.data_provider.get_terrain_cost("PLAIN", MovementTypeEnum.INFANTRY)
-        cavalry_forest_cost = self.data_provider.get_terrain_cost("FOREST", MovementTypeEnum.CAVALRY)
-        cavalry_house_cost = self.data_provider.get_terrain_cost("HOUSE", MovementTypeEnum.CAVALRY)
-        nonexistent_cost = self.data_provider.get_terrain_cost("INVALID", MovementTypeEnum.INFANTRY)
+        # We need to use TerrainTypeEnum values instead of string keys
+        infantry_plain_cost = self.data_provider.get_terrain_cost(TerrainTypeEnum.PLAIN, MovementTypeEnum.INFANTRY)
+        cavalry_forest_cost = self.data_provider.get_terrain_cost(TerrainTypeEnum.FOREST, MovementTypeEnum.CAVALRY)
+        cavalry_house_cost = self.data_provider.get_terrain_cost(TerrainTypeEnum.HOUSE, MovementTypeEnum.CAVALRY)
+        nonexistent_cost = self.data_provider.get_terrain_cost(TerrainTypeEnum.INVALID, MovementTypeEnum.INFANTRY)
         
         # Assertions
         self.assertEqual(infantry_plain_cost, 1, "Infantry should have cost 1 on plain")
@@ -435,11 +435,11 @@ class TestDataProvider(unittest.TestCase):
         }
         
         # Call the method under test
-        # We need to use the string keys instead of enum values
-        plain_bonuses = self.data_provider.get_terrain_bonuses("PLAIN")
-        forest_bonuses = self.data_provider.get_terrain_bonuses("FOREST")
-        house_bonuses = self.data_provider.get_terrain_bonuses("HOUSE")
-        nonexistent_bonuses = self.data_provider.get_terrain_bonuses("INVALID")
+        # We need to use TerrainTypeEnum values instead of string keys
+        plain_bonuses = self.data_provider.get_terrain_bonuses(TerrainTypeEnum.PLAIN)
+        forest_bonuses = self.data_provider.get_terrain_bonuses(TerrainTypeEnum.FOREST)
+        house_bonuses = self.data_provider.get_terrain_bonuses(TerrainTypeEnum.HOUSE)
+        nonexistent_bonuses = self.data_provider.get_terrain_bonuses(TerrainTypeEnum.INVALID)
         
         # Assertions
         self.assertEqual(plain_bonuses, {"def": 0, "avo": 0}, "Plain should have no bonuses")
@@ -458,11 +458,11 @@ class TestDataProvider(unittest.TestCase):
         }
         
         # Call the method under test
-        # We need to use the string keys instead of enum values
-        plain_healing = self.data_provider.is_terrain_healing("PLAIN")
-        forest_healing = self.data_provider.is_terrain_healing("FOREST")
-        house_healing = self.data_provider.is_terrain_healing("HOUSE")
-        nonexistent_healing = self.data_provider.is_terrain_healing("INVALID")
+        # We need to use TerrainTypeEnum values instead of string keys
+        plain_healing = self.data_provider.is_terrain_healing(TerrainTypeEnum.PLAIN)
+        forest_healing = self.data_provider.is_terrain_healing(TerrainTypeEnum.FOREST)
+        house_healing = self.data_provider.is_terrain_healing(TerrainTypeEnum.HOUSE)
+        nonexistent_healing = self.data_provider.is_terrain_healing(TerrainTypeEnum.INVALID)
         
         # Assertions
         self.assertFalse(plain_healing, "Plain should not be healing")
@@ -481,11 +481,11 @@ class TestDataProvider(unittest.TestCase):
         }
         
         # Call the method under test
-        # We need to use the string keys instead of enum values
-        plain_indoor = self.data_provider.is_terrain_indoor("PLAIN")
-        forest_indoor = self.data_provider.is_terrain_indoor("FOREST")
-        house_indoor = self.data_provider.is_terrain_indoor("HOUSE")
-        nonexistent_indoor = self.data_provider.is_terrain_indoor("INVALID")
+        # We need to use TerrainTypeEnum values instead of string keys
+        plain_indoor = self.data_provider.is_terrain_indoor(TerrainTypeEnum.PLAIN)
+        forest_indoor = self.data_provider.is_terrain_indoor(TerrainTypeEnum.FOREST)
+        house_indoor = self.data_provider.is_terrain_indoor(TerrainTypeEnum.HOUSE)
+        nonexistent_indoor = self.data_provider.is_terrain_indoor(TerrainTypeEnum.INVALID)
         
         # Assertions
         self.assertFalse(plain_indoor, "Plain should not be indoor")

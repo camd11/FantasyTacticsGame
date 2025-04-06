@@ -42,6 +42,25 @@ class Colors:
 
 # Terrain symbols and colors
 TERRAIN_DISPLAY = {
+    # Enum name keys
+    'PLAIN': (Colors.GREEN, '🟩'),  # Plain
+    'FOREST': (Colors.GREEN + Colors.BOLD, '🌲'),  # Forest
+    'RIVER': (Colors.BLUE, '🌊'),  # Water/River
+    'SEA': (Colors.BLUE, '🌊'),  # Sea
+    'BRIDGE': (Colors.BLUE + Colors.BOLD, '🌉'),  # Bridge
+    'VILLAGE': (Colors.YELLOW, '🏠'),  # Village
+    'CASTLE': (Colors.YELLOW + Colors.BOLD, '🏰'),  # Castle
+    'HOUSE': (Colors.YELLOW, '🏠'),  # House
+    'MOUNTAIN': (Colors.BLACK + Colors.BG_WHITE, '⛰️'),  # Mountain
+    'THRONE': (Colors.CYAN, '🏛️'),  # Throne
+    'WALL': (Colors.WHITE, '#'),  # Wall
+    'DOOR': (Colors.YELLOW, 'D'),  # Door
+    'GATE': (Colors.YELLOW + Colors.BOLD, 'G'),  # Gate
+    'ROAD': (Colors.WHITE, '='),  # Road
+    'RUINS': (Colors.MAGENTA, 'R'),  # Ruins
+    'INVALID': (Colors.RED, '?'),  # Invalid
+    
+    # Original string codes for backward compatibility
     'P': (Colors.GREEN, '🟩'),  # Plain
     'F': (Colors.GREEN + Colors.BOLD, '🌲'),  # Forest
     'W': (Colors.BLUE, '🌊'),  # Water
@@ -55,16 +74,35 @@ TERRAIN_DISPLAY = {
 
 # ASCII terrain symbols for simple display
 ASCII_TERRAIN = {
-    'P': '.',  # Plain
-    'F': 'T',  # Forest
-    'W': '~',  # Water
-    'D': '=',  # Bridge
-    'V': 'v',  # Village
-    'S': 'S',  # Seize point
-    'M': '^',  # Mountain
-    'H': 'H',  # Castle/Fortress
-    'T': 'O',  # Throne
-    'INVALID': '?'  # Invalid terrain
+    # Enum name keys
+    'PLAIN': '.',      # Plain
+    'FOREST': 'T',     # Forest
+    'RIVER': '~',      # Water/River
+    'SEA': '~',        # Sea
+    'BRIDGE': '=',     # Bridge
+    'VILLAGE': 'v',    # Village
+    'SEIZE': 'S',      # Seize point
+    'MOUNTAIN': '^',   # Mountain
+    'CASTLE': 'H',     # Castle
+    'HOUSE': 'h',      # House
+    'THRONE': 'O',     # Throne
+    'WALL': '#',       # Wall
+    'DOOR': 'D',       # Door
+    'GATE': 'G',       # Gate
+    'ROAD': 'r',       # Road
+    'RUINS': 'R',      # Ruins
+    'INVALID': '?',    # Invalid terrain
+    
+    # Original string codes for backward compatibility
+    'P': '.',          # Plain
+    'F': 'T',          # Forest
+    'W': '~',          # Water
+    'D': '=',          # Bridge
+    'V': 'v',          # Village
+    'S': 'S',          # Seize point
+    'M': '^',          # Mountain
+    'H': 'H',          # Castle/Fortress
+    'T': 'O'           # Throne
 }
 
 # ASCII unit symbols
@@ -190,7 +228,9 @@ class CLIDisplay:
                         cell = f"{faction_color}{unit_symbol}{Colors.RESET}"
                 else:
                     # Display terrain
-                    terrain_color, terrain_symbol = TERRAIN_DISPLAY.get(terrain_type, (Colors.WHITE, '·'))
+                    # Convert TerrainTypeEnum to string for lookup
+                    terrain_key = terrain_type.name if hasattr(terrain_type, 'name') else str(terrain_type)
+                    terrain_color, terrain_symbol = TERRAIN_DISPLAY.get(terrain_key, (Colors.WHITE, '·'))
                     
                     # Highlight position if in highlighted positions
                     if highlight_positions and position in highlight_positions:
@@ -554,8 +594,10 @@ class CLIDisplay:
                     cell = f"{faction_color}{unit_symbol}{Colors.RESET}"
                 else:
                     # Display terrain when no unit is found
-                    terrain_symbol = ASCII_TERRAIN.get(terrain_type, '?')
-                    terrain_color, _ = TERRAIN_DISPLAY.get(terrain_type, (Colors.WHITE, '·'))
+                    # Convert TerrainTypeEnum to string for lookup
+                    terrain_key = terrain_type.name if hasattr(terrain_type, 'name') else str(terrain_type)
+                    terrain_symbol = ASCII_TERRAIN.get(terrain_key, ASCII_TERRAIN.get('INVALID', '?'))
+                    terrain_color, _ = TERRAIN_DISPLAY.get(terrain_key, (Colors.WHITE, '·'))
                     cell = f"{terrain_color}{terrain_symbol}{Colors.RESET}"
                 
                 print(cell, end="")

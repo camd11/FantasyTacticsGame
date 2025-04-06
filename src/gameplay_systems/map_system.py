@@ -69,9 +69,6 @@ class PathfindingAlgorithm:
             if current_cost > visited.get(current_pos, IMPASSABLE):
                 continue
             
-            # If we've used up all movement points, stop exploring from this node
-            if current_cost >= movement_points:
-                continue
             
             # Get neighbors (adjacent tiles)
             neighbors = self._get_adjacent_tiles(current_pos)
@@ -270,7 +267,12 @@ class MapSystem:
             return set()
         
         start_pos = unit.position
-        movement_points = unit.base_stats.get(MOV, 0)
+        # Check both stats and base_stats for MOV to handle different unit representations
+        movement_points = 0
+        if hasattr(unit, 'stats') and MOV in unit.stats:
+            movement_points = unit.stats[MOV]
+        elif hasattr(unit, 'base_stats') and MOV in unit.base_stats:
+            movement_points = unit.base_stats[MOV]
         
         # Use the pathfinder instance
         reachable_nodes = self.pathfinder.find_reachable(start_pos, movement_points, unit_id)

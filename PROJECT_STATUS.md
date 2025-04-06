@@ -45,3 +45,8 @@
     - Potential GUI implementation.
 - **Bug Fixing:**
     - Address any remaining warnings or bugs as they arise.
+
+## Known Issues
+
+- AI Movement Range Bug: The movement range calculation currently only returns the starting tile, preventing AI units from moving in simulations. This requires further debugging of the pathfinding logic in `MovementSystem`/`MapSystem`. (See TODO comment in `src/gameplay_systems/movement_system.py`)
+- ASCII Display Update Bug: The ASCII map display (`--ascii-display`) does not update unit positions correctly after they move. The rendering call has been temporarily disabled in `src/core_engine/engine.py`. Needs debugging of the rendering logic and/or unit state updates. (See TODO comment in `src/core_engine/engine.py`)

@@ -1,0 +1,16 @@
+chapter_id: capture_test
+events:
+  - id: "scenario_end"
+    trigger: TURN_START
+    trigger_params:
+      turn: 5
+    conditions:
+      - type: TURN_NUMBER
+        params:
+          turn: 5
+    actions:
+      - type: END_SCENARIO
+        params:
+          reason: "Capture test scenario completed after 5 turns"
+    priority: 10
+    is_repeatable: false

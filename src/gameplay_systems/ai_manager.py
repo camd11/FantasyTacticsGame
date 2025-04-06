@@ -367,17 +367,19 @@ class AIManager:
         if best_action:
             # Get the current phase to identify if this is a player or enemy unit
             current_phase = self.gameStateManager.current_game_state.current_phase
-            faction_label = "PLAYER" if current_phase == self.gameStateManager.PhaseEnum.PLAYER else "ENEMY"
+            faction_label = "PLAYER" if current_phase == PhaseEnum.PLAYER else "ENEMY"
             
             # Log the action with detailed information
             self._log_ai_action_details(unit, best_action, faction_label)
             
             # Execute Move first if needed
             if best_action.target_data.get('move_path'):
+                print(f"DEBUG: process_unit_turn - Executing MOVE action with path: {best_action.target_data.get('move_path')}")
+                move_path = best_action.target_data.get('move_path')
                 move_outcome = self.actionHandler.perform_action(
                     unit_id,
                     'MOVE',
-                    {'path': best_action.target_data.get('move_path')}
+                    {'path': move_path}
                 )
                 
                 if not move_outcome.success:
@@ -426,56 +428,14 @@ class AIManager:
         
         # Get reachable tiles from the movement system
         try:
+            # Use calculate_movement_range to get reachable tiles
             movement_range = self.movementSystem.calculate_movement_range(unit_id)
-            if self.debug_mode:
-                logging.info(f"Found {len(movement_range)} reachable tiles for {unit.name}")
-                
-            # Filter out the current position
-            reachable_tiles = [tile for tile in movement_range if tile != current_pos]
+            # Always log movement range for debugging
+            logging.info(f"Found {len(movement_range)} reachable tiles for {unit.name}: {movement_range}")
             
-            if reachable_tiles:
-                # Add a move action to the first reachable tile
-                target_tile = reachable_tiles[0]
-                move_path = [current_pos, target_tile]
-                
-                actions.append({
-                    'type': 'MOVE',
-                    'score': 100,  # High score to ensure it's selected
-                    'target_info': {},
-                    'move_path': move_path,
-                    'is_current_pos': False
-                })
-                
-                logging.info(f"AI DEBUGGING: Added forced MOVE action to {target_tile} with score 100")
-            
-            # Always add a WAIT action with a high score
-            actions.append({
-                'type': 'WAIT',
-                'score': 90,  # High score but lower than MOVE
-                'target_info': {},
-                'move_path': None,
-                'is_current_pos': True
-            })
-            
-            logging.info(f"AI DEBUGGING: Added forced WAIT action with score 90")
-            
-        except Exception as e:
-            logging.error(f"Error getting reachable tiles: {e}")
-            # Add only a WAIT action if we can't get reachable tiles
-            actions.append({
-                'type': 'WAIT',
-                'score': 100,  # High score
-                'target_info': {},
-                'move_path': None,
-                'is_current_pos': True
-            })
-            logging.info(f"AI DEBUGGING: Added forced WAIT action with score 100 (fallback)")
-        
-        # Get reachable tiles from the movement system
-        try:
-            movement_range = self.movementSystem.calculate_movement_range(unit_id)
-            if self.debug_mode:
-                logging.info(f"Found {len(movement_range)} reachable tiles for {unit.name}")
+            # If no tiles beyond current position, log a warning
+            if len(movement_range) <= 1:
+                logging.warning(f"Movement range for {unit.name} contains only current position or is empty!")
         except Exception as e:
             logging.error(f"Error getting reachable tiles: {e}")
             movement_range = [current_pos]  # Fallback to just the current position
@@ -493,17 +453,16 @@ class AIManager:
                 )
                 actions.extend(tile_actions)
         
-        # Add Wait action as a fallback with lowest priority
+        # Add Wait action as a fallback with a low score
         actions.append({
             'type': 'WAIT',
-            'score': 0,
+            'score': 1,  # Low score as a fallback option
             'target_info': {},
             'move_path': None,
             'is_current_pos': True
         })
         
         return actions
-    
     def evaluate_actions_from_tile(self, unit_id: str, tile: Tuple[int, int],
                                    ai_profile: AIProfile, is_current_pos: bool) -> List[Dict]:
         """
@@ -525,11 +484,10 @@ class AIManager:
             
         # Get units that could potentially be targeted from this tile
         try:
-            # Since unitSystem.get_units_in_range might not be properly implemented,
-            # we'll implement a simple version here
-            potential_targets = self._get_units_in_range(unit_id, tile)
-            if self.debug_mode:
-                logging.info(f"Found {len(potential_targets)} potential targets from tile {tile}")
+            # Use unitSystem.get_units_in_range instead of our custom implementation
+            potential_targets = self.unitSystem.get_units_in_range(unit_id, tile)
+            # Always log for debugging
+            print(f"DEBUG: evaluate_actions_from_tile - Found {len(potential_targets)} potential targets from tile {tile}")
         except Exception as e:
             logging.error(f"Error getting units in range: {e}")
             potential_targets = []
@@ -545,28 +503,55 @@ class AIManager:
                 logging.error(f"Error finding path: {e}")
         
         # Evaluate Attack actions
-        # Simplified weapon handling since inventorySystem might not be properly initialized
         weapon = None
         if self.inventorySystem:
             try:
                 weapon = self.inventorySystem.get_equipped_weapon(unit_id)
+                if weapon:
+                    weapon_data = self.dataProvider.get_item_data(weapon)
+                    if weapon_data:
+                        # Check for enemy units that could be attacked
+                        for target_unit_id in potential_targets:
+                            target_unit = self.unitSystem.get_unit(target_unit_id)
+                            if not target_unit:
+                                continue
+                                
+                            # Check if target is an enemy
+                            if self.unitSystem.is_enemy(unit.faction, target_unit.faction):
+                                # Check if target is in weapon range
+                                distance = self.mapSystem.calculate_distance(tile, target_unit.position)
+                                if weapon_data.min_range <= distance <= weapon_data.max_range:
+                                    # Score the attack action
+                                    score = self.score_attack_action(unit_id, target_unit_id, tile, weapon, ai_profile)
+                                    
+                                    evaluated_actions.append({
+                                        'type': 'ATTACK',
+                                        'score': score,
+                                        'target_info': {'target_unit_id': target_unit_id},
+                                        'move_path': move_path if not is_current_pos else None,
+                                        'is_current_pos': is_current_pos
+                                    })
             except Exception as e:
-                logging.error(f"Error getting equipped weapon: {e}")
+                logging.error(f"Error evaluating attack actions: {e}")
         
+        # Always add a MOVE action if we have a path, regardless of weapon
+        if not is_current_pos and move_path:
+            print(f"DEBUG: evaluate_actions_from_tile - Adding MOVE action to tile {tile} with score 50")
+            evaluated_actions.append({
+                'type': 'MOVE',
+                'score': 50,  # High enough to be selected
+                'target_info': {},
+                'move_path': move_path,
+                'is_current_pos': is_current_pos
+            })
+        else:
+            print(f"DEBUG: evaluate_actions_from_tile - NOT adding MOVE action to tile {tile}. is_current_pos: {is_current_pos}, move_path: {move_path is not None}")
+            print(f"DEBUG: evaluate_actions_from_tile - NOT adding MOVE action to tile {tile}. is_current_pos: {is_current_pos}, move_path: {move_path is not None}")
+            
         # If we can't get a real weapon, create a dummy one for testing
         if not weapon:
-            # Create a simple move action with a high score to ensure units move
-            if not is_current_pos and move_path:
-                evaluated_actions.append({
-                    'type': 'MOVE',
-                    'score': 50,  # High enough to be selected
-                    'target_info': {},
-                    'move_path': move_path,
-                    'is_current_pos': is_current_pos
-                })
-                
-                if self.debug_mode:
-                    logging.info(f"Added MOVE action to tile {tile} with score 50")
+            if self.debug_mode:
+                logging.info(f"No weapon found for unit {unit_id}")
             
             # Check for enemy units that could be attacked
             for target_unit_id, target_unit in self.gameStateManager.current_game_state.unit_states.items():
@@ -702,7 +687,12 @@ class AIManager:
         Returns:
             The best AIAction or None if no valid action is found
         """
+        print(f"DEBUG: select_best_action - Selecting from {len(possible_actions)} possible actions")
+        for i, action in enumerate(possible_actions):
+            print(f"DEBUG: select_best_action - Action {i+1}: type={action.get('type')}, score={action.get('score')}, is_current_pos={action.get('is_current_pos')}, has_move_path={action.get('move_path') is not None}")
+        
         if not possible_actions:
+            print("DEBUG: select_best_action - No possible actions")
             return None
             
         # Filter out invalid actions (e.g., path not found for move-actions)
@@ -741,13 +731,16 @@ class AIManager:
         
         # Create AIAction from the highest scoring valid action
         best_action = valid_actions[0]
-        target_data = best_action['target_info'].copy()
+        target_data = best_action.get('target_info', {}).copy()
         
         # Add move path to target data if needed
-        if best_action['move_path']:
+        if best_action.get('move_path'):
             target_data['move_path'] = best_action['move_path']
+            print(f"DEBUG: select_best_action - Selected action with move_path: {best_action['move_path']}")
             
-        return AIAction(best_action['type'], unit_id, target_data)
+        action = AIAction(best_action['type'], unit_id, target_data)
+        print(f"DEBUG: select_best_action - Final action: type={action.action_type}, has_move_path={action.target_data.get('move_path') is not None}")
+        return action
     
     # --- Scoring Functions ---
     
