@@ -1,0 +1,10 @@
+id: basic_movement
+name: Basic Movement Test
+dimensions: [5, 5]
+terrain_grid:
+  - [P, P, P, P, P]
+  - [P, P, P, P, P]
+  - [P, P, F, P, P]
+  - [P, P, P, P, P]
+  - [P, P, P, P, P]
+seize_point: [4, 4]

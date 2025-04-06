@@ -2,7 +2,7 @@
 Command Line Display Module
 
 This module provides functions for displaying the game state in the command line interface.
-It handles rendering the map, units, menus, and other game elements.
+It handles rendering the map, units, menus, and other game elements, including ASCII map display.
 """
 
 import logging
@@ -51,6 +51,27 @@ TERRAIN_DISPLAY = {
     'M': (Colors.BLACK + Colors.BG_WHITE, '⛰️'),  # Mountain
     'H': (Colors.YELLOW + Colors.BOLD, '🏰'),  # Castle/Fortress
     'T': (Colors.CYAN, '🏛️'),  # Throne
+}
+
+# ASCII terrain symbols for simple display
+ASCII_TERRAIN = {
+    'P': '.',  # Plain
+    'F': 'T',  # Forest
+    'W': '~',  # Water
+    'D': '=',  # Bridge
+    'V': 'v',  # Village
+    'S': 'S',  # Seize point
+    'M': '^',  # Mountain
+    'H': 'H',  # Castle/Fortress
+    'T': 'O',  # Throne
+    'INVALID': '?'  # Invalid terrain
+}
+
+# ASCII unit symbols
+ASCII_UNITS = {
+    'PLAYER': 'P',
+    'ENEMY': 'E',
+    'NPC': 'N'
 }
 
 # Faction colors
@@ -276,9 +297,9 @@ class CLIDisplay:
     
     def display_turn_info(self):
         """Display the current turn and phase."""
-        turn_manager = self.game_state_manager.turn_manager
-        current_turn = turn_manager.get_current_turn()
-        current_phase = turn_manager.get_current_phase()
+        # Access turn information directly from the game state
+        current_turn = self.game_state_manager.current_game_state.current_turn
+        current_phase = self.game_state_manager.current_game_state.current_phase
         
         phase_color = FACTION_COLORS.get(current_phase.name, Colors.WHITE)
         print(f"\n{Colors.BOLD}{phase_color}=== Turn {current_turn}, {current_phase.name} Phase ==={Colors.RESET}")
@@ -473,4 +494,80 @@ class CLIDisplay:
         for unit_id, unit in self.game_state_manager.current_game_state.unit_states.items():
             if unit.position == position:
                 return unit_id
+    def render_ascii_map(self, game_state_manager):
+        """
+        Render the game map in ASCII format to the console.
+        
+        Args:
+            game_state_manager: Instance of the GameStateManager containing the current game state
+        """
+        # Get map dimensions
+        map_width, map_height = game_state_manager.get_map_dimensions()
+        
+        # Print a header
+        # Access turn information from the game state
+        current_turn = game_state_manager.current_game_state.current_turn
+        current_phase = game_state_manager.current_game_state.current_phase
+        print(f"\n=== ASCII MAP (Turn {current_turn}, {current_phase.name} Phase) ===")
+        
+        # Print column headers (x-coordinates)
+        print("   ", end="")
+        for x in range(map_width):
+            print(f"{x % 10}", end="")
+        print()
+        
+        # Print each row
+        for y in range(map_height):
+            # Print row header (y-coordinate)
+            print(f"{y:2d}|", end="")
+            
+            for x in range(map_width):
+                position = (x, y)
+                terrain_type = game_state_manager.get_terrain_type(position)
+                
+                # Check if there's a unit at this position - directly access unit_states
+                unit_found = False
+                unit_symbol = None
+                faction_color = None
+                
+                # Explicitly iterate through all units to find one at this position
+                for unit_id, unit_state in game_state_manager.current_game_state.unit_states.items():
+                    # Ensure position comparison is done correctly
+                    if hasattr(unit_state, 'position') and unit_state.position == position:
+                        # Get faction and determine symbol
+                        faction = getattr(unit_state, 'faction', 'PLAYER')  # Default to PLAYER if no faction
+                        
+                        # Convert FactionEnum to string for lookup
+                        if hasattr(faction, 'name'):
+                            faction_str = faction.name  # Get the name of the enum value
+                        else:
+                            faction_str = str(faction)  # Fallback to string conversion
+                            
+                        unit_symbol = ASCII_UNITS.get(faction_str, 'U')  # Default to 'U' if faction not found
+                        faction_color = FACTION_COLORS.get(faction_str, Colors.WHITE)
+                        unit_found = True
+                        break
+                
+                # Determine what to display - prioritize units over terrain
+                if unit_found and unit_symbol and faction_color:
+                    # Display unit with faction color
+                    cell = f"{faction_color}{unit_symbol}{Colors.RESET}"
+                else:
+                    # Display terrain when no unit is found
+                    terrain_symbol = ASCII_TERRAIN.get(terrain_type, '?')
+                    terrain_color, _ = TERRAIN_DISPLAY.get(terrain_type, (Colors.WHITE, '·'))
+                    cell = f"{terrain_color}{terrain_symbol}{Colors.RESET}"
+                
+                print(cell, end="")
+            
+            print()
+        
+        print()
+        
+        # Print a legend
+        print("Legend:")
+        print(f"Terrain: {Colors.GREEN}.{Colors.RESET}=Plain, {Colors.GREEN}T{Colors.RESET}=Forest, {Colors.BLUE}~{Colors.RESET}=Water, {Colors.BLUE}={Colors.RESET}=Bridge")
+        print(f"        {Colors.YELLOW}v{Colors.RESET}=Village, {Colors.MAGENTA}S{Colors.RESET}=Seize, {Colors.BLACK + Colors.BG_WHITE}^{Colors.RESET}=Mountain, {Colors.YELLOW}H{Colors.RESET}=Castle, {Colors.CYAN}O{Colors.RESET}=Throne")
+        print(f"Units:  {Colors.CYAN}P{Colors.RESET}=Player, {Colors.RED}E{Colors.RESET}=Enemy, {Colors.YELLOW}N{Colors.RESET}=NPC")
+        print()
         return None

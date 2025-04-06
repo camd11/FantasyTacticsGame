@@ -198,8 +198,19 @@ class GameStateManager:
             unit.id = unit_id
             unit.name = base_data.name
             unit.class_id = base_data.base_class_id
-            unit.faction = placement.faction
-            unit.position = placement.position
+            
+            # Convert string faction to FactionEnum
+            if placement.faction == 'PLAYER':
+                unit.faction = FactionEnum.PLAYER
+            elif placement.faction == 'ENEMY':
+                unit.faction = FactionEnum.ENEMY
+            elif placement.faction == 'NPC':
+                unit.faction = FactionEnum.NPC
+            else:
+                logging.warning(f"Unknown faction '{placement.faction}' for unit {unit_id}, defaulting to PLAYER")
+                unit.faction = FactionEnum.PLAYER
+                
+            unit.position = tuple(placement.position)
             
             unit.max_hp = base_data.stats.get("HP", 0)
             unit.current_hp = unit.max_hp
@@ -244,7 +255,7 @@ class GameStateManager:
                 self._autolevel_unit(unit, placement.target_level, data_provider)
             
             self.current_game_state.unit_states[unit_id] = unit
-            self.current_game_state.map_state.unit_positions[unit_id] = unit.position
+            self.current_game_state.map_state.unit_positions[unit_id] = tuple(unit.position)
         
         logging.info("Units deployed")
     
@@ -392,6 +403,13 @@ class GameStateManager:
         # A class is considered mounted if it has a dismount_class_id
         return class_data.dismount_class_id is not None
     
+    def get_map_dimensions(self) -> Tuple[int, int]:
+        """Get the dimensions of the current map (width, height)."""
+        if not self.current_game_state:
+            return (0, 0)
+        
+        return self.current_game_state.map_state.dimensions
+    
     def has_npc_units(self) -> bool:
         """Check if there are any active NPC units on the map."""
         if not self.current_game_state:
@@ -414,10 +432,10 @@ class GameStateManager:
             return False
         
         old_position = unit.position
-        unit.position = new_position
+        unit.position = tuple(new_position)
         
         # Update map_state.unit_positions dictionary
-        self.current_game_state.map_state.unit_positions[unit_id] = new_position
+        self.current_game_state.map_state.unit_positions[unit_id] = tuple(new_position)
         
         logging.info(f"Unit {unit_id} moved from {old_position} to {new_position}")
         return True

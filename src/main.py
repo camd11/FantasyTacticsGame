@@ -6,6 +6,7 @@ components, loads the game data, and starts the game loop.
 """
 
 import logging
+import argparse
 from typing import Dict, Any, Optional
 
 # Import core engine components
@@ -43,6 +44,13 @@ def setup_logging():
 
 def main():
     """Main entry point for the game."""
+    # Parse command-line arguments
+    parser = argparse.ArgumentParser(description='Fantasy Tactics Game')
+    parser.add_argument('--ai-vs-ai', action='store_true', help='Enable AI vs AI mode (AI controls player units)')
+    parser.add_argument('--ascii-display', action='store_true', help='Enable ASCII map display in the console')
+    parser.add_argument('--scenario', type=str, help='Scenario name for testing (loads from data/scenarios/[name])')
+    args = parser.parse_args()
+    
     # Set up logging
     setup_logging()
     
@@ -75,7 +83,7 @@ def main():
     # Order might matter depending on specific initialize implementations
     logging.info("Initializing system dependencies...")
     # GameStateManager takes dependencies in __init__, no initialize method needed here
-    turn_manager.initialize(game_state_manager, data_provider, event_handler) # Pass data_provider as second parameter
+    # turn_manager.initialize moved to engine.initialize_chapter to ensure game state is loaded first
     action_handler.initialize(
         gameStateManager_instance=game_state_manager,
         unitSystem_instance=unit_system,
@@ -97,6 +105,9 @@ def main():
         # uiManager_instance=None, # Assuming no UI for now
         aiManager_instance=ai_manager
     )
+    # Initialize inventory system before AI manager since AI manager needs it
+    inventory_system.initialize(game_state_manager, data_provider)
+    
     ai_manager.initialize(
         gameStateManager_instance=game_state_manager,
         unitSystem_instance=unit_system,
@@ -104,12 +115,13 @@ def main():
         movementSystem_instance=movement_system,
         combatSystem_instance=combat_system,
         actionHandler_instance=action_handler,
-        dataProvider_instance=data_provider
+        dataProvider_instance=data_provider,
+        inventorySystem_instance=inventory_system
     )
     # Initialize systems in the correct order (dependencies first)
     # First, systems with fewer dependencies
     map_system.initialize(game_state_manager, data_provider)
-    inventory_system.initialize(game_state_manager, data_provider) # Assuming similar pattern
+    # inventory_system already initialized above
     
     # Then systems that depend on the above
     unit_system.initialize(game_state_manager, data_provider) # Correct parameters
@@ -151,14 +163,21 @@ def main():
         combat_system=combat_system,
         map_system=map_system,
         movement_system=movement_system,
-        input_handler=input_handler
+        unit_system=unit_system,  # Pass the unit_system
+        input_handler=input_handler,
+        ai_vs_ai=args.ai_vs_ai,  # Pass the AI vs AI flag
+        ascii_display=args.ascii_display  # Pass the ASCII display flag
     )
     
     # Default chapter ID
     chapter_id = "test_chapter"
-    # Initialize the engine with the default chapter
-    logging.info(f"Initializing chapter: {chapter_id}")
-    engine.initialize_chapter(chapter_id)
+    # Initialize the engine with the default chapter or scenario
+    if args.scenario:
+        logging.info(f"Initializing scenario: {args.scenario}")
+        engine.initialize_chapter(chapter_id, args.scenario)
+    else:
+        logging.info(f"Initializing chapter: {chapter_id}")
+        engine.initialize_chapter(chapter_id)
 
     # Load AI profiles now that game state is initialized
     logging.info("Loading AI profiles...")

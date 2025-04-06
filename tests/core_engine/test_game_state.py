@@ -75,7 +75,7 @@ class TestGameStateManager(unittest.TestCase):
         # Create mock unit base data
         mock_base_data = MagicMock()
         mock_base_data.name = "Leif"
-        mock_base_data.class_id = "LORD"
+        mock_base_data.base_class_id = "LORD"
         mock_base_data.stats = {"HP": 20, "STR": 5, "MAG": 2, "SKL": 6, "SPD": 7, "LUK": 4, "DEF": 4, "CON": 5, "MOV": 5}
         mock_base_data.growths = {"HP": 70, "STR": 35, "MAG": 15, "SKL": 40, "SPD": 45, "LUK": 30, "DEF": 25}
         mock_base_data.base_weapon_ranks = {"SWORD": "C", "LANCE": "E"}

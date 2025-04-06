@@ -1,0 +1,114 @@
+# Events data for test chapter
+# Defines events that occur during the chapter
+
+chapter_id: "TEST_CHAPTER"
+chapter_name: "Test Chapter"
+
+# Pre-battle events
+pre_battle_events:
+  - event_id: "OPENING_CUTSCENE"
+    type: "DIALOGUE"
+    dialogue:
+      - speaker: "LEIF"
+        text: "We need to secure this area. Everyone, prepare for battle!"
+      - speaker: "FINN"
+        text: "Lord Leif, enemy soldiers have been spotted to the north."
+      - speaker: "EYVEL"
+        text: "We should proceed with caution. I'll take the lead."
+
+# Turn-based events
+turn_events:
+  - event_id: "REINFORCEMENTS_TURN_3"
+    trigger:
+      type: "TURN_NUMBER"
+      turn: 3
+      phase: "ENEMY"
+    action:
+      type: "SPAWN_UNITS"
+      units:
+        - unit_id: "ENEMY_SOLDIER_1"
+          position: [10, 1]
+        - unit_id: "ENEMY_SOLDIER_2"
+          position: [11, 1]
+    dialogue:
+      - speaker: "FINN"
+        text: "Lord Leif, enemy reinforcements have arrived from the north!"
+
+  - event_id: "REINFORCEMENTS_TURN_5"
+    trigger:
+      type: "TURN_NUMBER"
+      turn: 5
+      phase: "ENEMY"
+    action:
+      type: "SPAWN_UNITS"
+      units:
+        - unit_id: "ENEMY_ARCHER_1"
+          position: [1, 10]
+    dialogue:
+      - speaker: "EYVEL"
+        text: "More enemies approaching from the west!"
+
+# Location-based events
+location_events:
+  - event_id: "VILLAGE_VISIT"
+    trigger:
+      type: "UNIT_POSITION"
+      position: [5, 5]
+      unit_requirement:
+        faction: "PLAYER"
+    action:
+      type: "GIVE_ITEM"
+      item_id: "VULNERARY"
+      recipient: "TRIGGERING_UNIT"
+    dialogue:
+      - speaker: "VILLAGER"
+        text: "Please take this vulnerary. It might help in your battle."
+
+  - event_id: "CHEST_OPEN"
+    trigger:
+      type: "UNIT_POSITION"
+      position: [8, 8]
+      unit_requirement:
+        has_skill: "STEAL"
+        or_has_item: "LOCKPICK"
+    action:
+      type: "GIVE_ITEM"
+      item_id: "IRON_BLADE"
+      recipient: "TRIGGERING_UNIT"
+
+# Unit death events
+death_events:
+  - event_id: "LEIF_DEATH"
+    trigger:
+      type: "UNIT_DEATH"
+      unit_id: "LEIF"
+    action:
+      type: "GAME_OVER"
+    dialogue:
+      - speaker: "LEIF"
+        text: "I... I can't fall here..."
+      - speaker: "NARRATOR"
+        text: "Game Over"
+
+# Victory conditions
+victory_conditions:
+  - condition_id: "DEFEAT_ALL_ENEMIES"
+    type: "DEFEAT_ALL"
+    faction: "ENEMY"
+  
+  - condition_id: "SEIZE_THRONE"
+    type: "SEIZE"
+    position: [10, 10]
+    unit_id: "LEIF"
+
+# Post-battle events
+post_battle_events:
+  - event_id: "VICTORY_DIALOGUE"
+    type: "DIALOGUE"
+    dialogue:
+      - speaker: "LEIF"
+        text: "We've secured the area. Good work, everyone."
+      - speaker: "FINN"
+        text: "We should continue our march. There's still a long road ahead."
+      - speaker: "EYVEL"
+        text: "Let's rest for now and prepare for the next battle."

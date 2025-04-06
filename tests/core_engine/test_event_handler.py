@@ -94,7 +94,7 @@ class TestEventHandler(unittest.TestCase):
         self.event_handler.load_chapter_events("chapter1")
         
         # Verify event data was retrieved
-        self.mock_dataProvider.get_event_scripts.assert_called_once_with("chapter1")
+        self.mock_dataProvider.get_event_scripts.assert_called_once_with("chapter1", None)
         
         # Verify events were converted
         self.event_handler._convert_raw_events.assert_called_once_with(mock_event_data)

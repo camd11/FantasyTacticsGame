@@ -275,7 +275,7 @@ class TestDataProvider(unittest.TestCase):
         mock_path_exists.assert_any_call(os.path.join(self.mock_data_dir, "items.yaml"))
         
         # Check that yaml.safe_load was called for each file
-        self.assertEqual(mock_yaml_load.call_count, 10, "yaml.safe_load should be called 10 times")
+        self.assertEqual(mock_yaml_load.call_count, 7, "yaml.safe_load should be called 7 times")
 
     def test_get_unit_base_data(self):
         """Test that get_unit_base_data returns the correct unit data."""
@@ -352,12 +352,14 @@ class TestDataProvider(unittest.TestCase):
         
         self.assertIsNone(nonexistent_data, "Should return None for nonexistent class")
 
-    def test_get_map_data(self):
+    @patch('os.path.exists')
+    @patch('builtins.open', new_callable=mock_open)
+    @patch('json.load')
+    def test_get_map_data(self, mock_json_load, mock_file_open, mock_path_exists):
         """Test that get_map_data returns the correct map data."""
-        # Set up the data provider with mock data
-        self.data_provider._map_layouts = {
-            "CH1": MapData(self.mock_map_data["CH1"])
-        }
+        # Configure mocks
+        mock_path_exists.side_effect = lambda path: "NONEXISTENT" not in path
+        mock_json_load.return_value = self.mock_map_data["CH1"]
         
         # Call the method under test
         ch1_data = self.data_provider.get_map_data("CH1")
@@ -369,14 +371,20 @@ class TestDataProvider(unittest.TestCase):
         self.assertEqual(ch1_data.dimensions, (10, 8), "Should return correct dimensions")
         self.assertEqual(ch1_data.seize_point, (9, 7), "Should return correct seize point")
         
+        # We don't need to verify exact paths since we're mocking the path_exists function
+        # Just verify that the function was called
+        self.assertTrue(mock_path_exists.called)
+        
         self.assertIsNone(nonexistent_data, "Should return None for nonexistent map")
 
-    def test_get_unit_placements(self):
+    @patch('os.path.exists')
+    @patch('builtins.open', new_callable=mock_open)
+    @patch('json.load')
+    def test_get_unit_placements(self, mock_json_load, mock_file_open, mock_path_exists):
         """Test that get_unit_placements returns the correct unit placements."""
-        # Set up the data provider with mock data
-        self.data_provider._unit_placements = {
-            "CH1": [UnitPlacement(placement) for placement in self.mock_unit_placements["CH1"]]
-        }
+        # Configure mocks
+        mock_path_exists.side_effect = lambda path: "NONEXISTENT" not in path
+        mock_json_load.return_value = {"placements": self.mock_unit_placements["CH1"]}
         
         # Call the method under test
         ch1_placements = self.data_provider.get_unit_placements("CH1")
@@ -386,6 +394,10 @@ class TestDataProvider(unittest.TestCase):
         self.assertEqual(len(ch1_placements), 2, "Should return 2 placements for Chapter 1")
         self.assertEqual(ch1_placements[0].unit_id, "LEIF", "First placement should be for Leif")
         self.assertEqual(ch1_placements[1].unit_id, "FINN", "Second placement should be for Finn")
+        
+        # We don't need to verify exact paths since we're mocking the path_exists function
+        # Just verify that the function was called
+        self.assertTrue(mock_path_exists.called)
         
         self.assertEqual(nonexistent_placements, [], "Should return empty list for nonexistent chapter")
 
@@ -503,10 +515,14 @@ class TestDataProvider(unittest.TestCase):
         
         self.assertEqual(nonexistent_partners, [], "Nonexistent unit should have no partners")
 
-    def test_get_event_scripts(self):
+    @patch('os.path.exists')
+    @patch('builtins.open', new_callable=mock_open)
+    @patch('json.load')
+    def test_get_event_scripts(self, mock_json_load, mock_file_open, mock_path_exists):
         """Test that get_event_scripts returns the correct event scripts."""
-        # Set up the data provider with mock data
-        self.data_provider._event_scripts = self.mock_event_scripts
+        # Configure mocks
+        mock_path_exists.side_effect = lambda path: "NONEXISTENT" not in path
+        mock_json_load.return_value = self.mock_event_scripts["CH1"]
         
         # Call the method under test
         ch1_scripts = self.data_provider.get_event_scripts("CH1")
@@ -516,6 +532,10 @@ class TestDataProvider(unittest.TestCase):
         self.assertEqual(len(ch1_scripts), 1, "Chapter 1 should have 1 event script")
         self.assertEqual(ch1_scripts[0]["id"], "START_EVENT", "Event ID should be START_EVENT")
         self.assertEqual(ch1_scripts[0]["trigger"], "TURN_START", "Trigger should be TURN_START")
+        
+        # We don't need to verify exact paths since we're mocking the path_exists function
+        # Just verify that the function was called
+        self.assertTrue(mock_path_exists.called)
         
         self.assertEqual(nonexistent_scripts, [], "Nonexistent chapter should have no scripts")
 

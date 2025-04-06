@@ -1,0 +1,110 @@
+# Promotions data for Fantasy Tactics Game
+# Defines promotion paths and stat bonuses
+
+# Lord -> Master Knight promotion
+LORD_TO_MASTER_KNIGHT:
+  id: "LORD_TO_MASTER_KNIGHT"
+  base_class_id: "LORD"
+  promoted_class_id: "MASTER_KNIGHT"
+  required_level: 10
+  promotion_item: "KNIGHT_CREST"
+  stat_bonuses:
+    HP: 4
+    STR: 2
+    MAG: 2
+    SKL: 2
+    SPD: 2
+    LUK: 0
+    DEF: 2
+    CON: 1
+    MOV: 1
+
+# Lance Knight -> Paladin promotion
+LANCE_KNIGHT_TO_PALADIN:
+  id: "LANCE_KNIGHT_TO_PALADIN"
+  base_class_id: "LANCE_KNIGHT"
+  promoted_class_id: "PALADIN"
+  required_level: 10
+  promotion_item: "KNIGHT_CREST"
+  stat_bonuses:
+    HP: 3
+    STR: 2
+    MAG: 1
+    SKL: 2
+    SPD: 2
+    LUK: 0
+    DEF: 2
+    CON: 1
+    MOV: 1
+
+# Fighter -> Warrior promotion
+FIGHTER_TO_WARRIOR:
+  id: "FIGHTER_TO_WARRIOR"
+  base_class_id: "FIGHTER"
+  promoted_class_id: "WARRIOR"
+  required_level: 10
+  promotion_item: "HERO_CREST"
+  stat_bonuses:
+    HP: 4
+    STR: 3
+    MAG: 0
+    SKL: 2
+    SPD: 1
+    LUK: 0
+    DEF: 2
+    CON: 2
+    MOV: 1
+
+# Fighter -> Hero promotion
+FIGHTER_TO_HERO:
+  id: "FIGHTER_TO_HERO"
+  base_class_id: "FIGHTER"
+  promoted_class_id: "HERO"
+  required_level: 10
+  promotion_item: "HERO_CREST"
+  stat_bonuses:
+    HP: 3
+    STR: 2
+    MAG: 0
+    SKL: 3
+    SPD: 3
+    LUK: 0
+    DEF: 1
+    CON: 1
+    MOV: 1
+
+# Archer -> Sniper promotion
+ARCHER_TO_SNIPER:
+  id: "ARCHER_TO_SNIPER"
+  base_class_id: "ARCHER"
+  promoted_class_id: "SNIPER"
+  required_level: 10
+  promotion_item: "ORION_BOLT"
+  stat_bonuses:
+    HP: 3
+    STR: 2
+    MAG: 0
+    SKL: 3
+    SPD: 2
+    LUK: 0
+    DEF: 1
+    CON: 1
+    MOV: 1
+
+# Soldier -> Halberdier promotion
+SOLDIER_TO_HALBERDIER:
+  id: "SOLDIER_TO_HALBERDIER"
+  base_class_id: "SOLDIER"
+  promoted_class_id: "HALBERDIER"
+  required_level: 10
+  promotion_item: "MILITARY_MEDAL"
+  stat_bonuses:
+    HP: 3
+    STR: 2
+    MAG: 0
+    SKL: 2
+    SPD: 2
+    LUK: 0
+    DEF: 2
+    CON: 1
+    MOV: 1

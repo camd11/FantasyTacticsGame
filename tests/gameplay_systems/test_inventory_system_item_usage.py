@@ -25,6 +25,16 @@ class TestInventorySystemItemUsage(unittest.TestCase):
         # Create the InventorySystem instance
         self.inventory_system = InventorySystem()
         self.inventory_system.initialize(self.mock_game_state_manager, self.mock_data_provider)
+        
+        # Mock methods that are being asserted with assert_not_called
+        self.original_decrement_item_durability = self.inventory_system.decrement_item_durability
+        self.inventory_system.decrement_item_durability = MagicMock(name="decrement_item_durability")
+        self.inventory_system.decrement_item_durability.side_effect = self.original_decrement_item_durability
+        
+        # Mock _open_lock for tests that assert it's not called
+        self.original_open_lock = self.inventory_system._open_lock
+        self.inventory_system._open_lock = MagicMock(name="_open_lock")
+        self.inventory_system._open_lock.side_effect = self.original_open_lock
 
     def test_use_consumable_item_success(self):
         """Test using a consumable item successfully."""

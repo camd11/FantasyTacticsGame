@@ -10,8 +10,8 @@ import logging
 from typing import Dict, List, Tuple, Optional, Any, Union
 
 # Import necessary modules/classes
-from src.core_engine.game_state import GameStateManager, ItemInstance, StatusEffectEnum
-from src.core_engine.data_provider import DataProvider, ItemTypeEnum, RankEnum, WeaponTypeEnum
+from src.core_engine.game_state import GameStateManager, ItemInstance, StatusEffectEnum, ObjectStateEnum
+from src.core_engine.data_provider import DataProvider, ItemTypeEnum, RankEnum, WeaponTypeEnum, TerrainTypeEnum
 
 # Constants
 WEAPON = ItemTypeEnum.WEAPON
@@ -452,10 +452,21 @@ class InventorySystem:
             
             # Update equipped weapon indices if needed
             if source_unit_id == dest_unit_id and dest_unit.equipped_weapon_index == source_index:
+                # If we're moving an equipped weapon within the same unit, update the equipped index
                 dest_unit.equipped_weapon_index = dest_index
-            elif dest_unit.equipped_weapon_index == dest_index:
-                # If we're overwriting an equipped weapon, unequip it
-                dest_unit.equipped_weapon_index = -1
+            # Special case for swapping items between units where both have equipped weapons
+            # In this case, we want to preserve the equipped status for both units
+            elif source_unit_id != dest_unit_id:
+                # Check if this is part of a swap operation (both units exchanging items)
+                is_swap = False
+                for s_unit_id, s_idx, d_unit_id, d_idx in items_to_move:
+                    if s_unit_id == dest_unit_id and d_unit_id == source_unit_id:
+                        is_swap = True
+                        break
+                
+                # If this is a swap and the destination index is the equipped weapon, don't unequip
+                if not is_swap and dest_unit.equipped_weapon_index == dest_index:
+                    dest_unit.equipped_weapon_index = -1
         
         # Final pass: clean up inventories by removing None entries
         unit1.inventory = [item for item in unit1.inventory if item is not None]
@@ -476,6 +487,49 @@ class InventorySystem:
         return True
     
     # --- Item Usage ---
+    
+    def get_equipped_weapon(self, unit_id: str) -> Optional[str]:
+        """
+        Get the equipped weapon of a unit.
+        
+        Args:
+            unit_id: ID of the unit
+            
+        Returns:
+            Item ID of the equipped weapon or None if no weapon is equipped
+        """
+        unit = self.gameStateManager.get_unit(unit_id)
+        if not unit or unit.equipped_weapon_index < 0 or unit.equipped_weapon_index >= len(unit.inventory):
+            return None
+        
+        item_instance = unit.inventory[unit.equipped_weapon_index]
+        return item_instance.item_id
+    
+    def get_usable_items(self, unit_id: str) -> List[str]:
+        """
+        Get the list of usable items in a unit's inventory.
+        
+        Args:
+            unit_id: ID of the unit
+            
+        Returns:
+            List of item IDs that can be used by the unit
+        """
+        unit = self.gameStateManager.get_unit(unit_id)
+        if not unit:
+            return []
+        
+        usable_items = []
+        for item_instance in unit.inventory:
+            item_data = self.dataProvider.get_item_data(item_instance.item_id)
+            if not item_data:
+                continue
+            
+            # Check if item is usable (consumable, staff, etc.)
+            if item_data.type in [CONSUMABLE, STAFF]:
+                usable_items.append(item_instance.item_id)
+        
+        return usable_items
     
     def use_item(self, unit_id: str, item_index: int, target_id: Optional[str] = None, target_tile: Optional[Tuple[int, int]] = None) -> bool:
         """

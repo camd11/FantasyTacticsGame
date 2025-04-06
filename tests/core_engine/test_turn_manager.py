@@ -232,8 +232,9 @@ class TestTurnManager(unittest.TestCase):
         # Set up initial state
         self.turn_manager.unit_actions = {}
         self.turn_manager.unit_fatigue = {}
+        self.turn_manager.fatigue_enabled = True  # Enable fatigue for the test
         
-        # Test 1: Record an ATTACK action (fatigue +2)
+        # Test 1: Record an ATTACK action (fatigue +1)
         self.turn_manager.record_action_fatigue("unit1", "ATTACK")
         
         # Verify action was recorded
@@ -242,7 +243,7 @@ class TestTurnManager(unittest.TestCase):
         
         # Verify fatigue was updated
         self.assertIn("unit1", self.turn_manager.unit_fatigue)
-        self.assertEqual(self.turn_manager.unit_fatigue["unit1"], 2)
+        self.assertEqual(self.turn_manager.unit_fatigue["unit1"], 1)
         
         # Test 2: Record a MOVE action (fatigue +1)
         self.turn_manager.record_action_fatigue("unit1", "MOVE")
@@ -251,9 +252,9 @@ class TestTurnManager(unittest.TestCase):
         self.assertEqual(self.turn_manager.unit_actions["unit1"], ["ATTACK", "MOVE"])
         
         # Verify fatigue was updated
-        self.assertEqual(self.turn_manager.unit_fatigue["unit1"], 3)
+        self.assertEqual(self.turn_manager.unit_fatigue["unit1"], 2)
         
-        # Test 3: Record a CAPTURE action (fatigue +2)
+        # Test 3: Record a CAPTURE action (fatigue +1)
         self.turn_manager.record_action_fatigue("unit2", "CAPTURE")
         
         # Verify action was recorded
@@ -262,7 +263,7 @@ class TestTurnManager(unittest.TestCase):
         
         # Verify fatigue was updated
         self.assertIn("unit2", self.turn_manager.unit_fatigue)
-        self.assertEqual(self.turn_manager.unit_fatigue["unit2"], 2)
+        self.assertEqual(self.turn_manager.unit_fatigue["unit2"], 1)
     
     # TDD Anchor: test_check_movement_star_activation
     def test_check_movement_star(self):

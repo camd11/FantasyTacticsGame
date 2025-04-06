@@ -37,6 +37,7 @@ class ConditionType(Enum):
     UNIT_HAS_ITEM = auto()
     TURN_GE = auto()
     TURN_LE = auto()
+    TURN_NUMBER = auto()  # Exact turn number match
     RANDOM_CHANCE = auto()
 
 
@@ -54,6 +55,7 @@ class EventActionType(Enum):
     PLAY_SOUND = auto()
     PLAY_MUSIC = auto()
     CHANGE_FACTION = auto()
+    END_SCENARIO = auto()
 
 
 class EventCondition:
@@ -166,25 +168,36 @@ class EventHandler:
         
         logging.info("EventHandler initialized.")
     
-    def load_chapter_events(self, chapter_id: str):
+    def load_chapter_events(self, chapter_id: str, scenario_name: Optional[str] = None):
         """
-        Load event definitions for a chapter.
+        Load event definitions for a chapter or scenario.
         
         Args:
             chapter_id: ID of the chapter
+            scenario_name: Optional name of a test scenario
         """
         # Load event definitions from DataProvider
-        self.chapterEvents = self.dataProvider.get_event_scripts(chapter_id)
+        raw_data = self.dataProvider.get_event_scripts(chapter_id, scenario_name)
+        
+        # Extract events list from the data structure
+        # The events.yaml file has a structure with chapter_id and events keys
+        if isinstance(raw_data, dict) and 'events' in raw_data:
+            events_list = raw_data.get('events', [])
+        else:
+            events_list = raw_data if isinstance(raw_data, list) else []
         
         # Convert raw data to EventData objects if needed
-        if self.chapterEvents and isinstance(self.chapterEvents, list) and len(self.chapterEvents) > 0:
-            if not isinstance(self.chapterEvents[0], EventData):
-                self.chapterEvents = self._convert_raw_events(self.chapterEvents)
+        if events_list and len(events_list) > 0:
+            if not isinstance(events_list[0], EventData):
+                self.chapterEvents = self._convert_raw_events(events_list)
         else:
             # Ensure chapterEvents is always a list
             self.chapterEvents = []
         
-        logging.info(f"Loaded {len(self.chapterEvents)} events for chapter {chapter_id}.")
+        if scenario_name:
+            logging.info(f"Loaded {len(self.chapterEvents)} events for scenario {scenario_name}.")
+        else:
+            logging.info(f"Loaded {len(self.chapterEvents)} events for chapter {chapter_id}.")
     
     # --- Event Checking Methods ---
     
@@ -196,13 +209,14 @@ class EventHandler:
             turn: Current turn number
             phase: Current phase
         """
-        trigger_type = None
+        # Always check for TURN_START events, regardless of phase
+        # This ensures that events like scenario_end will trigger at the start of any phase
+        trigger_type = EventTrigger.TURN_START
         
-        if phase == PhaseEnum.PLAYER:  # Assuming turn events trigger at Player Phase start
-            trigger_type = EventTrigger.TURN_START
+        # Log the check for debugging purposes
+        logging.info(f"Checking turn events for turn {turn}, phase {phase.name}")
         
-        if trigger_type:
-            self.find_and_execute_events(trigger_type, {'turn': turn, 'phase': phase})
+        self.find_and_execute_events(trigger_type, {'turn': turn, 'phase': phase})
     
     def check_phase_end_events(self, turn: int, phase: PhaseEnum):
         """
@@ -438,6 +452,12 @@ class EventHandler:
                 if current_turn > turn:
                     return False
             
+            elif condition.type == ConditionType.TURN_NUMBER:
+                turn = condition.params.get('turn')
+                current_turn = self.gameStateManager.current_game_state.current_turn
+                if current_turn != turn:
+                    return False
+            
             elif condition.type == ConditionType.RANDOM_CHANCE:
                 chance = condition.params.get('chance')
                 import random
@@ -567,6 +587,9 @@ class EventHandler:
             else:
                 logging.info(f"Change Faction: {action.params.get('unit_id')} to {action.params.get('new_faction')}")
         
+        elif action.type == EventActionType.END_SCENARIO:
+            self.execute_end_scenario(action.params.get('reason', 'Scenario completed'))
+        
         else:
             logging.warning(f"Unknown event action type: {action.type}")
     
@@ -650,6 +673,20 @@ class EventHandler:
                         event.has_triggered = True
                         return True
         return False
+    
+    def execute_end_scenario(self, reason: str) -> None:
+        """
+        Set a flag in the game state indicating the scenario is complete.
+        
+        Args:
+            reason: The reason for ending the scenario
+        """
+        if self.gameStateManager and self.gameStateManager.current_game_state:
+            # Set a special flag to indicate scenario completion
+            self.gameStateManager.current_game_state.event_flags['scenario_complete'] = True
+            # Store the reason for ending the scenario
+            self.gameStateManager.current_game_state.event_flags['scenario_end_reason'] = reason
+            logging.info(f"Scenario ended: {reason}")
     
     # --- Helper Methods ---
     

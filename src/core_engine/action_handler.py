@@ -122,6 +122,28 @@ class ActionHandler:
         """
         action_type_str = action_data.get('type', '')
         
+        # Get unit information for logging
+        unit = self.gameStateManager.get_unit(unit_id)
+        if not unit:
+            logging.error(f"Cannot process action: Unit {unit_id} not found")
+            return False
+            
+        # Determine if this is an AI-controlled action in AI vs AI mode
+        current_phase = self.gameStateManager.current_game_state.current_phase
+        is_ai_controlled = True  # Assume AI-controlled for logging purposes
+        faction_label = "PLAYER" if current_phase == PhaseEnum.PLAYER else "ENEMY"
+        
+        # Get unit information for logging
+        unit = self.gameStateManager.get_unit(unit_id)
+        if not unit:
+            logging.error(f"Cannot process action: Unit {unit_id} not found")
+            return False
+            
+        # Determine if this is an AI-controlled action in AI vs AI mode
+        current_phase = self.gameStateManager.current_game_state.current_phase
+        is_ai_controlled = True  # Assume AI-controlled for logging purposes
+        faction_label = "PLAYER" if current_phase == PhaseEnum.PLAYER else "ENEMY"
+        
         # Convert string action type to ActionType enum
         try:
             # Handle combined actions like MOVE_AND_WAIT
@@ -205,6 +227,10 @@ class ActionHandler:
                 if not result or not result.success:
                     logging.error(f"Action failed: {result.message if result else 'Unknown error'}")
                     return False
+                
+                # Log the action execution with detailed information if it's an AI action
+                if is_ai_controlled:
+                    self._log_action_execution(unit, action_type_str, target_data, faction_label)
                 
                 return True
             
@@ -1054,6 +1080,16 @@ class ActionHandler:
         Returns:
             True if the phase corresponds to the faction, False otherwise
         """
+        # Check if AI vs AI mode is enabled
+        ai_vs_ai = False
+        if hasattr(self, 'turnManager') and self.turnManager and hasattr(self.turnManager, 'ai_vs_ai'):
+            ai_vs_ai = self.turnManager.ai_vs_ai
+        
+        # In AI vs AI mode, allow any unit to act in any phase
+        if ai_vs_ai:
+            return True
+            
+        # Normal phase-faction correspondence
         if phase == PhaseEnum.PLAYER and faction == FactionEnum.PLAYER:
             return True
         elif phase == PhaseEnum.ENEMY and faction == FactionEnum.ENEMY:
@@ -1634,3 +1670,95 @@ class ActionHandler:
         # This would be handled by the GameStateManager in a real implementation
         # For now, return a default state
         return UnitState.IDLE
+        
+    def _log_action_execution(self, unit, action_type: str, target_data: Dict, faction_label: str) -> None:
+        """
+        Log detailed information about an action execution.
+        
+        Args:
+            unit: The unit performing the action
+            action_type: The type of action being performed
+            target_data: Data about the action target
+            faction_label: String indicating which faction the AI is controlling ("PLAYER" or "ENEMY")
+        """
+        unit_name = unit.name
+        unit_pos = unit.position
+        
+        if action_type == "MOVE":
+            path = target_data.get('path', [])
+            if path:
+                dest_pos = path[-1]
+                logging.info(f"AI ({faction_label}): {unit_name} moves from {unit_pos} to {dest_pos}")
+            else:
+                logging.info(f"AI ({faction_label}): {unit_name} attempts to move but no path provided")
+                
+        elif action_type == "WAIT":
+            logging.info(f"AI ({faction_label}): {unit_name} waits at {unit_pos}")
+            
+        elif action_type == "ATTACK":
+            target_unit_id = target_data.get('target_unit_id')
+            target_unit = self.gameStateManager.get_unit(target_unit_id) if target_unit_id else None
+            
+            # Get weapon information
+            weapon = self._get_equipped_weapon(unit.id)
+            weapon_name = "Unknown Weapon"
+            if weapon:
+                weapon_data = self.dataProvider.get_item_data(weapon.item_id)
+                if weapon_data:
+                    weapon_name = getattr(weapon_data, 'name', weapon.item_id)
+            
+            if target_unit:
+                logging.info(f"AI ({faction_label}): {unit_name} attacks {target_unit.name} with {weapon_name}")
+            else:
+                logging.info(f"AI ({faction_label}): {unit_name} attempts to attack but no valid target")
+                
+        elif action_type == "CAPTURE":
+            target_unit_id = target_data.get('target_unit_id')
+            target_unit = self.gameStateManager.get_unit(target_unit_id) if target_unit_id else None
+            
+            if target_unit:
+                logging.info(f"AI ({faction_label}): {unit_name} attempts to capture {target_unit.name}")
+            else:
+                logging.info(f"AI ({faction_label}): {unit_name} attempts to capture but no valid target")
+                
+        elif action_type == "ITEM":
+            item_id = target_data.get('item_id')
+            target_unit_id = target_data.get('target_unit_id')
+            
+            item_name = "Unknown Item"
+            if item_id:
+                item_data = self.dataProvider.get_item_data(item_id)
+                if item_data:
+                    item_name = getattr(item_data, 'name', item_id)
+            
+            target_unit = self.gameStateManager.get_unit(target_unit_id) if target_unit_id else None
+            target_name = target_unit.name if target_unit else "self"
+            
+            logging.info(f"AI ({faction_label}): {unit_name} uses {item_name} on {target_name}")
+            
+        elif action_type == "TRADE":
+            partner_unit_id = target_data.get('partner_unit_id')
+            partner_unit = self.gameStateManager.get_unit(partner_unit_id) if partner_unit_id else None
+            
+            if partner_unit:
+                logging.info(f"AI ({faction_label}): {unit_name} trades with {partner_unit.name}")
+            else:
+                logging.info(f"AI ({faction_label}): {unit_name} attempts to trade but no valid partner")
+                
+        elif action_type == "VISIT":
+            target_tile = target_data.get('target_tile')
+            if target_tile:
+                logging.info(f"AI ({faction_label}): {unit_name} visits location at {target_tile}")
+            else:
+                logging.info(f"AI ({faction_label}): {unit_name} attempts to visit but no valid location")
+                
+        elif action_type == "SEIZE":
+            target_tile = target_data.get('target_tile')
+            if target_tile:
+                logging.info(f"AI ({faction_label}): {unit_name} seizes location at {target_tile}")
+            else:
+                logging.info(f"AI ({faction_label}): {unit_name} attempts to seize but no valid location")
+                
+        else:
+            # Generic log for other action types
+            logging.info(f"AI ({faction_label}): {unit_name} performs {action_type} action")

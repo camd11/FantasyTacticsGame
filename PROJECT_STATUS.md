@@ -20,6 +20,16 @@
 - **Bug Fixes:**
     - Resolved module import issues.
     - Corrected `class_id` attribute handling.
+- **AI & Testing Features:**
+    - Implemented AI vs AI testing mode via `--ai-vs-ai` flag.
+    - Implemented optional ASCII map display via `--ascii-display` flag.
+    - Adjusted AI vs AI turn limit to 10 for testing.
+    - Enhanced AI action logging for better simulation visibility.
+    - Fixed runtime errors related to ASCII display (`get_map_dimensions`, `turn_manager` access).
+- **Testing & Integration:**
+    - Resolved 6 integration test failures related to `DataProvider`, `Engine`, `EventHandler`, and `GameState`. All unit tests are now passing.
+- **Configuration:**
+    - Created placeholder map files (`layouts.yaml`, `placements.yaml`, `events.yaml`) in `data/maps/test_chapter/` to resolve startup warnings related to missing default chapter data.
 
 ## Remaining Tasks
 
@@ -33,5 +43,5 @@
     - Develop more comprehensive testing scenarios.
 - **Future Enhancements:**
     - Potential GUI implementation.
-- **Bug Fixing / Warnings:**
-    - Address warnings related to missing unit base data observed during the last run.
+- **Bug Fixing:**
+    - Address any remaining warnings or bugs as they arise.

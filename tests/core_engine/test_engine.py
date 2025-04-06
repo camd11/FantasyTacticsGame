@@ -124,14 +124,14 @@ class TestEngineCoreInitialization(unittest.TestCase):
         self.assertFalse(self.engine.victory, "Game should not be won initially")
 
         # 2. Check that dependencies were called correctly as per spec pseudocode
-        self.mock_data_provider.get_map_data.assert_called_once_with(chapter_id)
-        self.mock_data_provider.get_unit_placements.assert_called_once_with(chapter_id)
-        self.mock_data_provider.get_event_scripts.assert_called_once_with(chapter_id)
+        self.mock_data_provider.get_map_data.assert_called_once_with(chapter_id, None)
+        self.mock_data_provider.get_unit_placements.assert_called_once_with(chapter_id, None)
+        self.mock_data_provider.get_event_scripts.assert_called_once_with(chapter_id, None)
 
         self.mock_gs_manager.load_map.assert_called_once_with(mock_map_data)
         # Verify deploy_units receives placements and the data provider instance
         self.mock_gs_manager.deploy_units.assert_called_once_with(mock_unit_placements, self.mock_data_provider)
-        self.mock_event_handler.load_scripts.assert_called_once_with(mock_event_scripts)
+        self.mock_event_handler.load_chapter_events.assert_called_once_with(chapter_id, None)
 
         # 3. Check that the mocked start_phase was called at the end of initialization
         self.start_phase_mock.assert_called_once()

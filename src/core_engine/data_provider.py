@@ -229,45 +229,33 @@ class DataProvider:
             
             # Load unit data
             self._unit_data = self._load_data_to_objects(
-                os.path.join(data_directory, "units.yaml"), 
+                os.path.join(data_directory, "units.yaml"),
                 UnitBaseData
             )
             
             # Load item data
             self._item_data = self._load_data_to_objects(
-                os.path.join(data_directory, "items.yaml"), 
+                os.path.join(data_directory, "items.yaml"),
                 ItemData
             )
             
             # Load class data
             self._class_data = self._load_data_to_objects(
-                os.path.join(data_directory, "classes.yaml"), 
+                os.path.join(data_directory, "classes.yaml"),
                 ClassData
             )
             
             # Load terrain data
             self._terrain_data = self._load_data_to_objects(
-                os.path.join(data_directory, "terrain.yaml"), 
+                os.path.join(data_directory, "terrain.yaml"),
                 TerrainData
             )
             
-            # Load map layouts
-            self._map_layouts = self._load_data_to_objects(
-                os.path.join(data_directory, "maps/layouts.yaml"), 
-                MapData
-            )
-            
-            # Load unit placements
-            self._unit_placements = self._load_data_to_objects(
-                os.path.join(data_directory, "maps/placements.yaml"), 
-                UnitPlacement,
-                is_list=True
-            )
-            
-            # Load event scripts
-            self._event_scripts = self._load_yaml_or_json(
-                os.path.join(data_directory, "maps/events.yaml")
-            )
+            # Initialize empty collections for map data, placements, and events
+            # These will be loaded on demand by get_map_data, get_unit_placements, and get_event_scripts
+            self._map_layouts = {}
+            self._unit_placements = {}
+            self._event_scripts = {}
             
             # Load support relations
             self._support_relations = self._load_data_to_objects(
@@ -310,6 +298,24 @@ class DataProvider:
             UnitBaseData object or None if not found
         """
         return self._unit_data.get(unit_id)
+        
+    def get_unit_ai_profile(self, unit_id: str) -> Optional[Dict]:
+        """
+        Get the AI profile for a specific unit.
+        
+        Args:
+            unit_id: The ID of the unit
+            
+        Returns:
+            Dictionary containing AI profile data or None if not found
+        """
+        # For now, return a default AI profile
+        # In a real implementation, this would load from a file or database
+        return {
+            'behavior_type': 'AGGRESSIVE',
+            'target_priority': 'CLOSEST',
+            'aggression': 50
+        }
     
     def get_item_data(self, item_id: str) -> Optional[ItemData]:
         """
@@ -335,29 +341,21 @@ class DataProvider:
         """
         return self._class_data.get(class_id)
     
-    def get_map_data(self, chapter_id: str) -> Optional[MapData]:
-        """
-        Get the map layout for a specific chapter.
-        
-        Args:
-            chapter_id: The ID of the chapter
-            
-        Returns:
-            MapData object or None if not found
-        """
-        return self._map_layouts.get(chapter_id)
+    # This method is replaced by the implementation below at line 535
     
-    def get_unit_placements(self, chapter_id: str) -> List[UnitPlacement]:
+    # This method is replaced by the implementation below at line 564
+    
+    def get_terrain_data(self, terrain_type: TerrainTypeEnum) -> Optional[TerrainData]:
         """
-        Get the unit placements for a specific chapter.
+        Get the data for a specific terrain type.
         
         Args:
-            chapter_id: The ID of the chapter
+            terrain_type: The type of terrain
             
         Returns:
-            List of UnitPlacement objects (empty list if none found)
+            TerrainData object or None if not found
         """
-        return self._unit_placements.get(chapter_id, [])
+        return self._terrain_data.get(terrain_type)
     
     def get_terrain_cost(self, terrain_type: TerrainTypeEnum, movement_type: MovementTypeEnum) -> int:
         """
@@ -405,6 +403,22 @@ class DataProvider:
             return terrain_info.is_healing
         return False
     
+    def get_terrain_heal_amount(self, terrain_type: TerrainTypeEnum) -> int:
+        """
+        Get the healing amount provided by a terrain type.
+        
+        Args:
+            terrain_type: The type of terrain
+            
+        Returns:
+            Healing amount (0 if the terrain doesn't provide healing)
+        """
+        terrain_info = self._terrain_data.get(terrain_type)
+        if terrain_info and terrain_info.is_healing:
+            # Default to 10% healing if not specified
+            return terrain_info.get('heal_amount', 10)
+        return 0
+    
     def is_terrain_indoor(self, terrain_type: TerrainTypeEnum) -> bool:
         """
         Check if a terrain type is considered indoors (for dismounting).
@@ -448,17 +462,7 @@ class DataProvider:
         
         return partners
     
-    def get_event_scripts(self, chapter_id: str) -> List:
-        """
-        Get the event scripts for a specific chapter.
-        
-        Args:
-            chapter_id: The ID of the chapter
-            
-        Returns:
-            List of event scripts (empty list if none found)
-        """
-        return self._event_scripts.get(chapter_id, [])
+    # This method is replaced by the implementation below at line 603
     
     def get_promotion_gains(self, base_class_id: str, promoted_class_id: str) -> Optional[PromotionGains]:
         """
@@ -516,36 +520,58 @@ class DataProvider:
         # For now, just return the default value since we don't have actual config data
         # In a real implementation, this would look up values from a config file or database
         return default
-
-    def get_map_data(self, chapter_id: str) -> Optional[MapData]:
+    def get_map_data(self, chapter_id: str, scenario_name: Optional[str] = None) -> Optional[MapData]:
         """
-        Load and return the map layout data for a specific chapter.
+        Load and return the map layout data for a specific chapter or scenario.
         
         Args:
             chapter_id: The ID of the chapter
+            scenario_name: Optional name of a test scenario
             
         Returns:
             MapData object or None if not found
         """
-        # Construct path assuming chapter data is in data/chapters/{chapter_id}/map.json
-        filepath = os.path.join("data", "chapters", chapter_id, "map.json")
+        # Determine the filepath based on whether we're loading a scenario or a chapter
+        if scenario_name:
+            filepath = os.path.join("data", "scenarios", scenario_name, "map.json")
+            # Try YAML if JSON doesn't exist
+            if not os.path.exists(filepath):
+                filepath = os.path.join("data", "scenarios", scenario_name, "map.yaml")
+        else:
+            filepath = os.path.join("data", "chapters", chapter_id, "map.json")
+            # Try YAML if JSON doesn't exist
+            if not os.path.exists(filepath):
+                filepath = os.path.join("data", "chapters", chapter_id, "map.yaml")
+                
         map_dict = self._load_yaml_or_json(filepath)
         if map_dict:
             # Convert dict to MapData object
             return MapData(map_dict)
         return None
 
-    def get_unit_placements(self, chapter_id: str) -> List[UnitPlacement]:
+    def get_unit_placements(self, chapter_id: str, scenario_name: Optional[str] = None) -> List[UnitPlacement]:
         """
-        Load and return the unit placements for a specific chapter.
+        Load and return the unit placements for a specific chapter or scenario.
         
         Args:
             chapter_id: The ID of the chapter
+            scenario_name: Optional name of a test scenario
             
         Returns:
             List of UnitPlacement objects (empty list if none found)
         """
-        filepath = os.path.join("data", "chapters", chapter_id, "placements.json")
+        # Determine the filepath based on whether we're loading a scenario or a chapter
+        if scenario_name:
+            filepath = os.path.join("data", "scenarios", scenario_name, "placements.json")
+            # Try YAML if JSON doesn't exist
+            if not os.path.exists(filepath):
+                filepath = os.path.join("data", "scenarios", scenario_name, "placements.yaml")
+        else:
+            filepath = os.path.join("data", "chapters", chapter_id, "placements.json")
+            # Try YAML if JSON doesn't exist
+            if not os.path.exists(filepath):
+                filepath = os.path.join("data", "chapters", chapter_id, "placements.yaml")
+                
         placements_data = self._load_yaml_or_json(filepath)
         
         # Handle both formats: direct list or dictionary with "placements" key
@@ -562,18 +588,30 @@ class DataProvider:
         return []
 
     # Overwrite the existing get_event_scripts to load from chapter JSON
-    def get_event_scripts(self, chapter_id: str) -> List:
+    def get_event_scripts(self, chapter_id: str, scenario_name: Optional[str] = None) -> List:
         """
-        Load and return the event scripts for a specific chapter.
+        Load and return the event scripts for a specific chapter or scenario.
         
         Args:
             chapter_id: The ID of the chapter
+            scenario_name: Optional name of a test scenario
             
         Returns:
             List of event scripts (empty list if none found)
         """
-        filepath = os.path.join("data", "chapters", chapter_id, "events.json")
-        # Return the raw list/dict loaded from JSON, as EventHandler expects this format
+        # Determine the filepath based on whether we're loading a scenario or a chapter
+        if scenario_name:
+            filepath = os.path.join("data", "scenarios", scenario_name, "events.json")
+            # Try YAML if JSON doesn't exist
+            if not os.path.exists(filepath):
+                filepath = os.path.join("data", "scenarios", scenario_name, "events.yaml")
+        else:
+            filepath = os.path.join("data", "chapters", chapter_id, "events.json")
+            # Try YAML if JSON doesn't exist
+            if not os.path.exists(filepath):
+                filepath = os.path.join("data", "chapters", chapter_id, "events.yaml")
+                
+        # Return the raw list/dict loaded from JSON/YAML, as EventHandler expects this format
         return self._load_yaml_or_json(filepath) or []
     
     def _load_yaml_or_json(self, filepath: str) -> Dict:
