@@ -728,6 +728,77 @@ class TestUnitSystem(unittest.TestCase):
 if __name__ == '__main__':
     unittest.main()
 
+
+class TestUnitSystemGetUnit(unittest.TestCase):
+    """Test cases for the UnitSystem.get_unit method."""
+    
+    def setUp(self):
+        """Set up test fixtures before each test method."""
+        # Create mock objects for dependencies
+        self.mock_game_state_manager = MagicMock(name="GameStateManager")
+        self.mock_data_provider = MagicMock(name="DataProvider")
+        
+        # Create the UnitSystem instance
+        self.unit_system = UnitSystem()
+        self.unit_system.initialize(self.mock_game_state_manager, self.mock_data_provider)
+        
+        # Create a mock game state with unit_states dictionary
+        self.mock_game_state = MagicMock(name="GameState")
+        self.mock_game_state.unit_states = {}
+        
+        # Set the mock game state on the game state manager
+        self.mock_game_state_manager.current_game_state = self.mock_game_state
+    
+    def test_get_unit_returns_unit_when_exists(self):
+        """Test that get_unit returns the correct unit when it exists."""
+        # Arrange
+        unit_id = "U001"
+        mock_unit = MagicMock(name="UnitState")
+        
+        # Add the mock unit to the unit_states dictionary
+        self.mock_game_state.unit_states[unit_id] = mock_unit
+        
+        # Act
+        result = self.unit_system.get_unit(unit_id)
+        
+        # Assert
+        self.assertEqual(result, mock_unit)
+    
+    def test_get_unit_returns_none_when_unit_does_not_exist(self):
+        """Test that get_unit returns None when the unit doesn't exist."""
+        # Arrange
+        unit_id = "NONEXISTENT"
+        
+        # Act
+        result = self.unit_system.get_unit(unit_id)
+        
+        # Assert
+        self.assertIsNone(result)
+    
+    def test_get_unit_returns_none_when_game_state_manager_is_none(self):
+        """Test that get_unit returns None when the game state manager is None."""
+        # Arrange
+        unit_id = "U001"
+        self.unit_system.gameStateManager = None
+        
+        # Act
+        result = self.unit_system.get_unit(unit_id)
+        
+        # Assert
+        self.assertIsNone(result)
+    
+    def test_get_unit_returns_none_when_current_game_state_is_none(self):
+        """Test that get_unit returns None when the current game state is None."""
+        # Arrange
+        unit_id = "U001"
+        self.mock_game_state_manager.current_game_state = None
+        
+        # Act
+        result = self.unit_system.get_unit(unit_id)
+        
+        # Assert
+        self.assertIsNone(result)
+
     # TDD: Test charisma bonus calculation considers range and stacking
     def test_get_total_charisma_bonus_counts_nearby_units_with_charisma(self):
         """Test get_total_charisma_bonus correctly counts nearby units with Charisma skill."""
