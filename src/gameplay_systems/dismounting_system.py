@@ -271,8 +271,12 @@ class DismountingSystem:
                 inventory_item_data.append((item, item_data))
             
             # Then find a valid weapon to equip
-            for item, item_data in inventory_item_data:
+            for i, (item, item_data) in enumerate(inventory_item_data):
                 if item_data.type in allowed_weapon_types:
-                    self.unit_system.equip_item(unit.id, item.id)
+                    # Find the index of this item in the unit's inventory
+                    for j, inv_item in enumerate(unit.inventory):
+                        if inv_item.id == item.id:
+                            self.unit_system.equip_item(unit.id, j)
+                            break
                     valid_item_found = True
                     break

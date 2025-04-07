@@ -890,5 +890,35 @@ class UnitSystem:
             # Check if the distance is within the specified range
             if min_range <= distance <= max_range:
                 result.append(unit_id)
+                return result
                 
+            def change_unit_faction(self, unit_id: str, new_faction: str) -> bool:
+                """
+                Change a unit's faction (e.g., for recruitment).
+                
+                Args:
+                    unit_id: ID of the unit
+                    new_faction: New faction for the unit (e.g., "Player", "Enemy", "NPC")
+                    
+                Returns:
+                    True if the faction was changed successfully, False otherwise
+                """
+                unit = self.gameStateManager.get_unit(unit_id)
+                if not unit:
+                    logging.warning(f"Cannot change faction: Unit {unit_id} not found")
+                    return False
+                
+                # Convert string faction to FactionEnum
+                if new_faction == 'PLAYER' or new_faction == 'Player':
+                    unit.faction = FactionEnum.PLAYER
+                elif new_faction == 'ENEMY' or new_faction == 'Enemy':
+                    unit.faction = FactionEnum.ENEMY
+                elif new_faction == 'NPC':
+                    unit.faction = FactionEnum.NPC
+                else:
+                    logging.warning(f"Unknown faction '{new_faction}' for unit {unit_id}, faction not changed")
+                    return False
+                
+                logging.info(f"Unit {unit_id} faction changed to {new_faction}")
+                return True
         return result

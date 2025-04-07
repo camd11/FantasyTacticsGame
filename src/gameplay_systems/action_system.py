@@ -99,3 +99,31 @@ class ActionSystem:
         if unit:
             unit.has_acted = True
             logging.info(f"Unit {unit_id} action marked as complete")
+    
+    def mark_unit_action_taken(self, unit_id: str) -> None:
+        """
+        Mark a unit as having taken an action for the turn.
+        
+        Args:
+            unit_id: ID of the unit
+        """
+        unit = self.gameStateManager.get_unit(unit_id)
+        if unit:
+            unit.has_acted = True
+            logging.info(f"Unit {unit_id} action marked as taken")
+    
+    def has_unit_acted_or_waited(self, unit_id: str) -> bool:
+        """
+        Check if a unit has already acted or waited this turn.
+        
+        Args:
+            unit_id: ID of the unit
+            
+        Returns:
+            True if the unit has acted or waited, False otherwise
+        """
+        unit = self.gameStateManager.get_unit(unit_id)
+        if not unit:
+            return False
+        
+        return unit.has_acted

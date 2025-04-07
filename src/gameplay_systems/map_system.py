@@ -715,3 +715,20 @@ class MapSystem:
         # This method would typically update any cached pathfinding data
         # For now, we'll just log the update
         logging.info(f"Updated map passability at {position}")
+        
+    def are_units_adjacent(self, pos1: Tuple[int, int], pos2: Tuple[int, int]) -> bool:
+        """
+        Check if two positions are adjacent.
+        
+        Args:
+            pos1: First position (x, y)
+            pos2: Second position (x, y)
+            
+        Returns:
+            True if the positions are adjacent, False otherwise
+        """
+        # Calculate Manhattan distance
+        distance = abs(pos1[0] - pos2[0]) + abs(pos1[1] - pos2[1])
+        
+        # Positions are adjacent if Manhattan distance is 1
+        return distance == 1

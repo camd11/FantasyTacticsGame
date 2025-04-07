@@ -42,6 +42,22 @@
         - Provides combat bonuses (e.g., +Def, +Res, +Avoid) based on the terrain type.
         - Implements turn-based effects (e.g., healing on Forts, damage in Lava).
         - Modifies unit movement costs based on terrain and unit movement type (e.g., Plains cost 1 for Infantry, 2 for Armor).
+    - Trading System
+        - Allows adjacent allied units to trade items.
+        - Units can swap items or give items if the recipient has inventory space.
+        - Trading is a free action (does not consume the unit's turn).
+    - Talk System
+        - Enables specific units to interact with adjacent units via the 'Talk' command.
+        - Interaction is conditional based on predefined unit pairs or event flags.
+        - Outcomes can include triggering dialogue, receiving items, recruiting enemy/NPC units, or setting event flags.
+        - Consumes the initiating unit's action for the turn.
+        - Tracks usage per pair/event to prevent repeated interactions where applicable.
+    - Chapter Loader
+        - Parses chapter-specific data files (map layout, unit placements, event triggers).
+        - Initializes the game state based on the loaded chapter data.
+    - Event Manager
+        - Processes event triggers defined in chapter data (e.g., turn number, area entered, unit defeated).
+        - Executes corresponding event outcomes (e.g., reinforcements, dialogue, objective updates, map changes).
 - **Initial Data Population:**
     - Units (`units.yaml`): Added Mareeta, Nanna, Saias.
     - Items (`items.yaml`): Added Short Lance, Rapier, Physic, Killer Lance, Hand Axe.

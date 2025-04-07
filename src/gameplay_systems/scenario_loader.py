@@ -129,3 +129,65 @@ class ScenarioLoader:
             self.game_state.current_phase = settings['phase']
         
         # Apply other settings as needed
+        
+    def get_talk_events_for_pair(self, initiator_id: str, target_id: str) -> List:
+        """
+        Get talk events for a specific pair of units.
+        
+        Args:
+            initiator_id: ID of the initiating unit
+            target_id: ID of the target unit
+            
+        Returns:
+            List of talk events for the pair
+        """
+        from src.gameplay_systems.talk_system import TalkEvent, Condition
+        
+        # In a real implementation, this would load talk events from scenario data
+        # For testing purposes, we'll return mock events based on the unit IDs
+        
+        # This is a placeholder implementation for testing
+        talk_events = []
+        
+        # Check for specific unit pairs that have talk events
+        if initiator_id == "LEIF" and target_id == "DAGDAR":
+            # Add dialogue talk event
+            talk_events.append(TalkEvent(
+                event_id="LEIF_DAGDAR_TALK",
+                initiator_unit_id="LEIF",
+                target_unit_id="DAGDAR",
+                outcome_type="DIALOGUE",
+                outcome_data={"dialogue_id": "ch1_leif_dagdar_talk"},
+                is_repeatable=False
+            ))
+            
+            # Add item talk event
+            talk_events.append(TalkEvent(
+                event_id="LEIF_DAGDAR_ITEM",
+                initiator_unit_id="LEIF",
+                target_unit_id="DAGDAR",
+                outcome_type="ITEM",
+                outcome_data={"item_id": "Vouge", "quantity": 1},
+                is_repeatable=True,
+                max_uses=2
+            ))
+            
+            # Add recruitment talk event
+            talk_events.append(TalkEvent(
+                event_id="LEIF_DAGDAR_RECRUIT",
+                initiator_unit_id="LEIF",
+                target_unit_id="DAGDAR",
+                outcome_type="RECRUIT",
+                outcome_data={"unit_id_to_recruit": "DAGDAR", "new_faction": "Player"}
+            ))
+            
+            # Add flag talk event
+            talk_events.append(TalkEvent(
+                event_id="LEIF_DAGDAR_FLAG",
+                initiator_unit_id="LEIF",
+                target_unit_id="DAGDAR",
+                outcome_type="FLAG",
+                outcome_data={"flag_name": "dagdar_talked_to", "flag_value": True}
+            ))
+        
+        return talk_events

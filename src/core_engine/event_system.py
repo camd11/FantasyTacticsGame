@@ -232,8 +232,176 @@ class EventManager:
             if not event_def.repeatable:
                 # Ensure a flag exists to track execution
                 flag_name = f"event_{event_def.event_id}_triggered"
-                if not self.game_state.get_flag(flag_name):
-                    self.game_state.set_flag(flag_name, False)
+                try:
+                    if not self.game_state.get_flag(flag_name):
+                        try:
+                            self.game_state.set_flag(flag_name, False)
+                        except (AttributeError, TypeError):
+                            logging.warning(f"Could not set flag {flag_name}")
+                except (AttributeError, TypeError):
+                    logging.warning(f"Could not check flag {flag_name}")
+    
+    def register_triggers(self, trigger_definitions: List[Dict]):
+        """
+        Register event triggers from chapter data.
+        
+        Args:
+            trigger_definitions: List of trigger definition dictionaries
+        """
+        for trigger_def in trigger_definitions:
+            # Convert trigger definition to EventCondition
+            trigger_type = trigger_def.get('type', '')
+            
+            # Map chapter data trigger types to EventCondition types
+            condition_type_map = {
+                'turn_start': 'TurnNumber',
+                'area_entered': 'Location',
+                'talk_available': 'TalkBetweenUnits',
+                'unit_defeated': 'UnitDeath',
+                'village_visited': 'VisitLocation'
+            }
+            
+            condition_type = condition_type_map.get(trigger_type, trigger_type)
+            
+            # Create condition with appropriate parameters based on type
+            condition_params = {}
+            if trigger_type == 'turn_start':
+                condition_params = {'turn': trigger_def.get('value')}
+            elif trigger_type == 'area_entered':
+                # Convert area coordinates to a region or location format
+                area = trigger_def.get('area', [])
+                if len(area) == 2:  # Assuming format is [[x1, y1], [x2, y2]]
+                    unit_id = 'any'  # Default to any unit
+                    if 'faction' in trigger_def:
+                        # This is simplified; in a real implementation we'd track units by faction
+                        unit_id = f"{trigger_def['faction']}_unit"
+                    
+                    # For simplicity, we'll use the center of the area as the location
+                    x1, y1 = area[0]
+                    x2, y2 = area[1]
+                    center_x = (x1 + x2) // 2
+                    center_y = (y1 + y2) // 2
+                    
+                    condition_params = {
+                        'unit_id': unit_id,
+                        'location': (center_x, center_y)
+                    }
+            elif trigger_type == 'talk_available':
+                condition_params = {
+                    'talker_id': trigger_def.get('unit1_id'),
+                    'listener_id': trigger_def.get('unit2_id')
+                }
+            elif trigger_type == 'unit_defeated':
+                condition_params = {'unit_id': trigger_def.get('target_unit_id')}
+            elif trigger_type == 'village_visited':
+                condition_params = {
+                    'unit_id': trigger_def.get('visiting_unit_faction', 'any'),
+                    'location': trigger_def.get('target_position')
+                }
+            
+            # Store the trigger with its ID for later reference
+            condition = EventCondition(type=condition_type, **condition_params)
+            condition.trigger_id = trigger_def.get('trigger_id')
+            
+            # Add to a dictionary of available triggers
+            if not hasattr(self, 'available_triggers'):
+                self.available_triggers = {}
+            
+            self.available_triggers[trigger_def.get('trigger_id')] = condition
+    
+    def register_events(self, event_definitions: List[Dict]):
+        """
+        Register events from chapter data.
+        
+        Args:
+            event_definitions: List of event definition dictionaries
+        """
+        if not hasattr(self, 'available_triggers'):
+            self.available_triggers = {}
+        
+        for event_def in event_definitions:
+            event_id = event_def.get('event_id')
+            trigger_id = event_def.get('trigger')
+            
+            # Find the corresponding trigger condition
+            conditions = []
+            if trigger_id in self.available_triggers:
+                conditions.append(self.available_triggers[trigger_id])
+            
+            # Map trigger to appropriate trigger point
+            trigger_to_point = {
+                'turn_start': 'StartPlayerPhase',
+                'area_entered': 'UnitMoved',
+                'talk_available': 'UnitAction',
+                'unit_defeated': 'UnitDefeated',
+                'village_visited': 'UnitAction'
+            }
+            
+            # Determine trigger point based on the trigger type
+            trigger_point = 'StartPlayerPhase'  # Default
+            if conditions and hasattr(conditions[0], 'type'):
+                condition_type = conditions[0].type
+                # Map condition type back to trigger type
+                type_to_trigger = {v: k for k, v in {
+                    'turn_start': 'TurnNumber',
+                    'area_entered': 'Location',
+                    'talk_available': 'TalkBetweenUnits',
+                    'unit_defeated': 'UnitDeath',
+                    'village_visited': 'VisitLocation'
+                }.items()}
+                
+                trigger_type = type_to_trigger.get(condition_type, '')
+                trigger_point = trigger_to_point.get(trigger_type, 'StartPlayerPhase')
+            
+            # Convert actions
+            actions = []
+            for action_def in event_def.get('actions', []):
+                action_type = action_def.get('type')
+                
+                # Map chapter data action types to EventAction types
+                action_type_map = {
+                    'spawn_reinforcements': 'SpawnUnit',
+                    'show_dialogue': 'DisplayMessage',
+                    'set_trigger_inactive': 'SetFlag',
+                    'enable_talk_option': 'SetFlag',
+                    'drop_item_at': 'GiveItem',
+                    'give_item_to_unit': 'GiveItem'
+                }
+                
+                mapped_type = action_type_map.get(action_type, action_type)
+                
+                # Create action with appropriate parameters based on type
+                action_params = {}
+                if action_type == 'spawn_reinforcements':
+                    # This is simplified; in a real implementation we'd look up the reinforcement group
+                    action_params = {
+                        'unit_template_id': 'REINFORCEMENT',
+                        'location': (0, 0)  # Placeholder
+                    }
+                elif action_type == 'show_dialogue':
+                    action_params = {'message_key': action_def.get('dialogue_id')}
+                elif action_type == 'set_trigger_inactive':
+                    action_params = {'flag_id': f"event_{action_def.get('target_trigger_id')}_triggered"}
+                elif action_type == 'enable_talk_option':
+                    action_params = {'flag_id': f"talk_{action_def.get('unit1_id')}_{action_def.get('unit2_id')}_enabled"}
+                elif action_type == 'drop_item_at' or action_type == 'give_item_to_unit':
+                    action_params = {
+                        'item_id': action_def.get('item_id'),
+                        'target_unit': action_def.get('recipient_unit_triggering', 'NONE')
+                    }
+                
+                actions.append(EventAction(type=mapped_type, **action_params))
+            
+            # Create and add the event definition
+            event = EventDefinition(
+                event_id=event_id,
+                trigger_point=trigger_point,
+                repeatable=False,  # Default to non-repeatable
+                conditions=conditions,
+                actions=actions
+            )
+            
+            self.chapter_events.append(event)
     
     def check_events(self, trigger_point: str, context: Dict):
         """
@@ -250,8 +418,13 @@ class EventManager:
                 # Check if already triggered (for non-repeatable)
                 if not event_def.repeatable:
                     flag_name = f"event_{event_def.event_id}_triggered"
-                    if self.game_state.get_flag(flag_name):
-                        continue
+                    try:
+                        if self.game_state.get_flag(flag_name):
+                            continue
+                    except (AttributeError, TypeError):
+                        # If get_flag is not available, assume not triggered
+                        logging.warning(f"Could not check flag {flag_name}, assuming not triggered")
+                        pass
                 
                 # Check conditions
                 if self.check_conditions(event_def, context):
@@ -264,7 +437,12 @@ class EventManager:
             self.execute_event(event_def, context)
             if not event_def.repeatable:
                 flag_name = f"event_{event_def.event_id}_triggered"
-                self.game_state.set_flag(flag_name, True)
+                try:
+                    self.game_state.set_flag(flag_name, True)
+                except (AttributeError, TypeError):
+                    # If set_flag is not available, log a warning
+                    logging.warning(f"Could not set flag {flag_name}")
+                    pass
     
     def check_conditions(self, event_def: EventDefinition, context: Dict) -> bool:
         """

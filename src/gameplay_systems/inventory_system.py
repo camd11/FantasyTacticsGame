@@ -831,3 +831,24 @@ class InventorySystem:
         current_gold = self.gameStateManager.current_game_state.party_gold
         self.gameStateManager.current_game_state.party_gold = current_gold + amount
         logging.info(f"Added {amount} gold to party treasury. New total: {current_gold + amount}")
+        
+    def add_item_to_unit(self, unit_id: str, item_id: str, quantity: int = 1) -> bool:
+        """
+        Add an item to a unit's inventory.
+        
+        Args:
+            unit_id: ID of the unit
+            item_id: ID of the item to add
+            quantity: Quantity of the item to add (default: 1)
+            
+        Returns:
+            True if the item was added successfully, False otherwise
+        """
+        # For simplicity, we'll just call add_item_to_inventory for each quantity
+        success = True
+        for _ in range(quantity):
+            if not self.add_item_to_inventory(unit_id, item_id):
+                success = False
+                break
+        
+        return success
