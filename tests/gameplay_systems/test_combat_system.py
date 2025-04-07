@@ -681,13 +681,14 @@ class TestCombatSystem(unittest.TestCase):
         self.assertEqual(mock_defender.current_hp, 7)  # 25 - 6 - 6 - 6
         
         # Verify brave weapon caused two initial strikes
+        # The actual implementation adds force_skills_activated=[] parameter
         self.combat_system._perform_strike.assert_has_calls([
             call(mock_attacker, attacker_stats, mock_attacker_weapon,
                  mock_defender, defender_stats, mock_defender_weapon,
-                 is_follow_up=False),
+                 is_follow_up=False, force_skills_activated=[]),
             call(mock_attacker, attacker_stats, mock_attacker_weapon,
                  mock_defender, defender_stats, mock_defender_weapon,
-                 is_follow_up=True)  # Second brave strike is considered a follow-up
+                 is_follow_up=True, force_skills_activated=[])  # Second brave strike is considered a follow-up
         ], any_order=False)
     
     def test_execute_combat_with_wrath_skill(self):

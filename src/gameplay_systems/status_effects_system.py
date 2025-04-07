@@ -307,11 +307,12 @@ class StatusEffectManager:
         # Apply stat modifications
         if zero_stats:
             from src.core_engine.data_provider import StatEnum
-            modified_stats["STR"] = 0
-            modified_stats["MAG"] = 0
-            modified_stats["SKL"] = 0
-            modified_stats["SPD"] = 0
-            modified_stats["DEF"] = 0
+            # Use the enum constants instead of string literals
+            modified_stats[StatEnum.STR] = 0
+            modified_stats[StatEnum.MAG] = 0
+            modified_stats[StatEnum.SKL] = 0
+            modified_stats[StatEnum.SPD] = 0
+            modified_stats[StatEnum.DEF] = 0
             # Note: Luck, Con, Mov, HP are generally not zeroed by these statuses
         
         return modified_stats

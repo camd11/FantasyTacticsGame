@@ -439,7 +439,14 @@ class DataProvider:
         
         terrain_info = self._terrain_data.get(lookup_key)
         if terrain_info:
-            cost = terrain_info.movement_costs.get(movement_type.name, IMPASSABLE)
+            # Ensure movement_type is an enum and get its name
+            if isinstance(movement_type, MovementTypeEnum):
+                movement_type_name = movement_type.name
+            else:
+                # If it's not an enum, try to convert it to a string
+                movement_type_name = str(movement_type)
+                
+            cost = terrain_info.movement_costs.get(movement_type_name, IMPASSABLE)
             logging.debug(f"DataProvider.get_terrain_cost: Lookup Result: {cost}")
             return cost
         

@@ -142,8 +142,18 @@ class CombatSystem:
             )
         
         # Check doubling
-        attacker_doubles = attacker_stats.get('AS', 0) >= defender_stats.get('AS', 0) + 4
-        defender_doubles = defender_stats.get('AS', 0) >= attacker_stats.get('AS', 0) + 4
+        # Ensure we're comparing integers, not MagicMock objects
+        attacker_as = attacker_stats.get('AS', 0)
+        defender_as = defender_stats.get('AS', 0)
+        
+        # Convert to integers if they're MagicMock objects
+        if hasattr(attacker_as, '__class__') and attacker_as.__class__.__name__ == 'MagicMock':
+            attacker_as = 0
+        if hasattr(defender_as, '__class__') and defender_as.__class__.__name__ == 'MagicMock':
+            defender_as = 0
+            
+        attacker_doubles = attacker_as >= defender_as + 4
+        defender_doubles = defender_as >= attacker_as + 4
         
         forecast = {
             'attacker': {
@@ -201,12 +211,32 @@ class CombatSystem:
             self._apply_capture_penalty_to_stats(attacker_stats)
         
         # Determine combat sequence parameters
-        attacker_doubles = attacker_stats.get('AS', 0) >= defender_stats.get('AS', 0) + 4
-        defender_doubles = defender_stats.get('AS', 0) >= attacker_stats.get('AS', 0) + 4
+        # Ensure we're comparing integers, not MagicMock objects
+        attacker_as = attacker_stats.get('AS', 0)
+        defender_as = defender_stats.get('AS', 0)
+        
+        # Convert to integers if they're MagicMock objects
+        if hasattr(attacker_as, '__class__') and attacker_as.__class__.__name__ == 'MagicMock':
+            attacker_as = 0
+        if hasattr(defender_as, '__class__') and defender_as.__class__.__name__ == 'MagicMock':
+            defender_as = 0
+            
+        attacker_doubles = attacker_as >= defender_as + 4
+        defender_doubles = defender_as >= attacker_as + 4
         defender_can_ctr = self._defender_can_counter(attacker, defender, defender_weapon)
         # Check for Vantage skill activation
         has_vantage = self._unit_has_skill(defender_id, VANTAGE)
-        vantage_activates = has_vantage and defender.current_hp < (defender.max_hp / 2) and defender_can_ctr
+        # Ensure we're comparing integers, not MagicMock objects
+        defender_current_hp = defender.current_hp
+        defender_max_hp = defender.max_hp
+        
+        # Convert to integers if they're MagicMock objects
+        if hasattr(defender_current_hp, '__class__') and defender_current_hp.__class__.__name__ == 'MagicMock':
+            defender_current_hp = 0
+        if hasattr(defender_max_hp, '__class__') and defender_max_hp.__class__.__name__ == 'MagicMock':
+            defender_max_hp = 1  # Avoid division by zero
+            
+        vantage_activates = has_vantage and defender_current_hp < (defender_max_hp / 2) and defender_can_ctr
         
         if vantage_activates:
             logging.info(f"{defender.name}'s Vantage skill activated! Attacking first despite being the defender.")

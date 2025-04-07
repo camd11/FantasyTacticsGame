@@ -30,6 +30,7 @@ class StatusEffectEnum(Enum):
     SLEEP = auto()
     SILENCE = auto()
     BERSERK = auto()
+    PETRIFY = auto()  # Added for petrify status
     STAT_BOOST = auto()  # For temporary stat boosts
 
 class DispositionEnum(Enum):
