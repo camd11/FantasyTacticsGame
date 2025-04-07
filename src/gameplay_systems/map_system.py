@@ -644,3 +644,36 @@ class MapSystem:
             if status.type == effect_type:
                 return status.magnitude
         return 0
+    
+    def update_tile_terrain(self, position: Tuple[int, int], new_terrain_type: str) -> bool:
+        """
+        Update the terrain type of a tile.
+        
+        Args:
+            position: Position (x, y)
+            new_terrain_type: New terrain type
+            
+        Returns:
+            True if the terrain was updated successfully, False otherwise
+        """
+        # Check if the position is valid
+        map_width, map_height = self.gameStateManager.get_map_dimensions()
+        if position[0] < 0 or position[0] >= map_width or position[1] < 0 or position[1] >= map_height:
+            logging.warning(f"Cannot update terrain: Position {position} is out of bounds")
+            return False
+        
+        # Update the terrain type in the game state
+        self.gameStateManager.set_terrain_type(position, new_terrain_type)
+        logging.info(f"Updated terrain at {position} to {new_terrain_type}")
+        return True
+    
+    def update_map_passability(self, position: Tuple[int, int]) -> None:
+        """
+        Update the passability of a tile and notify pathfinding.
+        
+        Args:
+            position: Position (x, y)
+        """
+        # This method would typically update any cached pathfinding data
+        # For now, we'll just log the update
+        logging.info(f"Updated map passability at {position}")

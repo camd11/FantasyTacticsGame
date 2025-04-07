@@ -33,6 +33,11 @@
         - Rescued unit is removed from the map and cannot act ('Rescued' state).
         - Rescuer can drop the rescued unit onto an adjacent empty tile.
         - Allies can take the rescued unit from the rescuer.
+    - Door/Chest Interaction System
+        - Allows units to interact with adjacent doors or chests.
+        - Opening requires specific conditions: possessing the correct key, having the 'Locktouch' skill, or meeting other event-based criteria.
+        - Interaction can change terrain (door opens), grant items (chest contents), consume keys, or trigger events.
+        - Doors/chests change state upon interaction (e.g., 'Locked' -> 'Open').
 - **Initial Data Population:**
     - Units (`units.yaml`): Added Mareeta, Nanna, Saias.
     - Items (`items.yaml`): Added Short Lance, Rapier, Physic, Killer Lance, Hand Axe.

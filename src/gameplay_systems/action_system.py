@@ -87,3 +87,15 @@ class ActionSystem:
             attacker.has_acted = True
         
         return success
+    
+    def mark_unit_action_complete(self, unit_id: str) -> None:
+        """
+        Mark a unit as having completed their action for the turn.
+        
+        Args:
+            unit_id: ID of the unit
+        """
+        unit = self.gameStateManager.get_unit(unit_id)
+        if unit:
+            unit.has_acted = True
+            logging.info(f"Unit {unit_id} action marked as complete")

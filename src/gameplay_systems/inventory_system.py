@@ -804,3 +804,30 @@ class InventorySystem:
             return True
             
         return False
+    
+    def can_unit_carry_item(self, unit) -> bool:
+        """
+        Check if a unit can carry an additional item.
+        
+        Args:
+            unit: Unit object
+            
+        Returns:
+            True if the unit can carry an additional item, False otherwise
+        """
+        if not unit:
+            return False
+            
+        return len(unit.inventory) < MAX_INVENTORY_SIZE
+    
+    def add_gold_to_party(self, amount: int) -> None:
+        """
+        Add gold to the party's treasury.
+        
+        Args:
+            amount: Amount of gold to add
+        """
+        # Update the party's gold in the game state
+        current_gold = self.gameStateManager.current_game_state.party_gold
+        self.gameStateManager.current_game_state.party_gold = current_gold + amount
+        logging.info(f"Added {amount} gold to party treasury. New total: {current_gold + amount}")
