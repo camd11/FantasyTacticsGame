@@ -1,0 +1,49 @@
+# Chapter 1 Map
+# A simple map with plains, forests, a village, and a fort
+
+map_id: "chapter_1_map"
+name: "Chapter 1: The Beginning"
+width: 20
+height: 15
+
+# Map layout using terrain IDs
+# PLAINS (.), FOREST (F), FORT (O), MOUNTAIN (^), RIVER (~), BRIDGE (=), WALL (#), DOOR (D)
+layout: |
+  ..............^...
+  .....FF.......^...
+  ....FFFF......^...
+  ...FFFFF.....^^...
+  ....FFF......~....
+  .............=....
+  .............~....
+  ..O............FF.
+  .................F
+  .FF...............
+  FFFF..............
+  .FFF..............
+  .................O
+  ..................
+  ..................
+
+# Special tiles
+special_tiles:
+  - position: [7, 7]
+    type: "VILLAGE"
+    name: "Eastern Village"
+    description: "A small village under threat from bandits."
+    
+  - position: [1, 7]
+    type: "FORT"
+    name: "Western Fort"
+    description: "A small fort where the militia is stationed."
+    
+  - position: [18, 12]
+    type: "FORT"
+    name: "Bandit Hideout"
+    description: "A fortified position where the bandit leader is stationed."
+    is_throne: true
+
+# Starting positions
+starting_positions:
+  player: [[2, 8], [3, 8], [2, 9], [3, 9]]
+  enemy: [[16, 8], [17, 8], [16, 9], [17, 9], [18, 12]]

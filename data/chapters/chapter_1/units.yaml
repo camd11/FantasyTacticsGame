@@ -1,0 +1,90 @@
+# Chapter 1 Units
+# Defines initial unit placements, stats overrides, inventory, and AI
+
+units:
+  player:
+    - unit_id: "LEIF"
+      position: [2, 8]
+      stats_override:
+        level: 1
+        hp: 20
+      inventory:
+        - "IRON_SWORD"
+        - "RAPIER"
+        - "VULNERARY"
+      
+    - unit_id: "FINN"
+      position: [3, 8]
+      inventory:
+        - "IRON_LANCE"
+        - "JAVELIN"
+        - "VULNERARY"
+      
+    - unit_id: "EYVEL"
+      position: [2, 9]
+      inventory:
+        - "IRON_SWORD"
+        - "FLAME_SWORD"
+        - "VULNERARY"
+      
+    - unit_id: "OTHIN"
+      position: [3, 9]
+      inventory:
+        - "IRON_AXE"
+        - "HAND_AXE"
+        - "VULNERARY"
+
+  enemy:
+    - unit_id: "ENEMY_SOLDIER_1"
+      position: [16, 8]
+      class_override: "SOLDIER"
+      level_override: 2
+      inventory:
+        - "IRON_LANCE"
+      ai_archetype: "aggressive_melee"
+      
+    - unit_id: "ENEMY_SOLDIER_2"
+      position: [17, 8]
+      class_override: "SOLDIER"
+      level_override: 2
+      inventory:
+        - "IRON_LANCE"
+      ai_archetype: "aggressive_melee"
+      
+    - unit_id: "ENEMY_ARCHER_1"
+      position: [16, 9]
+      class_override: "ARCHER"
+      level_override: 2
+      inventory:
+        - "IRON_BOW"
+      ai_archetype: "stationary_ranged"
+      
+    - unit_id: "LIFIS"
+      position: [17, 9]
+      class_override: "BRIGAND"
+      level_override: 3
+      inventory:
+        - "IRON_AXE"
+        - "HAND_AXE"
+      ai_archetype: "aggressive_melee"
+      
+    - unit_id: "ENEMY_GUARD_1"
+      position: [18, 12]
+      class_override: "FIGHTER"
+      level_override: 5
+      inventory:
+        - "STEEL_AXE"
+        - "VULNERARY"
+      ai_archetype: "boss_stationary"
+      is_boss: true
+      name_override: "Bandit Leader"
+
+  npc:
+    - unit_id: "HALVAN"
+      position: [7, 7]
+      class_override: "FIGHTER"
+      level_override: 1
+      inventory:
+        - "IRON_AXE"
+      ai_archetype: "civilian_stationary"
+      name_override: "Villager"

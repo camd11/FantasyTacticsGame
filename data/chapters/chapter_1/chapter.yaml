@@ -1,0 +1,43 @@
+# Chapter 1 Main Configuration
+# References all other chapter data files
+
+chapter_id: "ch1_the_beginning"
+chapter_title: "The Beginning"
+description: "Leif and his companions must protect a village from bandits."
+
+# References to other data files
+map_file: "data/chapters/chapter_1/map.yaml"
+units_file: "data/chapters/chapter_1/units.yaml"
+objectives_file: "data/chapters/chapter_1/objectives.yaml"
+events_file: "data/chapters/chapter_1/events.yaml"
+
+# Chapter-specific settings
+starting_turn: 1
+max_turns: 20
+weather: "clear"
+music_track: "battle_theme_01"
+
+# Initial camera position
+initial_camera_position: [2, 8]
+
+# Opening cutscene dialogue
+opening_dialogue:
+  - speaker: "LEIF"
+    line: "We've received reports of bandits terrorizing the nearby village."
+  - speaker: "FINN"
+    line: "Lord Leif, we should move quickly. The villagers won't be able to hold out much longer."
+  - speaker: "EYVEL"
+    line: "I'll take the lead. Stay close and watch for ambushes."
+  - speaker: "LEIF"
+    line: "Let's go. We need to protect those villagers and defeat the bandit leader."
+
+# Ending cutscene dialogue
+ending_dialogue:
+  - speaker: "LEIF"
+    line: "The village is safe now. But this is just the beginning of our journey."
+  - speaker: "FINN"
+    line: "You've done well, Lord Leif. Your father would be proud."
+  - speaker: "EYVEL"
+    line: "We should move on. There are reports of more bandit activity to the east."
+  - speaker: "LEIF"
+    line: "Then that's where we'll go next. We won't rest until these lands are at peace."

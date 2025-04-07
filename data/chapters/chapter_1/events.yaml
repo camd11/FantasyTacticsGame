@@ -1,0 +1,143 @@
+# Chapter 1 Events
+# Defines event triggers, events, and reinforcements
+
+# Event Triggers
+event_triggers:
+  - trigger_id: "turn_3_reinforcements"
+    type: "turn_start"
+    value: 3
+    
+  - trigger_id: "bridge_area_trigger"
+    type: "area_entered"
+    area: [[11, 5], [13, 6]]
+    faction: "player"
+    
+  - trigger_id: "talk_leif_eyvel"
+    type: "talk_available"
+    unit1_id: "LEIF"
+    unit2_id: "EYVEL"
+    
+  - trigger_id: "boss_defeated_trigger"
+    type: "unit_defeated"
+    target_unit_id: "ENEMY_GUARD_1"
+    
+  - trigger_id: "village_visited_trigger"
+    type: "village_visited"
+    target_position: [7, 7]
+    visiting_unit_faction: "player"
+
+# Events
+events:
+  - event_id: "reinforcements_appear"
+    trigger: "turn_3_reinforcements"
+    actions:
+      - type: "spawn_reinforcements"
+        group_id: "bandit_reinforcements"
+      - type: "show_dialogue"
+        dialogue_id: "reinforcement_warning"
+        
+  - event_id: "bridge_ambush"
+    trigger: "bridge_area_trigger"
+    actions:
+      - type: "show_dialogue"
+        dialogue_id: "bridge_ambush_dialogue"
+      - type: "spawn_reinforcements"
+        group_id: "bridge_ambushers"
+      - type: "set_trigger_inactive"
+        target_trigger_id: "bridge_area_trigger"
+        
+  - event_id: "leif_eyvel_conversation"
+    trigger: "talk_leif_eyvel"
+    actions:
+      - type: "enable_talk_option"
+        unit1_id: "LEIF"
+        unit2_id: "EYVEL"
+        dialogue_id: "leif_eyvel_convo"
+        
+  - event_id: "boss_drops_item"
+    trigger: "boss_defeated_trigger"
+    actions:
+      - type: "drop_item_at"
+        item_id: "DOOR_KEY"
+        position_from_trigger: true
+      - type: "show_dialogue"
+        dialogue_id: "boss_defeated_dialogue"
+        
+  - event_id: "village_reward"
+    trigger: "village_visited_trigger"
+    actions:
+      - type: "give_item_to_unit"
+        item_id: "VULNERARY"
+        recipient_unit_triggering: true
+      - type: "show_dialogue"
+        dialogue_id: "village_thanks"
+      - type: "set_trigger_inactive"
+        target_trigger_id: "village_visited_trigger"
+      - type: "recruit_unit"
+        unit_id: "HALVAN"
+
+# Reinforcements
+reinforcements:
+  - group_id: "bandit_reinforcements"
+    units:
+      - unit_id: "ENEMY_SOLDIER_1"
+        position: [0, 0]
+        ai_archetype: "aggressive_melee"
+        inventory:
+          - "IRON_LANCE"
+      - unit_id: "ENEMY_SOLDIER_2"
+        position: [0, 1]
+        ai_archetype: "aggressive_melee"
+        inventory:
+          - "IRON_LANCE"
+    trigger: "turn_3_reinforcements"
+    
+  - group_id: "bridge_ambushers"
+    units:
+      - unit_id: "ENEMY_ARCHER_1"
+        position: [12, 4]
+        ai_archetype: "stationary_ranged"
+        inventory:
+          - "IRON_BOW"
+      - unit_id: "ENEMY_SOLDIER_1"
+        position: [12, 7]
+        ai_archetype: "aggressive_melee"
+        inventory:
+          - "IRON_LANCE"
+    trigger: "bridge_area_trigger"
+
+# Dialogue data (simplified, could be in a separate file)
+dialogue:
+  reinforcement_warning:
+    - speaker: "FINN"
+      line: "Lord Leif, I see enemy reinforcements approaching from the north!"
+    - speaker: "LEIF"
+      line: "We need to move quickly. Let's secure that village before they arrive."
+      
+  bridge_ambush_dialogue:
+    - speaker: "EYVEL"
+      line: "Wait... it's quiet. Too quiet."
+    - speaker: "ENEMY_SOLDIER_1"
+      line: "Ambush! Don't let them cross the bridge!"
+      
+  leif_eyvel_convo:
+    - speaker: "LEIF"
+      line: "Eyvel, thank you for your continued support. I couldn't do this without you."
+    - speaker: "EYVEL"
+      line: "You've grown stronger, Lord Leif. Your parents would be proud."
+    - speaker: "LEIF"
+      line: "I hope to live up to their legacy. Let's defeat these bandits and protect the villagers."
+      
+  boss_defeated_dialogue:
+    - speaker: "ENEMY_GUARD_1"
+      line: "Urgh... how could I lose to... a bunch of... kids..."
+    - speaker: "LEIF"
+      line: "The bandit leader is defeated. The village should be safe now."
+      
+  village_thanks:
+    - speaker: "HALVAN"
+      line: "Thank you for protecting our village! Please take this, it might help you on your journey."
+    - speaker: "HALVAN"
+      line: "I'm skilled with an axe. If you'll have me, I'd like to join your cause."
+    - speaker: "LEIF"
+      line: "We welcome your help. Together we'll bring peace to this land."

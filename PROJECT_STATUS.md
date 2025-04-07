@@ -66,6 +66,7 @@
     - Promotions (`promotions.yaml`): Added Myrmidon->Swordmaster, Troubadour->Valkyrie/Paladin.
     - Supports (`supports.yaml`): Added initial support pairs (e.g., Leif/Nanna, Othin/Tanya).
     - Terrain (`terrain.yaml`)
+    - Chapter 1 Data (`data/chapters/chapter_1/`): Initial map, units, objectives, and events created.
 - **CLI Enhancements:**
     - Basic command-line interface implemented.
 - **Bug Fixes:**
@@ -99,7 +100,7 @@
 
 - **Data Population:**
     - Add more units, items, classes, skills, promotions, and supports.
-    - Create chapter-specific data (layouts, placements, events).
+    - Create data for subsequent chapters (Chapter 2 onwards: layouts, placements, events).
 - **CLI Development:**
     - Implement fully interactive turn-by-turn gameplay via CLI.
 - **Testing:**
