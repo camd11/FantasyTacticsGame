@@ -19,6 +19,13 @@ class FactionEnum(Enum):
     ENEMY = auto()
     NPC = auto()
 
+class StatusEnum(Enum):
+    """Enum representing the status of a unit."""
+    NORMAL = auto()
+    RESCUING = auto()  # Unit is carrying another unit
+    RESCUED = auto()   # Unit is being carried
+    CAPTURED = auto()  # Unit has been captured by an enemy
+
 class PhaseEnum(Enum):
     PLAYER = auto()
     ENEMY = auto()

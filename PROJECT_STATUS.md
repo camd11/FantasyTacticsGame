@@ -21,6 +21,12 @@
         - Success depends on the thief's Speed vs. the target's Speed and the thief's CON vs. the item's weight.
         - Stealing incurs a fatigue cost for the thief.
         - Stolen items are transferred to the thief's inventory.
+    - Rescue/Drop/Take System
+        - Allows units to rescue adjacent allies if their CON is sufficient.
+        - Rescuer suffers stat penalties (e.g., reduced Speed, Skill).
+        - Rescued unit is removed from the map and cannot act ('Rescued' state).
+        - Rescuer can drop the rescued unit onto an adjacent empty tile.
+        - Allies can take the rescued unit from the rescuer.
 - **Initial Data Population:**
     - Units (`units.yaml`): Added Mareeta, Nanna, Saias.
     - Items (`items.yaml`): Added Short Lance, Rapier, Physic, Killer Lance, Hand Axe.
