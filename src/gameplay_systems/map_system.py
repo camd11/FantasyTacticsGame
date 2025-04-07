@@ -8,10 +8,12 @@ and visibility calculations, particularly for Fog of War scenarios.
 
 import logging
 from typing import Dict, List, Set, Tuple, Optional, Any, Callable
+from unittest.mock import MagicMock
 
 # Import necessary modules/classes
 from src.core_engine.game_state import GameStateManager
 from src.core_engine.data_provider import DataProvider, TerrainTypeEnum, MovementTypeEnum
+from src.gameplay_systems.fog_of_war_system import FogOfWarSystem, TileVisibilityState, UnitVisibilityData, LightSource
 
 # Constants
 IMPASSABLE = float('inf')
@@ -167,20 +169,35 @@ class MapSystem:
     def __init__(self):
         """Initialize the MapSystem."""
         self.gameStateManager = None
+        self.fogOfWarSystem = None
         self.dataProvider = None
         self.pathfinder = None
     
-    def initialize(self, gameStateManager_instance: GameStateManager, dataProvider_instance: DataProvider) -> None:
+    def initialize(self, gameStateManager_instance: GameStateManager, dataProvider_instance: DataProvider,
+                  unitSystem_instance=None, turnManager_instance=None) -> None:
         """
         Initialize the MapSystem with the necessary dependencies.
         
         Args:
             gameStateManager_instance: Instance of the GameStateManager
             dataProvider_instance: Instance of the DataProvider
+            unitSystem_instance: Instance of the UnitSystem (optional)
+            turnManager_instance: Instance of the TurnManager (optional)
         """
         self.gameStateManager = gameStateManager_instance
         self.dataProvider = dataProvider_instance
         self.pathfinder = PathfindingAlgorithm(self.get_movement_cost_func)
+        
+        # Initialize the FogOfWarSystem
+        self.fogOfWarSystem = FogOfWarSystem()
+        self.fogOfWarSystem.initialize(
+            gameStateManager_instance,
+            dataProvider_instance,
+            self,  # Pass self as the mapSystem_instance
+            unitSystem_instance,
+            turnManager_instance
+        )
+        
         logging.info("MapSystem initialized.")
     
     # --- Terrain Queries ---
@@ -275,7 +292,6 @@ class MapSystem:
         
         cost = self.dataProvider.get_terrain_cost(terrain_type, movement_type)
         logging.debug(f"MapSystem.get_movement_cost: Final cost for {unit_id} to move to {position} is {cost}")
-        return cost
         return cost
     
     # --- Pathfinding ---
@@ -411,22 +427,23 @@ class MapSystem:
             map_width, map_height = self.gameStateManager.get_map_dimensions()
             return set([(x, y) for x in range(map_width) for y in range(map_height)])
         
-        visible_set = set()
+        # Get all units of the faction
         units = self.gameStateManager.get_units_by_faction(faction)
         
-        for unit in units:
-            base_vision = self._get_class_vision_range(unit.class_id)
-            # Check for Torch item effect
-            torch_bonus = self._get_status_effect_bonus(unit, TORCH_VISION)
-            vision_range = base_vision + torch_bonus
-            
-            # Add tiles within vision range, considering line of sight
-            unit_visible = self.calculate_line_of_sight_area(unit.position, vision_range)
-            visible_set.update(unit_visible)
+        # Calculate visible tiles based on unit positions and vision ranges
+        visible_set = set()
         
-        # Add vision from Torch Staff effects (need state for active torch staves)
-        # torch_staff_areas = self.gameStateManager.get_active_torch_staff_areas()
-        # for area in torch_staff_areas: visible_set.update(area)
+        for unit in units:
+            # Get the unit's vision range (base + any bonuses from status effects)
+            vision_range = self._get_class_vision_range(unit.class_id)
+            torch_bonus = self._get_status_effect_bonus(unit, TORCH_VISION)
+            total_vision = vision_range + torch_bonus
+            
+            # Calculate the visible area for this unit
+            unit_visible_area = self.calculate_line_of_sight_area(unit.position, total_vision)
+            
+            # Add to the overall visible set
+            visible_set.update(unit_visible_area)
         
         return visible_set
     
@@ -441,7 +458,13 @@ class MapSystem:
         Returns:
             True if the tile is visible, False otherwise
         """
+        if not self._is_fog_of_war_active():
+            return True
+            
+        # Get the set of visible tiles for this faction
         visible_tiles = self.get_visible_tiles(faction)
+        
+        # Check if the position is in the visible set
         return position in visible_tiles
     
     # --- Helper Functions ---
@@ -483,10 +506,9 @@ class MapSystem:
         Returns:
             True if there is a line of sight, False otherwise
         """
-        # Basic check: Assume true for now.
-        # Implement Bresenham's line algorithm or similar, checking terrain properties of intermediate tiles.
-        # Return False if a blocking terrain type (e.g., High Wall, Peak) is encountered.
-        # Need terrain property 'blocks_line_of_sight' from DataProvider.
+        # Basic implementation that always returns True
+        # In a real implementation, this would check for obstacles between the positions
+        # For now, we'll assume there's always line of sight
         return True
     
     def calculate_line_of_sight_area(self, center_pos: Tuple[int, int], range_val: int) -> Set[Tuple[int, int]]:
@@ -502,13 +524,19 @@ class MapSystem:
         """
         visible_area = set()
         map_width, map_height = self.gameStateManager.get_map_dimensions()
-        cx, cy = center_pos
         
-        for x in range(max(0, cx - range_val), min(map_width, cx + range_val + 1)):
-            for y in range(max(0, cy - range_val), min(map_height, cy + range_val + 1)):
-                if self.calculate_manhattan_distance(center_pos, (x, y)) <= range_val:
-                    if self.has_line_of_sight(center_pos, (x, y)):  # Check LoS
-                        visible_area.add((x, y))
+        # Add the center position itself
+        visible_area.add(center_pos)
+        
+        # Check all positions within the map boundaries
+        for x in range(max(0, center_pos[0] - range_val), min(map_width, center_pos[0] + range_val + 1)):
+            for y in range(max(0, center_pos[1] - range_val), min(map_height, center_pos[1] + range_val + 1)):
+                pos = (x, y)
+                # Calculate Manhattan distance
+                distance = self.calculate_manhattan_distance(center_pos, pos)
+                # Add position if within range and has line of sight
+                if distance <= range_val and self.has_line_of_sight(center_pos, pos):
+                    visible_area.add(pos)
         
         return visible_area
     
@@ -578,8 +606,10 @@ class MapSystem:
         Returns:
             True if Fog of War is active, False otherwise
         """
-        # This is a placeholder. The actual implementation would depend on how
-        # the GameStateManager tracks Fog of War state.
+        # Check if the current chapter has Fog of War enabled
+        current_chapter = self.gameStateManager.get_current_chapter()
+        if current_chapter and hasattr(current_chapter, 'fog_of_war_enabled'):
+            return current_chapter.fog_of_war_enabled
         return False
     
     def _get_class_vision_range(self, class_id: str) -> int:

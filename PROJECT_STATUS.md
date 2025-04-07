@@ -10,6 +10,12 @@
     - Status Effects System
     - Dismounting System
     - Support/Leadership System
+    - Fog of War System
+        - Calculates visibility based on unit vision range and terrain.
+        - Maintains different map states (visible, explored, hidden).
+        - Updates visibility dynamically on unit movement or phase changes.
+        - Handles enemy unit visibility and actions within the fog.
+        - Incorporates effects like Torches or Light spells to temporarily increase vision.
     - Capture System
         - Allows units to capture enemies if they have higher Constitution (CON) and the target has low HP.
         - Capturer suffers stat penalties (e.g., reduced Speed, Skill).
