@@ -1,0 +1,29 @@
+BALLISTA_REGULAR:
+  id: "BALLISTA_REGULAR"
+  display_name: "Ballista"
+  sprite_id: "BALLISTA_SPRITE"
+  occupied_sprite_id: "BALLISTA_OCCUPIED_SPRITE"
+  weapon_id: "BALLISTA_WEAPON_REGULAR"
+  allowed_classes:
+    - "ARCHER"
+    - "SNIPER"
+    - "WARRIOR"
+
+BALLISTA_IRON:
+  id: "BALLISTA_IRON"
+  display_name: "Iron Ballista"
+  sprite_id: "BALLISTA_IRON_SPRITE"
+  occupied_sprite_id: "BALLISTA_IRON_OCCUPIED_SPRITE"
+  weapon_id: "BALLISTA_WEAPON_IRON"
+  allowed_classes:
+    - "ARCHER"
+    - "SNIPER"
+
+BALLISTA_KILLER:
+  id: "BALLISTA_KILLER"
+  display_name: "Killer Ballista"
+  sprite_id: "BALLISTA_KILLER_SPRITE"
+  occupied_sprite_id: "BALLISTA_KILLER_OCCUPIED_SPRITE"
+  weapon_id: "BALLISTA_WEAPON_KILLER"
+  allowed_classes:
+    - "SNIPER"

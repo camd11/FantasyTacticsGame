@@ -172,6 +172,9 @@ class MapSystem:
         self.fogOfWarSystem = None
         self.dataProvider = None
         self.pathfinder = None
+        self._map_objects = {}  # id -> object
+        self._map_objects_by_position = {}  # (x, y) -> [objects]
+        self._map_objects_by_type = {}  # type -> [objects]
     
     def initialize(self, gameStateManager_instance: GameStateManager, dataProvider_instance: DataProvider,
                   unitSystem_instance=None, turnManager_instance=None) -> None:
@@ -199,6 +202,11 @@ class MapSystem:
         )
         
         logging.info("MapSystem initialized.")
+        
+        # Initialize map objects collections
+        self._map_objects = {}
+        self._map_objects_by_position = {}
+        self._map_objects_by_type = {}
     
     # --- Terrain Queries ---
     
@@ -732,3 +740,175 @@ class MapSystem:
         
         # Positions are adjacent if Manhattan distance is 1
         return distance == 1
+    
+    # --- Map Objects ---
+    
+    def add_map_object(self, obj) -> bool:
+        """
+        Add an object to the map.
+        
+        Args:
+            obj: The object to add (must have id and position attributes)
+            
+        Returns:
+            True if the object was added successfully, False otherwise
+        """
+        if not hasattr(obj, 'id') or not hasattr(obj, 'position'):
+            logging.error("Cannot add map object: Object must have id and position attributes")
+            return False
+        
+        obj_id = obj.id
+        position = obj.position
+        obj_type = obj.__class__.__name__
+        
+        # Add to main dictionary
+        self._map_objects[obj_id] = obj
+        
+        # Add to position dictionary
+        if position not in self._map_objects_by_position:
+            self._map_objects_by_position[position] = []
+        self._map_objects_by_position[position].append(obj)
+        
+        # Add to type dictionary
+        if obj_type not in self._map_objects_by_type:
+            self._map_objects_by_type[obj_type] = []
+        self._map_objects_by_type[obj_type].append(obj)
+        
+        logging.info(f"Added map object {obj_id} at {position}")
+        return True
+    
+    def remove_map_object(self, obj_id: str) -> bool:
+        """
+        Remove an object from the map.
+        
+        Args:
+            obj_id: ID of the object to remove
+            
+        Returns:
+            True if the object was removed successfully, False otherwise
+        """
+        if obj_id not in self._map_objects:
+            return False
+        
+        obj = self._map_objects[obj_id]
+        position = obj.position
+        obj_type = obj.__class__.__name__
+        
+        # Remove from main dictionary
+        del self._map_objects[obj_id]
+        
+        # Remove from position dictionary
+        if position in self._map_objects_by_position:
+            self._map_objects_by_position[position] = [o for o in self._map_objects_by_position[position] if o.id != obj_id]
+            if not self._map_objects_by_position[position]:
+                del self._map_objects_by_position[position]
+        
+        # Remove from type dictionary
+        if obj_type in self._map_objects_by_type:
+            self._map_objects_by_type[obj_type] = [o for o in self._map_objects_by_type[obj_type] if o.id != obj_id]
+            if not self._map_objects_by_type[obj_type]:
+                del self._map_objects_by_type[obj_type]
+        
+        logging.info(f"Removed map object {obj_id}")
+        return True
+    
+    def get_object_by_id(self, obj_id: str) -> Optional[Any]:
+        """
+        Get a map object by ID.
+        
+        Args:
+            obj_id: ID of the object
+            
+        Returns:
+            The object or None if not found
+        """
+        return self._map_objects.get(obj_id)
+    
+    def get_object_at(self, position: Tuple[int, int], type: Optional[str] = None) -> Optional[Any]:
+        """
+        Get an object at a specific position, optionally of a specific type.
+        
+        Args:
+            position: Position (x, y)
+            type: Optional type of object to get
+            
+        Returns:
+            The object or None if not found
+        """
+        if position not in self._map_objects_by_position:
+            return None
+        
+        objects = self._map_objects_by_position[position]
+        
+        if type:
+            # Filter by type
+            objects = [obj for obj in objects if obj.__class__.__name__ == type]
+        
+        # Return the first object (or None if no objects)
+        return objects[0] if objects else None
+    
+    def get_all_objects_of_type(self, type_class) -> List[Any]:
+        """
+        Get all objects of a specific type.
+        
+        Args:
+            type_class: Class or string name of the type
+            
+        Returns:
+            List of objects of the specified type
+        """
+        type_name = type_class if isinstance(type_class, str) else type_class.__name__
+        return self._map_objects_by_type.get(type_name, [])
+    
+    def get_los_checker(self) -> Callable:
+        """
+        Get a function that checks line of sight between two positions.
+        
+        Returns:
+            Function that takes two positions and returns True if there is line of sight
+        """
+        return self.has_line_of_sight
+    
+    def calculate_tiles_in_range(self, origin: Tuple[int, int], min_range: int, max_range: int,
+                                map_data=None, los_checker=None) -> Set[Tuple[int, int]]:
+        """
+        Calculate tiles within a range, respecting line of sight.
+        
+        Args:
+            origin: Origin position (x, y)
+            min_range: Minimum range
+            max_range: Maximum range
+            map_data: Optional map data
+            los_checker: Optional line of sight checker function
+            
+        Returns:
+            Set of positions within range
+        """
+        if los_checker is None:
+            los_checker = self.has_line_of_sight
+            
+        valid_tiles = set()
+        map_width, map_height = self.get_map_dimensions()
+        
+        for x in range(max(0, origin[0] - max_range), min(map_width, origin[0] + max_range + 1)):
+            for y in range(max(0, origin[1] - max_range), min(map_height, origin[1] + max_range + 1)):
+                pos = (x, y)
+                distance = self.calculate_manhattan_distance(origin, pos)
+                
+                if min_range <= distance <= max_range and los_checker(origin, pos):
+                    valid_tiles.add(pos)
+        
+        return valid_tiles
+    
+    def distance(self, pos1: Tuple[int, int], pos2: Tuple[int, int]) -> int:
+        """
+        Calculate the Manhattan distance between two positions.
+        
+        Args:
+            pos1: First position (x, y)
+            pos2: Second position (x, y)
+            
+        Returns:
+            Manhattan distance
+        """
+        return self.calculate_manhattan_distance(pos1, pos2)

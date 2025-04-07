@@ -58,6 +58,13 @@
     - Event Manager
         - Processes event triggers defined in chapter data (e.g., turn number, area entered, unit defeated).
         - Executes corresponding event outcomes (e.g., reinforcements, dialogue, objective updates, map changes).
+    - Ballista System
+        - Implements Ballistae as map objects that units can mount and use.
+        - Usage requires the unit to have the appropriate weapon rank (e.g., Bows) and be adjacent to the Ballista.
+        - Allows targeting units within the Ballista's specific range and attack pattern.
+        - Combat calculations use the Ballista's stats combined with the mounting unit's relevant stats (e.g., Skill).
+        - Ballistae have durability (uses) which deplete upon firing.
+        - **Note:** Unit tests (`test_ballista_system.py`) are currently failing due to test setup/mocking issues and require refactoring.
 - **Initial Data Population:**
     - Units (`units.yaml`): Added Mareeta, Nanna, Saias.
     - Items (`items.yaml`): Added Short Lance, Rapier, Physic, Killer Lance, Hand Axe.
@@ -105,6 +112,7 @@
     - Implement fully interactive turn-by-turn gameplay via CLI.
 - **Testing:**
     - Develop more comprehensive testing scenarios covering edge cases and complex interactions.
+    - Refactor failing Ballista system tests (`test_ballista_system.py`).
 - **Future Enhancements:**
     - Potential GUI implementation.
 - **Bug Fixing:**

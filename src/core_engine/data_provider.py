@@ -238,6 +238,8 @@ class DataProvider:
         self._support_relations: Dict[str, List[SupportRelation]] = {}
         self._promotion_data: Dict[str, PromotionGains] = {}
         self._skill_data: Dict[str, SkillData] = {}
+        self._ballista_type_data: Dict[str, Any] = {}
+        self._ballista_weapon_data: Dict[str, Any] = {}
         
         # Weapon triangle data (could be loaded from file but hardcoded for simplicity)
         self._weapon_triangle = {
@@ -296,22 +298,35 @@ class DataProvider:
             
             # Load support relations
             self._support_relations = self._load_data_to_objects(
-                os.path.join(data_directory, "supports.yaml"), 
+                os.path.join(data_directory, "supports.yaml"),
                 SupportRelation,
                 is_list=True
             )
             
             # Load promotion data
             self._promotion_data = self._load_data_to_objects(
-                os.path.join(data_directory, "promotions.yaml"), 
+                os.path.join(data_directory, "promotions.yaml"),
                 PromotionGains
             )
             
             # Load skill data
             self._skill_data = self._load_data_to_objects(
-                os.path.join(data_directory, "skills.yaml"), 
+                os.path.join(data_directory, "skills.yaml"),
                 SkillData
             )
+            
+            # Load ballista data if available
+            ballista_types_path = os.path.join(data_directory, "ballista_types.yaml")
+            if os.path.exists(ballista_types_path):
+                self._ballista_type_data = self._load_yaml_or_json(ballista_types_path)
+            else:
+                self._ballista_type_data = {}
+                
+            ballista_weapons_path = os.path.join(data_directory, "ballista_weapons.yaml")
+            if os.path.exists(ballista_weapons_path):
+                self._ballista_weapon_data = self._load_yaml_or_json(ballista_weapons_path)
+            else:
+                self._ballista_weapon_data = {}
             
             logging.info("Static data loaded successfully")
             
@@ -746,6 +761,50 @@ class DataProvider:
             SkillData object or None if not found
         """
         return self._skill_data.get(skill_id)
+    
+    def get_ballista_type(self, ballista_type_id: str) -> Optional[Any]:
+        """
+        Get the data for a specific ballista type.
+        
+        Args:
+            ballista_type_id: The ID of the ballista type
+            
+        Returns:
+            Ballista type data or None if not found
+        """
+        return self._ballista_type_data.get(ballista_type_id)
+    
+    def get_ballista_weapon(self, weapon_id: str) -> Optional[Any]:
+        """
+        Get the data for a specific ballista weapon.
+        
+        Args:
+            weapon_id: The ID of the ballista weapon
+            
+        Returns:
+            Ballista weapon data or None if not found
+        """
+        return self._ballista_weapon_data.get(weapon_id)
+    
+    def get_effectiveness_multiplier(self, effectiveness: Dict, target) -> float:
+        """
+        Get the effectiveness multiplier for a weapon against a target.
+        
+        Args:
+            effectiveness: Dictionary mapping unit properties to multipliers
+            target: The target unit
+            
+        Returns:
+            Effectiveness multiplier (typically 1.0 or 3.0)
+        """
+        if not effectiveness:
+            return 1.0
+            
+        for property_name, multiplier in effectiveness.items():
+            if hasattr(target, 'has_property') and target.has_property(property_name):
+                return float(multiplier)
+                
+        return 1.0
         
     def get_config(self, config_key: str, default: Any = None) -> Any:
         """
@@ -828,6 +887,30 @@ class DataProvider:
         
         return []
 
+    def get_ballista_placements(self, chapter_id: str, scenario_name: Optional[str] = None) -> List:
+        """
+        Load and return the ballista placements for a specific chapter or scenario.
+        
+        Args:
+            chapter_id: The ID of the chapter
+            scenario_name: Optional name of a test scenario
+            
+        Returns:
+            List of ballista placement data (empty list if none found)
+        """
+        # Determine the filepath based on whether we're loading a scenario or a chapter
+        if scenario_name:
+            filepath = os.path.join("data", "scenarios", f"{scenario_name}.yaml")
+        else:
+            filepath = os.path.join("data", "chapters", chapter_id, "chapter.yaml")
+                
+        scenario_data = self._load_yaml_or_json(filepath)
+        
+        if not scenario_data or 'ballistae' not in scenario_data:
+            return []
+        
+        return scenario_data['ballistae']
+    
     # Overwrite the existing get_event_scripts to load from chapter JSON
     def get_event_scripts(self, chapter_id: str, scenario_name: Optional[str] = None) -> List:
         """

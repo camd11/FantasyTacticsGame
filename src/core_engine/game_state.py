@@ -115,6 +115,7 @@ class UnitState:
         # Action state for current turn
         self.has_moved: bool = False
         self.has_acted: bool = False
+        self.is_immobile: bool = False  # Added for ballista system
         
         # Relationships/Bonuses
         self.support_partner_ids: List[str] = []
@@ -127,10 +128,93 @@ class UnitState:
         
         # Overall Status
         self.disposition: DispositionEnum = DispositionEnum.ACTIVE
+        
+        # Component system
+        self.components: Dict[str, Any] = {}
     
     def has_status(self, status_type: StatusEffectEnum) -> bool:
         """Check if the unit has a specific status effect."""
         return any(status.type == status_type for status in self.status_effects)
+    
+    def add_component(self, component) -> None:
+        """
+        Add a component to the unit.
+        
+        Args:
+            component: The component to add
+        """
+        component_type = component.__class__.__name__
+        self.components[component_type] = component
+    
+    def remove_component(self, component_type: str) -> None:
+        """
+        Remove a component from the unit.
+        
+        Args:
+            component_type: Type of component to remove
+        """
+        if component_type in self.components:
+            del self.components[component_type]
+    
+    def get_component(self, component_type: str) -> Optional[Any]:
+        """
+        Get a component from the unit.
+        
+        Args:
+            component_type: Type of component to get
+            
+        Returns:
+            The component if found, None otherwise
+        """
+        return self.components.get(component_type)
+    
+    def has_component(self, component_type: str) -> bool:
+        """
+        Check if the unit has a component.
+        
+        Args:
+            component_type: Type of component to check for
+            
+        Returns:
+            True if the unit has the component, False otherwise
+        """
+        return component_type in self.components
+    
+    def set_immobile(self, immobile: bool) -> None:
+        """
+        Set whether the unit is immobile.
+        
+        Args:
+            immobile: True if the unit should be immobile, False otherwise
+        """
+        self.is_immobile = immobile
+    
+    def is_attackable(self) -> bool:
+        """
+        Check if the unit can be attacked.
+        
+        Returns:
+            True if the unit can be attacked, False otherwise
+        """
+        return self.disposition == DispositionEnum.ACTIVE
+    
+    def has_property(self, property_name: str) -> bool:
+        """
+        Check if the unit has a specific property.
+        
+        Args:
+            property_name: Name of the property to check for
+            
+        Returns:
+            True if the unit has the property, False otherwise
+        """
+        # For now, just handle IS_FLYING property
+        if property_name == "IS_FLYING":
+            # Check if the unit's class has the FLYING movement type
+            from src.core_engine.data_provider import MovementTypeEnum
+            return hasattr(self, 'movement_type') and self.movement_type == MovementTypeEnum.FLYING
+        
+        return False
 
 class MapState:
     """Represents the current state of the map."""

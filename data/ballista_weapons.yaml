@@ -1,0 +1,32 @@
+BALLISTA_WEAPON_REGULAR:
+  id: "BALLISTA_WEAPON_REGULAR"
+  might: 8
+  hit: 70
+  crit: 0
+  min_range: 3
+  max_range: 10
+  durability: 5
+  effectiveness:
+    IS_FLYING: 3.0
+
+BALLISTA_WEAPON_IRON:
+  id: "BALLISTA_WEAPON_IRON"
+  might: 10
+  hit: 60
+  crit: 0
+  min_range: 3
+  max_range: 15
+  durability: 3
+  effectiveness:
+    IS_FLYING: 3.0
+
+BALLISTA_WEAPON_KILLER:
+  id: "BALLISTA_WEAPON_KILLER"
+  might: 6
+  hit: 65
+  crit: 30
+  min_range: 3
+  max_range: 8
+  durability: 3
+  effectiveness:
+    IS_FLYING: 3.0

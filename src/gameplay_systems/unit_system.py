@@ -50,6 +50,7 @@ class UnitSystem:
         """Initialize the UnitSystem."""
         self.gameStateManager = None
         self.dataProvider = None
+        self._component_handlers = {}  # type -> handler function
     
     def initialize(self, gameStateManager_instance: GameStateManager, dataProvider_instance: DataProvider) -> None:
         """
@@ -62,6 +63,9 @@ class UnitSystem:
         self.gameStateManager = gameStateManager_instance
         self.dataProvider = dataProvider_instance
         logging.info("UnitSystem initialized.")
+        
+        # Initialize component handlers
+        self._init_component_handlers()
     
     # --- Unit State Access ---
     
@@ -922,3 +926,155 @@ class UnitSystem:
                 logging.info(f"Unit {unit_id} faction changed to {new_faction}")
                 return True
         return result
+    
+    # --- Component System ---
+    
+    def _init_component_handlers(self) -> None:
+        """Initialize component handlers for different component types."""
+        # Register handlers for different component types
+        # For now, we'll just have a default handler
+        self._component_handlers["BallistaUserState"] = self._handle_ballista_user_state
+    
+    def _handle_ballista_user_state(self, unit, component, is_adding: bool) -> None:
+        """
+        Handle adding or removing a BallistaUserState component.
+        
+        Args:
+            unit: The unit to add/remove the component to/from
+            component: The component to add/remove
+            is_adding: True if adding, False if removing
+        """
+        if is_adding:
+            # Set the unit as immobile when manning a ballista
+            if hasattr(unit, 'set_immobile'):
+                unit.set_immobile(True)
+        else:
+            # Set the unit as mobile when no longer manning a ballista
+            if hasattr(unit, 'set_immobile'):
+                unit.set_immobile(False)
+    
+    def add_component(self, unit_id: str, component) -> bool:
+        """
+        Add a component to a unit.
+        
+        Args:
+            unit_id: ID of the unit
+            component: Component to add
+            
+        Returns:
+            True if the component was added successfully, False otherwise
+        """
+        unit = self.get_unit(unit_id)
+        if not unit:
+            return False
+        
+        component_type = component.__class__.__name__
+        
+        # Add the component to the unit
+        if not hasattr(unit, 'components'):
+            unit.components = {}
+        
+        unit.components[component_type] = component
+        
+        # Call the appropriate handler if registered
+        if component_type in self._component_handlers:
+            self._component_handlers[component_type](unit, component, True)
+        
+        return True
+    
+    def remove_component(self, unit_id: str, component_type: str) -> bool:
+        """
+        Remove a component from a unit.
+        
+        Args:
+            unit_id: ID of the unit
+            component_type: Type of component to remove
+            
+        Returns:
+            True if the component was removed successfully, False otherwise
+        """
+        unit = self.get_unit(unit_id)
+        if not unit or not hasattr(unit, 'components') or component_type not in unit.components:
+            return False
+        
+        component = unit.components[component_type]
+        
+        # Call the appropriate handler if registered
+        if component_type in self._component_handlers:
+            self._component_handlers[component_type](unit, component, False)
+        
+        # Remove the component
+        del unit.components[component_type]
+        
+        return True
+    
+    def get_component(self, unit_id: str, component_type: str) -> Optional[Any]:
+        """
+        Get a component from a unit.
+        
+        Args:
+            unit_id: ID of the unit
+            component_type: Type of component to get
+            
+        Returns:
+            The component if found, None otherwise
+        """
+        unit = self.get_unit(unit_id)
+        if not unit or not hasattr(unit, 'components'):
+            return None
+        
+        return unit.components.get(component_type)
+    
+    def has_component(self, unit_id: str, component_type: str) -> bool:
+        """
+        Check if a unit has a component.
+        
+        Args:
+            unit_id: ID of the unit
+            component_type: Type of component to check for
+            
+        Returns:
+            True if the unit has the component, False otherwise
+        """
+        unit = self.get_unit(unit_id)
+        if not unit or not hasattr(unit, 'components'):
+            return False
+        
+        return component_type in unit.components
+    
+    def get_units_on_tiles(self, tiles: Set[Tuple[int, int]]) -> List[Any]:
+        """
+        Get all units on a set of tiles.
+        
+        Args:
+            tiles: Set of tile positions
+            
+        Returns:
+            List of units on the tiles
+        """
+        if not self.gameStateManager or not self.gameStateManager.current_game_state:
+            return []
+        
+        result = []
+        for unit_id, unit in self.gameStateManager.current_game_state.unit_states.items():
+            if unit.position in tiles and unit.disposition == ACTIVE:
+                result.append(unit)
+        
+        return result
+    
+    def are_hostile(self, unit1, unit2) -> bool:
+        """
+        Check if two units are hostile to each other.
+        
+        Args:
+            unit1: First unit
+            unit2: Second unit
+            
+        Returns:
+            True if the units are hostile, False otherwise
+        """
+        if not unit1 or not unit2:
+            return False
+        
+        # Units are hostile if they are from different factions
+        return unit1.faction != unit2.faction
