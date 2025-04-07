@@ -202,6 +202,44 @@ class MapSystem:
     
     # --- Terrain Queries ---
     
+    def get_terrain_id_at(self, position: Tuple[int, int]) -> str:
+        """
+        Get the terrain ID at the specified position.
+        
+        Args:
+            position: Position (x, y)
+            
+        Returns:
+            Terrain ID as a string
+        """
+        terrain_type = self.gameStateManager.get_terrain_type(position)
+        if terrain_type == TERRAIN_INVALID:
+            return "INVALID"
+        
+        # Convert TerrainTypeEnum to string ID if needed
+        if isinstance(terrain_type, TerrainTypeEnum):
+            if terrain_type == TerrainTypeEnum.PLAIN:
+                return "PLAINS"
+            return terrain_type.name
+        
+        return terrain_type
+    
+    def get_terrain_data_at(self, position: Tuple[int, int]) -> Optional[Any]:
+        """
+        Get the terrain data at the specified position.
+        
+        Args:
+            position: Position (x, y)
+            
+        Returns:
+            TerrainData object or None if invalid
+        """
+        terrain_id = self.get_terrain_id_at(position)
+        if terrain_id == "INVALID":
+            return None
+        
+        return self.dataProvider.get_terrain_data(terrain_id)
+    
     def get_terrain_properties(self, position: Tuple[int, int]) -> Optional[Dict[str, Any]]:
         """
         Get the properties of the terrain at the specified position.

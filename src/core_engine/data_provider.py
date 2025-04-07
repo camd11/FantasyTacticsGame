@@ -138,11 +138,42 @@ class ClassData:
 class TerrainData:
     """Represents the static data for a terrain type."""
     def __init__(self, data_dict: Dict):
+        self.id = data_dict.get('id', '')
         self.type = data_dict.get('type', TerrainTypeEnum.PLAIN)
         self.name = data_dict.get('name', '')
+        self.description = data_dict.get('description', '')
         self.movement_costs = data_dict.get('movement_costs', {})
+        
+        # Handle both old and new data structures
+        if 'combat_modifiers' in data_dict:
+            self.combat_modifiers = data_dict.get('combat_modifiers', {})
+        else:
+            # Convert from old bonuses format to new combat_modifiers format
+            self.combat_modifiers = {
+                'defense': data_dict.get('bonuses', {}).get('def', 0),
+                'avoid': data_dict.get('bonuses', {}).get('avo', 0),
+                'resistance': 0  # Default value for backward compatibility
+            }
+            
+        self.turn_effects = data_dict.get('turn_effects', {})
+        self.ignores_effects_by = data_dict.get('ignores_effects_by', [])
+        self.passable = data_dict.get('passable', True)
+        self.passable_by = data_dict.get('passable_by', [])
+        self.graphic_id = data_dict.get('graphic_id', '')
+        
+        # For backward compatibility
         self.bonuses = data_dict.get('bonuses', {})
+        if not self.bonuses:
+            self.bonuses = {
+                'def': self.combat_modifiers.get('defense', 0),
+                'avo': self.combat_modifiers.get('avoid', 0)
+            }
+        
+        # Handle is_healing based on either direct property or turn_effects
         self.is_healing = data_dict.get('is_healing', False)
+        if not self.is_healing and 'turn_effects' in data_dict:
+            self.is_healing = 'heal_percent' in self.turn_effects and self.turn_effects.get('heal_percent', 0) > 0
+            
         self.is_indoor = data_dict.get('is_indoor', False)
 
 class MapData:
@@ -495,7 +526,17 @@ class DataProvider:
         
         terrain_info = self._terrain_data.get(lookup_key)
         if terrain_info:
-            return terrain_info.bonuses
+            # For backward compatibility with tests
+            if hasattr(terrain_info, 'bonuses') and terrain_info.bonuses:
+                return terrain_info.bonuses
+            
+            # Convert from new combat_modifiers format to old bonuses format
+            if hasattr(terrain_info, 'combat_modifiers'):
+                return {
+                    'def': terrain_info.combat_modifiers.get('defense', 0),
+                    'avo': terrain_info.combat_modifiers.get('avoid', 0)
+                }
+        
         return {'def': 0, 'avo': 0}
     
     def is_terrain_healing(self, terrain_type: Union[TerrainTypeEnum, str]) -> bool:

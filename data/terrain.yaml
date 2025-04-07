@@ -13,6 +13,7 @@ PLAINS:
   combat_modifiers:
     avoid: 0
     defense: 0
+    resistance: 0
   passable: true
   graphic_id: "plains_tile"
 
@@ -28,13 +29,15 @@ FOREST:
   combat_modifiers:
     avoid: 20
     defense: 1
+    resistance: 0
+  ignores_effects_by: ["FLYING"]
   passable: true
   graphic_id: "forest_tile"
 
 FORT:
   id: "FORT"
   name: "Fort"
-  description: "Defensive structure that provides significant protection."
+  description: "Defensive structure that provides significant protection and recovery."
   movement_costs:
     INFANTRY: 1
     CAVALRY: 2
@@ -43,6 +46,11 @@ FORT:
   combat_modifiers:
     avoid: 30
     defense: 3
+    resistance: 1
+  turn_effects:
+    heal_percent: 10
+    timing: "start_of_unit_turn"
+  ignores_effects_by: ["FLYING"]
   passable: true
   graphic_id: "fort_tile"
 
@@ -58,6 +66,8 @@ MOUNTAIN:
   combat_modifiers:
     avoid: 40
     defense: 2
+    resistance: 0
+  ignores_effects_by: ["FLYING"]
   passable: false
   passable_by: ["FLYING"]
   graphic_id: "mountain_tile"
@@ -74,6 +84,8 @@ RIVER:
   combat_modifiers:
     avoid: 10
     defense: 0
+    resistance: 1
+  ignores_effects_by: ["FLYING"]
   passable: false
   passable_by: ["FLYING"]
   graphic_id: "river_tile"
@@ -90,6 +102,7 @@ BRIDGE:
   combat_modifiers:
     avoid: 0
     defense: 0
+    resistance: 0
   passable: true
   graphic_id: "bridge_tile"
 
@@ -105,6 +118,7 @@ WALL:
   combat_modifiers:
     avoid: 0
     defense: 0
+    resistance: 0
   passable: false
   graphic_id: "wall_tile"
 
@@ -120,6 +134,28 @@ DOOR:
   combat_modifiers:
     avoid: 0
     defense: 0
+    resistance: 0
   passable: false
   can_be_opened: true
+# Adding a new terrain type for testing damage effects
+LAVA:
+  id: "LAVA"
+  name: "Lava"
+  description: "Molten rock that damages units standing on it."
+  movement_costs:
+    INFANTRY: 5
+    CAVALRY: 99
+    ARMORED: 4
+    FLYING: 1
+  combat_modifiers:
+    avoid: -10
+    defense: -2
+    resistance: -2
+  turn_effects:
+    damage_percent: 15
+    timing: "start_of_unit_turn"
+  ignores_effects_by: ["FLYING"]
+  passable: false
+  passable_by: ["FLYING", "ARMORED", "INFANTRY"]
+  graphic_id: "lava_tile"
   graphic_id: "door_tile"

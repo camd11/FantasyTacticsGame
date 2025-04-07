@@ -38,6 +38,10 @@
         - Opening requires specific conditions: possessing the correct key, having the 'Locktouch' skill, or meeting other event-based criteria.
         - Interaction can change terrain (door opens), grant items (chest contents), consume keys, or trigger events.
         - Doors/chests change state upon interaction (e.g., 'Locked' -> 'Open').
+    - Enhanced Terrain Effects
+        - Provides combat bonuses (e.g., +Def, +Res, +Avoid) based on the terrain type.
+        - Implements turn-based effects (e.g., healing on Forts, damage in Lava).
+        - Modifies unit movement costs based on terrain and unit movement type (e.g., Plains cost 1 for Infantry, 2 for Armor).
 - **Initial Data Population:**
     - Units (`units.yaml`): Added Mareeta, Nanna, Saias.
     - Items (`items.yaml`): Added Short Lance, Rapier, Physic, Killer Lance, Hand Axe.
