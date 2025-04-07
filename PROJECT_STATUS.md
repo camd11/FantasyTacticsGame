@@ -10,6 +10,17 @@
     - Status Effects System
     - Dismounting System
     - Support/Leadership System
+    - Capture System
+        - Allows units to capture enemies if they have higher Constitution (CON) and the target has low HP.
+        - Capturer suffers stat penalties (e.g., reduced Speed, Skill).
+        - Captured unit is immobilized, cannot act, and has stats reduced to 0.
+        - Capturer can steal items from the captured unit.
+        - Captured units can be released by the capturer or rescued by allies.
+    - Stealing System
+        - Allows units with the 'Thief' skill to steal non-equipped items from adjacent enemies.
+        - Success depends on the thief's Speed vs. the target's Speed and the thief's CON vs. the item's weight.
+        - Stealing incurs a fatigue cost for the thief.
+        - Stolen items are transferred to the thief's inventory.
 - **Initial Data Population:**
     - Units (`units.yaml`): Added Mareeta, Nanna, Saias.
     - Items (`items.yaml`): Added Short Lance, Rapier, Physic, Killer Lance, Hand Axe.
