@@ -838,7 +838,9 @@ class TestDismountingSystem(unittest.TestCase):
         # Assert
         # Should unequip the lance and equip the sword
         self.mock_unit_system.unequip_item.assert_called_once_with(unit_id)
-        self.mock_unit_system.equip_item.assert_called_once_with(unit_id, mock_sword_item.id)
+        # We now expect equip_item to be called with the unit ID and the index of the sword item in the inventory
+        # Since the mock_unit.inventory = [mock_sword_item, mock_axe_item], the index of mock_sword_item is 0
+        self.mock_unit_system.equip_item.assert_called_once_with(unit_id, 0)
         
         # Verify get_item was called for all items
         self.mock_data_provider.get_item.assert_has_calls([
