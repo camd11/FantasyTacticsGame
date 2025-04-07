@@ -33,6 +33,7 @@ NIHIL = "NIHIL"
 SOL = "SOL"
 LUNA = "LUNA"
 PAVISE = "PAVISE"
+VANTAGE = "VANTAGE"
 
 class CombatSystem:
     """
@@ -203,58 +204,93 @@ class CombatSystem:
         attacker_doubles = attacker_stats.get('AS', 0) >= defender_stats.get('AS', 0) + 4
         defender_doubles = defender_stats.get('AS', 0) >= attacker_stats.get('AS', 0) + 4
         defender_can_ctr = self._defender_can_counter(attacker, defender, defender_weapon)
+        # Check for Vantage skill activation
+        has_vantage = self._unit_has_skill(defender_id, VANTAGE)
+        vantage_activates = has_vantage and defender.current_hp < (defender.max_hp / 2) and defender_can_ctr
+        
+        if vantage_activates:
+            logging.info(f"{defender.name}'s Vantage skill activated! Attacking first despite being the defender.")
+            # Swap attacker and defender roles for combat sequence
+            temp_attacker, temp_defender = defender, attacker
+            temp_attacker_id, temp_defender_id = defender_id, attacker_id
+            temp_attacker_stats, temp_defender_stats = defender_stats, attacker_stats
+            temp_attacker_weapon, temp_defender_weapon = defender_weapon, attacker_weapon
+            temp_attacker_doubles, temp_defender_doubles = defender_doubles, attacker_doubles
+            
+            # Record original roles for EXP calculation later
+            original_attacker_id = attacker_id
+            original_defender_id = defender_id
+        else:
+            # Keep original roles
+            temp_attacker, temp_defender = attacker, defender
+            temp_attacker_id, temp_defender_id = attacker_id, defender_id
+            temp_attacker_stats, temp_defender_stats = attacker_stats, defender_stats
+            temp_attacker_weapon, temp_defender_weapon = attacker_weapon, defender_weapon
+            temp_attacker_doubles, temp_defender_doubles = attacker_doubles, defender_doubles
+            
+            original_attacker_id = attacker_id
+            original_defender_id = defender_id
         
         # --- Combat Round ---
         combat_log = []  # Store events for display/result processing
         
+        # 1. First unit's Strike(s) (either attacker or defender with Vantage)
         # 1. Attacker's First Strike(s)
-        num_attacker_hits = 1
-        if attacker_weapon and getattr(attacker_weapon, 'is_brave', False):
-            num_attacker_hits = 2  # Brave weapons get two strikes
+        num_first_unit_hits = 1
+        if temp_attacker_weapon and getattr(temp_attacker_weapon, 'is_brave', False):
+            num_first_unit_hits = 2  # Brave weapons get two strikes
         
-        for i in range(num_attacker_hits):
-            if attacker.current_hp > 0 and defender.current_hp > 0:
+        for i in range(num_first_unit_hits):
+            if temp_attacker.current_hp > 0 and temp_defender.current_hp > 0:
+                # Add Vantage to skills_activated if this is the defender using Vantage
+                force_skill_activated = ["VANTAGE"] if vantage_activates and temp_attacker_id == defender_id else []
+                
                 strike_result = self._perform_strike(
-                    attacker, attacker_stats, attacker_weapon,
-                    defender, defender_stats, defender_weapon,
-                    is_follow_up=(i > 0)
+                    temp_attacker, temp_attacker_stats, temp_attacker_weapon,
+                    temp_defender, temp_defender_stats, temp_defender_weapon,
+                    is_follow_up=(i > 0), force_skills_activated=force_skill_activated
                 )
                 combat_log.append(strike_result)
-                if defender.current_hp <= 0:
-                    break  # Stop if defender falls
+                if temp_defender.current_hp <= 0:
+                    break  # Stop if second unit falls
         
-        # 2. Defender's Counterattack(s)
-        if defender.current_hp > 0 and attacker.current_hp > 0 and defender_can_ctr:
-            num_defender_hits = 1
-            # Check for Wrath activation
-            has_wrath = self._unit_has_skill(defender_id, WRATH)
+        # 2. Second unit's Counterattack(s)
+        if temp_defender.current_hp > 0 and temp_attacker.current_hp > 0:
+            # If Vantage activated, the original attacker is now the defender and can always counter
+            # If Vantage didn't activate, use the original defender_can_ctr check
+            second_unit_can_counter = True if vantage_activates else defender_can_ctr
             
-            for i in range(num_defender_hits):
-                if attacker.current_hp > 0 and defender.current_hp > 0:
-                    strike_result = self._perform_strike(
-                        defender, defender_stats, defender_weapon,
-                        attacker, attacker_stats, attacker_weapon,
-                        is_follow_up=(i > 0), force_crit=has_wrath
-                    )
-                    combat_log.append(strike_result)
-                    if attacker.current_hp <= 0:
-                        break  # Stop if attacker falls
+            if second_unit_can_counter:
+                num_second_unit_hits = 1
+                # Check for Wrath activation
+                has_wrath = self._unit_has_skill(temp_defender_id, WRATH)
+                
+                for i in range(num_second_unit_hits):
+                    if temp_attacker.current_hp > 0 and temp_defender.current_hp > 0:
+                        strike_result = self._perform_strike(
+                            temp_defender, temp_defender_stats, temp_defender_weapon,
+                            temp_attacker, temp_attacker_stats, temp_attacker_weapon,
+                            is_follow_up=(i > 0), force_crit=has_wrath
+                        )
+                        combat_log.append(strike_result)
+                        if temp_attacker.current_hp <= 0:
+                            break  # Stop if first unit falls
         
-        # 3. Attacker's Follow-Up Strike
-        if attacker.current_hp > 0 and defender.current_hp > 0 and attacker_doubles:
+        # 3. First unit's Follow-Up Strike
+        if temp_attacker.current_hp > 0 and temp_defender.current_hp > 0 and temp_attacker_doubles:
             strike_result = self._perform_strike(
-                attacker, attacker_stats, attacker_weapon,
-                defender, defender_stats, defender_weapon,
+                temp_attacker, temp_attacker_stats, temp_attacker_weapon,
+                temp_defender, temp_defender_stats, temp_defender_weapon,
                 is_follow_up=True
             )
             combat_log.append(strike_result)
         
-        # 4. Defender's Follow-Up Strike
-        if defender.current_hp > 0 and attacker.current_hp > 0 and defender_can_ctr and defender_doubles:
-            has_wrath = self._unit_has_skill(defender_id, WRATH)
+        # 4. Second unit's Follow-Up Strike
+        if temp_defender.current_hp > 0 and temp_attacker.current_hp > 0 and second_unit_can_counter and temp_defender_doubles:
+            has_wrath = self._unit_has_skill(temp_defender_id, WRATH)
             strike_result = self._perform_strike(
-                defender, defender_stats, defender_weapon,
-                attacker, attacker_stats, attacker_weapon,
+                temp_defender, temp_defender_stats, temp_defender_weapon,
+                temp_attacker, temp_attacker_stats, temp_attacker_weapon,
                 is_follow_up=True, force_crit=has_wrath
             )
             combat_log.append(strike_result)
@@ -262,14 +298,14 @@ class CombatSystem:
         # --- Post-Combat Updates ---
         
         # Check which units participated
-        attacker_participated = any(r['attacker_id'] == attacker_id and r['did_attack'] for r in combat_log)
-        defender_participated = any(r['attacker_id'] == defender_id and r['did_attack'] for r in combat_log)
+        attacker_participated = any(r['attacker_id'] == original_attacker_id and r['did_attack'] for r in combat_log)
+        defender_participated = any(r['attacker_id'] == original_defender_id and r['did_attack'] for r in combat_log)
         
         # Apply fatigue
         if attacker_participated:
-            self.gameStateManager.update_fatigue(attacker_id, 1)
+            self.gameStateManager.update_fatigue(original_attacker_id, 1)
         if defender_participated:
-            self.gameStateManager.update_fatigue(defender_id, 1)
+            self.gameStateManager.update_fatigue(original_defender_id, 1)
         
         # Check final death/capture state
         attacker_survived = attacker.current_hp > 0
@@ -287,9 +323,9 @@ class CombatSystem:
             self._set_unit_dead(attacker_id)
             logging.info(f"{attacker.name} defeated!")
         
-        # Award EXP/WExp
+        # Award EXP/WExp - use original attacker/defender IDs
         self._award_exp_wexp(
-            combat_log, attacker_id, defender_id,
+            combat_log, original_attacker_id, original_defender_id,
             initial_attacker_hp, initial_defender_hp,
             attacker_survived, defender_survived,
             is_capture
@@ -356,7 +392,7 @@ class CombatSystem:
     # --- Helper Methods: Strike Execution ---
     
     def _perform_strike(self, striker, striker_stats, striker_weapon, target, target_stats, target_weapon,
-                       is_follow_up=False, force_crit=False) -> Dict[str, Any]:
+                        is_follow_up=False, force_crit=False, force_skills_activated=None) -> Dict[str, Any]:
         """
         Perform a single strike in combat.
         
@@ -380,7 +416,7 @@ class CombatSystem:
             'hit': False,
             'crit': False,
             'damage': 0,
-            'skills_activated': []
+            'skills_activated': force_skills_activated.copy() if force_skills_activated else []
         }
         
         if not striker_weapon:
@@ -529,7 +565,7 @@ class CombatSystem:
             'Skills': target_stats.get('Skills', []),
             'unit': target,
             'unit_type_tags': getattr(target, 'class_tags', []),
-            'TerrainDefBonus': self.mapSystem.get_terrain_bonus(target.position).get('def', 0)
+            'TerrainDefBonus': self.dataProvider.get_terrain_bonuses(self.mapSystem.gameStateManager.get_terrain_type(target.position)).get('def', 0)
         }
         
         # Calculate hit chance

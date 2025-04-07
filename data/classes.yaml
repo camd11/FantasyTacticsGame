@@ -251,6 +251,131 @@ BRIGAND:
   dismount_class_id: null
   is_mounted: false
 
+MYRMIDON:
+  id: "MYRMIDON"
+  name: "Myrmidon"
+  base_stats:
+    HP: 0
+    STR: 0
+    MAG: 0
+    SKL: 0
+    SPD: 0
+    LUK: 0
+    DEF: 0
+    CON: 0
+    MOV: 5
+  max_stats:
+    HP: 60
+    STR: 20
+    MAG: 20
+    SKL: 20
+    SPD: 20
+    LUK: 30
+    DEF: 20
+    CON: 20
+    MOV: 7
+  max_weapon_ranks:
+    SWORD: "A"
+  movement_type: "INFANTRY"
+  promotion_options: ["SWORDMASTER"]
+  class_skills: []
+  dismount_class_id: null
+  is_mounted: false
+
+TROUBADOUR:
+  id: "TROUBADOUR"
+  name: "Troubadour"
+  base_stats:
+    HP: 0
+    STR: 0
+    MAG: 0
+    SKL: 0
+    SPD: 0
+    LUK: 0
+    DEF: 0
+    CON: 0
+    MOV: 7
+  max_stats:
+    HP: 60
+    STR: 20
+    MAG: 20
+    SKL: 20
+    SPD: 20
+    LUK: 30
+    DEF: 20
+    CON: 20
+    MOV: 9
+  max_weapon_ranks:
+    STAFF: "A"
+  movement_type: "CAVALRY"
+  promotion_options: ["VALKYRIE", "PALADIN"]
+  class_skills: ["CANTO"]
+  dismount_class_id: "TROUBADOUR_DISMOUNTED"
+  is_mounted: true
+
+TROUBADOUR_DISMOUNTED:
+  id: "TROUBADOUR_DISMOUNTED"
+  name: "Troubadour (Dismounted)"
+  base_stats:
+    HP: 0
+    STR: 0
+    MAG: 0
+    SKL: 0
+    SPD: 0
+    LUK: 0
+    DEF: 0
+    CON: 0
+    MOV: 5
+  max_stats:
+    HP: 60
+    STR: 20
+    MAG: 20
+    SKL: 20
+    SPD: 20
+    LUK: 30
+    DEF: 20
+    CON: 20
+    MOV: 7
+  max_weapon_ranks:
+    STAFF: "A"
+  movement_type: "INFANTRY"
+  promotion_options: ["VALKYRIE", "PALADIN"]
+  class_skills: []
+  dismount_class_id: null
+  is_mounted: false
+
+BISHOP:
+  id: "BISHOP"
+  name: "Bishop"
+  base_stats:
+    HP: 0
+    STR: 0
+    MAG: 0
+    SKL: 0
+    SPD: 0
+    LUK: 0
+    DEF: 0
+    CON: 0
+    MOV: 6
+  max_stats:
+    HP: 60
+    STR: 20
+    MAG: 20
+    SKL: 20
+    SPD: 20
+    LUK: 30
+    DEF: 20
+    CON: 20
+    MOV: 7
+  max_weapon_ranks:
+    LIGHT: "A"
+    STAFF: "A"
+  movement_type: "INFANTRY"
+  promotion_options: []
+  class_skills: []
+  dismount_class_id: null
+  is_mounted: false
+
 SOLDIER:
   id: "SOLDIER"
   name: "Soldier"

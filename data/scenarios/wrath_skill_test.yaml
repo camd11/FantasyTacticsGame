@@ -1,0 +1,83 @@
+# Wrath Skill Test Scenario
+# Tests the Wrath skill which guarantees a critical hit when a unit's HP is below half
+
+# Map definition
+id: wrath_skill_test
+name: Wrath Skill Test
+dimensions: [5, 5]
+terrain_grid:
+  - [P, P, P, P, P]
+  - [P, P, P, P, P]
+  - [P, P, P, P, P]
+  - [P, P, P, P, P]
+  - [P, P, P, P, P]
+
+# Unit placements
+placements:
+  # Player unit with Wrath skill and low HP
+  - unit_id: LEIF
+    faction: PLAYER
+    position: [2, 2]
+    level: 10
+    start_inventory:
+      - IRON_SWORD
+    stats_override:
+      HP: 20  # Max HP
+      current_hp: 8  # Current HP below half (40%)
+      STR: 10
+      SKL: 10
+      SPD: 10
+      LUK: 10
+      DEF: 10
+    skills_override:
+      - WRATH  # Add Wrath skill to the unit
+
+  # Enemy unit positioned to be attacked by the player
+  - unit_id: ENEMY_SOLDIER
+    faction: ENEMY
+    position: [2, 3]  # Adjacent to player unit
+    level: 10
+    start_inventory:
+      - IRON_LANCE
+    stats_override:
+      HP: 20
+      STR: 10
+      SKL: 10
+      SPD: 10
+      LUK: 10
+      DEF: 10
+
+# Test assertions
+test_assertions:
+  # Test that Wrath activates when HP is below half
+  - type: COMBAT_SEQUENCE
+    attacker_id: LEIF  # Player initiates combat
+    defender_id: ENEMY_SOLDIER
+    expected:
+      critical_hit: true  # LEIF should land a critical hit due to Wrath
+      skill_activated: WRATH
+
+# Instructions for manual verification
+verification_instructions: |
+  To verify the Wrath skill:
+  
+  1. Start the scenario and observe the initial state:
+     - LEIF has the Wrath skill
+     - LEIF's current HP is 8 out of 20 (below half)
+     - ENEMY_SOLDIER is adjacent to LEIF
+  
+  2. Select LEIF and initiate combat against ENEMY_SOLDIER.
+  
+  3. Observe the combat sequence carefully:
+     - The combat forecast should indicate a guaranteed critical hit with a "Wrath" indicator
+     - During combat, LEIF's attack should be a critical hit
+     - The combat log should show "Wrath activated!" or similar message
+     - The damage dealt should be triple the normal amount (critical hits deal 3x damage)
+  
+  4. In the ASCII display, you should see:
+     - A critical hit animation for LEIF's attack
+     - ENEMY_SOLDIER's HP decreasing by a much larger amount than normal
+     - Visual indicators of a critical hit (such as flashing or special effects)
+  
+  This confirms that the Wrath skill is working correctly, guaranteeing a critical hit
+  when a unit's HP is below half their maximum HP.

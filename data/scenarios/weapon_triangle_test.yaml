@@ -1,0 +1,118 @@
+# Weapon Triangle Test Scenario
+# Tests the Weapon Triangle mechanic: Sword > Axe > Lance > Sword
+
+# Map definition
+id: weapon_triangle_test
+name: Weapon Triangle Test
+dimensions: [5, 5]
+terrain_grid:
+  - [P, P, P, P, P]
+  - [P, P, P, P, P]
+  - [P, P, P, P, P]
+  - [P, P, P, P, P]
+  - [P, P, P, P, P]
+
+# Unit placements
+placements:
+  # Sword user (advantage over axe, disadvantage against lance)
+  - unit_id: LEIF
+    faction: PLAYER
+    position: [1, 1]
+    level: 10
+    start_inventory:
+      - IRON_SWORD
+    stats_override:
+      SKL: 8  # Set skill to 8 for consistent hit rate calculation
+      LUK: 6  # Set luck to 6 for consistent hit rate calculation
+
+  # Axe user (advantage over lance, disadvantage against sword)
+  - unit_id: HALVAN
+    faction: ENEMY
+    position: [3, 1]
+    level: 10
+    start_inventory:
+      - IRON_AXE
+    stats_override:
+      SKL: 8
+      LUK: 6
+
+  # Lance user (advantage over sword, disadvantage against axe)
+  - unit_id: FINN
+    faction: ENEMY
+    position: [2, 3]
+    level: 10
+    start_inventory:
+      - IRON_LANCE
+    stats_override:
+      SKL: 8
+      LUK: 6
+
+# Test assertions
+test_assertions:
+  # Test sword vs axe (advantage)
+  - type: COMBAT_STATS
+    attacker: LEIF
+    defender: HALVAN
+    expected:
+      hit_bonus: 5  # Sword has advantage over axe
+      damage_bonus: 0  # No damage bonus in this implementation
+
+  # Test sword vs lance (disadvantage)
+  - type: COMBAT_STATS
+    attacker: LEIF
+    defender: FINN
+    expected:
+      hit_bonus: -5  # Sword has disadvantage against lance
+      damage_bonus: 0
+
+  # Test axe vs lance (advantage)
+  - type: COMBAT_STATS
+    attacker: HALVAN
+    defender: FINN
+    expected:
+      hit_bonus: 5  # Axe has advantage over lance
+      damage_bonus: 0
+
+  # Test axe vs sword (disadvantage)
+  - type: COMBAT_STATS
+    attacker: HALVAN
+    defender: LEIF
+    expected:
+      hit_bonus: -5  # Axe has disadvantage against sword
+      damage_bonus: 0
+
+  # Test lance vs sword (advantage)
+  - type: COMBAT_STATS
+    attacker: FINN
+    defender: LEIF
+    expected:
+      hit_bonus: 5  # Lance has advantage over sword
+      damage_bonus: 0
+
+  # Test lance vs axe (disadvantage)
+  - type: COMBAT_STATS
+    attacker: FINN
+    defender: HALVAN
+    expected:
+      hit_bonus: -5  # Lance has disadvantage against axe
+      damage_bonus: 0
+
+# Instructions for manual verification
+verification_instructions: |
+  To verify the weapon triangle mechanic:
+  
+  1. Select LEIF (sword user) and check combat forecast against:
+     - HALVAN (axe user): Should show +5 hit due to weapon triangle advantage
+     - FINN (lance user): Should show -5 hit due to weapon triangle disadvantage
+  
+  2. Select HALVAN (axe user) and check combat forecast against:
+     - FINN (lance user): Should show +5 hit due to weapon triangle advantage
+     - LEIF (sword user): Should show -5 hit due to weapon triangle disadvantage
+  
+  3. Select FINN (lance user) and check combat forecast against:
+     - LEIF (sword user): Should show +5 hit due to weapon triangle advantage
+     - HALVAN (axe user): Should show -5 hit due to weapon triangle disadvantage
+  
+  The base hit rate for all units should be 112 (90 weapon hit + 16 skill + 6 luck).
+  With weapon triangle advantage, hit rate should be 117.
+  With weapon triangle disadvantage, hit rate should be 107.

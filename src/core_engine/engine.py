@@ -239,7 +239,8 @@ class EngineCore:
         #     self.input_handler.display.render_ascii_map(self.game_state_manager)
         
         # Get active faction units
-        faction = self._get_faction_for_phase(current_phase)
+        phase_enum = self.turn_manager._convert_to_phase_enum(current_phase)
+        faction = self._get_faction_for_phase(phase_enum)
         self.active_faction_units = self.game_state_manager.get_units_by_faction(faction)
         
         # Debug log to check active units
@@ -378,7 +379,7 @@ class EngineCore:
                     
                     if player_input['type'] == "END_TURN":
                         break  # Player chose to end phase early
-                    elif player_input['type'] in ["MOVE", "WAIT", "ATTACK", "CAPTURE", "ITEM", "TRADE", "VISIT", "SEIZE"]:
+                    elif player_input['type'] in ["MOVE", "WAIT", "ATTACK", "CAPTURE", "ITEM", "TRADE", "VISIT", "SEIZE", "MOVE_AND_WAIT", "MOVE_AND_ATTACK", "MOVE_AND_ITEM", "MOVE_AND_CAPTURE", "MOVE_AND_TRADE", "MOVE_AND_VISIT", "MOVE_AND_SEIZE"]:
                         # Delegate action processing to ActionHandler
                         self.action_handler.process_action(
                             player_input['unit_id'],

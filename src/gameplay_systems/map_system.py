@@ -74,21 +74,31 @@ class PathfindingAlgorithm:
             neighbors = self._get_adjacent_tiles(current_pos)
             
             for neighbor in neighbors:
+                # Log current position and cost
+                logging.debug(f"Pathfinding: Current position {current_pos}, current cost {current_cost}")
+                logging.debug(f"Pathfinding: Considering neighbor {neighbor}")
+                
                 # Get the cost to move to this neighbor
                 tile_cost = self.get_cost_callback(neighbor, unit_id)
+                logging.debug(f"Pathfinding: Tile cost for {neighbor} is {tile_cost}")
                 
                 # If the tile is impassable, skip it
                 if tile_cost == IMPASSABLE:
+                    logging.debug(f"Pathfinding: Neighbor {neighbor} is impassable, skipping")
                     continue
                 
                 # Calculate the total cost to reach this neighbor
                 new_cost = current_cost + tile_cost
+                logging.debug(f"Pathfinding: New cost to reach {neighbor} is {new_cost}")
                 
                 # If we've found a better path to this neighbor, update it
                 if new_cost < visited.get(neighbor, IMPASSABLE) and new_cost <= movement_points:
+                    logging.debug(f"Pathfinding: Found better path to {neighbor} (cost: {new_cost}, within movement limit: {movement_points})")
                     visited[neighbor] = new_cost
                     came_from[neighbor] = current_pos
                     frontier.append((new_cost, neighbor))
+                else:
+                    logging.debug(f"Pathfinding: No better path to {neighbor} (new cost: {new_cost}, existing cost: {visited.get(neighbor, IMPASSABLE)}, movement limit: {movement_points})")
         
         # Store the came_from dictionary for path reconstruction
         self.came_from = came_from
@@ -212,24 +222,38 @@ class MapSystem:
         Returns:
             Movement cost (IMPASSABLE if the tile is impassable)
         """
+        # Log input parameters
+        logging.debug(f"MapSystem.get_movement_cost: Calculating cost for position {position}, unit_id {unit_id}")
+        
         unit = self.gameStateManager.get_unit(unit_id)
         if not unit:
+            logging.debug(f"MapSystem.get_movement_cost: Unit {unit_id} not found, returning IMPASSABLE")
             return IMPASSABLE
         
         terrain_type = self.gameStateManager.get_terrain_type(position)
+        logging.debug(f"MapSystem.get_movement_cost: Terrain type at {position} is {terrain_type}")
+        
         if terrain_type == TERRAIN_INVALID:
+            logging.debug(f"MapSystem.get_movement_cost: Invalid terrain at {position}, returning IMPASSABLE")
             return IMPASSABLE
         
         # Check if tile is occupied by an enemy (impassable for movement)
         occupying_unit_id = self._get_unit_at(position)
+        logging.debug(f"MapSystem.get_movement_cost: Occupying unit at {position} is {occupying_unit_id}")
+        
         if occupying_unit_id and occupying_unit_id != unit_id:
             occupying_unit = self.gameStateManager.get_unit(occupying_unit_id)
+            logging.debug(f"MapSystem.get_movement_cost: Checking if unit {occupying_unit_id} blocks movement")
+            
             if occupying_unit.faction != unit.faction:  # Cannot move through enemies
+                logging.debug(f"MapSystem.get_movement_cost: Enemy unit {occupying_unit_id} blocks movement, returning IMPASSABLE")
                 return IMPASSABLE
+            logging.debug(f"MapSystem.get_movement_cost: Allied unit {occupying_unit_id} does not block movement (Thracia 776 rule)")
             # Allow moving through allies (Thracia 776 rule)
         
         class_data = self.dataProvider.get_class_data(unit.class_id)
         movement_type = class_data.movement_type
+        logging.debug(f"MapSystem.get_movement_cost: Unit {unit_id} has movement type {movement_type}")
         
         # Handle Dismount state affecting movement type
         is_mounted = self._is_class_mounted(unit.class_id)
@@ -246,8 +270,12 @@ class MapSystem:
         elif is_mounted and not is_dismounted and self._is_terrain_indoor(position):
             # Mounted unit cannot enter indoor tile
             return IMPASSABLE
+        # Log the terrain_type enum value before calling get_terrain_cost
+        logging.debug(f"MapSystem.get_movement_cost: Target ({position[0]},{position[1]}), TerrainType: {terrain_type}")
         
         cost = self.dataProvider.get_terrain_cost(terrain_type, movement_type)
+        logging.debug(f"MapSystem.get_movement_cost: Final cost for {unit_id} to move to {position} is {cost}")
+        return cost
         return cost
     
     # --- Pathfinding ---
@@ -269,10 +297,10 @@ class MapSystem:
         start_pos = unit.position
         # Check both stats and base_stats for MOV to handle different unit representations
         movement_points = 0
-        if hasattr(unit, 'stats') and MOV in unit.stats:
-            movement_points = unit.stats[MOV]
-        elif hasattr(unit, 'base_stats') and MOV in unit.base_stats:
-            movement_points = unit.base_stats[MOV]
+        if hasattr(unit, 'stats') and "MOV" in unit.stats:
+            movement_points = unit.stats["MOV"]
+        elif hasattr(unit, 'base_stats') and "MOV" in unit.base_stats:
+            movement_points = unit.base_stats["MOV"]
         
         # Use the pathfinder instance
         reachable_nodes = self.pathfinder.find_reachable(start_pos, movement_points, unit_id)

@@ -1,0 +1,88 @@
+# Poison Status Effect Test Scenario
+# Tests the Poison status effect which deals damage at the start of the afflicted unit's turn
+
+# Map definition
+id: poison_status_test
+name: Poison Status Test
+dimensions: [5, 5]
+terrain_grid:
+  - [P, P, P, P, P]
+  - [P, P, P, P, P]
+  - [P, P, P, P, P]
+  - [P, P, P, P, P]
+  - [P, P, P, P, P]
+
+# Unit placements
+placements:
+  # Player unit susceptible to poison
+  - unit_id: LEIF
+    faction: PLAYER
+    position: [1, 1]
+    level: 10
+    start_inventory:
+      - IRON_SWORD
+    stats_override:
+      HP: 20  # Set HP to 20 to easily observe poison damage
+      STR: 10
+      SKL: 10
+      SPD: 10
+      LUK: 10
+      DEF: 10
+
+  # Enemy unit with poison weapon
+  - unit_id: ENEMY_THIEF
+    faction: ENEMY
+    position: [3, 1]
+    level: 10
+    start_inventory:
+      - POISON_DAGGER  # Weapon that can inflict poison
+    stats_override:
+      SKL: 15  # High skill to ensure poison is applied
+
+# Status effect definitions
+status_effects:
+  - name: Poison
+    description: "Unit takes 2 damage at the start of their turn"
+    duration_type: "UNTIL_CURED"
+    cure_methods: ["Antidote", "Restore Staff", "Chapter End"]
+    icon: "poison_icon"
+    effects:
+      - type: "PERIODIC_DAMAGE"
+        parameters:
+          amount: 2  # Damage per turn
+
+# Test assertions
+test_assertions:
+  # Test that poison damage is applied at the start of the turn
+  - type: TURN_START_EFFECT
+    unit_id: LEIF
+    status: Poison
+    expected:
+      damage: 2
+      event: "POISON_DAMAGE"
+
+# Instructions for manual verification
+verification_instructions: |
+  To verify the Poison status effect:
+  
+  1. Start the scenario and observe the initial HP of LEIF (should be 20).
+  
+  2. Move LEIF adjacent to the ENEMY_THIEF and let the enemy attack LEIF during the enemy phase.
+     The POISON_DAGGER should have a chance to inflict the Poison status.
+  
+  3. Once LEIF is poisoned (indicated by a poison icon or status message), end the turn.
+  
+  4. At the start of the next player phase, observe that:
+     - LEIF takes 2 damage from poison (HP decreases from 20 to 18)
+     - A "Poison damage" message appears in the log
+  
+  5. End the turn again and observe another 2 damage at the start of the next player phase.
+  
+  6. Continue for several turns to verify that the poison damage is consistently applied
+     at the start of each of LEIF's turns until cured or the scenario ends.
+  
+  7. If available, use an Antidote or Restore Staff to cure the poison and verify that
+     no further poison damage is taken in subsequent turns.
+  
+  Note: The poison damage should be applied BEFORE the player can take any actions with LEIF,
+  confirming that the damage occurs at the start of the turn.

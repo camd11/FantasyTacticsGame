@@ -11,10 +11,13 @@
     - Dismounting System
     - Support/Leadership System
 - **Initial Data Population:**
-    - Units (`units.yaml`)
-    - Items (`items.yaml`)
-    - Classes (`classes.yaml`)
-    - Skills (`skills.yaml`)
+    - Units (`units.yaml`): Added Mareeta, Nanna, Saias.
+    - Items (`items.yaml`): Added Short Lance, Rapier, Physic, Killer Lance, Hand Axe.
+    - Classes (`classes.yaml`): Added Myrmidon, Troubadour, Bishop.
+    - Skills (`skills.yaml`): Added Astra, Sol, Luna, Pavise, Canto+.
+    - Promotions (`promotions.yaml`): Added Myrmidon->Swordmaster, Troubadour->Valkyrie/Paladin.
+    - Supports (`supports.yaml`): Added initial support pairs (e.g., Leif/Nanna, Othin/Tanya).
+    - Terrain (`terrain.yaml`)
 - **CLI Enhancements:**
     - Basic command-line interface implemented.
 - **Bug Fixes:**
@@ -26,21 +29,33 @@
     - Adjusted AI vs AI turn limit to 10 for testing.
     - Enhanced AI action logging for better simulation visibility.
     - Fixed runtime errors related to ASCII display (`get_map_dimensions`, `turn_manager` access).
+    - Fixed persistent AI movement range bug (corrected terrain cost lookup in `DataProvider`).
+    - Fixed `AttributeError` by adding `get_units_in_range` method to `UnitSystem`.
+    - Fixed phase/faction mismatch warnings and processing logic in `EngineCore`.
+    - Fixed `AttributeError` by adding `get_unit` method to `UnitSystem`.
+- **AI Refinement:**
+    - Improved AI target prioritization logic.
+    - Implemented basic AI archetypes (Aggressive/CHARGE, Defensive/GUARD).
 - **Testing & Integration:**
     - Resolved 6 integration test failures related to `DataProvider`, `Engine`, `EventHandler`, and `GameState`. All unit tests are now passing.
+    - Created new test scenarios for:
+        - Weapon Triangle (`test_weapon_triangle.py`)
+        - Poison Status (`test_poison_status.py`)
+        - Fatigue Accumulation (`test_fatigue_accumulation.py`)
+        - Vantage Skill (`test_vantage_skill.py`)
+        - Wrath Skill (`test_wrath_skill.py`)
 - **Configuration:**
     - Created placeholder map files (`layouts.yaml`, `placements.yaml`, `events.yaml`) in `data/maps/test_chapter/` to resolve startup warnings related to missing default chapter data.
 
 ## Remaining Tasks
 
 - **Data Population:**
-    - Populate core data files: `terrain.yaml`, `supports.yaml`, `promotions.yaml`.
-    - Add more units, items, classes, and skills.
+    - Add more units, items, classes, skills, promotions, and supports.
     - Create chapter-specific data (layouts, placements, events).
 - **CLI Development:**
     - Implement fully interactive turn-by-turn gameplay via CLI.
 - **Testing:**
-    - Develop more comprehensive testing scenarios.
+    - Develop more comprehensive testing scenarios covering edge cases and complex interactions.
 - **Future Enhancements:**
     - Potential GUI implementation.
 - **Bug Fixing:**
@@ -48,5 +63,4 @@
 
 ## Known Issues
 
-- AI Movement Range Bug: The movement range calculation currently only returns the starting tile, preventing AI units from moving in simulations. This requires further debugging of the pathfinding logic in `MovementSystem`/`MapSystem`. (See TODO comment in `src/gameplay_systems/movement_system.py`)
-- ASCII Display Update Bug: The ASCII map display (`--ascii-display`) does not update unit positions correctly after they move. The rendering call has been temporarily disabled in `src/core_engine/engine.py`. Needs debugging of the rendering logic and/or unit state updates. (See TODO comment in `src/core_engine/engine.py`)
+- (Add any known issues here)

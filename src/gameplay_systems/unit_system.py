@@ -11,7 +11,7 @@ import random
 from typing import Dict, List, Set, Tuple, Optional, Any, Union
 
 # Import necessary modules/classes
-from src.core_engine.game_state import GameStateManager, StatusEffectEnum, DispositionEnum
+from src.core_engine.game_state import GameStateManager, StatusEffectEnum, DispositionEnum, UnitState
 from src.core_engine.data_provider import DataProvider, StatEnum, RankEnum
 
 # Constants
@@ -100,6 +100,21 @@ class UnitSystem:
         
         return details
     
+    def get_unit(self, unit_id: str) -> Optional[UnitState]:
+        """
+        Get a unit state object by its ID.
+        
+        Args:
+            unit_id: ID of the unit
+            
+        Returns:
+            The unit state object if found, None otherwise
+        """
+        if not self.gameStateManager or not self.gameStateManager.current_game_state:
+            return None
+            
+        return self.gameStateManager.current_game_state.unit_states.get(unit_id)
+    
     # --- Stat Calculation ---
     
     def calculate_current_combat_stats(self, unit_id: str) -> Dict[str, Any]:
@@ -125,11 +140,11 @@ class UnitSystem:
         is_slept = unit.has_status(SLEEP)  # Check for sleep/petrify etc.
         
         if is_carrying or is_slept:  # Ref: research.md Sec 5.5, 9
-            current_stats[STR] //= 2
-            current_stats[MAG] //= 2
-            current_stats[SKL] //= 2
-            current_stats[SPD] //= 2
-            current_stats[DEF] //= 2
+            current_stats["STR"] //= 2
+            current_stats["MAG"] //= 2
+            current_stats["SKL"] //= 2
+            current_stats["SPD"] //= 2
+            current_stats["DEF"] //= 2
             # Note: Luck, Con, Mov are NOT halved
         
         # 3. Get Equipped Weapon Data
@@ -142,9 +157,9 @@ class UnitSystem:
         atk = 0
         if weapon_data:
             if self._is_weapon_physical(weapon_data.weapon_type):
-                atk = current_stats[STR] + weapon_data.might
+                atk = current_stats["STR"] + weapon_data.might
             elif self._is_weapon_magical(weapon_data.weapon_type):
-                atk = current_stats[MAG] + weapon_data.might
+                atk = current_stats["MAG"] + weapon_data.might
             # Handle magic swords potentially using Mag even at range 1? Needs specific check.
         
         # 5. Calculate Attack Speed (AS) - Ref: research.md Sec 2
@@ -154,16 +169,16 @@ class UnitSystem:
             if self._is_weapon_tome(weapon_data.weapon_type):
                 effective_weight = weapon_data.weight
             else:  # Physical weapons
-                effective_weight = max(0, weapon_data.weight - current_stats[CON])
-        
-        attack_speed = current_stats[SPD] - effective_weight
+                effective_weight = max(0, weapon_data.weight - current_stats["CON"])
+
+        attack_speed = current_stats["SPD"] - effective_weight
         
         # 6. Calculate Hit - Ref: research.md Sec 5.1
         hit = 0
         if weapon_data:
             hit = weapon_data.hit
-        hit += current_stats[SKL] * 2
-        hit += current_stats[LUK]
+        hit += current_stats["SKL"] * 2
+        hit += current_stats["LUK"]
         # Add Support, Leadership, Charisma bonuses
         hit += self.get_total_support_bonus(unit_id, 'hit')
         hit += self.get_total_leadership_bonus(unit.faction, 'hit')
@@ -172,7 +187,7 @@ class UnitSystem:
         
         # 7. Calculate Avoid (Avo) - Ref: research.md Sec 5.1
         avo = attack_speed * 2
-        avo += current_stats[LUK]
+        avo += current_stats["LUK"]
         # Add Support, Leadership, Charisma bonuses
         avo += self.get_total_support_bonus(unit_id, 'avo')
         avo += self.get_total_leadership_bonus(unit.faction, 'avo')
@@ -187,13 +202,13 @@ class UnitSystem:
         crit = 0
         if weapon_data:
             crit = weapon_data.crit
-        crit += current_stats[SKL]  # Skill adds directly to crit in Thracia
+        crit += current_stats["SKL"]  # Skill adds directly to crit in Thracia
         # Add Support bonus
         crit += self.get_total_support_bonus(unit_id, 'crit')
         # Note: Leadership/Charisma do NOT affect Crit in Thracia
         
         # 9. Calculate Dodge / Crit Evade (Ddg) - Ref: research.md Sec 5.3
-        ddg = current_stats[LUK] // 2  # Half of Luck
+        ddg = current_stats["LUK"] // 2  # Half of Luck
         # Add Support bonus
         ddg += self.get_total_support_bonus(unit_id, 'crit_evade')
         # Note: Leadership/Charisma do NOT affect Crit Evade
@@ -465,8 +480,8 @@ class UnitSystem:
         # Update HP based on potential Con gain? Or direct HP gain? Check FE5 promotion rules. Assume direct HP gain if specified.
         if HP in promotion_gains.stat_gains:
             # Update max_hp and heal the difference
-            hp_gain = unit.base_stats[HP] - (unit.base_stats[HP] - promotion_gains.stat_gains[HP])  # Calculate actual gain applied
-            unit.max_hp += hp_gain  # This assumes base_stats[HP] is max HP base
+            hp_gain = unit.base_stats["HP"] - (unit.base_stats["HP"] - promotion_gains.stat_gains["HP"])  # Calculate actual gain applied
+            unit.max_hp += hp_gain  # This assumes base_stats["HP"] is max HP base
             unit.current_hp += hp_gain
         
         # Update class ID
@@ -735,3 +750,72 @@ class UnitSystem:
         else:
             # Set to a specific rank
             return getattr(RankEnum, rank_change)
+            
+        
+    def get_units_in_range(self, *args) -> List[str]:
+        """
+        Get a list of unit IDs that are within a specified range.
+        
+        This method has two call signatures:
+        1. get_units_in_range(center_pos, min_range, max_range)
+        2. get_units_in_range(unit_id, tile)
+        
+        Args:
+            *args: Either (center_pos, min_range, max_range) or (unit_id, tile)
+            
+        Returns:
+            List of unit IDs within the specified range
+        """
+        # Check which call signature is being used
+        if len(args) == 3:
+            # Call signature 1: center_pos, min_range, max_range
+            center_pos, min_range, max_range = args
+            return self._get_units_in_range_by_position(center_pos, min_range, max_range)
+        elif len(args) == 2:
+            # Call signature 2: unit_id, tile
+            unit_id, tile = args
+            # Use a default range of 1-3 tiles for AI targeting
+            # This can be adjusted based on the unit's equipped weapon range
+            weapon_range = (1, 3)  # Default range
+            
+            # Try to get the unit's equipped weapon range if available
+            unit = self.gameStateManager.get_unit(unit_id)
+            if unit and hasattr(unit, 'equipped_weapon_index') and unit.equipped_weapon_index >= 0:
+                try:
+                    weapon_instance = unit.inventory[unit.equipped_weapon_index]
+                    weapon_data = self.dataProvider.get_item_data(weapon_instance.item_id)
+                    if weapon_data:
+                        weapon_range = (weapon_data.min_range, weapon_data.max_range)
+                except (AttributeError, IndexError):
+                    pass  # Use default range if any error occurs
+            
+            return self._get_units_in_range_by_position(tile, weapon_range[0], weapon_range[1])
+        else:
+            # Invalid call signature
+            logging.error(f"Invalid call signature for get_units_in_range: {args}")
+            return []
+    
+    def _get_units_in_range_by_position(self, center_pos: Tuple[int, int], min_range: int, max_range: int) -> List[str]:
+        """
+        Get a list of unit IDs that are within a specified range from a center position.
+        
+        Args:
+            center_pos: Center position (x, y)
+            min_range: Minimum range (inclusive)
+            max_range: Maximum range (inclusive)
+            
+        Returns:
+            List of unit IDs within the specified range
+        """
+        result = []
+        
+        # Iterate through all units in the current game state
+        for unit_id, unit in self.gameStateManager.current_game_state.unit_states.items():
+            # Calculate Manhattan distance between unit position and center position
+            distance = self._calculate_distance(center_pos, unit.position)
+            
+            # Check if the distance is within the specified range
+            if min_range <= distance <= max_range:
+                result.append(unit_id)
+                
+        return result

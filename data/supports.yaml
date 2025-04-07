@@ -1,24 +1,72 @@
 # Support relationships data for Fantasy Tactics Game
-# This file will define support relationships between characters
-# Format will be:
-# CHARACTER_ID:
-#   supports:
-#     - character_id: SUPPORTING_CHARACTER_ID
-#       levels:
-#         C:
-#           bonus:
-#             hit: 5
-#             avoid: 5
-#           required_turns: 20
-#         B:
-#           bonus:
-#             hit: 10
-#             avoid: 10
-#           required_turns: 40
-#         A:
-#           bonus:
-#             hit: 15
-#             avoid: 15
-#           required_turns: 60
+# Based on Thracia 776 support system
+# In Thracia 776, supports are predefined and provide bonuses when units are within 3 tiles
+# The bonus applies to Hit, Avoid, Critical, and Crit Evade
+# Supports can be one-way or mutual, with standard bonus of +10 or special bonds of +20
 
-# Currently empty - will be populated with character relationships later
+# Leif and Nanna (mutual support)
+LEIF:
+  supports:
+    - character_id: NANNA
+      bonus:
+        hit: 10
+        avoid: 10
+        critical: 10
+        dodge: 10
+      range: 3  # Units must be within 3 tiles
+
+NANNA:
+  supports:
+    - character_id: LEIF
+      bonus:
+        hit: 10
+        avoid: 10
+        critical: 10
+        dodge: 10
+      range: 3
+
+# Othin and Tanya
+OTHIN:
+  supports:
+    - character_id: TANYA
+      bonus:
+        hit: 10
+        avoid: 10
+        critical: 10
+        dodge: 10
+      range: 3
+
+TANYA:
+  supports:
+    - character_id: OTHIN
+      bonus:
+        hit: 10
+        avoid: 10
+        critical: 10
+        dodge: 10
+      range: 3
+
+# Mareeta and Eyvel (strong bond)
+MAREETA:
+  supports:
+    - character_id: EYVEL
+      bonus:
+        hit: 20  # Strong bond provides +20 instead of standard +10
+        avoid: 20
+        critical: 20
+        dodge: 20
+      range: 3
+
+# Dagdar and Tanya (father-daughter relationship)
+DAGDAR:
+  supports:
+    - character_id: TANYA
+      bonus:
+        hit: 10
+        avoid: 10
+        critical: 10
+        dodge: 10
+      range: 3
+
+# Note: In Thracia 776, the maximum total support bonus is capped at +30 for each stat
+# Support bonuses stack with Leadership stars and Charisma skill bonuses

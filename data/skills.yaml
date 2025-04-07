@@ -123,3 +123,57 @@ VANTAGE:
         condition: "WHEN_ATTACKED"
   activation_condition: "COMBAT"
   activation_chance: 100
+
+ASTRA:
+  id: "ASTRA"
+  name: "Astra"
+  description: "Allows unit to strike 5 consecutive attacks at half damage. Also known as Shooting Star."
+  effects:
+    - type: "MULTI_ATTACK"
+      params:
+        num_attacks: 5
+        damage_multiplier: 0.5
+  activation_condition: "COMBAT"
+  activation_chance: "SKILL"
+
+SOL:
+  id: "SOL"
+  name: "Sol"
+  description: "Heals the user by the amount of damage dealt to the enemy. Also known as Sun Sword."
+  effects:
+    - type: "HEAL_FROM_DAMAGE"
+      params:
+        heal_percent: 100
+  activation_condition: "COMBAT"
+  activation_chance: "SKILL"
+
+LUNA:
+  id: "LUNA"
+  name: "Luna"
+  description: "Ignores enemy's defense when calculating damage. Also known as Moon Sword."
+  effects:
+    - type: "IGNORE_DEFENSE"
+      params: {}
+  activation_condition: "COMBAT"
+  activation_chance: "SKILL"
+
+PAVISE:
+  id: "PAVISE"
+  name: "Pavise"
+  description: "Completely negates an incoming attack's damage. Also known as Big Shield."
+  effects:
+    - type: "NEGATE_DAMAGE"
+      params: {}
+  activation_condition: "WHEN_ATTACKED"
+  activation_chance: "SKILL"
+
+CANTO_PLUS:
+  id: "CANTO_PLUS"
+  name: "Canto+"
+  description: "Unit can move again after any action, including attacking and using staves."
+  effects:
+    - type: "MOVE_AFTER_ACTION"
+      params:
+        excluded_actions: []
+  activation_condition: "PASSIVE"
+  activation_chance: 100

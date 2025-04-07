@@ -1,0 +1,85 @@
+# Vantage Skill Test Scenario
+# Tests the Vantage skill which allows a unit to attack first when being attacked if their HP is below half
+
+# Map definition
+id: vantage_skill_test
+name: Vantage Skill Test
+dimensions: [5, 5]
+terrain_grid:
+  - [P, P, P, P, P]
+  - [P, P, P, P, P]
+  - [P, P, P, P, P]
+  - [P, P, P, P, P]
+  - [P, P, P, P, P]
+
+# Unit placements
+placements:
+  # Player unit with Vantage skill and low HP
+  - unit_id: LEIF
+    faction: PLAYER
+    position: [2, 2]
+    level: 10
+    start_inventory:
+      - IRON_SWORD
+    stats_override:
+      HP: 20  # Max HP
+      current_hp: 8  # Current HP below half (40%)
+      STR: 10
+      SKL: 10
+      SPD: 10
+      LUK: 10
+      DEF: 10
+    skills_override:
+      - VANTAGE  # Add Vantage skill to the unit
+
+  # Enemy unit positioned to attack the player
+  - unit_id: ENEMY_SOLDIER
+    faction: ENEMY
+    position: [2, 3]  # Adjacent to player unit
+    level: 10
+    start_inventory:
+      - IRON_LANCE
+    stats_override:
+      HP: 20
+      STR: 10
+      SKL: 10
+      SPD: 10
+      LUK: 10
+      DEF: 10
+    ai_behavior: AGGRESSIVE  # Ensure enemy will attack player unit
+
+# Test assertions
+test_assertions:
+  # Test that Vantage activates when HP is below half
+  - type: COMBAT_SEQUENCE
+    attacker_id: ENEMY_SOLDIER  # Enemy initiates combat
+    defender_id: LEIF  # Player unit with Vantage
+    expected:
+      first_striker: LEIF  # Despite being attacked, LEIF should strike first due to Vantage
+      skill_activated: VANTAGE
+
+# Instructions for manual verification
+verification_instructions: |
+  To verify the Vantage skill:
+  
+  1. Start the scenario and observe the initial state:
+     - LEIF has the Vantage skill
+     - LEIF's current HP is 8 out of 20 (below half)
+     - ENEMY_SOLDIER is adjacent to LEIF
+  
+  2. End your turn without moving LEIF to allow the enemy phase to begin.
+  
+  3. During the enemy phase, ENEMY_SOLDIER will initiate combat against LEIF.
+  
+  4. Observe the combat sequence carefully:
+     - Despite ENEMY_SOLDIER initiating the attack, LEIF should attack FIRST
+     - The combat log should show "Vantage activated!" or similar message
+     - The attack sequence should show LEIF's attack occurring before ENEMY_SOLDIER's attack
+  
+  5. In the ASCII display, you should see:
+     - LEIF's attack animation playing first
+     - ENEMY_SOLDIER's HP decreasing before LEIF takes any damage
+     - The combat forecast should indicate that LEIF will attack first with a "Vantage" indicator
+  
+  This confirms that the Vantage skill is working correctly, allowing a unit to attack first
+  when being attacked if their HP is below half, even during the enemy phase.

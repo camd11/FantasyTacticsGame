@@ -411,3 +411,99 @@ ENEMY_GUARD_1:
   leadership_stars: 0
   pcc: 0
   is_enemy: true
+
+MAREETA:
+  id: "MAREETA"
+  name: "Mareeta"
+  base_class_id: "MYRMIDON"
+  stats:
+    HP: 22
+    STR: 6
+    MAG: 1
+    SKL: 9
+    SPD: 12
+    LUK: 5
+    DEF: 3
+    CON: 6
+    MOV: 6
+    MOV_STARS: 0
+  growths:
+    HP: 65
+    STR: 35
+    MAG: 10
+    SKL: 45
+    SPD: 55
+    LUK: 30
+    DEF: 20
+    CON: 5
+    MOV: 5
+  base_weapon_ranks:
+    SWORD: "B"
+  skills: ["WRATH", "ASTRA"]
+  leadership_stars: 0
+  pcc: 5
+  
+NANNA:
+  id: "NANNA"
+  name: "Nanna"
+  base_class_id: "TROUBADOUR"
+  stats:
+    HP: 20
+    STR: 3
+    MAG: 5
+    SKL: 6
+    SPD: 8
+    LUK: 7
+    DEF: 3
+    CON: 5
+    MOV: 7
+    MOV_STARS: 0
+  growths:
+    HP: 55
+    STR: 20
+    MAG: 30
+    SKL: 35
+    SPD: 40
+    LUK: 45
+    DEF: 15
+    CON: 5
+    MOV: 5
+  base_weapon_ranks:
+    STAFF: "C"
+    SWORD: "D"
+  skills: ["CHARISMA", "CANTO"]
+  leadership_stars: 0
+  pcc: 1
+  
+SAIAS:
+  id: "SAIAS"
+  name: "Saias"
+  base_class_id: "BISHOP"
+  stats:
+    HP: 30
+    STR: 2
+    MAG: 12
+    SKL: 10
+    SPD: 10
+    LUK: 8
+    DEF: 6
+    CON: 7
+    MOV: 6
+    MOV_STARS: 0
+  growths:
+    HP: 60
+    STR: 10
+    MAG: 50
+    SKL: 40
+    SPD: 40
+    LUK: 35
+    DEF: 25
+    CON: 5
+    MOV: 5
+  base_weapon_ranks:
+    STAFF: "A"
+    LIGHT: "A"
+    FIRE: "B"
+  skills: ["CHARISMA", "NIHIL"]
+  leadership_stars: 10
+  pcc: 2

@@ -244,3 +244,78 @@ ANTITOXIN:
   weight: 1
   max_durability: 3
   effects: ["CURE_POISON"]
+
+SHORT_LANCE:
+ id: "SHORT_LANCE"
+ name: "Short Lance"
+ type: "WEAPON"
+ weapon_type: "LANCE"
+ might: 3
+ hit: 70
+ crit: 0
+ weight: 9
+ range_min: 1
+ range_max: 2
+ max_durability: 25
+ required_rank: "E"
+ effects: []
+
+RAPIER:
+ id: "RAPIER"
+ name: "Rapier"
+ type: "WEAPON"
+ weapon_type: "SWORD"
+ might: 6
+ hit: 95
+ crit: 10
+ weight: 4
+ range_min: 1
+ range_max: 1
+ max_durability: 40
+ required_rank: "C"
+ effects: ["EFFECTIVE_CAVALRY", "EFFECTIVE_ARMOR"]
+
+PHYSIC:
+ id: "PHYSIC"
+ name: "Physic"
+ type: "STAFF"
+ weapon_type: "STAFF"
+ might: 10
+ hit: 100
+ crit: 0
+ weight: 6
+ range_min: 1
+ range_max: 10
+ max_durability: 15
+ required_rank: "C"
+ effects: ["HEAL_RANGE"]
+
+KILLER_LANCE:
+ id: "KILLER_LANCE"
+ name: "Killer Lance"
+ type: "WEAPON"
+ weapon_type: "LANCE"
+ might: 7
+ hit: 75
+ crit: 30
+ weight: 9
+ range_min: 1
+ range_max: 1
+ max_durability: 20
+ required_rank: "C"
+ effects: []
+
+HAND_AXE:
+ id: "HAND_AXE"
+ name: "Hand Axe"
+ type: "WEAPON"
+ weapon_type: "AXE"
+ might: 5
+ hit: 60
+ crit: 0
+ weight: 12
+ range_min: 1
+ range_max: 2
+ max_durability: 20
+ required_rank: "E"
+ effects: []

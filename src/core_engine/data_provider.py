@@ -124,7 +124,13 @@ class ClassData:
         self.base_stats = data_dict.get('base_stats', {})
         self.max_stats = data_dict.get('max_stats', {})
         self.max_weapon_ranks = data_dict.get('max_weapon_ranks', {})
-        self.movement_type = data_dict.get('movement_type', MovementTypeEnum.INFANTRY)
+        # Convert movement_type string to MovementTypeEnum
+        movement_type_string = data_dict.get('movement_type', 'INFANTRY')
+        try:
+            self.movement_type = MovementTypeEnum[movement_type_string]
+        except (KeyError, TypeError) as e:
+            logging.error(f"Invalid movement type '{movement_type_string}' for class {data_dict.get('id', 'unknown')}: {str(e)}")
+            self.movement_type = MovementTypeEnum.INFANTRY
         self.promotion_options = data_dict.get('promotion_options', {})
         self.class_skills = data_dict.get('class_skills', [])
         self.dismount_class_id = data_dict.get('dismount_class_id', None)
@@ -345,91 +351,278 @@ class DataProvider:
     
     # This method is replaced by the implementation below at line 564
     
-    def get_terrain_data(self, terrain_type: TerrainTypeEnum) -> Optional[TerrainData]:
+    def get_terrain_data(self, terrain_type: Union[TerrainTypeEnum, str]) -> Optional[TerrainData]:
         """
         Get the data for a specific terrain type.
         
         Args:
-            terrain_type: The type of terrain
+            terrain_type: The type of terrain (TerrainTypeEnum or string)
             
         Returns:
             TerrainData object or None if not found
         """
-        return self._terrain_data.get(terrain_type.name)
+        logging.debug(f"DataProvider.get_terrain_data: Received TerrainType: {terrain_type}")
+        
+        # Determine the lookup key based on the type of terrain_type
+        if isinstance(terrain_type, TerrainTypeEnum):
+            # Case 1 & 3: Handle enum values
+            if terrain_type == TerrainTypeEnum.PLAIN:
+                # Case 1: TerrainTypeEnum.PLAIN -> "PLAINS"
+                lookup_key = "PLAINS"
+                logging.debug(f"DataProvider.get_terrain_data: Case 1 - Converting TerrainTypeEnum.PLAIN to 'PLAINS' for lookup")
+            else:
+                # Case 3: Other TerrainTypeEnum -> terrain_type.name
+                lookup_key = terrain_type.name
+                logging.debug(f"DataProvider.get_terrain_data: Case 3 - Using enum name '{lookup_key}' for lookup")
+        elif isinstance(terrain_type, str):
+            # Case 2: String input
+            if terrain_type == "PLAINS":
+                # Case 2: "PLAINS" string -> "PLAINS"
+                lookup_key = terrain_type
+                logging.debug(f"DataProvider.get_terrain_data: Case 2 - Using string 'PLAINS' directly for lookup")
+            else:
+                # Handle other string inputs
+                lookup_key = terrain_type
+                logging.debug(f"DataProvider.get_terrain_data: Using string '{lookup_key}' directly for lookup")
+        else:
+            # Case 5: Invalid type
+            lookup_key = str(terrain_type)
+            logging.error(f"DataProvider.get_terrain_data: Invalid terrain_type type: {type(terrain_type)}. Expected TerrainTypeEnum or string.")
+            
+        logging.debug(f"DataProvider.get_terrain_data: Final Lookup Key: '{lookup_key}'")
+        
+        return self._terrain_data.get(lookup_key)
     
-    def get_terrain_cost(self, terrain_type: TerrainTypeEnum, movement_type: MovementTypeEnum) -> int:
+    def get_terrain_cost(self, terrain_type: Union[TerrainTypeEnum, str], movement_type: MovementTypeEnum) -> int:
         """
         Get the movement cost for a specific terrain and movement type.
         
         Args:
-            terrain_type: The type of terrain
+            terrain_type: The type of terrain (TerrainTypeEnum or string)
             movement_type: The type of movement
             
         Returns:
             Movement cost (IMPASSABLE if terrain is impassable for the movement type)
         """
-        terrain_info = self._terrain_data.get(terrain_type.name)
+        logging.debug(f"DataProvider.get_terrain_cost: Received TerrainType: {terrain_type}, MovementType: {movement_type}")
+        
+        # Determine the lookup key based on the type of terrain_type
+        if isinstance(terrain_type, TerrainTypeEnum):
+            # Case 1 & 3: Handle enum values
+            if terrain_type == TerrainTypeEnum.PLAIN:
+                # Case 1: TerrainTypeEnum.PLAIN -> "PLAINS"
+                lookup_key = "PLAINS"
+                logging.debug(f"DataProvider.get_terrain_cost: Case 1 - Converting TerrainTypeEnum.PLAIN to 'PLAINS' for lookup")
+            else:
+                # Case 3: Other TerrainTypeEnum -> terrain_type.name
+                lookup_key = terrain_type.name
+                logging.debug(f"DataProvider.get_terrain_cost: Case 3 - Using enum name '{lookup_key}' for lookup")
+        elif isinstance(terrain_type, str):
+            # Case 2: String input
+            if terrain_type == "PLAINS":
+                # Case 2: "PLAINS" string -> "PLAINS"
+                lookup_key = terrain_type
+                logging.debug(f"DataProvider.get_terrain_cost: Case 2 - Using string 'PLAINS' directly for lookup")
+            else:
+                # Handle other string inputs
+                lookup_key = terrain_type
+                logging.debug(f"DataProvider.get_terrain_cost: Using string '{lookup_key}' directly for lookup")
+        else:
+            # Case 5: Invalid type
+            lookup_key = str(terrain_type)
+            logging.error(f"DataProvider.get_terrain_cost: Invalid terrain_type type: {type(terrain_type)}. Expected TerrainTypeEnum or string.")
+            
+        logging.debug(f"DataProvider.get_terrain_cost: Final Lookup Key: '{lookup_key}'")
+        
+        # Log the available keys in terrain_data
+        logging.debug(f"DataProvider.get_terrain_cost: Terrain Data Keys: {list(self._terrain_data.keys())}")
+        
+        terrain_info = self._terrain_data.get(lookup_key)
         if terrain_info:
-            return terrain_info.movement_costs.get(movement_type, IMPASSABLE)
+            cost = terrain_info.movement_costs.get(movement_type.name, IMPASSABLE)
+            logging.debug(f"DataProvider.get_terrain_cost: Lookup Result: {cost}")
+            return cost
+        
+        logging.debug(f"DataProvider.get_terrain_cost: No terrain info found for key '{lookup_key}', returning IMPASSABLE")
         return IMPASSABLE
     
-    def get_terrain_bonuses(self, terrain_type: TerrainTypeEnum) -> Dict[str, int]:
+    def get_terrain_bonuses(self, terrain_type: Union[TerrainTypeEnum, str]) -> Dict[str, int]:
         """
         Get the defensive bonuses for a specific terrain type.
         
         Args:
-            terrain_type: The type of terrain
+            terrain_type: The type of terrain (TerrainTypeEnum or string)
             
         Returns:
             Dictionary of bonuses (e.g., {'def': 0, 'avo': 5})
         """
-        terrain_info = self._terrain_data.get(terrain_type.name)
+        logging.debug(f"DataProvider.get_terrain_bonuses: Received TerrainType: {terrain_type}")
+        
+        # Determine the lookup key based on the type of terrain_type
+        if isinstance(terrain_type, TerrainTypeEnum):
+            # Case 1 & 3: Handle enum values
+            if terrain_type == TerrainTypeEnum.PLAIN:
+                # Case 1: TerrainTypeEnum.PLAIN -> "PLAINS"
+                lookup_key = "PLAINS"
+                logging.debug(f"DataProvider.get_terrain_bonuses: Case 1 - Converting TerrainTypeEnum.PLAIN to 'PLAINS' for lookup")
+            else:
+                # Case 3: Other TerrainTypeEnum -> terrain_type.name
+                lookup_key = terrain_type.name
+                logging.debug(f"DataProvider.get_terrain_bonuses: Case 3 - Using enum name '{lookup_key}' for lookup")
+        elif isinstance(terrain_type, str):
+            # Case 2: String input
+            if terrain_type == "PLAINS":
+                # Case 2: "PLAINS" string -> "PLAINS"
+                lookup_key = terrain_type
+                logging.debug(f"DataProvider.get_terrain_bonuses: Case 2 - Using string 'PLAINS' directly for lookup")
+            else:
+                # Handle other string inputs
+                lookup_key = terrain_type
+                logging.debug(f"DataProvider.get_terrain_bonuses: Using string '{lookup_key}' directly for lookup")
+        else:
+            # Case 5: Invalid type
+            lookup_key = str(terrain_type)
+            logging.error(f"DataProvider.get_terrain_bonuses: Invalid terrain_type type: {type(terrain_type)}. Expected TerrainTypeEnum or string.")
+            
+        logging.debug(f"DataProvider.get_terrain_bonuses: Final Lookup Key: '{lookup_key}'")
+        
+        terrain_info = self._terrain_data.get(lookup_key)
         if terrain_info:
             return terrain_info.bonuses
         return {'def': 0, 'avo': 0}
     
-    def is_terrain_healing(self, terrain_type: TerrainTypeEnum) -> bool:
+    def is_terrain_healing(self, terrain_type: Union[TerrainTypeEnum, str]) -> bool:
         """
         Check if a terrain type provides healing.
         
         Args:
-            terrain_type: The type of terrain
+            terrain_type: The type of terrain (TerrainTypeEnum or string)
             
         Returns:
             True if the terrain provides healing, False otherwise
         """
-        terrain_info = self._terrain_data.get(terrain_type.name)
+        logging.debug(f"DataProvider.is_terrain_healing: Received TerrainType: {terrain_type}")
+        
+        # Determine the lookup key based on the type of terrain_type
+        if isinstance(terrain_type, TerrainTypeEnum):
+            # Case 1 & 3: Handle enum values
+            if terrain_type == TerrainTypeEnum.PLAIN:
+                # Case 1: TerrainTypeEnum.PLAIN -> "PLAINS"
+                lookup_key = "PLAINS"
+                logging.debug(f"DataProvider.is_terrain_healing: Case 1 - Converting TerrainTypeEnum.PLAIN to 'PLAINS' for lookup")
+            else:
+                # Case 3: Other TerrainTypeEnum -> terrain_type.name
+                lookup_key = terrain_type.name
+                logging.debug(f"DataProvider.is_terrain_healing: Case 3 - Using enum name '{lookup_key}' for lookup")
+        elif isinstance(terrain_type, str):
+            # Case 2: String input
+            if terrain_type == "PLAINS":
+                # Case 2: "PLAINS" string -> "PLAINS"
+                lookup_key = terrain_type
+                logging.debug(f"DataProvider.is_terrain_healing: Case 2 - Using string 'PLAINS' directly for lookup")
+            else:
+                # Handle other string inputs
+                lookup_key = terrain_type
+                logging.debug(f"DataProvider.is_terrain_healing: Using string '{lookup_key}' directly for lookup")
+        else:
+            # Case 5: Invalid type
+            lookup_key = str(terrain_type)
+            logging.error(f"DataProvider.is_terrain_healing: Invalid terrain_type type: {type(terrain_type)}. Expected TerrainTypeEnum or string.")
+            
+        logging.debug(f"DataProvider.is_terrain_healing: Final Lookup Key: '{lookup_key}'")
+        
+        terrain_info = self._terrain_data.get(lookup_key)
         if terrain_info:
             return terrain_info.is_healing
         return False
     
-    def get_terrain_heal_amount(self, terrain_type: TerrainTypeEnum) -> int:
+    def get_terrain_heal_amount(self, terrain_type: Union[TerrainTypeEnum, str]) -> int:
         """
         Get the healing amount provided by a terrain type.
         
         Args:
-            terrain_type: The type of terrain
+            terrain_type: The type of terrain (TerrainTypeEnum or string)
             
         Returns:
             Healing amount (0 if the terrain doesn't provide healing)
         """
-        terrain_info = self._terrain_data.get(terrain_type.name)
+        logging.debug(f"DataProvider.get_terrain_heal_amount: Received TerrainType: {terrain_type}")
+        
+        # Determine the lookup key based on the type of terrain_type
+        if isinstance(terrain_type, TerrainTypeEnum):
+            # Case 1 & 3: Handle enum values
+            if terrain_type == TerrainTypeEnum.PLAIN:
+                # Case 1: TerrainTypeEnum.PLAIN -> "PLAINS"
+                lookup_key = "PLAINS"
+                logging.debug(f"DataProvider.get_terrain_heal_amount: Case 1 - Converting TerrainTypeEnum.PLAIN to 'PLAINS' for lookup")
+            else:
+                # Case 3: Other TerrainTypeEnum -> terrain_type.name
+                lookup_key = terrain_type.name
+                logging.debug(f"DataProvider.get_terrain_heal_amount: Case 3 - Using enum name '{lookup_key}' for lookup")
+        elif isinstance(terrain_type, str):
+            # Case 2: String input
+            if terrain_type == "PLAINS":
+                # Case 2: "PLAINS" string -> "PLAINS"
+                lookup_key = terrain_type
+                logging.debug(f"DataProvider.get_terrain_heal_amount: Case 2 - Using string 'PLAINS' directly for lookup")
+            else:
+                # Handle other string inputs
+                lookup_key = terrain_type
+                logging.debug(f"DataProvider.get_terrain_heal_amount: Using string '{lookup_key}' directly for lookup")
+        else:
+            # Case 5: Invalid type
+            lookup_key = str(terrain_type)
+            logging.error(f"DataProvider.get_terrain_heal_amount: Invalid terrain_type type: {type(terrain_type)}. Expected TerrainTypeEnum or string.")
+            
+        logging.debug(f"DataProvider.get_terrain_heal_amount: Final Lookup Key: '{lookup_key}'")
+        
+        terrain_info = self._terrain_data.get(lookup_key)
         if terrain_info and terrain_info.is_healing:
             # Default to 10% healing if not specified
             return terrain_info.get('heal_amount', 10)
         return 0
     
-    def is_terrain_indoor(self, terrain_type: TerrainTypeEnum) -> bool:
+    def is_terrain_indoor(self, terrain_type: Union[TerrainTypeEnum, str]) -> bool:
         """
         Check if a terrain type is considered indoors (for dismounting).
         
         Args:
-            terrain_type: The type of terrain
+            terrain_type: The type of terrain (TerrainTypeEnum or string)
             
         Returns:
             True if the terrain is indoors, False otherwise
         """
-        terrain_info = self._terrain_data.get(terrain_type.name)
+        logging.debug(f"DataProvider.is_terrain_indoor: Received TerrainType: {terrain_type}")
+        
+        # Determine the lookup key based on the type of terrain_type
+        if isinstance(terrain_type, TerrainTypeEnum):
+            # Case 1 & 3: Handle enum values
+            if terrain_type == TerrainTypeEnum.PLAIN:
+                # Case 1: TerrainTypeEnum.PLAIN -> "PLAINS"
+                lookup_key = "PLAINS"
+                logging.debug(f"DataProvider.is_terrain_indoor: Case 1 - Converting TerrainTypeEnum.PLAIN to 'PLAINS' for lookup")
+            else:
+                # Case 3: Other TerrainTypeEnum -> terrain_type.name
+                lookup_key = terrain_type.name
+                logging.debug(f"DataProvider.is_terrain_indoor: Case 3 - Using enum name '{lookup_key}' for lookup")
+        elif isinstance(terrain_type, str):
+            # Case 2: String input
+            if terrain_type == "PLAINS":
+                # Case 2: "PLAINS" string -> "PLAINS"
+                lookup_key = terrain_type
+                logging.debug(f"DataProvider.is_terrain_indoor: Case 2 - Using string 'PLAINS' directly for lookup")
+            else:
+                # Handle other string inputs
+                lookup_key = terrain_type
+                logging.debug(f"DataProvider.is_terrain_indoor: Using string '{lookup_key}' directly for lookup")
+        else:
+            # Case 5: Invalid type
+            lookup_key = str(terrain_type)
+            logging.error(f"DataProvider.is_terrain_indoor: Invalid terrain_type type: {type(terrain_type)}. Expected TerrainTypeEnum or string.")
+            
+        logging.debug(f"DataProvider.is_terrain_indoor: Final Lookup Key: '{lookup_key}'")
+        
+        terrain_info = self._terrain_data.get(lookup_key)
         if terrain_info:
             return terrain_info.is_indoor
         return False

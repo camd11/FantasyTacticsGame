@@ -108,3 +108,57 @@ SOLDIER_TO_HALBERDIER:
     DEF: 2
     CON: 1
     MOV: 1
+
+# Myrmidon -> Swordmaster promotion
+MYRMIDON_TO_SWORDMASTER:
+  id: "MYRMIDON_TO_SWORDMASTER"
+  base_class_id: "MYRMIDON"
+  promoted_class_id: "SWORDMASTER"
+  required_level: 10
+  promotion_item: "HERO_CREST"
+  stat_bonuses:
+    HP: 3
+    STR: 2
+    MAG: 0
+    SKL: 3
+    SPD: 3
+    LUK: 0
+    DEF: 1
+    CON: 1
+    MOV: 1
+
+# Troubadour -> Valkyrie promotion
+TROUBADOUR_TO_VALKYRIE:
+  id: "TROUBADOUR_TO_VALKYRIE"
+  base_class_id: "TROUBADOUR"
+  promoted_class_id: "VALKYRIE"
+  required_level: 10
+  promotion_item: "GUIDING_RING"
+  stat_bonuses:
+    HP: 3
+    STR: 0
+    MAG: 3
+    SKL: 2
+    SPD: 2
+    LUK: 0
+    DEF: 1
+    CON: 1
+    MOV: 1
+
+# Troubadour -> Paladin promotion
+TROUBADOUR_TO_PALADIN:
+  id: "TROUBADOUR_TO_PALADIN"
+  base_class_id: "TROUBADOUR"
+  promoted_class_id: "PALADIN"
+  required_level: 10
+  promotion_item: "KNIGHT_CREST"
+  stat_bonuses:
+    HP: 3
+    STR: 2
+    MAG: 1
+    SKL: 2
+    SPD: 2
+    LUK: 0
+    DEF: 2
+    CON: 1
+    MOV: 1
