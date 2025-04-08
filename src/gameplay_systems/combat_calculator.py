@@ -217,7 +217,7 @@ class CombatCalculator:
         support_bonus = self._get_support_bonus(unit, "CritEvade")
         return (unit.luk // 2) + support_bonus
 
-    def calculate_battle_crit_chance(self, attacker_stats, defender_stats, is_first_attack):
+    def calculate_battle_crit_chance(self, attacker_stats, defender_stats, is_first_attack, astra_hit_index=None):
         """
         Calculate the final critical chance for an attack.
         
@@ -225,6 +225,7 @@ class CombatCalculator:
             attacker_stats: Stats of the attacking unit
             defender_stats: Stats of the defending unit
             is_first_attack: Whether this is the first attack in a combat round
+            astra_hit_index: Optional index of the current hit in an Astra skill sequence (None if not an Astra attack)
             
         Returns:
             Final critical chance (0-100)
@@ -242,6 +243,16 @@ class CombatCalculator:
             return 100
         
         potential_crit = attacker_stats['BaseCrit'] - defender_stats['CritEvade']
+        
+        # Handle Astra skill special case if astra_hit_index is provided
+        if astra_hit_index is not None:
+            # For Astra skill, we might want to adjust crit chance based on which hit in the sequence this is
+            # This is a placeholder implementation that can be expanded based on specific requirements
+            astra_multiplier = 1.0
+            if astra_hit_index > 0:
+                # Potentially increase crit chance for later hits in the Astra sequence
+                astra_multiplier = 1.0 + (0.1 * astra_hit_index)  # 10% increase per hit
+            potential_crit = int(potential_crit * astra_multiplier)
         
         if is_first_attack:
             return max(0, min(25, potential_crit))  # First attack capped at 25%

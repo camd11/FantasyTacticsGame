@@ -9,6 +9,7 @@ It determines hit rates, damage, critical hits, follow-up attacks, and applies t
 import logging
 import random
 from typing import Dict, List, Tuple, Optional, Any, Set, Union
+from unittest.mock import MagicMock
 
 # Import necessary modules/classes
 from src.core_engine.game_state import GameStateManager, StatusEffectEnum
@@ -34,6 +35,7 @@ SOL = "SOL"
 LUNA = "LUNA"
 PAVISE = "PAVISE"
 VANTAGE = "VANTAGE"
+ASTRA = "ASTRA"
 
 class CombatSystem:
     """
@@ -264,28 +266,56 @@ class CombatSystem:
         # --- Combat Round ---
         combat_log = []  # Store events for display/result processing
         
-        # 1. First unit's Strike(s) (either attacker or defender with Vantage)
-        # 1. Attacker's First Strike(s)
-        num_first_unit_hits = 1
-        if temp_attacker_weapon and getattr(temp_attacker_weapon, 'is_brave', False):
-            num_first_unit_hits = 2  # Brave weapons get two strikes
-        
-        for i in range(num_first_unit_hits):
-            if temp_attacker.current_hp > 0 and temp_defender.current_hp > 0:
-                # Add Vantage to skills_activated if this is the defender using Vantage
-                force_skill_activated = ["VANTAGE"] if vantage_activates and temp_attacker_id == defender_id else []
+        # Check for Astra activation
+        astra_activates = False
+        if (self._unit_has_skill(temp_attacker_id, ASTRA) and
+            not self._unit_has_skill(temp_defender_id, NIHIL)):
+            # Roll for Astra activation (Skill%)
+            if random.randint(1, 100) <= temp_attacker_stats.get('SKL', 0):
+                astra_activates = True
+                logging.info(f"{temp_attacker.name}'s Astra skill activated! Performing 5 consecutive attacks!")
                 
-                strike_result = self._perform_strike(
-                    temp_attacker, temp_attacker_stats, temp_attacker_weapon,
-                    temp_defender, temp_defender_stats, temp_defender_weapon,
-                    is_follow_up=(i > 0), force_skills_activated=force_skill_activated
-                )
-                combat_log.append(strike_result)
-                if temp_defender.current_hp <= 0:
-                    break  # Stop if second unit falls
+                # Perform 5 Astra hits
+                for hit_index in range(1, 6):
+                    if temp_attacker.current_hp > 0 and temp_defender.current_hp > 0:
+                        strike_result = self._perform_strike_astra_hit(
+                            temp_attacker, temp_attacker_stats, temp_attacker_weapon,
+                            temp_defender, temp_defender_stats, temp_defender_weapon,
+                            hit_index
+                        )
+                        combat_log.append(strike_result)
+                        if temp_defender.current_hp <= 0:
+                            break  # Stop if defender falls
+                # Skip to post-combat updates if Astra activated
+                
+        # Skip normal combat flow if Astra activated
+        if astra_activates:
+            # Skip to post-combat updates
+            pass
+        else:
+            # Normal combat flow if Astra didn't activate
+            # 1. First unit's Strike(s) (either attacker or defender with Vantage)
+            # 1. Attacker's First Strike(s)
+            num_first_unit_hits = 1
+            if temp_attacker_weapon and getattr(temp_attacker_weapon, 'is_brave', False):
+                num_first_unit_hits = 2  # Brave weapons get two strikes
+            
+            for i in range(num_first_unit_hits):
+                if temp_attacker.current_hp > 0 and temp_defender.current_hp > 0:
+                    # Add Vantage to skills_activated if this is the defender using Vantage
+                    force_skill_activated = ["VANTAGE"] if vantage_activates and temp_attacker_id == defender_id else []
+                    
+                    strike_result = self._perform_strike(
+                        temp_attacker, temp_attacker_stats, temp_attacker_weapon,
+                        temp_defender, temp_defender_stats, temp_defender_weapon,
+                        is_follow_up=(i > 0), force_skills_activated=force_skill_activated
+                    )
+                    combat_log.append(strike_result)
+                    if temp_defender.current_hp <= 0:
+                        break  # Stop if second unit falls
         
-        # 2. Second unit's Counterattack(s)
-        if temp_defender.current_hp > 0 and temp_attacker.current_hp > 0:
+        # 2. Second unit's Counterattack(s) - only if Astra didn't activate
+        if not astra_activates and temp_defender.current_hp > 0 and temp_attacker.current_hp > 0:
             # If Vantage activated, the original attacker is now the defender and can always counter
             # If Vantage didn't activate, use the original defender_can_ctr check
             second_unit_can_counter = True if vantage_activates else defender_can_ctr
@@ -306,8 +336,8 @@ class CombatSystem:
                         if temp_attacker.current_hp <= 0:
                             break  # Stop if first unit falls
         
-        # 3. First unit's Follow-Up Strike
-        if temp_attacker.current_hp > 0 and temp_defender.current_hp > 0 and temp_attacker_doubles:
+        # 3. First unit's Follow-Up Strike - only if Astra didn't activate
+        if not astra_activates and temp_attacker.current_hp > 0 and temp_defender.current_hp > 0 and temp_attacker_doubles:
             strike_result = self._perform_strike(
                 temp_attacker, temp_attacker_stats, temp_attacker_weapon,
                 temp_defender, temp_defender_stats, temp_defender_weapon,
@@ -315,8 +345,8 @@ class CombatSystem:
             )
             combat_log.append(strike_result)
         
-        # 4. Second unit's Follow-Up Strike
-        if temp_defender.current_hp > 0 and temp_attacker.current_hp > 0 and second_unit_can_counter and temp_defender_doubles:
+        # 4. Second unit's Follow-Up Strike - only if Astra didn't activate
+        if not astra_activates and temp_defender.current_hp > 0 and temp_attacker.current_hp > 0 and second_unit_can_counter and temp_defender_doubles:
             has_wrath = self._unit_has_skill(temp_defender_id, WRATH)
             strike_result = self._perform_strike(
                 temp_defender, temp_defender_stats, temp_defender_weapon,
@@ -422,7 +452,8 @@ class CombatSystem:
     # --- Helper Methods: Strike Execution ---
     
     def _perform_strike(self, striker, striker_stats, striker_weapon, target, target_stats, target_weapon,
-                        is_follow_up=False, force_crit=False, force_skills_activated=None) -> Dict[str, Any]:
+                        is_follow_up=False, force_crit=False, force_skills_activated=None,
+                        is_astra_hit=False, astra_hit_index=0) -> Dict[str, Any]:
         """
         Perform a single strike in combat.
         
@@ -453,16 +484,21 @@ class CombatSystem:
             strike_log['did_attack'] = False
             return strike_log  # Cannot attack without weapon
         
+        # Check for Nihil on attacker and defender
+        defender_has_nihil = self._unit_has_skill(target.id, NIHIL)
+        attacker_has_nihil = self._unit_has_skill(striker.id, NIHIL)
+        
         # Calculate Hit/Dmg/Crit for this specific strike
         hit_chance, base_dmg, crit_chance = self._calculate_single_attack_outcome(
             striker, striker_stats, striker_weapon,
             target, target_stats, target_weapon,
-            is_first_hit=(not is_follow_up),
-            pcc_multiplier=striker_stats.get('FCM', 1)
+            is_first_hit=(not is_follow_up and not is_astra_hit),
+            pcc_multiplier=striker_stats.get('FCM', 1),
+            astra_hit_index=astra_hit_index if is_astra_hit else 0
         )
         
-        # Check for Miracle activation
-        if self._unit_has_skill(target.id, MIRACLE) and target.current_hp <= 10:
+        # Check for Miracle activation (defender defensive skill)
+        if not attacker_has_nihil and self._unit_has_skill(target.id, MIRACLE) and target.current_hp <= 10:
             logging.info(f"{target.name}'s Miracle activated!")
             strike_log['skills_activated'].append(MIRACLE)
             hit_chance = 0  # Negates hit
@@ -472,48 +508,62 @@ class CombatSystem:
         if hit_roll <= hit_chance:
             strike_log['hit'] = True
             
-            # Check for Pavise activation
-            if self._unit_has_skill(target.id, PAVISE):
-                # Roll for Pavise activation (Level%)
-                if random.randint(1, 100) <= target.level:
-                    logging.info(f"{target.name}'s Pavise activated!")
-                    strike_log['skills_activated'].append(PAVISE)
-                    base_dmg = 0  # Negates damage
-            
+            # Store base damage before any skill modifications
             actual_dmg = base_dmg
             is_crit = False
             
+            # Check for Pavise activation (defender defensive skill)
+            pavise_activated = False
+            if not attacker_has_nihil and self._unit_has_skill(target.id, PAVISE):
+                # Roll for Pavise activation (Skill% instead of Level%)
+                if random.randint(1, 100) <= target_stats.get('SKL', 0):
+                    logging.info(f"{target.name}'s Pavise activated!")
+                    strike_log['skills_activated'].append(PAVISE)
+                    pavise_activated = True
+                    # Damage will be negated later
+            
+            # Check for Luna activation (attacker offensive skill)
+            luna_activated = False
+            if not defender_has_nihil and self._unit_has_skill(striker.id, LUNA):
+                # Roll for Luna activation (Skill%)
+                if random.randint(1, 100) <= striker_stats.get('SKL', 0):
+                    logging.info(f"{striker.name}'s Luna activated!")
+                    strike_log['skills_activated'].append(LUNA)
+                    luna_activated = True
+                    # Recalculate damage ignoring defense
+                    actual_dmg = self._calculate_damage_ignoring_defense(
+                        striker, striker_stats, striker_weapon,
+                        target, target_stats
+                    )
+            
             # Roll for critical hit - check Nihil first
-            if base_dmg > 0 and not self._unit_has_skill(target.id, NIHIL):
+            if actual_dmg > 0 and not defender_has_nihil:
                 if force_crit or (random.randint(1, 100) <= crit_chance):
                     is_crit = True
                     actual_dmg *= 2  # Apply crit bonus
                     strike_log['crit'] = True
                     logging.info("Critical Hit!")
             
-            # Check for Sol/Luna activation - check Nihil first
-            if base_dmg > 0 and not self._unit_has_skill(target.id, NIHIL):
-                if self._unit_has_skill(striker.id, LUNA):
-                    # Roll for Luna activation (Skill%)
-                    if random.randint(1, 100) <= striker_stats.get('SKL', 0):
-                        logging.info(f"{striker.name}'s Luna activated!")
-                        strike_log['skills_activated'].append(LUNA)
-                        # Recalculate damage ignoring defense
-                        actual_dmg = self._calculate_damage_ignoring_defense(
-                            striker, striker_stats, striker_weapon,
-                            target, target_stats, is_crit
-                        )
-                
-                if self._unit_has_skill(striker.id, SOL):
-                    # Roll for Sol activation (Skill%)
-                    if random.randint(1, 100) <= striker_stats.get('SKL', 0):
-                        logging.info(f"{striker.name}'s Sol activated!")
-                        strike_log['skills_activated'].append(SOL)
-                        self.gameStateManager.apply_healing(striker.id, actual_dmg)  # Heal for damage dealt
+            # Store damage before Pavise negation for Sol calculation
+            damage_for_sol = actual_dmg
+            
+            # Apply Pavise negation if it activated
+            if pavise_activated:
+                actual_dmg = 0
             
             # Apply final damage
             self.gameStateManager.apply_damage(target.id, actual_dmg)
             strike_log['damage'] = actual_dmg
+            
+            # Check for Sol activation (attacker healing skill)
+            if not defender_has_nihil and self._unit_has_skill(striker.id, SOL):
+                # Roll for Sol activation (Skill%)
+                if random.randint(1, 100) <= striker_stats.get('SKL', 0):
+                    logging.info(f"{striker.name}'s Sol activated!")
+                    strike_log['skills_activated'].append(SOL)
+                    # Heal for damage dealt before Pavise negation
+                    heal_amount = damage_for_sol
+                    self.gameStateManager.apply_healing(striker.id, heal_amount)
             
             # Apply weapon status effects
             self._apply_weapon_status_effects(striker_weapon, target.id)
@@ -531,7 +581,8 @@ class CombatSystem:
             striker.current_hp > 0 and
             target.current_hp > 0 and
             self._unit_has_skill(striker.id, ADEPT) and
-            not self._unit_has_skill(target.id, NIHIL)):
+            not self._unit_has_skill(target.id, NIHIL) and
+            not is_astra_hit):  # Adept doesn't activate during Astra sequence
             
             # Roll for Adept activation (Skill%)
             if random.randint(1, 100) <= striker_stats.get('SKL', 0):
@@ -553,7 +604,7 @@ class CombatSystem:
     # These methods delegate to the CombatCalculator
     def _calculate_single_attack_outcome(self, striker, striker_stats, striker_weapon,
                                          target, target_stats, target_weapon,
-                                         is_first_hit=True, pcc_multiplier=1) -> Tuple[int, int, int]:
+                                         is_first_hit=True, pcc_multiplier=1, astra_hit_index=0) -> Tuple[int, int, int]:
         """
         Calculate the outcome of a single attack.
         
@@ -566,6 +617,7 @@ class CombatSystem:
             target_weapon: Weapon data of the defending unit
             is_first_hit: Whether this is the first hit
             pcc_multiplier: Pursuit Critical Coefficient multiplier
+            astra_hit_index: Index of the Astra hit (0 for non-Astra hits, 1-5 for Astra hits)
             
         Returns:
             Tuple of (hit_chance, damage, crit_chance)
@@ -605,10 +657,9 @@ class CombatSystem:
         damage = self.combatCalculator.calculate_damage(attacker_stats, defender_stats)
         
         # Calculate crit chance
-        crit_chance = self.combatCalculator.calculate_battle_crit_chance(attacker_stats, defender_stats, is_first_hit)
+        crit_chance = self.combatCalculator.calculate_battle_crit_chance(attacker_stats, defender_stats, is_first_hit, astra_hit_index)
         
         return hit_chance, damage, crit_chance
-        return hit_chance, base_dmg, crit_chance
     
     def _calculate_damage_ignoring_defense(self, striker, striker_stats, striker_weapon,
                                           target, target_stats, is_crit=False) -> int:
@@ -652,7 +703,7 @@ class CombatSystem:
         
         # Apply crit bonus if applicable
         if is_crit:
-            damage = self.combatCalculator.calculate_crit_damage(damage)
+            damage *= 2  # Critical hits double damage
         
         return max(0, damage)
     
@@ -1157,10 +1208,112 @@ class CombatSystem:
         """Proxy method for tests - delegates to CombatCalculator."""
         return self.combatCalculator.calculate_avoid_rate(unit, opponent)
     
+    def _perform_strike_astra_hit(self, striker, striker_stats, striker_weapon, target, target_stats, target_weapon, hit_index) -> Dict[str, Any]:
+        """
+        Perform a single Astra hit in combat.
+        
+        Args:
+            striker: The attacking unit
+            striker_stats: Stats of the attacking unit
+            striker_weapon: Weapon data of the attacking unit
+            target: The defending unit
+            target_stats: Stats of the defending unit
+            target_weapon: Weapon data of the defending unit
+            hit_index: The index of the Astra hit (1-5)
+            
+        Returns:
+            Dictionary containing the strike result
+        """
+        # Call _perform_strike with is_astra_hit=True and astra_hit_index=hit_index
+        strike_result = self._perform_strike(
+            striker, striker_stats, striker_weapon,
+            target, target_stats, target_weapon,
+            is_follow_up=False, is_astra_hit=True, astra_hit_index=hit_index
+        )
+        
+        # If the hit landed, apply the Astra damage multiplier (0.5x)
+        if strike_result['hit']:
+            # Store original damage for reference
+            original_damage = strike_result['damage']
+            
+            # Apply Astra's half damage multiplier
+            astra_damage = max(0, int(original_damage * 0.5))
+            
+            # Update the damage in the strike result
+            strike_result['damage'] = astra_damage
+            
+            # Apply the corrected damage to the target
+            damage_diff = original_damage - astra_damage
+            if damage_diff > 0:
+                # Undo the excess damage that was applied in _perform_strike
+                self.gameStateManager.apply_healing(target.id, damage_diff)
+            
+            # If Sol activated, adjust healing to match the actual damage dealt
+            if SOL in strike_result['skills_activated']:
+                # Recalculate Sol healing based on the actual Astra damage
+                self.gameStateManager.apply_healing(striker.id, -original_damage)  # Undo original healing
+                self.gameStateManager.apply_healing(striker.id, astra_damage)  # Apply correct healing
+        
+        # Add Astra to the skills activated
+        if 'skills_activated' not in strike_result:
+            strike_result['skills_activated'] = []
+        strike_result['skills_activated'].append(ASTRA)
+        
+        return strike_result
+    
     def _calculate_battle_hit_chance(self, attacker_stats, defender_stats):
         """Proxy method for tests - delegates to CombatCalculator."""
         return self.combatCalculator.calculate_battle_hit_chance(attacker_stats, defender_stats)
 
-
-# Add this import at the top of the file with other imports
-from unittest.mock import MagicMock
+    def _perform_strike_astra_hit(self, striker, striker_stats, striker_weapon, target, target_stats, target_weapon, hit_index) -> Dict[str, Any]:
+        """
+        Perform a single Astra hit in combat.
+        
+        Args:
+            striker: The attacking unit
+            striker_stats: Stats of the attacking unit
+            striker_weapon: Weapon data of the attacking unit
+            target: The defending unit
+            target_stats: Stats of the defending unit
+            target_weapon: Weapon data of the defending unit
+            hit_index: The index of the Astra hit (1-5)
+            
+        Returns:
+            Dictionary containing the strike result
+        """
+        # Call _perform_strike with is_astra_hit=True and astra_hit_index=hit_index
+        strike_result = self._perform_strike(
+            striker, striker_stats, striker_weapon,
+            target, target_stats, target_weapon,
+            is_follow_up=False, is_astra_hit=True, astra_hit_index=hit_index
+        )
+        
+        # If the hit landed, apply the Astra damage multiplier (0.5x)
+        if strike_result['hit']:
+            # Store original damage for reference
+            original_damage = strike_result['damage']
+            
+            # Apply Astra's half damage multiplier
+            astra_damage = max(0, int(original_damage * 0.5))
+            
+            # Update the damage in the strike result
+            strike_result['damage'] = astra_damage
+            
+            # Apply the corrected damage to the target
+            damage_diff = original_damage - astra_damage
+            if damage_diff > 0:
+                # Undo the excess damage that was applied in _perform_strike
+                self.gameStateManager.apply_healing(target.id, damage_diff)
+            
+            # If Sol activated, adjust healing to match the actual damage dealt
+            if SOL in strike_result['skills_activated']:
+                # Recalculate Sol healing based on the actual Astra damage
+                self.gameStateManager.apply_healing(striker.id, -original_damage)  # Undo original healing
+                self.gameStateManager.apply_healing(striker.id, astra_damage)  # Apply correct healing
+        
+        # Add Astra to the skills activated
+        if 'skills_activated' not in strike_result:
+            strike_result['skills_activated'] = []
+        strike_result['skills_activated'].append(ASTRA)
+        
+        return strike_result

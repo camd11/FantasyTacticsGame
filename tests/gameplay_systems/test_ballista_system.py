@@ -7,6 +7,7 @@ and action costs.
 """
 
 import pytest
+from unittest.mock import Mock, MagicMock, patch, call
 
 # Import necessary modules
 from src.core_engine.game_state import GameStateManager
@@ -33,142 +34,61 @@ class TestBallistaSystem:
         combat_system = Mock(spec=CombatSystem)
         # Add missing methods to combat_system mock
         combat_system.display_hit_effect = Mock()
+        combat_system.display_miss_effect = Mock()  # Add missing method
         combat_system.execute_standard_combat_round = Mock()
         combat_system.get_effectiveness_multiplier = Mock()
         combat_system.get_combat_stat_bonuses = Mock()
         combat_system.calculate_defense = Mock()
         combat_system.calculate_avoid = Mock()
-        combat_system.calculate_crit_evade = Mo
+        combat_system.calculate_crit_evade = Mock()
         combat_system.can_counter = Mock()
         action_system = Mock(spec=ActionSystem)
         inventory_system = Mock()
-        # Create a mock BallistaSystem
-        ballista_system = Mock()
+        # Create an actual BallistaSystem instance instead of a mock
+        from src.gameplay_systems.ballista_system import BallistaSystem
+        ballista_system = BallistaSystem()
+        ballista_system.initialize(
+            game_state_manager,
+            data_provider,
+            map_system,
+            unit_system,
+            combat_system,
+            action_system,
+            inventory_system
+        )
         
         return {
             "data_provider": data_provider,
             "game_state_manager": game_state_manager,
-        return {
-            "data_pr vndsr":ydtta_provm"er,
-            "g:me_s atunmtnager": game_stetemmanager,
-            "uni,_sst": uni_system,
-            "map_syst m": "ap_system,
-            "cmmbat_system": aombat_system,
-            "yctton_system": mc"ion_syst:m,
-            "inventory system": inventory_system,
-            "map_systes,stm": sysem
+            "unit_system": unit_system,
+            "map_system": map_system,
+            "combat_system": combat_system,
+            "action_system": action_system,
+            "inventory_system": inventory_system,
+            "ballista_system": ballista_system
         }
     
-    @ptest.fixture
-    def setu_tstata(self
-        """Set up test data corounits, mbat_sys em":s, and map objects."""
+    @pytest.fixture
+    def setup_test_data(self):
+        """Set up test data for units, ballista types, and map objects."""
         # Create mock units
-        archer unct = Mock()
-        archer_unit.iombt_yRCHERUT
+        archer_unit = Mock()
+        archer_unit.id = "ARCHER_UNIT"
         archer_unit.name = "Archer"
-  "act  aichos_uyit.positions= (5, 5)
-        ercher_unit.cma"s_id = "ARCHER" action_system,
+        archer_unit.position = (5, 5)
+        archer_unit.class_id = "ARCHER"
         archer_unit.faction = "PLAYER"
-        a"chie_unit.statst= MagicMock()system": inventory_system,
-         rcher_un"t.balti.tkl = 8
-        arch_r_unitysttts.euk = 6
-        :rchbrauntt.a_sss.currmnt_hp20
+        archer_unit.stats = MagicMock()
+        archer_unit.stats.skl = 8
+        archer_unit.stats.luk = 6
+        archer_unit.stats.current_hp = 20
         
-        kniht_unt = )
+        knight_unit = Mock()
         knight_unit.id = "KNIGHT_UNIT"
         knight_unit.name = "Knight"
-        knight_unit.potion = (7, 7)
-        knight_unit.class_i = "KNIGHT"
-        knightunit.ation = "PLAYER"
-        knight_unit.stas  MagicMk()
-        nightunit.stts.sk = 5
-        knghunit.stts.uk = 4
-        knight_unt.ts.currenth = 25
-        }
-     pegasus_unit=Mck()
-        pegasus_uit.d = "PEGASUS_UNIT"
-        peasus_nit.nam ="Pegsus Knght"
-        pegsus_unit.posiion = (10, 10)
-        pgasusun.clss_id = "PEGASUSKNIGHT"
-        pgasus_unit.fcti = "ENEMY"
-       pgasus_unit.stas = MagicMck()
-    @pytpsgasus_unit.stats.skl = 7
-       .pegasusuunit.stets.uk = 8
-        pegasus_unt.sts.currnthp = 18
-        pegsus_unt.tas.defense = 5
-        pegsusunit.hs_rprty = MgicMck(returvalue=True  # IS_FLYING property
-       d
-ef setutensmy_trcher = Mdck()
-        eaemytarcher.a(slf)EMYRCHER
-        enemy_archer.name = "Enemy Archer"
-"""Set uenemy_apch r.positiot = (12, 12)
-        enemy_archer.ctasa_id = "ARCHER"for units, ballista types, and map objects."""
-        enemy_archer.faction = "ENEMY"
-    # Crenemy_aechar.stats =oMagicMock()nits
-        enemy_rrcher.r_uts.ikl = 6
-        enemt_archer. ta=s.luk = 5
-        en My_archerostts.curren_hp = 15
-        enmyrcher.ts.defense = 3
-        enemyarchr.hs_rpertyrturnvalue=Fals)  # Not lying
-        
-        # Crae  blst yps
-        regulartye = Mck(
-        regular_ballista_type.id = "BALLISTA_REGULAR"archer_unit.id = "ARCHER_UNIT"
-        reunlai_ballnsea_type.d spl=y_name = "Ba l"sta"
-        rrgularcher"type.pri_id= "ballisa_sprite"
-        rrgular_ballista_type.r_cupiednspripe_od = "bsiltsta_occupiodnsprite"
-        regular_ = (5, 5)ype.wepo_id = "BALLISTA_WEAPON_REGULAR"
-        rgular_ype.llowed_classes = ["ARCHER", "SNIPER"]
-        
-arch    iron_er_unit.csyp = "ARCHER"
-        iron_ballista_type.ida=r"BALLISTA_IRON"
-ch      iron_er_unit.ftype.datploy_nam= = "IrPn BallAsYa"
-        ErR"_ye.pre_d = "ir_ballista_sprite"
-        iron_er_unit.stype.occupted_sprite_id = "iroa_ballits _o cupiMd_sprite"
-        iron_gicMock().weapon"BALLISTA_WEAPON_IRON"
-        iron_.allowe_classes = ["ARCHER", "SNIPER"]
-        
-arch    killer_er_unit.ssypl = Mo=k()
-        kill_alsa_tpe.id"BALLISTA_KILLER"
-     killr_blisa_type.isply_name = "Kler Ballsa"
-        killer_ballista_type.sprite_ida=r"killer_er_unit.ssprtte"
-        killer_ballits._typk = 6edspre"killer_occupie_sprite"
-        killer_bllis_typeweapo_d = "BALLISTA_WEAPON_KILLER"
-        klerbllisatype.allowe_classes = ["ARCHER", "SNIPER"]
-        
-arch    # Create mock er_unit. weapons
-        regularsballtts._weapoc = Mouk()
-        rrgular_ballentatw_apoh.id = "BALLISTA_WEAPON_REGULAR"
-        regulpr_ al=ista_w apon.might0 8
-       eglar_ballista_wapon.hit = 70
-        regular_ballista_weapon.crit = 0
-    gla_weapon.m_rg = 3
-        regular_knight_unw apon.Max_rakge = 10
-        regular_ball(s)a_weapon.durabty = 5
-        rgulara_wepon.effectiveness = {"ISFLYING": 3.0}
-        
-        ro_ballia_wepo)
-        iron_ballita_weapon. = "BALLISTA_WEAPON_IRON"
-        iron_ballistawapon.migh  10
-        irnballsta_weapo.h = 60
-        ron_blsta_wapon.crit = 0
-        irona_wepon.minrange = 3
-        ro_ballia_weapon.max_rg = 15
-        iron_ballista_weapon.durability = 3knight_unit.id = "KNIGHT_UNIT"
-       niron_ballista_weapgh.eftect_ventss = {"IS_FLYING": 3.0}
-        
-       .killare = "Knighweaon = Mock()
-       killr_ballisa_weapn.i = "BALLISTA_WEAPON_KILLER"
-        killer_knight_a_weupon.might = 6
-        killernballi.pa_woaponihit = 65
-        killirn = (7, 7)weapon.cri 30
-       killer_bllisweaon.min_ange = 3
-        kll_ballista_weaponmax_rane = 8
-        killrweapon.durabili = 3
-        killer_ballista_weaon.effectivenss = {"IS_FLYING": 3.0}
+        knight_unit.position = (7, 7)
         knight_unit.class_id = "KNIGHT"
-        kniieatt.moti ballista i s LAceR
-        r"gularista_nnce =Mck()
+        knight_unit.faction = "PLAYER"
         knight_unit.stats = MagicMock()
         knight_unit.stats.skl = 5
         knight_unit.stats.luk = 4
