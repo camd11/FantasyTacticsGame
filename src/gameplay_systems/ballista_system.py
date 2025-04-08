@@ -329,7 +329,6 @@ class BallistaSystem:
             origin=ballista_instance.position,
             min_range=weapon.min_range,
             max_range=weapon.max_range,
-            map_data=self.mapSystem.current_map,
             los_checker=self.mapSystem.get_los_checker()
         )
         
