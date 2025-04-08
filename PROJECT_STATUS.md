@@ -64,7 +64,6 @@
         - Allows targeting units within the Ballista's specific range and attack pattern.
         - Combat calculations use the Ballista's stats combined with the mounting unit's relevant stats (e.g., Skill).
         - Ballistae have durability (uses) which deplete upon firing.
-        - **Note:** Unit tests (`test_ballista_system.py`) are currently failing due to test setup/mocking issues and require refactoring.
     - Combat Skills (Astra, Sol, Luna, Pavise)
         - Implemented core combat skills (Astra, Sol, Luna, Pavise) according to their specifications.
         - These skills are now functional within the combat system, triggering based on activation rates and conditions.
@@ -115,7 +114,6 @@
     - Implement fully interactive turn-by-turn gameplay via CLI.
 - **Testing:**
     - Develop more comprehensive testing scenarios covering edge cases and complex interactions.
-    - Refactor failing Ballista system tests (`test_ballista_system.py`).
 - **Future Enhancements:**
     - Potential GUI implementation.
 - **Bug Fixing:**
