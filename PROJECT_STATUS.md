@@ -72,6 +72,10 @@
         - Defines targeting rules (allies, enemies, specific ranges).
         - Calculates EXP gain for staff usage.
         - Incorporates resource costs (staff durability, potential fatigue).
+    - Shop/Armory System
+        - Allows units to interact with designated Shop or Armory tiles.
+        - Implements logic for purchasing items (checking gold, inventory space) and selling items (adding gold).
+        - Tracks player gold and manages unit inventories during transactions.
 - **Initial Data Population:**
     - Units (`units.yaml`): Added Mareeta, Nanna, Saias.
     - Items (`items.yaml`): Added Short Lance, Rapier, Physic, Killer Lance, Hand Axe.
