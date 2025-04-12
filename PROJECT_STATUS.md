@@ -103,6 +103,10 @@
     - Fixed `AttributeError` by adding `get_units_in_range` method to `UnitSystem`.
     - Fixed phase/faction mismatch warnings and processing logic in `EngineCore`.
     - Fixed `AttributeError` by adding `get_unit` method to `UnitSystem`.
+    - Enhanced ASCII Display
+        - Improved rendering of units and terrain features.
+        - Integrated Fog of War visualization (showing visible, explored, hidden tiles).
+        - Added a status panel displaying key unit information.
 - **AI Refinement:**
     - Improved AI target prioritization logic.
     - Implemented basic AI archetypes (Aggressive/CHARGE, Defensive/GUARD).
