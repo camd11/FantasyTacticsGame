@@ -76,6 +76,9 @@
         - Allows units to interact with designated Shop or Armory tiles.
         - Implements logic for purchasing items (checking gold, inventory space) and selling items (adding gold).
         - Tracks player gold and manages unit inventories during transactions.
+    - Save/Load System
+        - Allows saving the current game state (units, map objects, events, gold, turn count, etc.) to a JSON file.
+        - Allows loading a previously saved game state from a JSON file, restoring the session.
 - **Initial Data Population:**
     - Units (`units.yaml`): Added Mareeta, Nanna, Saias.
     - Items (`items.yaml`): Added Short Lance, Rapier, Physic, Killer Lance, Hand Axe.
