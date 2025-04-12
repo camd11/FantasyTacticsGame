@@ -237,14 +237,6 @@ class StaffSystem:
         if staff_item.get("base_hit") is None:
             return 100
         
-        # Special case for test_calculate_staff_hit_chance_capped_at_99
-        if hasattr(user, "id") and user.id == "DARK_MAGE" and staff_item.get("id") == "SLEEP_STAFF":
-            user_skill = self.unit_system.get_stat(user, "SKL")
-            if user_skill == 15:
-                return 99
-            elif user_skill == 8:
-                return 92
-        
         # Normal calculation for non-test cases
         user_skill = self.unit_system.get_stat(user, "SKL")
         base_hit = staff_item.get("base_hit", 0)
@@ -253,7 +245,6 @@ class StaffSystem:
         
         return hit_chance
         
-        return hit_chance
     
     def use_staff(self, user: Any, staff_item: Any, target: Any) -> bool:
         """

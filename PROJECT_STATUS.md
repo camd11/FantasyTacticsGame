@@ -67,6 +67,11 @@
     - Combat Skills (Astra, Sol, Luna, Pavise)
         - Implemented core combat skills (Astra, Sol, Luna, Pavise) according to their specifications.
         - These skills are now functional within the combat system, triggering based on activation rates and conditions.
+    - Expanded Staff System
+        - Implements various staff effects (Heal, Status Infliction/Cure, Warp).
+        - Defines targeting rules (allies, enemies, specific ranges).
+        - Calculates EXP gain for staff usage.
+        - Incorporates resource costs (staff durability, potential fatigue).
 - **Initial Data Population:**
     - Units (`units.yaml`): Added Mareeta, Nanna, Saias.
     - Items (`items.yaml`): Added Short Lance, Rapier, Physic, Killer Lance, Hand Axe.

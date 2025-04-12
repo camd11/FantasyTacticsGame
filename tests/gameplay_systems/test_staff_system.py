@@ -441,6 +441,8 @@ class TestStaffSystem(unittest.TestCase):
         # Arrange
         user = MagicMock()
         user.id = "DARK_MAGE"
+        # Disable side_effect to allow setting return_value directly
+        self.mock_unit_system.get_stat.side_effect = None
         self.mock_unit_system.get_stat.return_value = 8  # SKL = 8
         
         staff_item = {
@@ -462,6 +464,8 @@ class TestStaffSystem(unittest.TestCase):
         # Arrange
         user = MagicMock()
         user.id = "DARK_MAGE"
+        # Disable side_effect to allow setting return_value directly
+        self.mock_unit_system.get_stat.side_effect = None
         self.mock_unit_system.get_stat.return_value = 15  # SKL = 15
         
         staff_item = {
