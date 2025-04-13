@@ -115,6 +115,10 @@
 - **AI Refinement:**
     - Improved AI target prioritization logic.
     - Implemented basic AI archetypes (Aggressive/CHARGE, Defensive/GUARD).
+    - Healer (HEAL_SUPPORT) AI Archetype
+        - Prioritizes healing allies with low HP.
+        - Uses Restore staff on allies with status effects.
+        - Defaults to defensive behavior if no healing/restoring is needed.
 - **Testing & Integration:**
     - Resolved 6 integration test failures related to `DataProvider`, `Engine`, `EventHandler`, and `GameState`. All unit tests are now passing.
     - Created new test scenarios for:

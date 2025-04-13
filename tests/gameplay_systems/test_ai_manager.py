@@ -948,11 +948,12 @@ class TestAIManager(unittest.TestCase):
         mock_profile = MagicMock()
         mock_profile.behavior_type = AIBehaviorType.AGGRESSIVE
         
-        # Create mock status staff
-        mock_item_data = MagicMock()
-        mock_item_data.heals_hp = False
-        mock_item_data.inflicts_status = True
-        mock_item_data.status_effect = "SLEEP"
+        # Create status staff data as a dictionary
+        mock_item_data = {
+            'heals_hp': False,
+            'inflicts_status': True,
+            'status_effect': "SLEEP"
+        }
         
         # Configure mock behavior
         self.mock_unitSystem.get_unit.side_effect = lambda unit_id: {

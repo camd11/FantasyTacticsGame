@@ -318,6 +318,139 @@ class AIManager:
     function create_escape_action(...) -> AIAction: ...
 
 end class
+
+### 5.1. Archetype-Specific Logic: HEAL_SUPPORT
+
+This section details the specific logic applied when a unit's `AIProfile.behavior_archetype` is `HEAL_SUPPORT`. This logic primarily influences `evaluate_action_utility` and `filter_actions_by_archetype`.
+
+```pseudocode
+// --- Within AIManager class ---
+
+function evaluate_action_utility(actions: List[AIAction], unit: Unit, profile: AIProfile):
+    // ... (existing utility calculations) ...
+
+    // Specific calculation for HEAL_SUPPORT archetype
+    if profile.behavior_archetype == HEAL_SUPPORT:
+        for action in actions:
+            if action.action_type == USE_STAFF and action.target.is_ally():
+                action.predicted_utility = calculate_ally_heal_utility(action, unit, profile)
+                // TDD_ANCHOR: Healer calculates heal utility based on HP restored and target HP%
+            elif action.action_type == ATTACK:
+                 // Heavily penalize attacking unless necessary (e.g., self-defense)
+                 // This might be better handled in filter_actions_by_archetype
+                 action.predicted_utility *= 0.1 // Example penalty
+            // Add utility for moving towards injured allies even if not in range yet? (Future enhancement)
+
+function calculate_ally_heal_utility(action: AIAction, healer: Unit, profile: AIProfile) -> Float:
+    target_ally = action.target_unit // Assuming action structure holds the target Unit object
+    staff = action.item // Assuming action structure holds the staff Item object used
+
+    base_utility = 100.0 // High base utility to prioritize healing
+
+    // Calculate potential HP restored (consider staff power, healer magic, target resistance if applicable)
+    potential_heal_amount = StaffSystem.predict_heal_amount(healer, staff, target_ally)
+    actual_heal_amount = min(potential_heal_amount, target_ally.max_hp - target_ally.current_hp)
+
+    // Bonus based on how much HP is missing (higher bonus for lower HP%)
+    hp_percentage_missing = 1.0 - (target_ally.current_hp / target_ally.max_hp)
+    missing_hp_bonus = hp_percentage_missing * 150.0 // Scale bonus significantly
+
+    // Bonus for amount healed (healing 1 HP is less valuable than 20 HP)
+    amount_healed_bonus = actual_heal_amount * 2.0
+
+    // (Optional) Bonus for curing status effects if using Restore/etc.
+    status_cure_bonus = 0.0
+    if staff.cures_status() and target_ally.has_negative_status():
+        // Prioritize dangerous statuses?
+        status_cure_bonus = 50.0 // Flat bonus for curing any status
+        // TDD_ANCHOR: Healer prioritizes Restore for specific status effects if enabled.
+
+    // Penalty for staff uses remaining? (Lower utility if staff is almost broken?) - Optional
+    staff_uses_penalty = 0.0
+    # if staff.uses < 3: staff_uses_penalty = -20.0
+
+    total_utility = base_utility + missing_hp_bonus + amount_healed_bonus + status_cure_bonus + staff_uses_penalty
+
+    // TDD_ANCHOR: Healer utility increases significantly for low HP% targets.
+    // TDD_ANCHOR: Healer utility scales with the amount of HP actually restored.
+
+    return total_utility
+
+
+function filter_actions_by_archetype(actions: List[AIAction], profile: AIProfile) -> List[AIAction]:
+    if profile.behavior_archetype == HEAL_SUPPORT:
+        heal_actions = [a for a in actions if a.action_type == USE_STAFF and a.target.is_ally()]
+        self_heal_actions = [a for a in actions if a.action_type == USE_ITEM and a.target == unit] # Assuming target is unit for self-use
+
+        # Priority 1: Heal Allies if possible
+        if heal_actions:
+             # Return only the best healing actions? Or all valid ones? Let's return all for now.
+             # Maybe also include safe moves/waits if the heal isn't critical?
+             # For simplicity: prioritize healing above all else if available.
+             # TDD_ANCHOR: Healer selects healing action over low-utility attack/wait.
+             return heal_actions
+
+        # Priority 2: Self Heal if needed
+        if self_heal_actions and unit.current_hp / unit.max_hp <= profile.heal_threshold_self:
+             return self_heal_actions
+
+        # Priority 3: Default Behavior (No healing needed/possible)
+        # Avoid combat unless directly threatened? Or follow a simple pattern?
+        # Option A: Minimal action - Wait or move to safest adjacent tile.
+        # Option B: Move towards nearest ally group center.
+        # Option C: Basic Guard behavior around current position.
+
+        # Let's implement Option A: Prefer Wait/Safe Move, avoid attacks unless high utility (self-preservation)
+        safe_actions = []
+        for action in actions:
+            if action.action_type == WAIT:
+                safe_actions.append(action)
+            elif action.action_type == MOVE:
+                 # Evaluate safety of destination tile (e.g., terrain bonus, distance from enemies)
+                 if MapSystem.is_tile_safe(action.move_target_coord, unit.faction): # Needs is_tile_safe logic
+                     safe_actions.append(action)
+            elif action.action_type == ATTACK:
+                 # Only consider attack if utility is very high (e.g., finishing off a major threat, self-defense)
+                 # The utility penalty in evaluate_action_utility helps here.
+                 # We might still include high-utility attacks if no safe moves exist.
+                 pass # Let utility decide if attack is worth it vs. just waiting
+
+        # If safe moves/waits exist, prefer them. Otherwise, consider other actions based on utility.
+        if safe_actions:
+             # TDD_ANCHOR: Healer defaults to safe movement/waiting when no healing targets are available.
+             return safe_actions
+        else:
+             # If no explicitly "safe" actions, return all non-heal actions for utility comparison
+             # This allows attacking if cornered and waiting isn't safe either.
+             return [a for a in actions if not (a.action_type == USE_STAFF and a.target.is_ally())]
+
+    else:
+        // Apply filters for other archetypes or return all actions
+        return actions
+
+
+// --- Helper functions potentially needed ---
+
+function find_heal_targets_for_staff(unit: Unit, staff: Item, coord: Coordinate) -> List[Unit]:
+    // Finds allies within staff range from 'coord' who are injured
+    potential_targets = []
+    allies = game_state.get_allied_units(unit.faction)
+    staff_range = StaffSystem.get_staff_range(unit, staff) // e.g., 1 for Heal, 1-Mag/2 for Physic
+
+    for ally in allies:
+        if ally.current_hp < ally.max_hp:
+            distance = MapSystem.calculate_distance(coord, ally.position)
+            if distance <= staff_range:
+                 potential_targets.append(ally)
+                 // TDD_ANCHOR: Healer considers different staff ranges (Heal vs. Physic).
+
+    // TDD_ANCHOR: Healer identifies allies below HP threshold within move+staff range. (Combined check needed in generate_potential_actions)
+    return potential_targets
+
+// Need to ensure generate_potential_actions correctly considers movement *then* staff range.
+// The existing pseudocode seems to do this by checking actions at each reachable_tile.
+
+```
 ```
 
 ## 6. TDD Anchors
@@ -345,6 +478,16 @@ end class
 -   **TDD_ANCHOR: Test AI correctly uses Combat Prediction for action evaluation.**
 -   **TDD_ANCHOR: Test AI handles full inventory when considering item-related actions (steal, trade).**
 -   **TDD_ANCHOR: Test AI item trading logic (if implemented).**
+-   **TDD_ANCHOR: Healer identifies allies below HP threshold within move+staff range.**
+-   **TDD_ANCHOR: Healer prioritizes ally with lowest HP percentage.** (Handled by selecting max utility heal action)
+-   **TDD_ANCHOR: Healer calculates heal utility based on HP restored and target HP%.**
+-   **TDD_ANCHOR: Healer utility increases significantly for low HP% targets.**
+-   **TDD_ANCHOR: Healer utility scales with the amount of HP actually restored.**
+-   **TDD_ANCHOR: Healer selects healing action over low-utility attack/wait.**
+-   **TDD_ANCHOR: Healer moves to the optimal tile to heal the chosen target.** (Implicitly handled by selecting best AIAction)
+-   **TDD_ANCHOR: Healer defaults to safe movement/waiting when no healing targets are available.**
+-   **TDD_ANCHOR: Healer considers different staff ranges (Heal vs. Physic).**
+-   **TDD_ANCHOR: Healer prioritizes Restore for specific status effects if enabled.**
 
 ## 7. Open Questions / Future Considerations
 

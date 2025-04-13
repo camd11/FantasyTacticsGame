@@ -937,6 +937,28 @@ class DataProvider:
                 
         # Return the raw list/dict loaded from JSON/YAML, as EventHandler expects this format
         return self._load_yaml_or_json(filepath) or []
+
+    def load_scenario(self, scenario_name: str) -> Optional[Dict]:
+        """
+        Load data for a specific test scenario.
+
+        Args:
+            scenario_name: The name of the scenario (without extension)
+
+        Returns:
+            Dictionary containing scenario data or None if not found
+        """
+        filepath = os.path.join("data", "scenarios", f"{scenario_name}.yaml")
+        if not os.path.exists(filepath):
+            filepath = os.path.join("data", "scenarios", f"{scenario_name}.json")
+
+        scenario_data = self._load_yaml_or_json(filepath)
+        if scenario_data:
+            logging.info(f"Loaded scenario data for '{scenario_name}' from {filepath}")
+            return scenario_data
+        else:
+            logging.error(f"Could not load scenario data for '{scenario_name}' from {filepath}")
+            return None
     
     def _load_yaml_or_json(self, filepath: str) -> Dict:
         """
