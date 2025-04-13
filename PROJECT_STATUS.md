@@ -79,6 +79,11 @@
     - Save/Load System
         - Allows saving the current game state (units, map objects, events, gold, turn count, etc.) to a JSON file.
         - Allows loading a previously saved game state from a JSON file, restoring the session.
+    - Convoy/Supply System
+        - Provides a shared storage accessible by the main lord or designated units.
+        - Allows depositing items from unit inventories into the convoy.
+        - Allows withdrawing items from the convoy into unit inventories (if space permits).
+        - Access is typically restricted to specific locations (e.g., base camp) or units (e.g., main lord).
 - **Initial Data Population:**
     - Units (`units.yaml`): Added Mareeta, Nanna, Saias.
     - Items (`items.yaml`): Added Short Lance, Rapier, Physic, Killer Lance, Hand Axe.
