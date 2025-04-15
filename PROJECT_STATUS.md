@@ -64,8 +64,8 @@
         - Allows targeting units within the Ballista's specific range and attack pattern.
         - Combat calculations use the Ballista's stats combined with the mounting unit's relevant stats (e.g., Skill).
         - Ballistae have durability (uses) which deplete upon firing.
-    - Combat Skills (Astra, Sol, Luna, Pavise)
-        - Implemented core combat skills (Astra, Sol, Luna, Pavise) according to their specifications.
+    - Combat Skills (Astra, Sol, Luna, Pavise, Nihil)
+        - Implemented core combat skills (Astra, Sol, Luna, Pavise, Nihil) according to their specifications.
         - These skills are now functional within the combat system, triggering based on activation rates and conditions.
     - Pursuit Critical Coefficient (PCC)
         - Implemented the PCC mechanic from Thracia 776 that modifies critical hit rates for follow-up attacks.

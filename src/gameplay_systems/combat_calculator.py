@@ -225,6 +225,10 @@ class CombatCalculator:
         - Initial attacks have their critical chance capped at 25% (PCC is ignored)
         - Follow-up attacks have their critical chance multiplied by the unit's PCC value and capped at 100%
         
+        Nihil Skill Interaction:
+        - If the defender has the Nihil skill, critical chance is reduced to 0 regardless of other factors
+        - This is checked before any other critical chance calculations are performed
+        
         Args:
             attacker_stats: Stats of the attacking unit, including 'PCC' value (Pursuit Critical Coefficient)
             defender_stats: Stats of the defending unit

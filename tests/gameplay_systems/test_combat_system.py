@@ -19,6 +19,8 @@ NIHIL = "NIHIL"
 SOL = "SOL"
 LUNA = "LUNA"
 PAVISE = "PAVISE"
+VANTAGE = "VANTAGE"
+ASTRA = "ASTRA"
 
 
 class TestCombatSystem(unittest.TestCase):
@@ -741,9 +743,12 @@ class TestCombatSystem(unittest.TestCase):
         
         self.combat_system._defender_can_counter = MagicMock(return_value=True)
         
-        # Mock _unit_has_skill to give defender Wrath
+        # Mock _unit_has_skill to give defender Wrath and handle all skill checks
         self.combat_system._unit_has_skill = MagicMock(side_effect=lambda unit_id, skill:
-            unit_id == defender_id and skill == WRATH)
+            (unit_id == defender_id and skill == WRATH) or
+            (unit_id == defender_id and skill == VANTAGE and False) or
+            (unit_id == attacker_id and skill == NIHIL and False) or
+            (unit_id == attacker_id and skill == ASTRA and False))
         
         # Mock _perform_strike to simulate combat rounds with Wrath
         # First strike: attacker hits for 6 damage
@@ -796,8 +801,10 @@ class TestCombatSystem(unittest.TestCase):
         self.assertEqual(mock_attacker.current_hp, 8)  # 20 - 12 (critical hit)
         self.assertEqual(mock_defender.current_hp, 19)  # 25 - 6
         
-        # Verify Wrath was checked
-        self.combat_system._unit_has_skill.assert_called_with(defender_id, WRATH)
+        # Verify all skill checks were made
+        # We don't need to verify the exact order of all calls, just that the key ones were made
+        self.combat_system._unit_has_skill.assert_any_call(defender_id, WRATH)
+        self.combat_system._unit_has_skill.assert_any_call(attacker_id, NIHIL)
         
         # Skip checking the exact calls as they're not reliable in the test
     

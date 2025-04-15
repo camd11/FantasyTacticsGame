@@ -180,6 +180,18 @@ class CombatSystem:
         """
         Execute combat between two units.
         
+        This method orchestrates the entire combat sequence, including:
+        - Determining attack order (considering Vantage skill and Nihil negation)
+        - Checking for skill activations like Astra, Wrath, Adept
+        - Handling brave weapons (double strikes)
+        - Processing follow-up attacks based on Attack Speed differences
+        - Applying post-combat effects (fatigue, experience, weapon experience)
+        
+        Nihil Skill Interaction:
+        - If a unit has Nihil, it negates the opponent's combat skills and critical hits
+        - Specifically, Nihil negates: Vantage, Wrath, Luna, Sol, Adept, Pavise, Astra, and critical hits
+        - Nihil does not negate passive stat skills, aura skills, or status effects
+        
         Args:
             attacker_id: ID of the attacking unit
             defender_id: ID of the defending unit
@@ -238,7 +250,9 @@ class CombatSystem:
         if hasattr(defender_max_hp, '__class__') and defender_max_hp.__class__.__name__ == 'MagicMock':
             defender_max_hp = 1  # Avoid division by zero
             
-        vantage_activates = has_vantage and defender_current_hp < (defender_max_hp / 2) and defender_can_ctr
+        # Check if attacker has Nihil, which negates Vantage
+        attacker_has_nihil = self._unit_has_skill(attacker_id, NIHIL)
+        vantage_activates = has_vantage and defender_current_hp < (defender_max_hp / 2) and defender_can_ctr and not attacker_has_nihil
         
         if vantage_activates:
             logging.info(f"{defender.name}'s Vantage skill activated! Attacking first despite being the defender.")
@@ -323,7 +337,7 @@ class CombatSystem:
             if second_unit_can_counter:
                 num_second_unit_hits = 1
                 # Check for Wrath activation
-                has_wrath = self._unit_has_skill(temp_defender_id, WRATH)
+                has_wrath = self._unit_has_skill(temp_defender_id, WRATH) and not self._unit_has_skill(temp_attacker_id, NIHIL)
                 
                 for i in range(num_second_unit_hits):
                     if temp_attacker.current_hp > 0 and temp_defender.current_hp > 0:
@@ -347,7 +361,7 @@ class CombatSystem:
         
         # 4. Second unit's Follow-Up Strike - only if Astra didn't activate
         if not astra_activates and temp_defender.current_hp > 0 and temp_attacker.current_hp > 0 and second_unit_can_counter and temp_defender_doubles:
-            has_wrath = self._unit_has_skill(temp_defender_id, WRATH)
+            has_wrath = self._unit_has_skill(temp_defender_id, WRATH) and not self._unit_has_skill(temp_attacker_id, NIHIL)
             strike_result = self._perform_strike(
                 temp_defender, temp_defender_stats, temp_defender_weapon,
                 temp_attacker, temp_attacker_stats, temp_attacker_weapon,
@@ -457,6 +471,19 @@ class CombatSystem:
         """
         Perform a single strike in combat.
         
+        This method handles all aspects of a single attack, including:
+        - Checking for skill activations (with Nihil negation checks)
+        - Rolling for hit/miss
+        - Calculating damage
+        - Applying critical hits (if not negated by Nihil)
+        - Applying skill effects like Luna, Pavise, and Sol (if not negated by Nihil)
+        - Handling weapon durability
+        
+        Nihil Skill Interaction:
+        - If the target has Nihil, it negates the striker's combat skills (Luna, Sol, Adept) and critical hits
+        - If the striker has Nihil, it negates the target's defensive skills (Pavise, Miracle)
+        - These checks are performed before each respective skill activation check
+        
         Args:
             striker: The attacking unit
             striker_stats: Stats of the attacking unit
@@ -466,6 +493,9 @@ class CombatSystem:
             target_weapon: Weapon data of the defending unit
             is_follow_up: Whether this is a follow-up attack
             force_crit: Whether to force a critical hit
+            force_skills_activated: List of skills to force activate
+            is_astra_hit: Whether this is part of an Astra skill activation sequence
+            astra_hit_index: Index of the current hit in an Astra sequence (1-5)
             
         Returns:
             Dictionary containing the strike result
@@ -1090,6 +1120,11 @@ class CombatSystem:
     def _unit_has_skill(self, unit_id: str, skill_id: str) -> bool:
         """
         Check if a unit has a specific skill.
+        
+        This method is used throughout the combat system to check for skill possession,
+        particularly for combat skills like Vantage, Wrath, Luna, Sol, Adept, Pavise,
+        and Nihil itself. The Nihil skill is checked before other combat skills to
+        determine if those skills should be negated.
         
         Args:
             unit_id: ID of the unit
