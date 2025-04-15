@@ -48,7 +48,7 @@ Represents a potential action sequence evaluated by the AI.
 ```
 AIAction {
     unit_id: UnitID
-    action_type: Enum(MOVE, ATTACK, CAPTURE, USE_ITEM, USE_STAFF, WAIT, TRADE, ESCAPE, VISIT, TALK)
+    action_type: Enum(MOVE, ATTACK, CAPTURE, USE_ITEM, USE_STAFF, WAIT, TRADE, ESCAPE, VISIT, TALK, INTERACT_MAP, STEAL) // Added INTERACT_MAP (Chests/Doors), STEAL
     move_target_coord: Coordinate // Destination tile for movement
     action_target: Coordinate or UnitID or ItemID // Target of the action (enemy, ally, item, tile)
     predicted_utility: Float // Score representing the desirability of this action
@@ -80,6 +80,8 @@ AIAction {
     -   Waiting.
     -   Escaping (if applicable).
     -   Visiting/Talking (if applicable for NPCs).
+    -   Interacting with map objects (Chests, Doors).
+    -   Stealing from adjacent enemies.
 -   **FR-AI-007:** Each potential `AIAction` shall be evaluated and assigned a `predicted_utility` score based on the unit's `AIProfile` and the current game state. Utility calculation should consider:
     -   Damage dealt / Kill potential (for offensive actions).
     -   Damage taken / Survival risk.
@@ -99,7 +101,7 @@ AIAction {
 -   **FR-AI-013 (Escape):** Units shall prioritize moving towards the nearest designated escape point, avoiding combat unless necessary for survival or to clear a path.
 -   **FR-AI-014 (Heal Support):** Units (typically with staves) shall prioritize healing allied units below the `heal_threshold_ally`. May also use restorative items/staves on self if below `heal_threshold_self`. Will attack if no healing targets are available/reachable.
 -   **FR-AI-015 (Capture Priority):** Units with `capture_enabled` shall evaluate capture actions against eligible targets (considering Con difference, target HP, target armament). Capture utility should be weighed against kill utility, potentially prioritizing capture for disarming or if the target is weak/unarmed.
--   **FR-AI-016 (Thief Loot):** Units shall prioritize moving towards and interacting with chests or specific loot objectives. Once loot is obtained, behavior may switch to ESCAPE.
+-   **FR-AI-016 (Thief Loot):** Units with this archetype shall prioritize identifying and moving towards reachable chests, locked doors (especially those blocking paths to objectives/chests), and enemies with stealable items. They will evaluate the utility of opening chests/doors or attempting to steal against standard actions like attacking or waiting, favoring loot acquisition and access. If no thief-specific targets are available or reachable, they should default to avoiding combat and moving towards map objectives or escape points, or waiting in a safe location.
 -   **FR-AI-017 (Retreat):** If HP drops below `retreat_threshold`, the unit may prioritize moving towards a safe location (e.g., fort, healer) over engaging enemies.
 -   **FR-AI-018 (Status Staff Usage):** Units with `use_status_staves` enabled shall evaluate using offensive staves (Sleep, Silence, Berserk) against high-priority player targets (e.g., healers, mages, strong combat units), considering staff hit chance.
 -   **FR-AI-019 (Item Trading):** AI units shall be capable of trading items with adjacent allies, particularly to distribute captured items or arm unarmed allies (requires specific flag/logic).
@@ -182,6 +184,8 @@ class AIManager:
         // TDD_ANCHOR: Test generation includes Capture actions if profile allows and target is valid
         // TDD_ANCHOR: Test generation includes Heal actions if profile allows and target is valid
         // TDD_ANCHOR: Test generation includes Escape actions if profile allows and on escape map
+        // TDD_ANCHOR: Test generation includes Interact Map actions (Chest/Door) if profile is THIEF_LOOT and targets exist
+        // TDD_ANCHOR: Test generation includes Steal actions if profile is THIEF_LOOT and targets exist
 
         return actions
 
@@ -236,6 +240,25 @@ class AIManager:
                      possible_actions.append(action)
                      // TDD_ANCHOR: Test status staff action generation finds valid enemy targets
 
+        // Generate Interact Map actions (Chests/Doors) - Primarily for THIEF_LOOT
+        if profile.behavior_archetype == THIEF_LOOT:
+            map_interactables = find_map_interactables_from(unit, coord) // Finds adjacent chests/doors
+            for interactable_coord, interactable_type in map_interactables:
+                if (interactable_type == CHEST and unit.can_open_chest()) or \
+                   (interactable_type == DOOR and unit.can_open_door()):
+                    action = create_interact_map_action(unit, interactable_coord, interactable_type, move_coord)
+                    possible_actions.append(action)
+                    // TDD_ANCHOR: Test Interact Map action generation finds adjacent chests/doors for Thief
+
+        // Generate Steal actions - Primarily for THIEF_LOOT
+        if profile.behavior_archetype == THIEF_LOOT:
+            steal_targets = find_steal_targets_from(unit, coord) // Finds adjacent enemies with stealable items
+            for target_unit, stealable_item in steal_targets:
+                if StealingSystem.can_steal(unit, target_unit, stealable_item): // Checks Speed, inventory space etc.
+                    action = create_steal_action(unit, target_unit, stealable_item, move_coord)
+                    possible_actions.append(action)
+                    // TDD_ANCHOR: Test Steal action generation finds valid targets and items
+
         // Generate Visit/Talk actions (mainly for NPCs or specific AI)
         // ...
 
@@ -275,8 +298,16 @@ class AIManager:
                 case ESCAPE:
                     // High utility if objective is escape and near exit
                     utility = calculate_escape_utility(action, unit, profile)
+                case INTERACT_MAP:
+                    // Consider type (Chest > Door?), necessity (door blocking path?)
+                    utility = calculate_interact_map_utility(action, unit, profile)
+                    // TDD_ANCHOR: Test Interact Map utility is high for chests/blocking doors for Thief
+                case STEAL:
+                    // Consider item value, success chance, risk from target
+                    utility = calculate_steal_utility(action, unit, profile)
+                    // TDD_ANCHOR: Test Steal utility considers item value and success chance
 
-            action.predicted_utility = utility
+             action.predicted_utility = utility
 
 
     function select_best_action(actions: List[AIAction], profile: AIProfile) -> AIAction or None:
@@ -301,6 +332,8 @@ class AIManager:
     function calculate_capture_utility(...) -> Float: ...
     function calculate_move_utility(...) -> Float: ...
     function calculate_wait_utility(...) -> Float: ...
+    function calculate_interact_map_utility(...) -> Float: ...
+    function calculate_steal_utility(...) -> Float: ...
     // ... etc ...
 
     function find_attack_targets_from(unit: Unit, coord: Coordinate) -> List[Unit]: ...
@@ -308,6 +341,8 @@ class AIManager:
     function can_capture(unit: Unit, target: Unit) -> Boolean: ...
     function find_heal_targets_for_staff(...) -> List[Unit]: ...
     function find_status_targets_for_staff(...) -> List[Unit]: ...
+    function find_map_interactables_from(unit: Unit, coord: Coordinate) -> List[(Coordinate, MapObjectType)]: ... // Finds adjacent chests/doors
+    function find_steal_targets_from(unit: Unit, coord: Coordinate) -> List[(Unit, Item)]: ... // Finds adjacent units with stealable items
 
     function create_wait_action(unit: Unit) -> AIAction: ...
     function create_move_action(unit: Unit, target_coord: Coordinate) -> AIAction: ...
@@ -316,6 +351,8 @@ class AIManager:
     function create_use_item_action(...) -> AIAction: ...
     function create_use_staff_action(...) -> AIAction: ...
     function create_escape_action(...) -> AIAction: ...
+    function create_interact_map_action(...) -> AIAction: ...
+    function create_steal_action(...) -> AIAction: ...
 
 end class
 
@@ -451,6 +488,258 @@ function find_heal_targets_for_staff(unit: Unit, staff: Item, coord: Coordinate)
 // The existing pseudocode seems to do this by checking actions at each reachable_tile.
 
 ```
+
+### 5.2. Archetype-Specific Logic: THIEF_LOOT
+
+This section details the specific logic applied when a unit's `AIProfile.behavior_archetype` is `THIEF_LOOT`. This logic influences action generation, utility evaluation, and potentially action filtering.
+
+```pseudocode
+// --- Within AIManager class ---
+
+function generate_potential_actions(unit: Unit, profile: AIProfile) -> List[AIAction]:
+    actions = []
+    reachable_tiles = movement_system.get_reachable_tiles(unit)
+    all_potential_targets = find_all_thief_targets(unit, profile) // Find all chests, doors, steal targets on map
+
+    // 1. Generate standard actions (Move, Wait, Attack, etc.) as before
+    // ... (call get_actions_at_coord for current pos and reachable tiles) ...
+    // This already includes the generation logic added earlier for INTERACT_MAP and STEAL
+    // if the target is adjacent to the evaluated 'coord'.
+
+    // 2. Generate MOVE actions specifically towards non-adjacent thief targets
+    for target_info in all_potential_targets:
+        target_coord = target_info.coord // Coord of chest, door, or enemy unit
+        target_type = target_info.type // CHEST, DOOR, STEAL_TARGET
+
+        // Find path towards the target
+        path = movement_system.find_path(unit.position, target_coord, unit)
+
+        if path and len(path) > 1: // Path exists and target is not adjacent
+            // Find the furthest reachable tile along the path
+            best_move_coord = None
+            for i in range(len(path) - 1, 0, -1):
+                 tile = path[i]
+                 if tile in reachable_tiles:
+                     best_move_coord = tile
+                     break
+
+            if best_move_coord:
+                 // Check if a simple move action to this tile already exists
+                 move_exists = any(a.action_type == MOVE and a.move_target_coord == best_move_coord for a in actions)
+                 if not move_exists:
+                     action = create_move_action(unit, best_move_coord)
+                     // Add context about *why* this move is being considered
+                     action.context = {"target_type": target_type, "target_coord": target_coord}
+                     actions.append(action)
+                     // TDD_ANCHOR: Thief generates move actions towards distant chests/doors/steal targets.
+
+    // 3. Always add WAIT action
+    actions.append(create_wait_action(unit))
+
+    return actions
+
+
+function evaluate_action_utility(actions: List[AIAction], unit: Unit, profile: AIProfile):
+    // ... (standard utility calculations for Attack, Heal, etc.) ...
+
+    if profile.behavior_archetype == THIEF_LOOT:
+        for action in actions:
+            if action.action_type == INTERACT_MAP:
+                action.predicted_utility = calculate_interact_map_utility(action, unit, profile)
+            elif action.action_type == STEAL:
+                action.predicted_utility = calculate_steal_utility(action, unit, profile)
+            elif action.action_type == MOVE:
+                // Boost utility if the move is towards a thief target
+                if hasattr(action, 'context') and action.context.get("target_type") in [CHEST, DOOR, STEAL_TARGET]:
+                    base_move_utility = calculate_move_utility(action, unit, profile) // Standard move utility (safety, terrain)
+                    distance_to_target = MapSystem.calculate_distance(action.move_target_coord, action.context["target_coord"])
+                    proximity_bonus = max(0, 10 - distance_to_target) * 10 // Higher bonus closer to target
+                    action.predicted_utility = base_move_utility + proximity_bonus + 50 // Add flat bonus for moving towards goal
+                    // TDD_ANCHOR: Thief move utility increases significantly when moving towards loot/steal targets.
+                else:
+                    // Standard move utility (likely low unless moving to safety)
+                    action.predicted_utility = calculate_move_utility(action, unit, profile)
+            elif action.action_type == ATTACK:
+                 // Lower utility for attacking unless necessary (e.g., blocking enemy, self-defense)
+                 base_attack_utility = calculate_attack_utility(action, unit, profile)
+                 action.predicted_utility = base_attack_utility * 0.3 // Significantly reduce desire to fight
+                 // TDD_ANCHOR: Thief attack utility is significantly lower than loot/steal actions unless critical.
+            elif action.action_type == WAIT:
+                 action.predicted_utility = calculate_wait_utility(action, unit, profile) * 0.5 // Prefer moving/acting
+
+
+function calculate_interact_map_utility(action: AIAction, unit: Unit, profile: AIProfile) -> Float:
+    target_coord = action.action_target // Coord of chest/door
+    interact_type = action.context.get("interact_type") // CHEST or DOOR
+
+    base_utility = 0.0
+    if interact_type == CHEST:
+        # Check if chest is already opened? MapSystem should handle this.
+        # Assume higher value for chests
+        base_utility = 200.0
+        // TDD_ANCHOR: Thief utility for opening chests is very high.
+    elif interact_type == DOOR:
+        # Check if door is already open?
+        # Check if door blocks path to objective/chest/escape?
+        is_blocking = MapSystem.is_door_blocking_progress(target_coord, unit, profile) # Needs implementation
+        if is_blocking:
+            base_utility = 150.0 // High value if blocking progress
+        else:
+            base_utility = 50.0 // Lower value otherwise
+        // TDD_ANCHOR: Thief utility for opening doors is high if blocking progress.
+
+    # Consider risk? (e.g., opening door reveals strong enemies) - Future enhancement
+    risk_penalty = 0.0
+
+    return base_utility - risk_penalty
+
+
+function calculate_steal_utility(action: AIAction, unit: Unit, profile: AIProfile) -> Float:
+    target_unit = action.action_target_unit // The unit being stolen from
+    item_to_steal = action.context.get("item") // The item being stolen
+
+    base_utility = 100.0
+
+    # Bonus based on item value (needs item valuation system)
+    item_value_bonus = ItemSystem.get_item_value(item_to_steal) * 2.0 # Example scaling
+    // TDD_ANCHOR: Thief steal utility scales with the value of the item.
+
+    # Factor in success chance (based on Speed difference, skills?)
+    success_chance = StealingSystem.predict_steal_chance(unit, target_unit, item_to_steal) # Needs implementation
+    chance_bonus = success_chance * 100.0 # Max 100 bonus at 100% chance
+    // TDD_ANCHOR: Thief steal utility scales with the predicted success chance.
+
+    # Penalty based on risk (target retaliation?)
+    # Predict counter-attack if steal fails? Or just general threat level?
+    retaliation_risk = CombatSystem.predict_combat(target_unit, unit, target_unit.position).damage_taken # Damage unit would take if target attacked now
+    risk_penalty = retaliation_risk * 1.5
+    // TDD_ANCHOR: Thief steal utility decreases based on potential retaliation damage.
+
+    # Check inventory space
+    if not unit.inventory.has_space():
+        return -1.0 // Cannot steal if inventory is full
+
+    total_utility = base_utility + item_value_bonus + chance_bonus - risk_penalty
+
+    return total_utility if success_chance > 0 else -1.0 // No utility if chance is 0
+
+
+function filter_actions_by_archetype(actions: List[AIAction], profile: AIProfile) -> List[AIAction]:
+    if profile.behavior_archetype == THIEF_LOOT:
+        thief_actions = [a for a in actions if a.action_type in [INTERACT_MAP, STEAL]]
+        move_to_thief_actions = [a for a in actions if a.action_type == MOVE and hasattr(a, 'context') and a.context.get("target_type") in [CHEST, DOOR, STEAL_TARGET]]
+
+        # Priority 1: Perform Thief Actions if possible
+        if thief_actions:
+            # Also consider moving towards *other* thief targets if current ones aren't great
+            # For now, prioritize immediate actions
+            # TDD_ANCHOR: Thief prioritizes immediate Steal/Interact actions over moving if available.
+            return thief_actions + move_to_thief_actions # Allow utility to decide between immediate action vs moving to better target
+
+        # Priority 2: Move towards Thief Targets
+        if move_to_thief_actions:
+            # TDD_ANCHOR: Thief prioritizes moving towards loot/steal targets if no immediate action is possible.
+            return move_to_thief_actions
+
+        # Priority 3: Default Behavior (No thief targets reachable/exist)
+        # Avoid combat, move towards objective/escape, or wait safely.
+        safe_actions = []
+        objective_moves = []
+        for action in actions:
+            if action.action_type == WAIT:
+                 # Check safety of waiting tile
+                 if MapSystem.is_tile_safe(unit.position, unit.faction):
+                     safe_actions.append(action)
+            elif action.action_type == MOVE:
+                 # Check safety of destination
+                 if MapSystem.is_tile_safe(action.move_target_coord, unit.faction):
+                     # Check if move is towards objective/escape
+                     if MapSystem.is_move_towards_objective(action.move_target_coord, unit, profile):
+                         objective_moves.append(action)
+                     else:
+                         safe_actions.append(action)
+
+        # Prefer moving towards objective > safe move > safe wait
+        if objective_moves:
+             # TDD_ANCHOR: Thief moves towards objective/escape if no loot targets available.
+             return objective_moves
+        elif safe_actions:
+             # TDD_ANCHOR: Thief waits or moves safely if no loot targets and no objective path.
+             return safe_actions
+        else:
+             # If nothing else, return all remaining actions (might include low-utility attacks if cornered)
+             return [a for a in actions if a.action_type not in [INTERACT_MAP, STEAL] and not (a.action_type == MOVE and hasattr(a, 'context'))]
+
+
+    else:
+        // Apply filters for other archetypes or return all actions
+        return actions
+
+
+// --- Helper functions potentially needed ---
+
+function find_all_thief_targets(unit: Unit, profile: AIProfile) -> List[TargetInfo]:
+    // Scans the entire map for relevant chests, doors, and units with stealable items.
+    // Returns a list of objects/structs containing target coordinates and type.
+    targets = []
+    # Find Chests
+    chests = MapSystem.get_map_objects(type=CHEST, only_unopened=True)
+    for chest_coord in chests:
+        targets.append(TargetInfo(coord=chest_coord, type=CHEST))
+
+    # Find Locked Doors
+    doors = MapSystem.get_map_objects(type=DOOR, only_unopened=True)
+    for door_coord in doors:
+        targets.append(TargetInfo(coord=door_coord, type=DOOR))
+
+    # Find Stealable Items on Enemies
+    enemies = game_state.get_enemy_units(unit.faction)
+    for enemy in enemies:
+        stealable_items = StealingSystem.get_stealable_items(unit, enemy)
+        if stealable_items:
+             # For simplicity, just target the enemy unit. Utility calc can decide which item.
+             # Or create a target for each item? Let's target the unit for now.
+             targets.append(TargetInfo(coord=enemy.position, type=STEAL_TARGET, unit_id=enemy.id))
+
+    // TDD_ANCHOR: Thief identifies all chests, locked doors, and enemies with stealable items on the map.
+    return targets
+
+
+function find_map_interactables_from(unit: Unit, coord: Coordinate) -> List[(Coordinate, MapObjectType)]:
+    // Checks adjacent tiles to 'coord' for chests or doors.
+    adjacent_interactables = []
+    for neighbor_coord in MapSystem.get_adjacent_tiles(coord):
+        map_object = MapSystem.get_object_at(neighbor_coord)
+        if map_object:
+             if map_object.type == CHEST and map_object.is_unopened():
+                 adjacent_interactables.append((neighbor_coord, CHEST))
+             elif map_object.type == DOOR and map_object.is_unopened() and map_object.is_locked():
+                 adjacent_interactables.append((neighbor_coord, DOOR))
+    return adjacent_interactables
+
+
+function find_steal_targets_from(unit: Unit, coord: Coordinate) -> List[(Unit, Item)]:
+    // Checks adjacent tiles to 'coord' for enemies with stealable items.
+    adjacent_stealables = []
+    enemies = game_state.get_enemy_units(unit.faction)
+    for enemy in enemies:
+        if MapSystem.calculate_distance(coord, enemy.position) == 1:
+            stealable_items = StealingSystem.get_stealable_items(unit, enemy)
+            for item in stealable_items:
+                 adjacent_stealables.append((enemy, item))
+    return adjacent_stealables
+
+
+// Need definitions for MapSystem.is_door_blocking_progress, MapSystem.is_tile_safe,
+// MapSystem.is_move_towards_objective, StealingSystem.get_stealable_items,
+// StealingSystem.predict_steal_chance, ItemSystem.get_item_value
+
+```
+
+### 5.3. Archetype-Specific Logic: HEAL_SUPPORT
+(Existing HEAL_SUPPORT content remains here)
+...
+
 ```
 
 ## 6. TDD Anchors
@@ -488,6 +777,25 @@ function find_heal_targets_for_staff(unit: Unit, staff: Item, coord: Coordinate)
 -   **TDD_ANCHOR: Healer defaults to safe movement/waiting when no healing targets are available.**
 -   **TDD_ANCHOR: Healer considers different staff ranges (Heal vs. Physic).**
 -   **TDD_ANCHOR: Healer prioritizes Restore for specific status effects if enabled.**
+-   **TDD_ANCHOR: Test generation includes Interact Map actions (Chest/Door) if profile is THIEF_LOOT and targets exist.**
+-   **TDD_ANCHOR: Test generation includes Steal actions if profile is THIEF_LOOT and targets exist.**
+-   **TDD_ANCHOR: Test Interact Map action generation finds adjacent chests/doors for Thief.**
+-   **TDD_ANCHOR: Test Steal action generation finds valid targets and items.**
+-   **TDD_ANCHOR: Test Interact Map utility is high for chests/blocking doors for Thief.**
+-   **TDD_ANCHOR: Test Steal utility considers item value and success chance.**
+-   **TDD_ANCHOR: Thief generates move actions towards distant chests/doors/steal targets.**
+-   **TDD_ANCHOR: Thief move utility increases significantly when moving towards loot/steal targets.**
+-   **TDD_ANCHOR: Thief attack utility is significantly lower than loot/steal actions unless critical.**
+-   **TDD_ANCHOR: Thief utility for opening chests is very high.**
+-   **TDD_ANCHOR: Thief utility for opening doors is high if blocking progress.**
+-   **TDD_ANCHOR: Thief steal utility scales with the value of the item.**
+-   **TDD_ANCHOR: Thief steal utility scales with the predicted success chance.**
+-   **TDD_ANCHOR: Thief steal utility decreases based on potential retaliation damage.**
+-   **TDD_ANCHOR: Thief prioritizes immediate Steal/Interact actions over moving if available.**
+-   **TDD_ANCHOR: Thief prioritizes moving towards loot/steal targets if no immediate action is possible.**
+-   **TDD_ANCHOR: Thief moves towards objective/escape if no loot targets available.**
+-   **TDD_ANCHOR: Thief waits or moves safely if no loot targets and no objective path.**
+-   **TDD_ANCHOR: Thief identifies all chests, locked doors, and enemies with stealable items on the map.**
 
 ## 7. Open Questions / Future Considerations
 
