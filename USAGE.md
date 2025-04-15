@@ -41,24 +41,24 @@ The game uses different "states" to handle your input. Here's a breakdown:
 3.  **Display Action Menu State:**
     *   **Goal:** Choose an action for the unit after moving.
     *   **Controls:**
-        *   `Arrow Keys`: Navigate the action menu (Attack, Staff, Item, Wait, etc.).
+        *   `Arrow Keys`: Navigate the action menu (Attack, Staff, Item, Wait, **Dance/Play**, etc.). The `Dance`/`Play` action will appear if the unit has the skill and there's a potential target nearby.
         *   `Enter` / `Space`: Select the highlighted menu option.
         *   `A`, `S`, `I`, `W`: Shortcuts for Attack, Staff, Item, Wait (if available).
         *   `Backspace` / `Esc`: Cancel action selection, revert movement, and return to Display Movement Range State (allowing you to choose a different move).
     *   **Visuals:** A menu appears near the unit listing available actions.
 
 4.  **Select Target State (if needed):**
-    *   **Goal:** Choose a target for an action like Attack or Staff.
+    *   **Goal:** Choose a target for an action like Attack, Staff, or **Dance/Play**.
     *   **Controls:**
         *   `Arrow Keys`: Cycle through valid targets within range.
         *   `Enter` / `Space`: Confirm the selected target.
         *   `Backspace` / `Esc`: Cancel targeting, return to Display Action Menu State.
-    *   **Visuals:** Action range is shown. Valid targets are highlighted. The currently selected target has a distinct indicator. Potential combat preview might be shown for attacks.
+    *   **Visuals:** Action range is shown. Valid targets are highlighted. The currently selected target has a distinct indicator. Potential combat preview might be shown for attacks. For **Dance/Play**, only adjacent allies who have already acted (and haven't been refreshed yet) will be valid targets.
 
 5.  **Execution & End Turn:**
     *   Once an action (like Wait) is chosen or a target is confirmed, the action executes automatically.
     *   The unit is marked as 'Acted' (greyed out).
-    *   The game returns to the **Select Unit State** for you to choose the next unit.
+    *   The game returns to the **Select Unit State** for you to choose the next unit. If a unit was targeted by **Dance/Play**, they will no longer be greyed out and can be selected to act again.
 
 ### General Tips
 

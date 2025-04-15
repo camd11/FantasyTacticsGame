@@ -676,15 +676,26 @@ class TurnManager:
     
     def _reset_faction_units(self, faction: FactionEnum):
         """
-        Reset the state of all units for a faction.
+        Reset the state of all units for a faction at the start of their phase.
+        
+        This method resets movement and action flags for all units of the specified faction,
+        including the Move Again skill attributes (has_acted_this_turn and was_refreshed_this_turn).
+        This ensures units can act again in the new phase and that the 'refreshed' status from
+        Dance/Play actions is cleared between phases.
         
         Args:
-            faction: Faction
+            faction: Faction whose units should be reset
         """
         for unit_id, unit in self.gameStateManager.current_game_state.unit_states.items():
             if unit.faction == faction:
                 unit.has_moved = False
                 unit.has_acted = False
+                
+                # Reset Move Again skill attributes
+                # has_acted_this_turn tracks if the unit has performed its primary action this phase
+                unit.has_acted_this_turn = False
+                # was_refreshed_this_turn tracks if the unit has been granted an extra action via Dance/Play this phase
+                unit.was_refreshed_this_turn = False
                 
                 # Reset any other unit state as needed
                 if hasattr(unit, 'state'):

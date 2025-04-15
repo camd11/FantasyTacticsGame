@@ -177,3 +177,13 @@ CANTO_PLUS:
         excluded_actions: []
   activation_condition: "PASSIVE"
   activation_chance: 100
+
+SKILL_DANCE:
+  id: "SKILL_DANCE"
+  name: "Dance"
+  description: "Allows unit to refresh an adjacent ally who has already acted, granting them another action."
+  effects:
+    - type: "ENABLE_DANCE_COMMAND"
+      params: {}
+  activation_condition: "PASSIVE"
+  activation_chance: 100

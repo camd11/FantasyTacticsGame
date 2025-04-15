@@ -72,6 +72,11 @@
         - Defines targeting rules (allies, enemies, specific ranges).
         - Calculates EXP gain for staff usage.
         - Incorporates resource costs (staff durability, potential fatigue).
+    - Move Again (Dance/Play) Skill
+        - Allows specific units (e.g., Dancers) to grant an adjacent, already-acted ally another action.
+        - Implemented state tracking (`has_acted_this_turn`, `was_refreshed_this_turn`) in `UnitState`.
+        - Integrated action availability and execution logic into `ActionSystem`.
+        - Added phase reset logic in `TurnManager`.
     - Shop/Armory System
         - Allows units to interact with designated Shop or Armory tiles.
         - Implements logic for purchasing items (checking gold, inventory space) and selling items (adding gold).
