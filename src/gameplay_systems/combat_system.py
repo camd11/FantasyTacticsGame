@@ -604,9 +604,13 @@ class CombatSystem:
     # These methods delegate to the CombatCalculator
     def _calculate_single_attack_outcome(self, striker, striker_stats, striker_weapon,
                                          target, target_stats, target_weapon,
-                                         is_first_hit=True, pcc_multiplier=1, astra_hit_index=0) -> Tuple[int, int, int]:
+                                         is_first_hit=True, pcc_multiplier=1, astra_hit_index=0, is_astra_hit=False) -> Tuple[int, int, int]:
         """
-        Calculate the outcome of a single attack.
+        Calculate the outcome of a single attack, including hit chance, damage, and critical chance.
+        
+        Implements the Pursuit Critical Coefficient (PCC) mechanic for critical hit calculations:
+        - Initial attacks have their critical chance capped at 25% (PCC is ignored)
+        - Follow-up attacks have their critical chance multiplied by the unit's PCC value and capped at 100%
         
         Args:
             striker: The attacking unit
@@ -615,9 +619,10 @@ class CombatSystem:
             target: The defending unit
             target_stats: Stats of the defending unit
             target_weapon: Weapon data of the defending unit
-            is_first_hit: Whether this is the first hit
-            pcc_multiplier: Pursuit Critical Coefficient multiplier
+            is_first_hit: Whether this is the first hit in a combat sequence
+            pcc_multiplier: Pursuit Critical Coefficient multiplier (typically 0-5)
             astra_hit_index: Index of the Astra hit (0 for non-Astra hits, 1-5 for Astra hits)
+            is_astra_hit: Whether this is part of an Astra skill activation sequence
             
         Returns:
             Tuple of (hit_chance, damage, crit_chance)
@@ -657,7 +662,11 @@ class CombatSystem:
         damage = self.combatCalculator.calculate_damage(attacker_stats, defender_stats)
         
         # Calculate crit chance
-        crit_chance = self.combatCalculator.calculate_battle_crit_chance(attacker_stats, defender_stats, is_first_hit, astra_hit_index)
+        crit_chance = self.combatCalculator.calculate_battle_crit_chance(
+            attacker_stats, defender_stats,
+            is_first_attack=is_first_hit and not is_astra_hit,
+            astra_hit_index=astra_hit_index
+        )
         
         return hit_chance, damage, crit_chance
     

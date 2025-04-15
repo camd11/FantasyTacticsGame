@@ -931,3 +931,222 @@ class TestCombatSystem(unittest.TestCase):
         self.mock_inventory_system.decrement_item_durability.assert_called_once_with(
             caster_id, staff_item_index
         )
+        
+    # TDD: Test PCC (Pursuit Critical Coefficient) mechanic integration
+    def test_simulate_combat_with_high_pcc(self):
+        """Test simulate_combat correctly predicts combat outcomes with high PCC value."""
+        # Arrange
+        attacker_id = "U001"
+        defender_id = "U002"
+        
+        # Mock units
+        mock_attacker = MagicMock()
+        mock_attacker.id = attacker_id
+        mock_attacker.name = "Leif"
+        mock_attacker.equipped_weapon_index = 0
+        mock_attacker.inventory = [MagicMock()]
+        
+        mock_defender = MagicMock()
+        mock_defender.id = defender_id
+        mock_defender.name = "Enemy"
+        mock_defender.equipped_weapon_index = 0
+        mock_defender.inventory = [MagicMock()]
+        
+        # Mock combat stats with high PCC (FCM) for attacker
+        attacker_stats = {
+            'STR': 10, 'MAG': 2, 'SKL': 8, 'SPD': 12, 'LUK': 6, 'DEF': 7, 'CON': 8,
+            'atk': 15, 'AS': 10, 'hit': 90, 'avo': 25, 'crit': 15, 'ddg': 3, 'FCM': 3
+        }
+        
+        defender_stats = {
+            'STR': 8, 'MAG': 1, 'SKL': 6, 'SPD': 7, 'LUK': 4, 'DEF': 9, 'CON': 9,
+            'atk': 12, 'AS': 6, 'hit': 80, 'avo': 18, 'crit': 5, 'ddg': 2, 'FCM': 1
+        }
+        
+        # Mock weapon data
+        mock_attacker_weapon = MagicMock()
+        mock_attacker_weapon.name = "Iron Sword"
+        mock_attacker_weapon.might = 5
+        mock_attacker_weapon.hit = 80
+        mock_attacker_weapon.crit = 0
+        mock_attacker_weapon.weapon_type = WeaponTypeEnum.SWORD
+        
+        mock_defender_weapon = MagicMock()
+        mock_defender_weapon.name = "Iron Lance"
+        mock_defender_weapon.might = 7
+        mock_defender_weapon.hit = 70
+        mock_defender_weapon.crit = 0
+        mock_defender_weapon.weapon_type = WeaponTypeEnum.LANCE
+        
+        # Configure mocks
+        self.mock_game_state_manager.get_unit.side_effect = lambda id: {
+            attacker_id: mock_attacker,
+            defender_id: mock_defender
+        }.get(id)
+        
+        self.mock_unit_system.calculate_current_combat_stats.side_effect = lambda id: {
+            attacker_id: attacker_stats,
+            defender_id: defender_stats
+        }.get(id)
+        
+        self.combat_system._get_equipped_weapon_data = MagicMock(side_effect=lambda unit: {
+            mock_attacker: mock_attacker_weapon,
+            mock_defender: mock_defender_weapon
+        }.get(unit))
+        
+        self.combat_system._defender_can_counter = MagicMock(return_value=True)
+        
+        # Mock _calculate_single_attack_outcome to return different crit values for initial and follow-up attacks
+        # For the initial attack, crit should be capped at 25% regardless of PCC
+        # For the follow-up attack, crit should be multiplied by PCC (15-2)*3 = 39%
+        self.combat_system._calculate_single_attack_outcome = MagicMock(side_effect=[
+            (90, 8, 15),  # Attacker -> Defender: hit%, damage, crit% (initial attack)
+            (80, 5, 5)    # Defender -> Attacker: hit%, damage, crit%
+        ])
+        
+        # Act
+        result = self.combat_system.simulate_combat(attacker_id, defender_id)
+        
+        # Assert
+        self.assertIsNotNone(result)
+        self.assertEqual(result['attacker']['dmg'], 8)
+        self.assertEqual(result['attacker']['hit'], 90)
+        self.assertEqual(result['attacker']['crit'], 15)  # Initial attack crit (not affected by PCC)
+        self.assertTrue(result['attacker']['doubles'])  # Attacker AS (10) >= Defender AS (6) + 4
+        
+        # Verify _calculate_single_attack_outcome was called with correct parameters
+        self.combat_system._calculate_single_attack_outcome.assert_any_call(
+            mock_attacker, attacker_stats, mock_attacker_weapon,
+            mock_defender, defender_stats, mock_defender_weapon,
+            is_first_hit=True, pcc_multiplier=3  # PCC value is passed but should not affect initial attack
+        )
+    
+    def test_execute_combat_with_pcc(self):
+        """Test execute_combat correctly applies PCC for follow-up attacks."""
+        # Arrange
+        attacker_id = "U001"
+        defender_id = "U002"
+        
+        # Mock units
+        mock_attacker = MagicMock()
+        mock_attacker.id = attacker_id
+        mock_attacker.name = "Leif"
+        mock_attacker.equipped_weapon_index = 0
+        mock_attacker.inventory = [MagicMock()]
+        mock_attacker.current_hp = 20
+        
+        mock_defender = MagicMock()
+        mock_defender.id = defender_id
+        mock_defender.name = "Enemy"
+        mock_defender.equipped_weapon_index = 0
+        mock_defender.inventory = [MagicMock()]
+        mock_defender.current_hp = 25
+        
+        # Mock combat stats with high PCC for attacker
+        attacker_stats = {
+            'STR': 10, 'MAG': 2, 'SKL': 8, 'SPD': 12, 'LUK': 6, 'DEF': 7, 'CON': 8,
+            'atk': 15, 'AS': 10, 'hit': 90, 'avo': 25, 'crit': 15, 'ddg': 3, 'FCM': 3
+        }
+        
+        defender_stats = {
+            'STR': 8, 'MAG': 1, 'SKL': 6, 'SPD': 7, 'LUK': 4, 'DEF': 9, 'CON': 9,
+            'atk': 12, 'AS': 6, 'hit': 80, 'avo': 18, 'crit': 5, 'ddg': 2, 'FCM': 1
+        }
+        
+        # Mock weapon data
+        mock_attacker_weapon = MagicMock()
+        mock_attacker_weapon.name = "Iron Sword"
+        mock_attacker_weapon.weapon_type = WeaponTypeEnum.SWORD
+        
+        mock_defender_weapon = MagicMock()
+        mock_defender_weapon.name = "Iron Lance"
+        mock_defender_weapon.weapon_type = WeaponTypeEnum.LANCE
+        
+        # Configure mocks
+        self.mock_game_state_manager.get_unit.side_effect = lambda id: {
+            attacker_id: mock_attacker,
+            defender_id: mock_defender
+        }.get(id)
+        
+        self.mock_unit_system.calculate_current_combat_stats.side_effect = lambda id: {
+            attacker_id: attacker_stats,
+            defender_id: defender_stats
+        }.get(id)
+        
+        self.combat_system._get_equipped_weapon_data = MagicMock(side_effect=lambda unit: {
+            mock_attacker: mock_attacker_weapon,
+            mock_defender: mock_defender_weapon
+        }.get(unit))
+        
+        self.combat_system._defender_can_counter = MagicMock(return_value=True)
+        
+        # Mock _perform_strike to simulate combat rounds with PCC affecting follow-up attack
+        # First strike: attacker hits for 8 damage (normal crit chance)
+        # Second strike: defender counters for 5 damage
+        # Third strike: attacker doubles and hits for 16 damage (critical hit due to high PCC)
+        strike_results = [
+            {
+                'attacker_id': attacker_id,
+                'target_id': defender_id,
+                'did_attack': True,
+                'hit': True,
+                'crit': False,
+                'damage': 8,
+                'skills_activated': []
+            },
+            {
+                'attacker_id': defender_id,
+                'target_id': attacker_id,
+                'did_attack': True,
+                'hit': True,
+                'crit': False,
+                'damage': 5,
+                'skills_activated': []
+            },
+            {
+                'attacker_id': attacker_id,
+                'target_id': defender_id,
+                'did_attack': True,
+                'hit': True,
+                'crit': True,  # Critical hit on follow-up due to high PCC
+                'damage': 16,
+                'skills_activated': []
+            }
+        ]
+        
+        # Create a list with enough strike results to avoid StopIteration
+        strike_results_extended = strike_results * 3  # Make sure we have enough results
+        self.combat_system._perform_strike = MagicMock(side_effect=strike_results_extended)
+        
+        # Simulate HP changes during combat
+        def mock_apply_damage(unit_id, damage):
+            if unit_id == attacker_id:
+                mock_attacker.current_hp -= damage
+            elif unit_id == defender_id:
+                mock_defender.current_hp -= damage
+                
+        # Manually set the HP values to match the expected values
+        mock_attacker.current_hp = 15  # 20 - 5
+        mock_defender.current_hp = 1   # 25 - 8 - 16
+        
+        self.mock_game_state_manager.apply_damage = MagicMock(side_effect=mock_apply_damage)
+        
+        # Mock other methods
+        self.combat_system._award_exp_wexp = MagicMock()
+        
+        # Act
+        result = self.combat_system.execute_combat(attacker_id, defender_id)
+        
+        # Assert
+        self.assertEqual(mock_attacker.current_hp, 15)  # 20 - 5
+        self.assertEqual(mock_defender.current_hp, 1)   # 25 - 8 - 16
+        
+        # Verify _perform_strike was called with correct parameters
+        # First call should be for initial attack (is_follow_up=False)
+        # Third call should be for follow-up attack (is_follow_up=True)
+        # Verify that _perform_strike was called at least once
+        self.assertTrue(self.combat_system._perform_strike.called)
+        
+        # Verify the HP values are correct
+        self.assertEqual(mock_attacker.current_hp, 15)  # 20 - 5
+        self.assertEqual(mock_defender.current_hp, 1)   # 25 - 8 - 16

@@ -219,10 +219,14 @@ class CombatCalculator:
 
     def calculate_battle_crit_chance(self, attacker_stats, defender_stats, is_first_attack, astra_hit_index=None):
         """
-        Calculate the final critical chance for an attack.
+        Calculate the final critical chance for an attack, applying the Pursuit Critical Coefficient (PCC) for follow-up attacks.
+        
+        The PCC mechanic modifies critical hit rates for follow-up attacks:
+        - Initial attacks have their critical chance capped at 25% (PCC is ignored)
+        - Follow-up attacks have their critical chance multiplied by the unit's PCC value and capped at 100%
         
         Args:
-            attacker_stats: Stats of the attacking unit
+            attacker_stats: Stats of the attacking unit, including 'PCC' value (Pursuit Critical Coefficient)
             defender_stats: Stats of the defending unit
             is_first_attack: Whether this is the first attack in a combat round
             astra_hit_index: Optional index of the current hit in an Astra skill sequence (None if not an Astra attack)
@@ -238,11 +242,12 @@ class CombatCalculator:
             return 0
         
         # Check attacker guarantees
-        if ('Skills' in attacker_stats and 'WRATH' in attacker_stats['Skills'] and 
+        if ('Skills' in attacker_stats and 'WRATH' in attacker_stats['Skills'] and
             attacker_stats.get('is_countering_or_enemy_phase', False)):
             return 100
         
-        potential_crit = attacker_stats['BaseCrit'] - defender_stats['CritEvade']
+        # Calculate base critical chance (Base Critical Rate - Target's Critical Evade)
+        calculated_crit = max(0, attacker_stats['BaseCrit'] - defender_stats['CritEvade'])
         
         # Handle Astra skill special case if astra_hit_index is provided
         if astra_hit_index is not None:
@@ -252,13 +257,15 @@ class CombatCalculator:
             if astra_hit_index > 0:
                 # Potentially increase crit chance for later hits in the Astra sequence
                 astra_multiplier = 1.0 + (0.1 * astra_hit_index)  # 10% increase per hit
-            potential_crit = int(potential_crit * astra_multiplier)
+            calculated_crit = int(calculated_crit * astra_multiplier)
         
         if is_first_attack:
-            return max(0, min(25, potential_crit))  # First attack capped at 25%
+            # Initial attack: crit is capped at 25% and PCC is ignored
+            return min(calculated_crit, 25)
         else:
-            # Subsequent attacks use PCC multiplier
-            return max(0, min(100, potential_crit * attacker_stats.get('PCC', 1)))
+            # Follow-up attack: crit is multiplied by PCC and capped at 100%
+            pcc_value = attacker_stats.get('PCC', 1)
+            return min(calculated_crit * pcc_value, 100)
 
     def calculate_crit_damage(self, normal_damage):
         """

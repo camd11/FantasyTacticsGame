@@ -67,6 +67,11 @@
     - Combat Skills (Astra, Sol, Luna, Pavise)
         - Implemented core combat skills (Astra, Sol, Luna, Pavise) according to their specifications.
         - These skills are now functional within the combat system, triggering based on activation rates and conditions.
+    - Pursuit Critical Coefficient (PCC)
+        - Implemented the PCC mechanic from Thracia 776 that modifies critical hit rates for follow-up attacks.
+        - Initial attacks have critical chance capped at 25% (PCC ignored).
+        - Follow-up attacks have critical chance multiplied by the unit's PCC value and capped at 100%.
+        - Integrated with existing combat skills and weapon effects.
     - Expanded Staff System
         - Implements various staff effects (Heal, Status Infliction/Cure, Warp).
         - Defines targeting rules (allies, enemies, specific ranges).
