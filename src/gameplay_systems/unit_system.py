@@ -122,9 +122,39 @@ class UnitSystem:
     
     # --- Stat Calculation ---
     
+    def get_active_skills(self, unit_id: str) -> List[str]:
+        """
+        Get the list of active skills for a unit, including skills granted by equipped weapons
+        and Prf weapon effects.
+        
+        Args:
+            unit_id: ID of the unit
+            
+        Returns:
+            List of active skill IDs
+        """
+        unit = self.gameStateManager.get_unit(unit_id)
+        if not unit:
+            return []
+        
+        # Start with the unit's base skills
+        active_skills = unit.skills.copy() if hasattr(unit, 'skills') else []
+        
+        # Add skills from equipped weapon's prf_effects
+        if hasattr(unit, 'equipped_weapon_index') and unit.equipped_weapon_index >= 0 and unit.equipped_weapon_index < len(unit.inventory):
+            weapon_id = unit.inventory[unit.equipped_weapon_index]
+            weapon_data = self.dataProvider.get_item_data(weapon_id)
+            
+            if weapon_data and hasattr(weapon_data, 'prf_effects'):
+                for effect in weapon_data.prf_effects:
+                    if effect.get("type") == "GRANT_SKILL":
+                        active_skills.append(effect.get("skill_id"))
+        
+        return active_skills
+    
     def calculate_current_combat_stats(self, unit_id: str) -> Dict[str, Any]:
         """
-        Calculate the current combat stats for a unit.
+        Calculate the current combat stats for a unit, including any stat boosts from Prf weapon effects.
         
         Args:
             unit_id: ID of the unit
@@ -138,6 +168,19 @@ class UnitSystem:
         
         # 1. Get Base Stats
         current_stats = dict(unit.base_stats)  # Start with base
+        
+        # 1.5 Apply Prf Weapon Stat Boosts
+        if unit.equipped_weapon_index >= 0 and unit.equipped_weapon_index < len(unit.inventory):
+            weapon_id = unit.inventory[unit.equipped_weapon_index]
+            weapon_data = self.dataProvider.get_item_data(weapon_id)
+            
+            if weapon_data and hasattr(weapon_data, 'prf_effects'):
+                for effect in weapon_data.prf_effects:
+                    if effect.get("type") == "STAT_BOOST":
+                        stat_key = effect.get("stat", "").upper()
+                        if hasattr(StatEnum, stat_key):
+                            stat_enum = getattr(StatEnum, stat_key)
+                            current_stats[stat_enum] = current_stats.get(stat_enum, 0) + effect.get("value", 0)
         
         # 2. Apply Status Penalties
         is_carrying = unit.carrying_unit_id is not None

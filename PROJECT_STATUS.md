@@ -72,6 +72,11 @@
         - Initial attacks have critical chance capped at 25% (PCC ignored).
         - Follow-up attacks have critical chance multiplied by the unit's PCC value and capped at 100%.
         - Integrated with existing combat skills and weapon effects.
+    - Prf Weapon Effects System
+        - Implemented special "Prf" (preferred/personal) weapon effects that grant unique abilities to specific weapons.
+        - Supports various effect types: STAT_BOOST, EFFECTIVE_VS, GRANT_SKILL, BRAVE_EFFECT, and STATUS_ON_HIT.
+        - Integrated with combat system, unit stats calculation, and status effects application.
+        - Effects are defined in the weapon data and applied dynamically during gameplay.
     - Expanded Staff System
         - Implements various staff effects (Heal, Status Infliction/Cure, Warp).
         - Defines targeting rules (allies, enemies, specific ranges).

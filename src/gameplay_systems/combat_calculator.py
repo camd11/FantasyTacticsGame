@@ -510,7 +510,7 @@ class CombatCalculator:
 
     def _get_effective_bonus(self, weapon, unit_type_tags):
         """
-        Get the effectiveness bonus for a weapon against a unit type.
+        Get the effectiveness bonus for a weapon against a unit type, including Prf weapon EFFECTIVE_VS effects.
         
         Args:
             weapon: The weapon
@@ -519,8 +519,26 @@ class CombatCalculator:
         Returns:
             Effectiveness bonus (3 if effective, 1 otherwise)
         """
-        # This would be implemented based on the effectiveness system
-        # For now, return 1 (no effectiveness)
+        # Check for Prf weapon EFFECTIVE_VS effect
+        if hasattr(weapon, 'prf_effects'):
+            for effect in weapon.prf_effects:
+                if effect.get("type") == "EFFECTIVE_VS":
+                    categories = effect.get("category", [])
+                    for category in categories:
+                        if category in unit_type_tags:
+                            # Use default multiplier (3) or specified multiplier
+                            return effect.get("multiplier", 3)
+        
+        # Check standard effectiveness (from weapon effects)
+        if hasattr(weapon, 'effects'):
+            if "EFFECTIVE_CAVALRY" in weapon.effects and "cavalry" in unit_type_tags:
+                return 3
+            if "EFFECTIVE_ARMOR" in weapon.effects and "armor" in unit_type_tags:
+                return 3
+            if "EFFECTIVE_FLIER" in weapon.effects and "flier" in unit_type_tags:
+                return 3
+        
+        # No effectiveness
         return 1
 
     def _roll_random(self, min_val, max_val):

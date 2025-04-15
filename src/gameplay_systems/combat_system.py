@@ -297,7 +297,7 @@ class CombatSystem:
             # 1. First unit's Strike(s) (either attacker or defender with Vantage)
             # 1. Attacker's First Strike(s)
             num_first_unit_hits = 1
-            if temp_attacker_weapon and getattr(temp_attacker_weapon, 'is_brave', False):
+            if temp_attacker_weapon and self._is_brave_weapon(temp_attacker_weapon):
                 num_first_unit_hits = 2  # Brave weapons get two strikes
             
             for i in range(num_first_unit_hits):
@@ -950,17 +950,15 @@ class CombatSystem:
         
         # Delegate to StaffHandler
         self.staffHandler._apply_staff_effect(caster, target, staff_data)
-    
     def _apply_weapon_status_effects(self, weapon_data, target_id: str) -> None:
         """
-        Apply status effects from a weapon.
+        Apply status effects from a weapon, including Prf weapon STATUS_ON_HIT effects.
         
         Args:
             weapon_data: Data of the weapon
             target_id: ID of the target unit
         """
-        # This would be implemented based on weapon effects
-        # For now, just check for poison effect as an example
+        # Check for standard weapon effects
         if hasattr(weapon_data, 'effects'):
             for effect in weapon_data.effects:
                 if effect.get('type') == 'POISON':
@@ -969,6 +967,20 @@ class CombatSystem:
                         effect.get('duration', 3),
                         effect.get('magnitude', 0)
                     )
+        
+        # Check for Prf weapon STATUS_ON_HIT effect
+        if hasattr(weapon_data, 'prf_effects'):
+            for effect in weapon_data.prf_effects:
+                if effect.get("type") == "STATUS_ON_HIT":
+                    status_id = effect.get("status_id")
+                    chance = effect.get("chance", 100)
+                    duration = effect.get("duration", 3)
+                    
+                    # Roll for chance
+                    if self._roll_random(1, 100) <= chance:
+                        self.gameStateManager.add_status_effect(
+                            target_id, status_id, duration
+                        )
     
     def _get_staff_fatigue_cost(self, staff_data) -> int:
         """
@@ -1141,6 +1153,28 @@ class CombatSystem:
         # Use DataProvider to check weapon effectiveness against class
         # In Thracia 776, effective weapons deal 3x might
         return self.dataProvider.get_effectiveness_multiplier(weapon_id, class_id)
+    
+    def _is_brave_weapon(self, weapon) -> bool:
+        """
+        Check if a weapon has the brave effect, including Prf weapon BRAVE_EFFECT.
+        
+        Args:
+            weapon: The weapon to check
+            
+        Returns:
+            True if the weapon has the brave effect, False otherwise
+        """
+        # Check for Prf weapon BRAVE_EFFECT
+        if hasattr(weapon, 'prf_effects'):
+            for effect in weapon.prf_effects:
+                if effect.get("type") == "BRAVE_EFFECT":
+                    return True
+        
+        # Check for standard brave flag
+        if hasattr(weapon, 'is_brave') and weapon.is_brave:
+            return True
+        
+        return False
     
     def _is_weapon_physical(self, weapon_type) -> bool:
         """

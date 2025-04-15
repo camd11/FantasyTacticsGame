@@ -1,5 +1,21 @@
 # Items data for Fantasy Tactics Game
 # Based on Fire Emblem: Thracia 776 items
+#
+# Prf Weapon Effects Structure:
+# prf_effects:
+#   - type: STAT_BOOST       # Boosts a unit's stat while equipped
+#     stat: str/mag/skl/etc  # The stat to boost
+#     value: 5               # The amount to boost by
+#   - type: EFFECTIVE_VS     # Grants effective damage against specific targets
+#     category: [armor, cavalry, etc]  # Target categories
+#     multiplier: 3          # Optional damage multiplier (default: 3)
+#   - type: GRANT_SKILL      # Grants a skill while equipped
+#     skill_id: S010_Vantage # ID of the skill to grant
+#   - type: BRAVE_EFFECT     # Allows consecutive attacks
+#   - type: STATUS_ON_HIT    # Inflicts a status effect on hit
+#     status_id: ST005_Poison # ID of the status to inflict
+#     chance: 100            # Percentage chance to inflict
+#     duration: 3            # Optional duration in turns
 
 IRON_SWORD:
   id: "IRON_SWORD"

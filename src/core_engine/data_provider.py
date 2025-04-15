@@ -23,6 +23,7 @@ class StatEnum(Enum):
     SPD = auto()
     LUK = auto()
     DEF = auto()
+    RES = auto()  # Resistance
     CON = auto()
     MOV = auto()
     MOV_STARS = auto()  # Movement stars
@@ -101,7 +102,26 @@ class UnitBaseData:
         self.pcc = data_dict.get('pcc', 0)  # Pursuit Critical Coefficient
 
 class ItemData:
-    """Represents the static data for an item."""
+    """
+    Represents the static data for an item.
+    
+    Attributes:
+        id: Unique identifier for the item
+        name: Display name of the item
+        type: Type of item (weapon, consumable, etc.)
+        weapon_type: Type of weapon (sword, lance, etc.) if applicable
+        might: Base damage of the weapon
+        hit: Base hit rate of the weapon
+        crit: Base critical hit rate of the weapon
+        weight: Weight of the item (affects attack speed)
+        range_min: Minimum attack range
+        range_max: Maximum attack range
+        max_durability: Maximum number of uses
+        required_rank: Required weapon rank to use
+        effects: List of general effects
+        prf_effects: List of special "Prf" (preferred/personal) weapon effects
+                    Each effect has a 'type' and additional parameters specific to that effect type
+    """
     def __init__(self, data_dict: Dict):
         self.id = data_dict.get('id', '')
         self.name = data_dict.get('name', '')
@@ -116,6 +136,7 @@ class ItemData:
         self.max_durability = data_dict.get('max_durability', 0)
         self.required_rank = data_dict.get('required_rank', RankEnum.E)
         self.effects = data_dict.get('effects', [])
+        self.prf_effects = data_dict.get('prf_effects', [])
 
 class ClassData:
     """Represents the static data for a class."""
@@ -1060,3 +1081,31 @@ class DataProvider:
         # For example, checking that all referenced IDs exist, required fields are present, etc.
         # For now, we'll just log that validation is complete
         logging.info("Data validation complete")
+        
+    def unit_has_skill(self, unit_id: str, skill_id: str) -> bool:
+        """
+        Check if a unit has a specific skill.
+        
+        Args:
+            unit_id: The ID of the unit
+            skill_id: The ID of the skill
+            
+        Returns:
+            True if the unit has the skill, False otherwise
+        """
+        unit_data = self.get_unit_base_data(unit_id)
+        if not unit_data:
+            return False
+            
+        # Check if the skill is in the unit's skill list
+        if hasattr(unit_data, 'skills') and unit_data.skills:
+            if skill_id in unit_data.skills:
+                return True
+                
+        # Check if the skill is a class skill
+        class_data = self.get_class_data(unit_data.base_class_id)
+        if class_data and hasattr(class_data, 'class_skills') and class_data.class_skills:
+            if skill_id in class_data.class_skills:
+                return True
+                
+        return False
