@@ -500,8 +500,19 @@ class TestDataProvider(unittest.TestCase):
     def test_get_support_partners(self):
         """Test that get_support_partners returns the correct support partners."""
         # Set up the data provider with mock data
+        # Correctly mock the structure expected by get_support_partners
+        # It expects Dict[initiator_id, List[SupportRelation]]
+        initiator_id = "LEIF" # Assuming based on the mock data structure
+        # The constructor expects a dict with 'character_id', 'bonus', 'range'
+        # We adapt the mock data slightly for the constructor call
+        mock_entry = self.mock_support_relations["SUPPORTS"][0]
+        partner_data = {
+            'character_id': mock_entry.get('partner_id', ''), # Use partner_id from mock
+            'bonus': mock_entry.get('bonus', {}),
+            # 'range' will use the default value (3) in the constructor
+        }
         self.data_provider._support_relations = {
-            "SUPPORTS": [SupportRelation(self.mock_support_relations["SUPPORTS"][0])]
+            initiator_id: [SupportRelation(initiator_id, partner_data)]
         }
         
         # Call the method under test

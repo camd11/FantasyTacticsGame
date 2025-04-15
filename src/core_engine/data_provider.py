@@ -10,6 +10,7 @@ import yaml
 import json
 import random # Added import
 import logging
+# import traceback # Remove traceback import
 from enum import Enum, auto
 from typing import Dict, List, Tuple, Optional, Any, Union
 
@@ -199,11 +200,19 @@ class UnitPlacement:
         self.target_level = data_dict.get('target_level', 1)
 
 class SupportRelation:
-    """Represents a support relationship between two units."""
-    def __init__(self, data_dict: Dict):
-        self.unit_id = data_dict.get('unit_id', '')
-        self.partner_id = data_dict.get('partner_id', '')
-        self.bonus = data_dict.get('bonus', 0)
+    """Represents a support relationship entry initiated by one unit."""
+    def __init__(self, initiator_id: str, data_dict: Dict):
+        """
+        Initializes a support relation.
+        Args:
+            initiator_id: The ID of the unit whose entry this is (e.g., 'LEIF').
+            data_dict: The dictionary for a single entry in the 'supports' list
+                       (e.g., {'character_id': 'NANNA', 'bonus': {...}, 'range': 3}).
+        """
+        self.unit_id = initiator_id # The unit initiating this support entry
+        self.partner_id = data_dict.get('character_id', '') # Get partner from 'character_id'
+        self.bonus = data_dict.get('bonus', {}) # Bonus is a dictionary
+        self.range = data_dict.get('range', 3) # Get range, default 3
 
 class SkillData:
     """Represents the static data for a skill."""
@@ -296,12 +305,31 @@ class DataProvider:
             self._unit_placements = {}
             self._event_scripts = {}
             
-            # Load support relations
-            self._support_relations = self._load_data_to_objects(
-                os.path.join(data_directory, "supports.yaml"),
-                SupportRelation,
-                is_list=True
-            )
+            # Load support relations (custom logic)
+            supports_filepath = os.path.join(data_directory, "supports.yaml")
+            raw_supports_data = self._load_yaml_or_json(supports_filepath)
+            self._support_relations = {} # Stores as Dict[initiator_id, List[SupportRelation]]
+
+            if raw_supports_data:
+                for initiator_id, support_data in raw_supports_data.items():
+                    if isinstance(support_data, dict) and 'supports' in support_data and isinstance(support_data['supports'], list):
+                        support_list_for_unit = []
+                        for support_entry in support_data['supports']:
+                            if isinstance(support_entry, dict):
+                                try:
+                                    # Pass initiator_id and the support entry dict
+                                    support_relation = SupportRelation(initiator_id, support_entry)
+                                    support_list_for_unit.append(support_relation)
+                                except Exception as e:
+                                    logging.error(f"Error creating SupportRelation for {initiator_id} with data {support_entry}: {e}")
+                            else:
+                                logging.warning(f"Skipping invalid support entry for {initiator_id}: {support_entry}")
+                        if support_list_for_unit:
+                            self._support_relations[initiator_id] = support_list_for_unit
+                    else:
+                        logging.warning(f"Skipping invalid support data structure for {initiator_id}: {support_data}")
+            else:
+                logging.warning(f"Could not load or parse {supports_filepath}")
             
             # Load promotion data
             self._promotion_data = self._load_data_to_objects(
@@ -337,6 +365,7 @@ class DataProvider:
             
         except Exception as e:
             logging.error(f"Error loading static data: {str(e)}")
+            # traceback.print_exc() # Removed traceback print
             return False
     
     def get_unit_base_data(self, unit_id: str) -> Optional[UnitBaseData]:
@@ -1005,10 +1034,17 @@ class DataProvider:
         if not data:
             return result
         
+        # Note: The 'is_list' logic was problematic for nested structures like supports.yaml
+        # Supports are now loaded with custom logic.
+        # This part of the function might need review if other data uses is_list=True.
+        # For now, assuming is_list=True is only used for simple list structures if at all.
         if is_list:
-            # Data is organized as lists by key (e.g., chapter_id -> list of placements)
+            # Assumes data is Dict[str, List[Dict]]
             for key, items in data.items():
-                result[key] = [class_type(item) for item in items]
+                if isinstance(items, list):
+                    result[key] = [class_type(item) for item in items if isinstance(item, dict)]
+                else:
+                    logging.warning(f"Expected a list for key '{key}' in {filepath} when is_list=True, but got {type(items)}")
         else:
             # Data is organized as individual entries with IDs
             for key, item_data in data.items():

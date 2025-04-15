@@ -81,12 +81,12 @@ class TestAsciiDisplay:
         mock_game_state.get_all_units.return_value = [player_unit]
         
         # Initialize the display
-        cli_display.initialize(mock_game_state, mock_unit_system, None, mock_map_system, None)
+        cli_display.initialize(mock_game_state, mock_unit_system, None, mock_map_system, None, fog_system=mock_fog_system)
         
         # Act
         # Capture the output of render_enhanced_ascii_map
         with patch('builtins.print') as mock_print:
-            cli_display.render_ascii_map(mock_game_state)
+            cli_display.render_ascii_map()
             
         # Assert
         # Check that the player unit character 'P' was printed with the correct color
@@ -108,12 +108,12 @@ class TestAsciiDisplay:
         mock_game_state.get_all_units.return_value = [enemy_unit]
         
         # Initialize the display
-        cli_display.initialize(mock_game_state, mock_unit_system, None, mock_map_system, None)
+        cli_display.initialize(mock_game_state, mock_unit_system, None, mock_map_system, None, fog_system=mock_fog_system)
         
         # Act
         # Capture the output of render_enhanced_ascii_map
         with patch('builtins.print') as mock_print:
-            cli_display.render_ascii_map(mock_game_state)
+            cli_display.render_ascii_map()
             
         # Assert
         # Check that the enemy unit character 'E' was printed with the correct color
@@ -135,12 +135,12 @@ class TestAsciiDisplay:
         mock_game_state.get_all_units.return_value = [npc_unit]
         
         # Initialize the display
-        cli_display.initialize(mock_game_state, mock_unit_system, None, mock_map_system, None)
+        cli_display.initialize(mock_game_state, mock_unit_system, None, mock_map_system, None, fog_system=mock_fog_system)
         
         # Act
         # Capture the output of render_enhanced_ascii_map
         with patch('builtins.print') as mock_print:
-            cli_display.render_ascii_map(mock_game_state)
+            cli_display.render_ascii_map()
             
         # Assert
         # Check that the NPC unit character 'N' was printed with the correct color
@@ -162,12 +162,12 @@ class TestAsciiDisplay:
         mock_game_state.get_all_units.return_value = [mounted_unit]
         
         # Initialize the display
-        cli_display.initialize(mock_game_state, mock_unit_system, None, mock_map_system, None)
+        cli_display.initialize(mock_game_state, mock_unit_system, None, mock_map_system, None, fog_system=mock_fog_system)
         
         # Act
         # Capture the output of render_enhanced_ascii_map
         with patch('builtins.print') as mock_print:
-            cli_display.render_ascii_map(mock_game_state)
+            cli_display.render_ascii_map()
             
         # Assert
         # This test should fail initially because the current implementation doesn't support mounted status
@@ -190,12 +190,12 @@ class TestAsciiDisplay:
         mock_game_state.get_all_units.return_value = [captured_unit]
         
         # Initialize the display
-        cli_display.initialize(mock_game_state, mock_unit_system, None, mock_map_system, None)
+        cli_display.initialize(mock_game_state, mock_unit_system, None, mock_map_system, None, fog_system=mock_fog_system)
         
         # Act
         # Capture the output of render_enhanced_ascii_map
         with patch('builtins.print') as mock_print:
-            cli_display.render_ascii_map(mock_game_state)
+            cli_display.render_ascii_map()
             
         # Assert
         # This test should fail initially because the current implementation doesn't support captured status
@@ -218,12 +218,12 @@ class TestAsciiDisplay:
         mock_game_state.get_all_units.return_value = [low_hp_unit]
         
         # Initialize the display
-        cli_display.initialize(mock_game_state, mock_unit_system, None, mock_map_system, None)
+        cli_display.initialize(mock_game_state, mock_unit_system, None, mock_map_system, None, fog_system=mock_fog_system)
         
         # Act
         # Capture the output of render_enhanced_ascii_map
         with patch('builtins.print') as mock_print:
-            cli_display.render_ascii_map(mock_game_state)
+            cli_display.render_ascii_map()
             
         # Assert
         # This test should fail initially because the current implementation doesn't change color for low HP
@@ -253,12 +253,12 @@ class TestAsciiDisplay:
         mock_game_state.get_all_units.return_value = []
         
         # Initialize the display
-        cli_display.initialize(mock_game_state, mock_unit_system, None, mock_map_system, None)
+        cli_display.initialize(mock_game_state, mock_unit_system, None, mock_map_system, None, fog_system=mock_fog_system)
         
         # Act
         # Capture the output of render_enhanced_ascii_map
         with patch('builtins.print') as mock_print:
-            cli_display.render_ascii_map(mock_game_state)
+            cli_display.render_ascii_map()
             
         # Assert
         # Check that each terrain type was printed with the correct character
@@ -288,12 +288,12 @@ class TestAsciiDisplay:
         mock_game_state.get_all_units.return_value = []
         
         # Initialize the display
-        cli_display.initialize(mock_game_state, mock_unit_system, None, mock_map_system, None)
+        cli_display.initialize(mock_game_state, mock_unit_system, None, mock_map_system, None, fog_system=mock_fog_system)
         
         # Act
         # Capture the output of render_enhanced_ascii_map
         with patch('builtins.print') as mock_print:
-            cli_display.render_ascii_map(mock_game_state)
+            cli_display.render_ascii_map()
             
         # Assert
         # This test should fail initially because the current implementation doesn't support fog of war
@@ -335,12 +335,12 @@ class TestAsciiDisplay:
         mock_game_state.get_all_units.return_value = [player_unit, enemy_unit]
         
         # Initialize the display
-        cli_display.initialize(mock_game_state, mock_unit_system, None, mock_map_system, None)
+        cli_display.initialize(mock_game_state, mock_unit_system, None, mock_map_system, None, fog_system=mock_fog_system)
         
         # Act
         # Capture the output of render_enhanced_ascii_map
         with patch('builtins.print') as mock_print:
-            cli_display.render_ascii_map(mock_game_state)
+            cli_display.render_ascii_map()
             
         # Assert
         # This test should fail initially because the current implementation doesn't support fog of war
@@ -356,12 +356,12 @@ class TestAsciiDisplay:
         mock_game_state.current_game_state.current_phase.name = "ENEMY"
         
         # Initialize the display
-        cli_display.initialize(mock_game_state, mock_unit_system, None, mock_map_system, None)
+        cli_display.initialize(mock_game_state, mock_unit_system, None, mock_map_system, None, fog_system=mock_fog_system)
         
         # Act
         # Capture the output of render_enhanced_ascii_map
         with patch('builtins.print') as mock_print:
-            cli_display.render_ascii_map(mock_game_state)
+            cli_display.render_ascii_map()
             
         # Assert
         # Check that the turn and phase information is displayed
@@ -426,12 +426,12 @@ class TestAsciiDisplay:
         mock_fog_system.should_display_unit.side_effect = lambda unit, grid: unit.faction == "PLAYER" or (unit.position[0] < 2 and unit.position[1] < 2)
         
         # Initialize the display
-        cli_display.initialize(mock_game_state, mock_unit_system, None, mock_map_system, None)
+        cli_display.initialize(mock_game_state, mock_unit_system, None, mock_map_system, None, fog_system=mock_fog_system)
         
         # Act
         # Capture the output of render_enhanced_ascii_map
         with patch('builtins.print') as mock_print:
-            output = cli_display.render_ascii_map(mock_game_state)
+            output = cli_display.render_ascii_map()
             
         # Assert
         # This test should fail initially because the current implementation doesn't match the expected output

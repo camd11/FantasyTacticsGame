@@ -112,6 +112,11 @@
         - Improved rendering of units and terrain features.
         - Integrated Fog of War visualization (showing visible, explored, hidden tiles).
         - Added a status panel displaying key unit information.
+- **UI/Interaction:**
+    - Interactive Player Input System
+        - Allows direct player control of units via keyboard during the Player Phase.
+        - Handles unit selection, movement range display, move confirmation, action menu navigation, targeting, and turn management through a state-based system.
+        - Replaces previous scenario-driven execution for player actions.
 - **AI Refinement:**
     - Improved AI target prioritization logic.
     - Implemented basic AI archetypes (Aggressive/CHARGE, Defensive/GUARD).
@@ -139,8 +144,8 @@
 - **Data Population:**
     - Add more units, items, classes, skills, promotions, and supports.
     - Create data for subsequent chapters (Chapter 2 onwards: layouts, placements, events).
+    - **Note:** Full implementation of subsequent chapters (beyond initial test/scenario chapters) is deferred pending GUI development.
 - **CLI Development:**
-    - Implement fully interactive turn-by-turn gameplay via CLI.
 - **Testing:**
     - Develop more comprehensive testing scenarios covering edge cases and complex interactions.
 - **Future Enhancements:**

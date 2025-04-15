@@ -291,11 +291,9 @@ class EngineCore:
                 logging.info(f"ENGINE DEBUGGING: self.active_faction_units = {len(self.active_faction_units)}")
                 logging.info(f"ENGINE DEBUGGING: _sort_units_for_ai = {hasattr(self, '_sort_units_for_ai')}")
                 
-                # TODO: [BUG] ASCII display rendering is disabled as it doesn't correctly update unit positions visually turn-to-turn.
-                # Needs debugging of the render function logic and potentially how unit state position is updated/accessed.
                 # Display ASCII map at the start of AI vs AI player phase if enabled
-                # if self.ascii_display and hasattr(self.input_handler, 'display'):
-                #     self.input_handler.display.render_ascii_map(self.game_state_manager)
+                if self.ascii_display and hasattr(self.input_handler, 'display'):
+                    self.input_handler.display.render_ascii_map(self.game_state_manager)
                 
                 # Debug information about active units
                 logging.info(f"ENGINE DEBUGGING: AI vs AI mode active for PLAYER phase")
@@ -346,11 +344,9 @@ class EngineCore:
                                     # Mark unit as acted even if action failed to prevent infinite loops
                                     unit.has_acted = True
                                 
-                                # TODO: [BUG] ASCII display rendering is disabled as it doesn't correctly update unit positions visually turn-to-turn.
-                                # Needs debugging of the render function logic and potentially how unit state position is updated/accessed.
                                 # Display ASCII map after each AI action in AI vs AI mode if enabled
-                                # if self.ascii_display and hasattr(self.input_handler, 'display'):
-                                #     self.input_handler.display.render_ascii_map(self.game_state_manager)
+                                if self.ascii_display and hasattr(self.input_handler, 'display'):
+                                    self.input_handler.display.render_ascii_map(self.game_state_manager)
                             else:
                                 # AI decides to wait or cannot act
                                 logging.info(f"ENGINE DEBUGGING: AI decided to wait for {unit.name} (no action returned)")
@@ -401,11 +397,9 @@ class EngineCore:
             # Log the start of AI phase with clear indication
             logging.info(f"=== AI controlling {current_phase.name} units (Turn: {current_turn}) ===")
             
-            # TODO: [BUG] ASCII display rendering is disabled as it doesn't correctly update unit positions visually turn-to-turn.
-            # Needs debugging of the render function logic and potentially how unit state position is updated/accessed.
             # Display ASCII map at the start of enemy/NPC phase if enabled
-            # if self.ascii_display and hasattr(self.input_handler, 'display'):
-            #     self.input_handler.display.render_ascii_map(self.game_state_manager)
+            if self.ascii_display and hasattr(self.input_handler, 'display'):
+                self.input_handler.display.render_ascii_map(self.game_state_manager)
             
             # Determine unit order (e.g., based on deployment list or initiative)
             ordered_units = self._sort_units_for_ai(self.active_faction_units)
@@ -437,11 +431,9 @@ class EngineCore:
                                 # Mark unit as acted even if action failed to prevent infinite loops
                                 unit.has_acted = True
                             
-                            # TODO: [BUG] ASCII display rendering is disabled as it doesn't correctly update unit positions visually turn-to-turn.
-                            # Needs debugging of the render function logic and potentially how unit state position is updated/accessed.
                             # Display ASCII map after each AI action if enabled
-                            # if self.ascii_display and hasattr(self.input_handler, 'display'):
-                            #     self.input_handler.display.render_ascii_map(self.game_state_manager)
+                            if self.ascii_display and hasattr(self.input_handler, 'display'):
+                                self.input_handler.display.render_ascii_map(self.game_state_manager)
                         else:
                             # AI decides to wait or cannot act
                             logging.info(f"AI decided to wait for {unit.name}")
@@ -745,11 +737,9 @@ class EngineCore:
                             # Mark unit as acted even if action failed to prevent infinite loops
                             unit.has_acted = True
                         
-                        # TODO: [BUG] ASCII display rendering is disabled as it doesn't correctly update unit positions visually turn-to-turn.
-                        # Needs debugging of the render function logic and potentially how unit state position is updated/accessed.
                         # Display ASCII map after each AI action in AI vs AI mode if enabled
-                        # if self.ascii_display and hasattr(self.input_handler, 'display'):
-                        #     self.input_handler.display.render_ascii_map(self.game_state_manager)
+                        if self.ascii_display and hasattr(self.input_handler, 'display'):
+                            self.input_handler.display.render_ascii_map(self.game_state_manager)
                     else:
                         # AI decides to wait or cannot act
                         logging.info(f"AI decided to wait for {unit.name} (no action returned)")
@@ -804,11 +794,9 @@ class EngineCore:
                             # Mark unit as acted even if action failed to prevent infinite loops
                             unit.has_acted = True
                         
-                        # TODO: [BUG] ASCII display rendering is disabled as it doesn't correctly update unit positions visually turn-to-turn.
-                        # Needs debugging of the render function logic and potentially how unit state position is updated/accessed.
                         # Display ASCII map after each AI action if enabled
-                        # if self.ascii_display and hasattr(self.input_handler, 'display'):
-                        #     self.input_handler.display.render_ascii_map(self.game_state_manager)
+                        if self.ascii_display and hasattr(self.input_handler, 'display'):
+                            self.input_handler.display.render_ascii_map(self.game_state_manager)
                     else:
                         # AI decides to wait or cannot act
                         logging.info(f"AI decided to wait for {unit.name}")

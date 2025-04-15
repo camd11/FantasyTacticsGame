@@ -7,6 +7,7 @@ and visibility calculations, particularly for Fog of War scenarios.
 """
 
 import logging
+import heapq
 from typing import Dict, List, Set, Tuple, Optional, Any, Callable
 from unittest.mock import MagicMock
 
@@ -55,7 +56,9 @@ class PathfindingAlgorithm:
         """
         # Implementation of Dijkstra's algorithm
         visited = {}  # Position -> cost
-        frontier = [(0, start_pos)]  # (cost, position)
+        # Use heapq: store (cost, position)
+        frontier = [(0, start_pos)]
+        heapq.heapify(frontier) # Not strictly necessary as it starts with one element
         came_from = {}  # Position -> previous position (for path reconstruction)
         
         # Add starting position
@@ -63,13 +66,14 @@ class PathfindingAlgorithm:
         
         # Process nodes in order of increasing cost
         while frontier:
-            # Get the node with the lowest cost
-            current_cost, current_pos = min(frontier)
-            frontier.remove((current_cost, current_pos))
+            # Get the node with the lowest cost using heapq
+            current_cost, current_pos = heapq.heappop(frontier)
             
             # If we've already found a better path to this node, skip it
+            # Optimization: If we found a shorter path already, skip
+            # This is important with heapq as duplicates might exist
             if current_cost > visited.get(current_pos, IMPASSABLE):
-                continue
+                 continue
             
             
             # Get neighbors (adjacent tiles)
@@ -94,11 +98,13 @@ class PathfindingAlgorithm:
                 logging.debug(f"Pathfinding: New cost to reach {neighbor} is {new_cost}")
                 
                 # If we've found a better path to this neighbor, update it
-                if new_cost < visited.get(neighbor, IMPASSABLE) and new_cost <= movement_points:
+                # Check if within movement range AND is a better path
+                if new_cost <= movement_points and new_cost < visited.get(neighbor, IMPASSABLE):
                     logging.debug(f"Pathfinding: Found better path to {neighbor} (cost: {new_cost}, within movement limit: {movement_points})")
                     visited[neighbor] = new_cost
                     came_from[neighbor] = current_pos
-                    frontier.append((new_cost, neighbor))
+                    # Add to frontier using heapq
+                    heapq.heappush(frontier, (new_cost, neighbor))
                 else:
                     logging.debug(f"Pathfinding: No better path to {neighbor} (new cost: {new_cost}, existing cost: {visited.get(neighbor, IMPASSABLE)}, movement limit: {movement_points})")
         

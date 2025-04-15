@@ -57,7 +57,6 @@ class MovementSystem:
         Returns:
             Set of reachable positions
         """
-        # TODO: [BUG] Movement range calculation is currently bugged. It consistently returns only the starting tile (range=1) even for units with higher movement stats on clear terrain. This prevents AI from moving. Needs in-depth debugging of the pathfinding algorithm (BFS/Dijkstra), terrain cost application, and boundary checks.
         self._current_unit_id = unit_id
         # Delegate pathfinding to MapSystem
         self._reachable_tiles = self.mapSystem.get_reachable_tiles(unit_id)
