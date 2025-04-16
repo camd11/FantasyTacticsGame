@@ -171,22 +171,23 @@ class TestStatusEffectsSystem(unittest.TestCase):
         self.mock_game_state_manager.get_unit.return_value = mock_unit
         
         # Test with Sleep status
-        self.status_effect_manager.has_status = MagicMock(side_effect=lambda unit, status: 
+        self.status_effect_manager.has_status = MagicMock(side_effect=lambda unit, status:
             status == "Sleep" if unit == unit_id else False)
         
         # Act
         result = self.status_effect_manager.get_modified_stats(unit_id, base_stats)
         
-        # Assert
-        self.assertEqual(result[STR], 0)  # Should be zeroed
-        self.assertEqual(result[MAG], 0)  # Should be zeroed
-        self.assertEqual(result[SKL], 0)  # Should be zeroed
-        self.assertEqual(result[SPD], 0)  # Should be zeroed
-        self.assertEqual(result[DEF], 0)  # Should be zeroed
-        self.assertEqual(result[LUK], 7)  # Should not be zeroed
-        self.assertEqual(result[CON], 8)  # Should not be zeroed
-        self.assertEqual(result[MOV], 6)  # Should not be zeroed
-        self.assertEqual(result[HP], 30)  # Should not be zeroed
+        # Assert - Sleep only affects Avoid, not combat stats
+        # Verify all stats remain unchanged except Avoid (which isn't in our test stats)
+        self.assertEqual(result[STR], 10)  # Should not be zeroed
+        self.assertEqual(result[MAG], 8)   # Should not be zeroed
+        self.assertEqual(result[SKL], 12)  # Should not be zeroed
+        self.assertEqual(result[SPD], 14)  # Should not be zeroed
+        self.assertEqual(result[DEF], 9)   # Should not be zeroed
+        self.assertEqual(result[LUK], 7)   # Should not be zeroed
+        self.assertEqual(result[CON], 8)   # Should not be zeroed
+        self.assertEqual(result[MOV], 6)   # Should not be zeroed
+        self.assertEqual(result[HP], 30)   # Should not be zeroed
 
     # TDD Anchor: test_poison_application
     def test_poison_application(self):

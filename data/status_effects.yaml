@@ -15,15 +15,21 @@ POISON:
 
 SLEEP:
   name: "Sleep"
-  description: "Unit cannot act until cured or attacked."
-  duration_type: "UNTIL_CURED"
-  default_duration: -1  # -1 means until cured
-  cure_methods: ["Restore Staff", "Chapter End", "Attacked"]
+  description: "Unit cannot perform actions. Avoid becomes 0. Cured by taking damage or after duration expires."
+  duration_type: "SCRIPTED_TURNS"
+  default_duration: 3
+  cure_methods: ["Restore Staff", "Taking Damage", "Chapter End"]
   icon: "sleep_icon"
   effects:
-    - type: "ACTION_RESTRICTION"
+    - type: "PREVENT_ACTION"
       parameters:
         all: true  # Restricts all actions
+    - type: "SET_STAT"
+      parameters:
+        stat: "Avoid"
+        value: 0
+    - type: "CURE_ON_DAMAGE"
+      parameters: {}
 
 SILENCE:
   name: "Silence"

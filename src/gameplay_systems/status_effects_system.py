@@ -106,6 +106,12 @@ class StatusEffectManager:
         """
         Apply a status effect to a unit.
         
+        For Sleep status specifically:
+        - Prevents the unit from taking any actions
+        - Sets the unit's Avoid stat to 0
+        - Causes mounted units to dismount
+        - Can be cured by taking damage or when duration expires
+        
         Args:
             unit_id: The ID of the target unit
             status_effect_name: The name of the status effect to apply
@@ -213,6 +219,44 @@ class StatusEffectManager:
             del self.active_statuses[unit_id]
         
         return True
+    def handle_damage_taken(self, unit_id: str, damage: int):
+        """
+        Handle status effects that should be removed when a unit takes damage.
+        
+        Specifically for Sleep status:
+        - Sleep is cured when a unit takes any amount of damage greater than 0
+        - This occurs after damage calculation but before any potential counter-attack
+        
+        Args:
+            unit_id: The ID of the unit
+            damage: The amount of damage taken
+        """
+        if damage <= 0 or unit_id not in self.active_statuses:
+            return
+        
+        statuses_to_remove = []
+        unit = self.game_state_manager.get_unit(unit_id)
+        
+        # Check for statuses with CURE_ON_DAMAGE effect
+        for status in self.active_statuses[unit_id]:
+            for effect in status.effects:
+                if effect["type"] == "CURE_ON_DAMAGE":
+                    statuses_to_remove.append(status)
+                    logging.info(f"Status {status.name} removed from unit {unit_id} due to taking damage")
+                    break
+        
+        # Remove the statuses
+        for status in statuses_to_remove:
+            self.active_statuses[unit_id].remove(status)
+            self.event_system.publish("STATUS_REMOVED", {
+                "unit": unit,
+                "status": status.name,
+                "reason": "Damage Taken"
+            })
+        
+        # Remove the unit entry if no statuses remain
+        if unit_id in self.active_statuses and not self.active_statuses[unit_id]:
+            del self.active_statuses[unit_id]
     
     def process_turn_start_effects(self, unit_id: str):
         """
@@ -333,10 +377,28 @@ class StatusEffectManager:
         """
         modified_stats = base_stats.copy()
         
-        # Check for statuses that zero stats
-        zero_stats = self.has_status(unit_id, "Sleep") or self.has_status(unit_id, "Petrify")
+        # Check for statuses that modify stats
+        if unit_id in self.active_statuses:
+            for status in self.active_statuses[unit_id]:
+                for effect in status.effects:
+                    if effect["type"] == "SET_STAT":
+                        stat_name = effect["parameters"].get("stat")
+                        stat_value = effect["parameters"].get("value")
+                        if stat_name and stat_value is not None:
+                            from src.core_engine.data_provider import StatEnum
+                            # Convert string stat name to enum if needed
+                            if stat_name == "Avoid":
+                                modified_stats["AVOID"] = stat_value
+                            elif stat_name in StatEnum.__members__:
+                                modified_stats[getattr(StatEnum, stat_name)] = stat_value
+                            else:
+                                # Handle string stat names directly
+                                modified_stats[stat_name] = stat_value
         
-        # Apply stat modifications
+        # Legacy check for statuses that zero stats
+        zero_stats = self.has_status(unit_id, "Petrify")
+        
+        # Apply stat modifications for petrify
         if zero_stats:
             from src.core_engine.data_provider import StatEnum
             # Use the enum constants instead of string literals
@@ -349,53 +411,14 @@ class StatusEffectManager:
         
         return modified_stats
     
-    def can_perform_action(self, unit_id: str, action_type: str) -> bool:
-        """
-        Check if a unit can perform a specific action based on status effects.
-        
-        Args:
-            unit_id: The ID of the unit
-            action_type: The type of action to check
-            
-        Returns:
-            bool: True if the unit can perform the action, False otherwise
-            
-        Notes:
-            - Units with Sleep, Petrify, or Paralysis status cannot perform any actions
-            - Units with Berserk status cannot be controlled by the player
-            - Units with Silence status cannot perform Magic or Staff actions
-            - Other status effects may have specific action restrictions defined in their effects list
-        """
-        # Check for statuses that prevent all actions
-        if self.has_status(unit_id, "Sleep") or self.has_status(unit_id, "Petrify") or self.has_status(unit_id, "Paralysis"):
-            return False  # Cannot perform any action
-        
-        # Check for Berserk status
-        if self.has_status(unit_id, "Berserk"):
-            return False  # Cannot be controlled by the player
-        
-        # Check for Silence preventing magic/staff use
-        if self.has_status(unit_id, "Silence") and action_type in ["Magic", "Staff"]:
-            return False
-        
-        # Check if unit has any statuses
-        if unit_id not in self.active_statuses:
-            return True
-        
-        # Check specific action restrictions from effects list
-        for status in self.active_statuses[unit_id]:
-            for effect in status.effects:
-                if effect.get("type") == "ACTION_RESTRICTION":
-                    params = effect.get("parameters", {})
-                    if params.get("all", False):
-                        return False  # All actions restricted
-                    if params.get("action") == action_type and params.get("allowed") is False:
-                        return False
-        return True
+    # This method is replaced by the more comprehensive version below
     
     def can_perform_action(self, unit_id: str, action_type: str) -> bool:
         """
         Check if a unit can perform a specific action based on status effects.
+        
+        Sleep status prevents a unit from performing any action, regardless of the action type.
+        Other status effects like Silence may only prevent specific actions (e.g., Magic, Staff).
         
         Args:
             unit_id: The ID of the unit
@@ -430,7 +453,6 @@ class StatusEffectManager:
                             return False  # All actions restricted
                         if params.get("action") == action_type and params.get("allowed") is False:
                             return False
-        
         return True
         return True
     
@@ -447,6 +469,29 @@ class StatusEffectManager:
         # Check if unit has any statuses
         if unit_id not in self.active_statuses:
             return None
+            
+        def can_unit_act(self, unit_id: str) -> bool:
+            """
+            Check if a unit can perform actions based on status effects.
+            
+            Sleep status completely prevents a unit from taking any action during their turn.
+            The unit's turn is effectively skipped when they have the Sleep status.
+            
+            Args:
+                unit_id: The ID of the unit
+                
+            Returns:
+                True if the unit can act, False otherwise
+            """
+            # Check for statuses that prevent all actions
+            if self.has_status(unit_id, "Sleep") or self.has_status(unit_id, "Petrify") or self.has_status(unit_id, "Paralysis"):
+                return False  # Cannot perform any action
+            
+            # Check for Berserk status (AI-controlled, but can still act)
+            if self.has_status(unit_id, "Berserk"):
+                return True  # Can act, but under AI control
+            
+            return True  # No action-preventing statuses
         
         # Check for statuses that override AI
         for status in self.active_statuses[unit_id]:

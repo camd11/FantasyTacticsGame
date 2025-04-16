@@ -106,6 +106,10 @@ class CombatCalculator:
         """
         Calculate a unit's Avoid Rate based on attack speed, luck, and various bonuses.
         
+        Note: This calculation can be overridden by status effects. For example, the Sleep
+        status effect sets a unit's Avoid to 0 regardless of the calculation result.
+        The StatusEffectManager handles these overrides after this calculation.
+        
         Args:
             unit: The defending unit
             opponent: The attacking unit

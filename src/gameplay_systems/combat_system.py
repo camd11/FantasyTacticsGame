@@ -53,10 +53,11 @@ class CombatSystem:
         self.combatCalculator = None
         self.captureHandler = None
         self.staffHandler = None
+        self.statusEffectManager = None
     
     def initialize(self, gameStateManager_instance: GameStateManager, dataProvider_instance: DataProvider,
                    unitSystem_instance: UnitSystem, mapSystem_instance: MapSystem,
-                   inventorySystem_instance: InventorySystem) -> None:
+                   inventorySystem_instance: InventorySystem, statusEffectManager_instance=None) -> None:
         """
         Initialize the CombatSystem with the necessary dependencies.
         
@@ -66,12 +67,14 @@ class CombatSystem:
             unitSystem_instance: Instance of the UnitSystem
             mapSystem_instance: Instance of the MapSystem
             inventorySystem_instance: Instance of the InventorySystem
+            statusEffectManager_instance: Optional instance of the StatusEffectManager
         """
         self.gameStateManager = gameStateManager_instance
         self.dataProvider = dataProvider_instance
         self.unitSystem = unitSystem_instance
         self.mapSystem = mapSystem_instance
         self.inventorySystem = inventorySystem_instance
+        self.statusEffectManager = statusEffectManager_instance
         
         # Initialize sub-modules
         self.combatCalculator = CombatCalculator(
@@ -633,7 +636,7 @@ class CombatSystem:
                 actual_dmg = 0
             
             # Apply final damage
-            self.gameStateManager.apply_damage(target.id, actual_dmg)
+            self.gameStateManager.apply_damage(target.id, actual_dmg, False, self.statusEffectManager)
             strike_log['damage'] = actual_dmg
             
             # Check for Sol activation (attacker healing skill)
@@ -1488,7 +1491,7 @@ class CombatSystem:
                         pass
                     else:
                         # In real environment, apply the damage
-                        self.gameStateManager.apply_damage(result['target_id'], result['damage'])
+                        self.gameStateManager.apply_damage(result['target_id'], result['damage'], False, self.statusEffectManager)
                     
                     # Check if target died
                     if self.gameStateManager.get_unit(result['target_id']).current_hp <= 0:
@@ -1504,7 +1507,7 @@ class CombatSystem:
                     pass
                 else:
                     # In real environment, apply the damage
-                    self.gameStateManager.apply_damage(strike_result['target_id'], strike_result['damage'])
+                    self.gameStateManager.apply_damage(strike_result['target_id'], strike_result['damage'], False, self.statusEffectManager)
                 
                 # Check if target died
                 if self.gameStateManager.get_unit(strike_result['target_id']).current_hp <= 0:
@@ -1532,7 +1535,7 @@ class CombatSystem:
                             pass
                         else:
                             # In real environment, apply the damage
-                            self.gameStateManager.apply_damage(result['target_id'], result['damage'])
+                            self.gameStateManager.apply_damage(result['target_id'], result['damage'], False, self.statusEffectManager)
                         
                         # Check if target died
                         if self.gameStateManager.get_unit(result['target_id']).current_hp <= 0:
@@ -1548,7 +1551,7 @@ class CombatSystem:
                         pass
                     else:
                         # In real environment, apply the damage
-                        self.gameStateManager.apply_damage(strike_result['target_id'], strike_result['damage'])
+                        self.gameStateManager.apply_damage(strike_result['target_id'], strike_result['damage'], False, self.statusEffectManager)
                     
                     # Check if target died
                     if self.gameStateManager.get_unit(strike_result['target_id']).current_hp <= 0:
@@ -1576,7 +1579,7 @@ class CombatSystem:
                             pass
                         else:
                             # In real environment, apply the damage
-                            self.gameStateManager.apply_damage(result['target_id'], result['damage'])
+                            self.gameStateManager.apply_damage(result['target_id'], result['damage'], False, self.statusEffectManager)
                         
                         # Check if target died
                         if self.gameStateManager.get_unit(result['target_id']).current_hp <= 0:
@@ -1592,7 +1595,7 @@ class CombatSystem:
                         pass
                     else:
                         # In real environment, apply the damage
-                        self.gameStateManager.apply_damage(strike_result['target_id'], strike_result['damage'])
+                        self.gameStateManager.apply_damage(strike_result['target_id'], strike_result['damage'], False, self.statusEffectManager)
                     
                     # Check if target died
                     if self.gameStateManager.get_unit(strike_result['target_id']).current_hp <= 0:
@@ -1619,7 +1622,7 @@ class CombatSystem:
                                 pass
                             else:
                                 # In real environment, apply the damage
-                                self.gameStateManager.apply_damage(result['target_id'], result['damage'])
+                                self.gameStateManager.apply_damage(result['target_id'], result['damage'], False, self.statusEffectManager)
                             
                             # Check if target died
                             if self.gameStateManager.get_unit(result['target_id']).current_hp <= 0:
@@ -1635,7 +1638,7 @@ class CombatSystem:
                             pass
                         else:
                             # In real environment, apply the damage
-                            self.gameStateManager.apply_damage(strike_result['target_id'], strike_result['damage'])
+                            self.gameStateManager.apply_damage(strike_result['target_id'], strike_result['damage'], False, self.statusEffectManager)
                         
                         # Check if target died
                         if self.gameStateManager.get_unit(strike_result['target_id']).current_hp <= 0:
@@ -1664,7 +1667,7 @@ class CombatSystem:
                             pass
                         else:
                             # In real environment, apply the damage
-                            self.gameStateManager.apply_damage(result['target_id'], result['damage'])
+                            self.gameStateManager.apply_damage(result['target_id'], result['damage'], False, self.statusEffectManager)
                         
                         # Check if target died
                         if self.gameStateManager.get_unit(result['target_id']).current_hp <= 0:
@@ -1680,7 +1683,7 @@ class CombatSystem:
                         pass
                     else:
                         # In real environment, apply the damage
-                        self.gameStateManager.apply_damage(strike_result['target_id'], strike_result['damage'])
+                        self.gameStateManager.apply_damage(strike_result['target_id'], strike_result['damage'], False, self.statusEffectManager)
                     
                     # Check if target died
                     if self.gameStateManager.get_unit(strike_result['target_id']).current_hp <= 0:
@@ -1708,7 +1711,7 @@ class CombatSystem:
                                 pass
                             else:
                                 # In real environment, apply the damage
-                                self.gameStateManager.apply_damage(result['target_id'], result['damage'])
+                                self.gameStateManager.apply_damage(result['target_id'], result['damage'], False, self.statusEffectManager)
                             
                             # Check if target died
                             if self.gameStateManager.get_unit(result['target_id']).current_hp <= 0:
@@ -1724,7 +1727,7 @@ class CombatSystem:
                             pass
                         else:
                             # In real environment, apply the damage
-                            self.gameStateManager.apply_damage(strike_result['target_id'], strike_result['damage'])
+                            self.gameStateManager.apply_damage(strike_result['target_id'], strike_result['damage'], False, self.statusEffectManager)
                         
                         # Check if target died
                         if self.gameStateManager.get_unit(strike_result['target_id']).current_hp <= 0:
@@ -1752,7 +1755,7 @@ class CombatSystem:
                             pass
                         else:
                             # In real environment, apply the damage
-                            self.gameStateManager.apply_damage(result['target_id'], result['damage'])
+                            self.gameStateManager.apply_damage(result['target_id'], result['damage'], False, self.statusEffectManager)
                         
                         # Check if target died
                         if self.gameStateManager.get_unit(result['target_id']).current_hp <= 0:
@@ -1768,7 +1771,7 @@ class CombatSystem:
                         pass
                     else:
                         # In real environment, apply the damage
-                        self.gameStateManager.apply_damage(strike_result['target_id'], strike_result['damage'])
+                        self.gameStateManager.apply_damage(strike_result['target_id'], strike_result['damage'], False, self.statusEffectManager)
                     
                     # Check if target died
                     if self.gameStateManager.get_unit(strike_result['target_id']).current_hp <= 0:
@@ -1795,7 +1798,7 @@ class CombatSystem:
                                 pass
                             else:
                                 # In real environment, apply the damage
-                                self.gameStateManager.apply_damage(result['target_id'], result['damage'])
+                                self.gameStateManager.apply_damage(result['target_id'], result['damage'], False, self.statusEffectManager)
                             
                             # Check if target died
                             if self.gameStateManager.get_unit(result['target_id']).current_hp <= 0:
@@ -1811,7 +1814,7 @@ class CombatSystem:
                             pass
                         else:
                             # In real environment, apply the damage
-                            self.gameStateManager.apply_damage(strike_result['target_id'], strike_result['damage'])
+                            self.gameStateManager.apply_damage(strike_result['target_id'], strike_result['damage'], False, self.statusEffectManager)
                         
                         # Check if target died
                         if self.gameStateManager.get_unit(strike_result['target_id']).current_hp <= 0:

@@ -705,6 +705,11 @@ class TurnManager:
         """
         Check if a unit can act.
         
+        This method checks various conditions that might prevent a unit from acting:
+        - If the unit is exhausted (fatigue > HP)
+        - If the unit has status effects that prevent action (e.g., Sleep, Petrify, Paralysis)
+          Sleep specifically prevents all actions and causes the unit's turn to be skipped
+        
         Args:
             unit: Unit
             
