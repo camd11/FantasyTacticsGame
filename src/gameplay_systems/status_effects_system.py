@@ -112,6 +112,14 @@ class StatusEffectManager:
         - Causes mounted units to dismount
         - Can be cured by taking damage or when duration expires
         
+        For Petrify status specifically:
+        - Prevents the unit from taking any actions
+        - Sets the unit's Avoid stat to 0
+        - Increases Defense and Resistance by +10
+        - Sets combat stats (STR, MAG, SKL, SPD) to 0
+        - Can only be cured by Restore staff or equivalent status-clearing effect
+        - Does not expire over time
+        
         Args:
             unit_id: The ID of the target unit
             status_effect_name: The name of the status effect to apply
@@ -181,10 +189,6 @@ class StatusEffectManager:
         statuses_to_remove = []
         
         if status_name:  # Cure a specific status
-            # Special case: Petrify requires Kia Staff
-            if status_name == "Petrify" and cure_method != "Kia Staff":
-                return False
-            
             found = False
             for status in self.active_statuses[unit_id]:
                 if status.name == status_name and cure_method in status.cure_methods:
@@ -196,9 +200,6 @@ class StatusEffectManager:
                 return False  # Status not found or cure method invalid
         else:  # Cure all applicable statuses
             for status in self.active_statuses[unit_id]:
-                # Restore staff doesn't cure Petrify
-                if status.name == "Petrify" and cure_method == "Restore Staff":
-                    continue
                 if cure_method in status.cure_methods:
                     statuses_to_remove.append(status)
         
@@ -368,6 +369,11 @@ class StatusEffectManager:
         """
         Get modified stats based on active status effects.
         
+        For Petrify status specifically:
+        - Sets combat stats (STR, MAG, SKL, SPD) to 0
+        - Increases Defense and Resistance by +10
+        - Sets Avoid to 0 (handled in combat calculations)
+        
         Args:
             unit_id: The ID of the unit
             base_stats: The unit's base stats
@@ -377,11 +383,22 @@ class StatusEffectManager:
         """
         modified_stats = base_stats.copy()
         
+        # Special handling for Petrify status - zeroes out combat stats
+        if self.has_status(unit_id, "Petrify"):
+            from src.core_engine.data_provider import StatEnum
+            # Zero out combat stats but leave other stats unchanged
+            modified_stats[StatEnum.STR] = 0
+            modified_stats[StatEnum.MAG] = 0
+            modified_stats[StatEnum.SKL] = 0
+            modified_stats[StatEnum.SPD] = 0
+            modified_stats[StatEnum.DEF] = 0
+            # LUK, CON, MOV, and HP are not zeroed
+        
         # Check for statuses that modify stats
         if unit_id in self.active_statuses:
             for status in self.active_statuses[unit_id]:
                 for effect in status.effects:
-                    if effect["type"] == "SET_STAT":
+                    if effect["type"] == "SET_STAT" or effect["type"] == "STAT_OVERRIDE":
                         stat_name = effect["parameters"].get("stat")
                         stat_value = effect["parameters"].get("value")
                         if stat_name and stat_value is not None:
@@ -394,20 +411,21 @@ class StatusEffectManager:
                             else:
                                 # Handle string stat names directly
                                 modified_stats[stat_name] = stat_value
-        
-        # Legacy check for statuses that zero stats
-        zero_stats = self.has_status(unit_id, "Petrify")
-        
-        # Apply stat modifications for petrify
-        if zero_stats:
-            from src.core_engine.data_provider import StatEnum
-            # Use the enum constants instead of string literals
-            modified_stats[StatEnum.STR] = 0
-            modified_stats[StatEnum.MAG] = 0
-            modified_stats[StatEnum.SKL] = 0
-            modified_stats[StatEnum.SPD] = 0
-            modified_stats[StatEnum.DEF] = 0
-            # Note: Luck, Con, Mov, HP are generally not zeroed by these statuses
+                    elif effect["type"] == "STAT_MODIFIER_FLAT":
+                        stat_name = effect["parameters"].get("stat")
+                        stat_value = effect["parameters"].get("value", 0)
+                        if stat_name and stat_value is not None:
+                            # Convert string stat name to enum if needed
+                            if stat_name == "Def":
+                                modified_stats["DEF"] += stat_value
+                            elif stat_name == "Res":
+                                modified_stats["RES"] += stat_value
+                            elif stat_name in StatEnum.__members__:
+                                modified_stats[getattr(StatEnum, stat_name)] += stat_value
+                            else:
+                                # Handle string stat names directly
+                                if stat_name in modified_stats:
+                                    modified_stats[stat_name] += stat_value
         
         return modified_stats
     
@@ -418,6 +436,8 @@ class StatusEffectManager:
         Check if a unit can perform a specific action based on status effects.
         
         Sleep status prevents a unit from performing any action, regardless of the action type.
+        Petrify status prevents a unit from performing any action, regardless of the action type.
+        The unit's turn is immediately skipped if they are petrified.
         Other status effects like Silence may only prevent specific actions (e.g., Magic, Staff).
         
         Args:
@@ -447,13 +467,12 @@ class StatusEffectManager:
         if unit_id in self.active_statuses:
             for status in self.active_statuses[unit_id]:
                 for effect in status.effects:
-                    if effect.get("type") == "ACTION_RESTRICTION":
+                    if effect.get("type") == "ACTION_RESTRICTION" or effect.get("type") == "BLOCK_ACTION":
                         params = effect.get("parameters", {})
-                        if params.get("all", False):
+                        if params.get("all", False) or params.get("value") == "ALL":
                             return False  # All actions restricted
                         if params.get("action") == action_type and params.get("allowed") is False:
                             return False
-        return True
         return True
     
     def get_ai_override(self, unit_id: str) -> Optional[str]:
@@ -475,7 +494,8 @@ class StatusEffectManager:
             Check if a unit can perform actions based on status effects.
             
             Sleep status completely prevents a unit from taking any action during their turn.
-            The unit's turn is effectively skipped when they have the Sleep status.
+            Petrify status completely prevents a unit from taking any action during their turn.
+            The unit's turn is effectively skipped when they have these statuses.
             
             Args:
                 unit_id: The ID of the unit

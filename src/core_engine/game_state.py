@@ -572,8 +572,19 @@ class GameStateManager:
         logging.info(f"Unit {unit_id} moved from {old_position} to {new_position}")
         return True
     
-    def apply_damage(self, unit_id: str, damage: int, is_capture_attempt: bool = False) -> bool:
-        """Apply damage to a unit."""
+    def apply_damage(self, unit_id: str, damage: int, is_capture_attempt: bool = False, status_effect_manager=None) -> bool:
+        """
+        Apply damage to a unit and handle status effects.
+        
+        Args:
+            unit_id: ID of the unit
+            damage: Amount of damage to apply
+            is_capture_attempt: Whether this is a capture attempt
+            status_effect_manager: Optional StatusEffectManager to handle status effects
+            
+        Returns:
+            True if damage was applied successfully, False otherwise
+        """
         if not self.current_game_state:
             return False
         
@@ -583,6 +594,10 @@ class GameStateManager:
         
         unit.current_hp = max(0, unit.current_hp - damage)
         logging.info(f"Unit {unit_id} takes {damage} damage. HP: {unit.current_hp}/{unit.max_hp}")
+        
+        # Handle status effects that should be removed when taking damage
+        if status_effect_manager and damage > 0:
+            status_effect_manager.handle_damage_taken(unit_id, damage)
         
         if unit.current_hp <= 0:
             if is_capture_attempt:

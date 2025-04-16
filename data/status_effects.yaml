@@ -65,12 +65,24 @@ BERSERK:
 
 PETRIFY:
   name: "Petrify"
-  description: "Unit is turned to stone and cannot act."
+  description: "Unit is turned to stone, cannot act, and has altered defensive stats."
   duration_type: "UNTIL_CURED"
   default_duration: -1  # -1 means until cured
-  cure_methods: ["Kia Staff", "Chapter End"]
+  cure_methods: ["Restore Staff", "Chapter End"]
   icon: "petrify_icon"
   effects:
-    - type: "ACTION_RESTRICTION"
+    - type: "BLOCK_ACTION"
       parameters:
-        all: true  # Restricts all actions
+        value: "ALL"  # Restricts all actions
+    - type: "STAT_OVERRIDE"
+      parameters:
+        stat: "Avoid"
+        value: 0
+    - type: "STAT_MODIFIER_FLAT"
+      parameters:
+        stat: "Def"
+        value: 10
+    - type: "STAT_MODIFIER_FLAT"
+      parameters:
+        stat: "Res"
+        value: 10
