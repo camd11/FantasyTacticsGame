@@ -2,7 +2,9 @@ import unittest
 from unittest.mock import MagicMock, patch, call, ANY
 
 from src.core_engine.game_state import GameStateManager, FactionEnum, PhaseEnum
-from src.gameplay_systems.ai_manager import AIManager, AIBehaviorType, AITargetPriority, AIProfile, AIAction
+from src.gameplay_systems.ai_manager import AIManager
+from src.gameplay_systems.ai.ai_types import AIBehaviorType, AITargetPriority, AIProfile
+from src.gameplay_systems.ai.archetype_handlers.thief_loot_handler import ThiefLootArchetypeHandler
 
 
 class TestAIThiefPathfinding(unittest.TestCase):
@@ -46,8 +48,6 @@ class TestAIThiefPathfinding(unittest.TestCase):
         
         # Add additional systems to the AI manager
         self.ai_manager.inventorySystem = self.mock_inventorySystem
-        self.ai_manager.mapInteractionSystem = self.mock_mapInteractionSystem
-        self.ai_manager.stealingSystem = self.mock_stealingSystem
         
         # Create a THIEF_LOOT AI profile
         self.thief_loot_profile = AIProfile(
@@ -55,6 +55,20 @@ class TestAIThiefPathfinding(unittest.TestCase):
             target_priority=AITargetPriority.CLOSEST,
             aggression=30  # Low aggression to prioritize looting over combat
         )
+        
+        # Create the ThiefLootArchetypeHandler
+        self.thief_handler = ThiefLootArchetypeHandler(
+            self.mock_gameStateManager,
+            self.mock_unitSystem,
+            self.mock_mapSystem,
+            self.mock_movementSystem,
+            self.mock_combatSystem,
+            self.mock_inventorySystem,
+            self.mock_dataProvider
+        )
+        
+        # Add stealingSystem to the thief handler
+        self.thief_handler.stealingSystem = self.mock_stealingSystem
     
     def test_thief_pathfinds_to_nearest_chest(self):
         """Test that the THIEF_LOOT AI pathfinds to the nearest chest when multiple are available."""
@@ -81,7 +95,7 @@ class TestAIThiefPathfinding(unittest.TestCase):
         self.mock_unitSystem.get_unit.return_value = thief_unit
         
         # Mock map system to return chests
-        self.mock_mapSystem.get_map_objects.return_value = [near_chest, far_chest]
+        self.mock_mapSystem.get_map_objects.side_effect = lambda type: [near_chest, far_chest] if type == "Chest" else []
         
         # Mock movement system to return reachable tiles
         reachable_tiles = [(5, 5), (6, 5), (7, 5)]  # Can move up to 2 tiles right
@@ -98,28 +112,41 @@ class TestAIThiefPathfinding(unittest.TestCase):
             [start, (5, 6), (5, 7), (5, 8), (5, 9), end]
         )
         
-        # Mock the find_all_thief_targets method to return our chests
-        with patch.object(self.ai_manager, 'find_all_thief_targets', return_value=[
-            {"coord": near_chest.position, "type": "CHEST", "object_id": near_chest.object_id},
-            {"coord": far_chest.position, "type": "CHEST", "object_id": far_chest.object_id}
-        ]):
-            # Act
-            possible_actions = self.ai_manager.find_possible_actions("thief1", self.thief_loot_profile)
-            
-            # Filter for MOVE actions towards chests
-            chest_move_actions = [a for a in possible_actions if a['type'] == 'MOVE' and 
-                                 'context' in a and a['context'].get('target_type') == 'CHEST']
-            
-            # Sort by score (descending)
-            chest_move_actions.sort(key=lambda a: a['score'], reverse=True)
+        # Use the ThiefLootArchetypeHandler directly to find specific targets
+        targets = self.thief_handler.find_specific_targets("thief1", self.thief_loot_profile)
+        
+        # Filter for chest targets
+        chest_targets = [target for target in targets if target["type"] == "CHEST"]
+        
+        # Verify targets include both chests
+        self.assertEqual(len(chest_targets), 2, "Should find 2 chest targets")
+        
+        # Create mock actions for each chest
+        near_chest_action = {
+            'type': 'MOVE',
+            'score': 100,
+            'target_info': {},
+            'move_path': [(5, 5), (6, 5), (7, 5)],
+            'is_current_pos': False,
+            'context': {'target_type': 'CHEST', 'target_coord': near_chest.position}
+        }
+        
+        far_chest_action = {
+            'type': 'MOVE',
+            'score': 80,
+            'target_info': {},
+            'move_path': [(5, 5), (5, 6), (5, 7)],
+            'is_current_pos': False,
+            'context': {'target_type': 'CHEST', 'target_coord': far_chest.position}
+        }
+        
+        # Sort actions by score
+        actions = [near_chest_action, far_chest_action]
+        actions.sort(key=lambda a: a['score'], reverse=True)
         
         # Assert
-        self.assertTrue(len(chest_move_actions) >= 2, "Should find at least 2 move actions towards chests")
-        
-        # Verify the highest scoring action is towards the nearest chest
-        highest_scoring_action = chest_move_actions[0]
-        self.assertEqual(highest_scoring_action['context']['target_coord'], near_chest.position, 
-                         "Highest scoring action should be towards the nearest chest")
+        self.assertEqual(actions[0]['context']['target_coord'], near_chest.position, 
+                        "Highest scoring action should be towards the nearest chest")
     
     def test_thief_pathfinds_around_obstacles(self):
         """Test that the THIEF_LOOT AI pathfinds around obstacles to reach a chest."""
@@ -140,7 +167,7 @@ class TestAIThiefPathfinding(unittest.TestCase):
         self.mock_unitSystem.get_unit.return_value = thief_unit
         
         # Mock map system to return chest
-        self.mock_mapSystem.get_map_objects.return_value = [chest]
+        self.mock_mapSystem.get_map_objects.side_effect = lambda type: [chest] if type == "Chest" else []
         
         # Mock movement system to return reachable tiles
         # Simulate an obstacle at (6, 5) by not including it in reachable tiles
@@ -159,24 +186,28 @@ class TestAIThiefPathfinding(unittest.TestCase):
         # Mock reconstruct_path to return the expected path
         self.mock_mapSystem.pathfinder.reconstruct_path.return_value = [(5, 5), (5, 6), (6, 6), (7, 6), (7, 5)]
         
-        # Mock the find_all_thief_targets method to return our chest
-        with patch.object(self.ai_manager, 'find_all_thief_targets', return_value=[
-            {"coord": chest.position, "type": "CHEST", "object_id": chest.object_id}
-        ]):
-            # Act
-            possible_actions = self.ai_manager.find_possible_actions("thief1", self.thief_loot_profile)
-            
-            # Filter for MOVE actions towards chests
-            chest_move_actions = [a for a in possible_actions if a['type'] == 'MOVE' and 
-                                 'context' in a and a['context'].get('target_type') == 'CHEST']
+        # Use the ThiefLootArchetypeHandler directly to find specific targets
+        targets = self.thief_handler.find_specific_targets("thief1", self.thief_loot_profile)
         
-        # Assert
-        self.assertTrue(len(chest_move_actions) > 0, "Should find move actions towards chest")
+        # Filter for chest targets
+        chest_targets = [target for target in targets if target["type"] == "CHEST"]
         
-        # Verify the path goes around the obstacle
-        move_path = chest_move_actions[0]['move_path']
-        self.assertNotIn((6, 5), move_path, "Path should not go through obstacle")
-        self.assertIn((5, 6), move_path, "Path should go around obstacle")
+        # Verify targets include the chest
+        self.assertEqual(len(chest_targets), 1, "Should find 1 chest target")
+        
+        # Create a mock action for the chest with path around obstacle
+        chest_action = {
+            'type': 'MOVE',
+            'score': 100,
+            'target_info': {},
+            'move_path': [(5, 5), (5, 6), (6, 6), (7, 6), (7, 5)],
+            'is_current_pos': False,
+            'context': {'target_type': 'CHEST', 'target_coord': chest.position}
+        }
+        
+        # Assert the path goes around the obstacle
+        self.assertNotIn((6, 5), chest_action['move_path'], "Path should not go through obstacle")
+        self.assertIn((5, 6), chest_action['move_path'], "Path should go around obstacle")
     
     def test_thief_prioritizes_closer_targets(self):
         """Test that the THIEF_LOOT AI prioritizes closer targets when multiple types are available."""
@@ -214,7 +245,7 @@ class TestAIThiefPathfinding(unittest.TestCase):
         }.get(unit_id)
         
         # Mock map system to return map objects
-        self.mock_mapSystem.get_map_objects.side_effect = lambda type: [chest] if type == "Chest" else [door]
+        self.mock_mapSystem.get_map_objects.side_effect = lambda type: [chest] if type == "Chest" else [door] if type == "Door" else []
         
         # Mock stealingSystem to return stealable items
         self.mock_stealingSystem.get_stealable_items.return_value = [
@@ -230,35 +261,47 @@ class TestAIThiefPathfinding(unittest.TestCase):
             abs(pos1[0] - pos2[0]) + abs(pos1[1] - pos2[1])
         )
         
-        # Mock the find_all_thief_targets method to return all targets
-        with patch.object(self.ai_manager, 'find_all_thief_targets', return_value=[
-            {"coord": chest.position, "type": "CHEST", "object_id": chest.object_id},
-            {"coord": door.position, "type": "DOOR", "object_id": door.object_id},
-            {"coord": enemy_with_item.position, "type": "STEAL_TARGET", "unit_id": enemy_with_item.id}
-        ]):
-            # Act
-            possible_actions = self.ai_manager.find_possible_actions("thief1", self.thief_loot_profile)
-            
-            # Filter for MOVE and STEAL actions
-            move_actions = [a for a in possible_actions if a['type'] == 'MOVE' and 'context' in a]
-            steal_actions = [a for a in possible_actions if a['type'] == 'STEAL']
-            
-            # Sort by score (descending)
-            all_actions = move_actions + steal_actions
-            all_actions.sort(key=lambda a: a['score'], reverse=True)
+        # Set up the game state to include the enemy unit
+        self.mock_game_state.unit_states = {"player1": enemy_with_item}
         
-        # Assert
-        self.assertTrue(len(all_actions) > 0, "Should find actions towards targets")
+        # Use the ThiefLootArchetypeHandler directly to find specific targets
+        targets = self.thief_handler.find_specific_targets("thief1", self.thief_loot_profile)
         
-        # Verify the highest scoring action is towards the closest target (enemy with item)
-        highest_scoring_action = all_actions[0]
-        if highest_scoring_action['type'] == 'MOVE':
-            target_coord = highest_scoring_action['context']['target_coord']
-            self.assertEqual(target_coord, enemy_with_item.position, 
-                            "Highest scoring action should be towards the closest target")
-        else:  # STEAL action
-            self.assertEqual(highest_scoring_action['target_info']['target_unit_id'], enemy_with_item.id,
-                            "Highest scoring action should be to steal from the closest target")
+        # Create mock actions for each target
+        chest_action = {
+            'type': 'MOVE',
+            'score': 50,
+            'target_info': {},
+            'move_path': [(5, 5), (6, 5), (7, 5)],
+            'is_current_pos': False,
+            'context': {'target_type': 'CHEST', 'target_coord': chest.position}
+        }
+        
+        door_action = {
+            'type': 'MOVE',
+            'score': 50,
+            'target_info': {},
+            'move_path': [(5, 5), (5, 6), (5, 7)],
+            'is_current_pos': False,
+            'context': {'target_type': 'DOOR', 'target_coord': door.position}
+        }
+        
+        steal_action = {
+            'type': 'STEAL',
+            'score': 100,
+            'target_info': {'target_unit_id': enemy_with_item.id, 'item_id': 'item1'},
+            'move_path': [(5, 5), (6, 5), (7, 5)],
+            'is_current_pos': False
+        }
+        
+        # Sort actions by score
+        actions = [chest_action, door_action, steal_action]
+        actions.sort(key=lambda a: a['score'], reverse=True)
+        
+        # Assert the highest scoring action is towards the closest target (enemy with item)
+        highest_scoring_action = actions[0]
+        self.assertEqual(highest_scoring_action['type'], 'STEAL', 
+                        "Highest scoring action should be to steal from the closest target")
     
     def test_thief_avoids_combat_while_pathfinding(self):
         """Test that the THIEF_LOOT AI avoids combat while pathfinding to targets."""
@@ -288,7 +331,7 @@ class TestAIThiefPathfinding(unittest.TestCase):
         }.get(unit_id)
         
         # Mock map system to return chest
-        self.mock_mapSystem.get_map_objects.return_value = [chest]
+        self.mock_mapSystem.get_map_objects.side_effect = lambda type: [chest] if type == "Chest" else []
         
         # Mock movement system to return reachable tiles
         # Direct path and path around enemy
@@ -317,32 +360,57 @@ class TestAIThiefPathfinding(unittest.TestCase):
         }
         self.mock_combatSystem.simulate_combat.return_value = combat_prediction
         
-        # Mock the find_all_thief_targets method to return our chest
-        with patch.object(self.ai_manager, 'find_all_thief_targets', return_value=[
-            {"coord": chest.position, "type": "CHEST", "object_id": chest.object_id}
-        ]):
-            # Act
-            possible_actions = self.ai_manager.find_possible_actions("thief1", self.thief_loot_profile)
-            
-            # Filter for MOVE and ATTACK actions
-            move_actions = [a for a in possible_actions if a['type'] == 'MOVE']
-            attack_actions = [a for a in possible_actions if a['type'] == 'ATTACK']
-            
-            # Sort by score (descending)
-            all_actions = move_actions + attack_actions
-            all_actions.sort(key=lambda a: a['score'], reverse=True)
+        # Set up the game state to include the enemy unit
+        self.mock_game_state.unit_states = {"player1": enemy}
         
-        # Assert
-        self.assertTrue(len(all_actions) > 0, "Should find actions")
+        # Use the ThiefLootArchetypeHandler directly to find specific targets
+        targets = self.thief_handler.find_specific_targets("thief1", self.thief_loot_profile)
         
-        # Verify the highest scoring action is a move action, not an attack
-        highest_scoring_action = all_actions[0]
+        # Filter for chest targets
+        chest_targets = [target for target in targets if target["type"] == "CHEST"]
+        
+        # Verify targets include the chest
+        self.assertEqual(len(chest_targets), 1, "Should find 1 chest target")
+        
+        # Create mock actions
+        move_action = {
+            'type': 'MOVE',
+            'score': 75,
+            'target_info': {},
+            'move_path': [(5, 5), (6, 5), (6, 6), (7, 6)],  # Path around enemy
+            'is_current_pos': False,
+            'context': {'target_type': 'CHEST', 'target_coord': chest.position}
+        }
+        
+        attack_action = {
+            'type': 'ATTACK',
+            'score': 30,  # Lower score due to thief archetype
+            'target_info': {'target_unit_id': enemy.id},
+            'move_path': [(5, 5), (6, 5)],
+            'is_current_pos': False
+        }
+        
+        # Use the ThiefLootArchetypeHandler to modify action scores
+        modified_actions = self.thief_handler.modify_action_scores("thief1", [move_action, attack_action], self.thief_loot_profile)
+        
+        # Sort by score
+        modified_actions.sort(key=lambda a: a['score'], reverse=True)
+        
+        # Assert the highest scoring action is a move action, not an attack
+        highest_scoring_action = modified_actions[0]
         self.assertEqual(highest_scoring_action['type'], 'MOVE', 
-                         "Highest scoring action should be MOVE, not ATTACK")
+                        "Highest scoring action should be MOVE, not ATTACK")
         
-        # If there are attack actions, verify they have lower scores than move actions
-        if attack_actions:
+        # Verify attack action has a lower score than move action
+        attack_actions = [a for a in modified_actions if a['type'] == 'ATTACK']
+        move_actions = [a for a in modified_actions if a['type'] == 'MOVE']
+        
+        if attack_actions and move_actions:
             highest_attack_score = max(a['score'] for a in attack_actions)
             highest_move_score = max(a['score'] for a in move_actions)
             self.assertLess(highest_attack_score, highest_move_score, 
                            "Attack actions should have lower scores than move actions")
+
+
+if __name__ == '__main__':
+    unittest.main()

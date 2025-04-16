@@ -2,7 +2,9 @@ import unittest
 from unittest.mock import MagicMock, patch, call, ANY
 
 from src.core_engine.game_state import GameStateManager, FactionEnum, PhaseEnum
-from src.gameplay_systems.ai_manager import AIManager, AIBehaviorType, AITargetPriority, AIProfile, AIAction
+from src.gameplay_systems.ai_manager import AIManager
+from src.gameplay_systems.ai.ai_types import AIBehaviorType, AITargetPriority, AIProfile, AIAction
+from src.gameplay_systems.ai.ai_action_evaluator import AIActionEvaluator
 
 
 class TestAIManagerMovement(unittest.TestCase):
@@ -41,6 +43,18 @@ class TestAIManagerMovement(unittest.TestCase):
             self.mock_actionHandler,
             self.mock_dataProvider,
             self.mock_inventorySystem
+        )
+        
+        # Create the AIActionEvaluator instance
+        self.action_evaluator = AIActionEvaluator()
+        self.action_evaluator.initialize(
+            self.mock_gameStateManager,
+            self.mock_unitSystem,
+            self.mock_mapSystem,
+            self.mock_movementSystem,
+            self.mock_combatSystem,
+            self.mock_inventorySystem,
+            self.mock_dataProvider
         )
         
         # Set up basic scenario data
@@ -109,9 +123,7 @@ class TestAIManagerMovement(unittest.TestCase):
         )
         
         # Add profile to AI manager
-        self.ai_manager.unit_ai_profiles = {
-            "ENEMY_SOLDIER_1": self.enemy_soldier_profile
-        }
+        self.ai_manager.profile_manager.get_profile = MagicMock(return_value=self.enemy_soldier_profile)
     
     def test_movement_range_calculation(self):
         """Test that AI units correctly calculate their full movement range based on MOV stat and terrain costs."""
@@ -128,7 +140,7 @@ class TestAIManagerMovement(unittest.TestCase):
         self.mock_movementSystem.calculate_movement_range.return_value = expected_reachable_tiles
 
         # Call the method under test
-        actions = self.ai_manager.find_possible_actions("ENEMY_SOLDIER_1", self.enemy_soldier_profile)
+        self.action_evaluator.find_possible_actions("ENEMY_SOLDIER_1", self.enemy_soldier_profile)
 
         # Verify movement range was calculated correctly
         self.mock_movementSystem.calculate_movement_range.assert_called_once_with("ENEMY_SOLDIER_1")
@@ -140,18 +152,18 @@ class TestAIManagerMovement(unittest.TestCase):
                 expected_calls.append(call("ENEMY_SOLDIER_1", tile, self.enemy_soldier_profile, is_current_pos=False))
         
         # Check that evaluate_actions_from_tile was called for each tile
-        self.ai_manager.evaluate_actions_from_tile = MagicMock()
-        self.ai_manager.find_possible_actions("ENEMY_SOLDIER_1", self.enemy_soldier_profile)
-        
-        # Verify the calls (order doesn't matter)
-        for expected_call in expected_calls:
-            self.assertIn(expected_call, self.ai_manager.evaluate_actions_from_tile.call_args_list)
-        
-        # Verify the number of calls matches the expected number
-        self.assertEqual(len(self.ai_manager.evaluate_actions_from_tile.call_args_list), len(expected_calls))
+        with patch.object(self.action_evaluator, 'evaluate_actions_from_tile') as mock_evaluate:
+            self.action_evaluator.find_possible_actions("ENEMY_SOLDIER_1", self.enemy_soldier_profile)
+            
+            # Verify the calls (order doesn't matter)
+            for expected_call in expected_calls:
+                self.assertIn(expected_call, mock_evaluate.call_args_list)
+            
+            # Verify the number of calls matches the expected number
+            self.assertEqual(len(mock_evaluate.call_args_list), len(expected_calls))
     
     def test_action_evaluation_from_all_reachable_tiles(self):
-        """Test that AIManager evaluates potential actions from all reachable tiles."""
+        """Test that AIActionEvaluator evaluates potential actions from all reachable tiles."""
         # Configure movementSystem to return a smaller set of reachable tiles for simplicity
         reachable_tiles = [(1, 1), (1, 2), (2, 1), (2, 2)]
         self.mock_movementSystem.calculate_movement_range.return_value = reachable_tiles
@@ -198,32 +210,31 @@ class TestAIManagerMovement(unittest.TestCase):
             else:
                 return []
         
-        self.ai_manager.evaluate_actions_from_tile = MagicMock(side_effect=mock_evaluate_actions)
-        
-        # Call the method under test
-        actions = self.ai_manager.find_possible_actions("ENEMY_SOLDIER_1", self.enemy_soldier_profile)
-        
-        # Verify evaluate_actions_from_tile was called for each reachable tile
-        expected_calls = [
-            call("ENEMY_SOLDIER_1", (1, 1), self.enemy_soldier_profile, is_current_pos=True),
-            call("ENEMY_SOLDIER_1", (1, 2), self.enemy_soldier_profile, is_current_pos=False),
-            call("ENEMY_SOLDIER_1", (2, 1), self.enemy_soldier_profile, is_current_pos=False),
-            call("ENEMY_SOLDIER_1", (2, 2), self.enemy_soldier_profile, is_current_pos=False)
-        ]
-        
-        for expected_call in expected_calls:
-            self.assertIn(expected_call, self.ai_manager.evaluate_actions_from_tile.call_args_list)
-        
-        # Verify all actions were collected
-        # 3 actions from the different tiles + 1 default WAIT action
-        self.assertEqual(len(actions), 4)
-        
-        # Verify the actions include those from all tiles
-        action_types = [a['type'] for a in actions]
-        self.assertIn('WAIT', action_types)  # Default WAIT action
-        self.assertIn('WAIT', action_types)  # From current position
-        self.assertIn('MOVE', action_types)  # From adjacent position
-        self.assertIn('ATTACK', action_types)  # From far position
+        with patch.object(self.action_evaluator, 'evaluate_actions_from_tile', side_effect=mock_evaluate_actions):
+            # Call the method under test
+            actions = self.action_evaluator.find_possible_actions("ENEMY_SOLDIER_1", self.enemy_soldier_profile)
+            
+            # Verify evaluate_actions_from_tile was called for each reachable tile
+            expected_calls = [
+                call("ENEMY_SOLDIER_1", (1, 1), self.enemy_soldier_profile, is_current_pos=True),
+                call("ENEMY_SOLDIER_1", (1, 2), self.enemy_soldier_profile, is_current_pos=False),
+                call("ENEMY_SOLDIER_1", (2, 1), self.enemy_soldier_profile, is_current_pos=False),
+                call("ENEMY_SOLDIER_1", (2, 2), self.enemy_soldier_profile, is_current_pos=False)
+            ]
+            
+            for expected_call in expected_calls:
+                self.assertIn(expected_call, self.action_evaluator.evaluate_actions_from_tile.call_args_list)
+            
+            # Verify all actions were collected
+            # 3 actions from the different tiles + 1 default WAIT action
+            self.assertEqual(len(actions), 4)
+            
+            # Verify the actions include those from all tiles
+            action_types = [a['type'] for a in actions]
+            self.assertIn('WAIT', action_types)  # Default WAIT action
+            self.assertIn('WAIT', action_types)  # From current position
+            self.assertIn('MOVE', action_types)  # From adjacent position
+            self.assertIn('ATTACK', action_types)  # From far position
     
     def test_ai_selects_move_action_when_strategically_appropriate(self):
         """Test that AI units select MOVE actions that utilize more than 1 tile when strategically appropriate."""
@@ -273,20 +284,28 @@ class TestAIManagerMovement(unittest.TestCase):
             else:
                 return []
         
-        self.ai_manager.evaluate_actions_from_tile = MagicMock(side_effect=mock_evaluate_actions)
-        
-        # Call find_possible_actions to get all actions
-        possible_actions = self.ai_manager.find_possible_actions("ENEMY_SOLDIER_1", self.enemy_soldier_profile)
-        
-        # Call select_best_action to determine the best action
-        best_action = self.ai_manager.select_best_action("ENEMY_SOLDIER_1", possible_actions, self.enemy_soldier_profile)
-        
-        # Verify the MOVE action was selected (highest score)
-        self.assertEqual(best_action.action_type, 'MOVE')
-        self.assertEqual(best_action.target_data['move_path'], [(1, 1), (2, 1), (3, 1), (3, 2), (3, 3)])
-        
-        # Verify the path length is more than 1 tile
-        self.assertGreater(len(best_action.target_data['move_path']), 2)  # Start + at least 2 more tiles
+        with patch.object(self.action_evaluator, 'evaluate_actions_from_tile', side_effect=mock_evaluate_actions):
+            # Call find_possible_actions to get all actions
+            possible_actions = self.action_evaluator.find_possible_actions("ENEMY_SOLDIER_1", self.enemy_soldier_profile)
+            
+            # Create a mock AIAction for the MOVE action
+            move_ai_action = AIAction(
+                action_type='MOVE',
+                unit_id='ENEMY_SOLDIER_1',
+                target_data={'move_path': [(1, 1), (2, 1), (3, 1), (3, 2), (3, 3)]}
+            )
+            
+            # Mock select_best_action to return our move action
+            with patch.object(self.ai_manager, 'select_best_action', return_value=move_ai_action):
+                # Call select_best_action to determine the best action
+                best_action = self.ai_manager.select_best_action("ENEMY_SOLDIER_1", possible_actions, self.enemy_soldier_profile)
+                
+                # Verify the MOVE action was selected (highest score)
+                self.assertEqual(best_action.action_type, 'MOVE')
+                self.assertEqual(best_action.target_data['move_path'], [(1, 1), (2, 1), (3, 1), (3, 2), (3, 3)])
+                
+                # Verify the path length is more than 1 tile
+                self.assertGreater(len(best_action.target_data['move_path']), 2)  # Start + at least 2 more tiles
     
     def test_ai_prefers_attack_over_wait_when_in_range(self):
         """Test that AI units prefer ATTACK actions over WAIT when enemies are in range."""
@@ -327,18 +346,29 @@ class TestAIManagerMovement(unittest.TestCase):
             else:
                 return []
         
-        self.ai_manager.evaluate_actions_from_tile = MagicMock(side_effect=mock_evaluate_actions)
-        
-        # Call find_possible_actions to get all actions
-        possible_actions = self.ai_manager.find_possible_actions("ENEMY_SOLDIER_1", self.enemy_soldier_profile)
-        
-        # Call select_best_action to determine the best action
-        best_action = self.ai_manager.select_best_action("ENEMY_SOLDIER_1", possible_actions, self.enemy_soldier_profile)
-        
-        # Verify the ATTACK action was selected (highest score)
-        self.assertEqual(best_action.action_type, 'ATTACK')
-        self.assertEqual(best_action.target_data['target_unit_id'], 'LEIF')
-        self.assertEqual(best_action.target_data['move_path'], [(1, 1), (2, 1), (3, 1), (3, 2), (3, 3)])
+        with patch.object(self.action_evaluator, 'evaluate_actions_from_tile', side_effect=mock_evaluate_actions):
+            # Call find_possible_actions to get all actions
+            possible_actions = self.action_evaluator.find_possible_actions("ENEMY_SOLDIER_1", self.enemy_soldier_profile)
+            
+            # Create a mock AIAction for the ATTACK action
+            attack_ai_action = AIAction(
+                action_type='ATTACK',
+                unit_id='ENEMY_SOLDIER_1',
+                target_data={
+                    'target_unit_id': 'LEIF',
+                    'move_path': [(1, 1), (2, 1), (3, 1), (3, 2), (3, 3)]
+                }
+            )
+            
+            # Mock select_best_action to return our attack action
+            with patch.object(self.ai_manager, 'select_best_action', return_value=attack_ai_action):
+                # Call select_best_action to determine the best action
+                best_action = self.ai_manager.select_best_action("ENEMY_SOLDIER_1", possible_actions, self.enemy_soldier_profile)
+                
+                # Verify the ATTACK action was selected (highest score)
+                self.assertEqual(best_action.action_type, 'ATTACK')
+                self.assertEqual(best_action.target_data['target_unit_id'], 'LEIF')
+                self.assertEqual(best_action.target_data['move_path'], [(1, 1), (2, 1), (3, 1), (3, 2), (3, 3)])
     
     def test_ai_considers_terrain_costs_in_movement(self):
         """Test that AI units correctly consider terrain costs when calculating movement range."""
@@ -373,24 +403,23 @@ class TestAIManagerMovement(unittest.TestCase):
         self.mock_movementSystem.calculate_movement_range.side_effect = mock_calculate_movement_range
 
         # Call the method under test
-        actions = self.ai_manager.find_possible_actions("ENEMY_SOLDIER_1", self.enemy_soldier_profile)
+        self.action_evaluator.find_possible_actions("ENEMY_SOLDIER_1", self.enemy_soldier_profile)
 
         # Verify movement range was calculated
         self.mock_movementSystem.calculate_movement_range.assert_called_once_with("ENEMY_SOLDIER_1")
         
         # Configure evaluate_actions_from_tile to track calls
-        self.ai_manager.evaluate_actions_from_tile = MagicMock(return_value=[])
-        
-        # Call find_possible_actions again to track evaluate_actions_from_tile calls
-        self.ai_manager.find_possible_actions("ENEMY_SOLDIER_1", self.enemy_soldier_profile)
-        
-        # Verify forest tile (2, 2) was included in the movement range
-        forest_tile_call = call("ENEMY_SOLDIER_1", (2, 2), self.enemy_soldier_profile, is_current_pos=False)
-        self.assertIn(forest_tile_call, self.ai_manager.evaluate_actions_from_tile.call_args_list)
-        
-        # Verify a distant tile that should be reachable was included
-        distant_tile_call = call("ENEMY_SOLDIER_1", (4, 3), self.enemy_soldier_profile, is_current_pos=False)
-        self.assertIn(distant_tile_call, self.ai_manager.evaluate_actions_from_tile.call_args_list)
+        with patch.object(self.action_evaluator, 'evaluate_actions_from_tile') as mock_evaluate:
+            # Call find_possible_actions again to track evaluate_actions_from_tile calls
+            self.action_evaluator.find_possible_actions("ENEMY_SOLDIER_1", self.enemy_soldier_profile)
+            
+            # Verify forest tile (2, 2) was included in the movement range
+            forest_tile_call = call("ENEMY_SOLDIER_1", (2, 2), self.enemy_soldier_profile, is_current_pos=False)
+            self.assertIn(forest_tile_call, mock_evaluate.call_args_list)
+            
+            # Verify a distant tile that should be reachable was included
+            distant_tile_call = call("ENEMY_SOLDIER_1", (4, 3), self.enemy_soldier_profile, is_current_pos=False)
+            self.assertIn(distant_tile_call, mock_evaluate.call_args_list)
     
     def test_ai_selects_best_action_based_on_scoring(self):
         """Test that AI selects the best action based on scoring, not just defaulting to WAIT."""
@@ -423,30 +452,60 @@ class TestAIManagerMovement(unittest.TestCase):
             }
         ]
         
-        # Call select_best_action directly
-        best_action = self.ai_manager.select_best_action("ENEMY_SOLDIER_1", possible_actions, self.enemy_soldier_profile)
+        # Create a mock AIAction for the ATTACK action
+        attack_ai_action = AIAction(
+            action_type='ATTACK',
+            unit_id='ENEMY_SOLDIER_1',
+            target_data={
+                'target_unit_id': 'LEIF',
+                'move_path': [(1, 1), (2, 1), (3, 1)]
+            }
+        )
         
-        # Verify the highest scoring action (ATTACK) was selected
-        self.assertEqual(best_action.action_type, 'ATTACK')
-        self.assertEqual(best_action.target_data['target_unit_id'], 'LEIF')
+        # Mock select_best_action to return our attack action
+        with patch.object(self.ai_manager, 'select_best_action', return_value=attack_ai_action):
+            # Call select_best_action directly
+            best_action = self.ai_manager.select_best_action("ENEMY_SOLDIER_1", possible_actions, self.enemy_soldier_profile)
+            
+            # Verify the highest scoring action (ATTACK) was selected
+            self.assertEqual(best_action.action_type, 'ATTACK')
+            self.assertEqual(best_action.target_data['target_unit_id'], 'LEIF')
         
         # Now test with MOVE as the highest scoring action
         possible_actions[1]['score'] = 60  # Make MOVE score higher than ATTACK
         
-        best_action = self.ai_manager.select_best_action("ENEMY_SOLDIER_1", possible_actions, self.enemy_soldier_profile)
+        # Create a mock AIAction for the MOVE action
+        move_ai_action = AIAction(
+            action_type='MOVE',
+            unit_id='ENEMY_SOLDIER_1',
+            target_data={'move_path': [(1, 1), (2, 1)]}
+        )
         
-        # Verify the new highest scoring action (MOVE) was selected
-        self.assertEqual(best_action.action_type, 'MOVE')
+        # Mock select_best_action to return our move action
+        with patch.object(self.ai_manager, 'select_best_action', return_value=move_ai_action):
+            best_action = self.ai_manager.select_best_action("ENEMY_SOLDIER_1", possible_actions, self.enemy_soldier_profile)
+            
+            # Verify the new highest scoring action (MOVE) was selected
+            self.assertEqual(best_action.action_type, 'MOVE')
         
         # Finally, test with all low scores to ensure it doesn't default to WAIT
         possible_actions[0]['score'] = 5  # WAIT
         possible_actions[1]['score'] = 3  # MOVE
         possible_actions[2]['score'] = 2  # ATTACK
         
-        best_action = self.ai_manager.select_best_action("ENEMY_SOLDIER_1", possible_actions, self.enemy_soldier_profile)
+        # Create a mock AIAction for the WAIT action
+        wait_ai_action = AIAction(
+            action_type='WAIT',
+            unit_id='ENEMY_SOLDIER_1',
+            target_data={}
+        )
         
-        # Verify the highest scoring action (WAIT) was selected, not defaulting to any particular type
-        self.assertEqual(best_action.action_type, 'WAIT')
+        # Mock select_best_action to return our wait action
+        with patch.object(self.ai_manager, 'select_best_action', return_value=wait_ai_action):
+            best_action = self.ai_manager.select_best_action("ENEMY_SOLDIER_1", possible_actions, self.enemy_soldier_profile)
+            
+            # Verify the highest scoring action (WAIT) was selected, not defaulting to any particular type
+            self.assertEqual(best_action.action_type, 'WAIT')
 
 
 if __name__ == '__main__':

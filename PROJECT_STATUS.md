@@ -144,6 +144,9 @@
         - Prioritizes identifying and moving towards chests, locked doors, and enemies with stealable items.
         - Evaluates the utility of opening chests/doors or attempting to steal against standard actions.
         - Defaults to avoiding combat and moving towards map objectives when no thief-specific targets are available.
+- **Major AI System Refactoring:**
+    - Re-architected the monolithic `AIManager` into modular components (`AIProfileManager`, `AIActionEvaluator`, `AIActionScoring`, `ArchetypeHandlers`).
+    - Improved separation of concerns, testability, and extensibility.
 - **Testing & Integration:**
     - Resolved 6 integration test failures related to `DataProvider`, `Engine`, `EventHandler`, and `GameState`. All unit tests are now passing.
     - Created new test scenarios for:

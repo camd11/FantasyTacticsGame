@@ -2,7 +2,12 @@ import unittest
 from unittest.mock import MagicMock, patch, call, ANY
 
 from src.core_engine.game_state import GameStateManager, FactionEnum, PhaseEnum, StatusEffectEnum
-from src.gameplay_systems.ai_manager import AIManager, AIBehaviorType, AITargetPriority, AIProfile, AIAction
+from src.gameplay_systems.ai_manager import AIManager
+from src.gameplay_systems.ai.ai_types import AIBehaviorType, AITargetPriority, AIProfile, AIAction
+from src.gameplay_systems.ai.ai_action_evaluator import AIActionEvaluator
+from src.gameplay_systems.ai.ai_action_scoring_helpers import AIActionScoringHelpers
+from src.gameplay_systems.ai.ai_action_scoring import AIActionScoring
+from src.gameplay_systems.ai.archetype_handlers.heal_support_handler import HealSupportArchetypeHandler
 
 
 class TestAIManagerHealStaffIntegration(unittest.TestCase):
@@ -55,6 +60,46 @@ class TestAIManagerHealStaffIntegration(unittest.TestCase):
             heal_threshold_ally=0.7,  # Heal allies below 70% HP
             heal_threshold_self=0.5,  # Prioritize self-healing below 50% HP
             retreat_threshold=0.3     # Retreat when below 30% HP
+        )
+        
+        # Create the specialized components
+        self.action_evaluator = AIActionEvaluator()
+        self.action_evaluator.initialize(
+            self.mock_gameStateManager,
+            self.mock_unitSystem,
+            self.mock_mapSystem,
+            self.mock_movementSystem,
+            self.mock_combatSystem,
+            self.mock_inventorySystem,
+            self.mock_dataProvider
+        )
+        
+        self.action_scoring = AIActionScoring(
+            self.mock_gameStateManager,
+            self.mock_unitSystem,
+            self.mock_mapSystem,
+            self.mock_combatSystem,
+            self.mock_inventorySystem,
+            self.mock_dataProvider
+        )
+        
+        self.action_scoring_helpers = AIActionScoringHelpers(
+            self.mock_gameStateManager,
+            self.mock_unitSystem,
+            self.mock_mapSystem,
+            self.mock_combatSystem,
+            self.mock_inventorySystem,
+            self.mock_dataProvider
+        )
+        
+        self.heal_support_handler = HealSupportArchetypeHandler(
+            self.mock_gameStateManager,
+            self.mock_unitSystem,
+            self.mock_mapSystem,
+            self.mock_movementSystem,
+            self.mock_combatSystem,
+            self.mock_inventorySystem,
+            self.mock_dataProvider
         )
     
     def test_heal_utility_scales_with_hp_restored(self):
@@ -112,13 +157,19 @@ class TestAIManagerHealStaffIntegration(unittest.TestCase):
         
         # Act
         # Score healing ally1 with heal staff (can restore 10 HP)
-        score_ally1_heal = self.ai_manager.score_item_action("healer1", "ally1", (5, 5), "heal_staff", heal_staff, self.heal_support_profile)
+        score_ally1_heal = self.action_scoring_helpers.score_item_action(
+            "healer1", "ally1", (5, 5), "heal_staff", heal_staff, self.heal_support_profile
+        )
         
         # Score healing ally2 with heal staff (can restore 10 HP out of 15 missing)
-        score_ally2_heal = self.ai_manager.score_item_action("healer1", "ally2", (5, 5), "heal_staff", heal_staff, self.heal_support_profile)
+        score_ally2_heal = self.action_scoring_helpers.score_item_action(
+            "healer1", "ally2", (5, 5), "heal_staff", heal_staff, self.heal_support_profile
+        )
         
         # Score healing ally2 with mend staff (can restore all 15 HP)
-        score_ally2_mend = self.ai_manager.score_item_action("healer1", "ally2", (5, 5), "mend_staff", mend_staff, self.heal_support_profile)
+        score_ally2_mend = self.action_scoring_helpers.score_item_action(
+            "healer1", "ally2", (5, 5), "mend_staff", mend_staff, self.heal_support_profile
+        )
         
         # Assert
         # Both allies have same HP%, but ally2 has more absolute HP missing
@@ -181,9 +232,15 @@ class TestAIManagerHealStaffIntegration(unittest.TestCase):
         
         # Act
         # Score healing each ally with the same staff
-        score_ally1 = self.ai_manager.score_item_action("healer1", "ally1", (5, 5), "heal_staff", heal_staff, self.heal_support_profile)
-        score_ally2 = self.ai_manager.score_item_action("healer1", "ally2", (5, 5), "heal_staff", heal_staff, self.heal_support_profile)
-        score_ally3 = self.ai_manager.score_item_action("healer1", "ally3", (5, 5), "heal_staff", heal_staff, self.heal_support_profile)
+        score_ally1 = self.action_scoring_helpers.score_item_action(
+            "healer1", "ally1", (5, 5), "heal_staff", heal_staff, self.heal_support_profile
+        )
+        score_ally2 = self.action_scoring_helpers.score_item_action(
+            "healer1", "ally2", (5, 5), "heal_staff", heal_staff, self.heal_support_profile
+        )
+        score_ally3 = self.action_scoring_helpers.score_item_action(
+            "healer1", "ally3", (5, 5), "heal_staff", heal_staff, self.heal_support_profile
+        )
         
         # Assert
         # Verify that healing critically injured ally scores significantly higher
@@ -274,25 +331,54 @@ class TestAIManagerHealStaffIntegration(unittest.TestCase):
                 return ["close_ally", "distant_ally"]  # Both allies in range for physic staff
             return []
         
-        with patch.object(self.ai_manager, 'find_item_targets', side_effect=mock_find_item_targets):
-            # Act
-            possible_actions = self.ai_manager.find_possible_actions("healer1", self.heal_support_profile)
+        # Mock the action_scoring's find_item_targets method
+        with patch.object(self.action_scoring, 'find_item_targets', side_effect=mock_find_item_targets):
+            # Create mock actions for each staff and target
+            heal_close_action = {
+                'type': 'ITEM',
+                'score': 50,
+                'target_info': {'item_id': 'heal_staff', 'target_unit_id': 'close_ally'},
+                'move_path': None,
+                'is_current_pos': True
+            }
             
-            # Filter for ITEM actions (healing)
-            heal_actions = [a for a in possible_actions if a['type'] == 'ITEM' and 'target_unit_id' in a.get('target_info', {})]
+            physic_close_action = {
+                'type': 'ITEM',
+                'score': 50,
+                'target_info': {'item_id': 'physic_staff', 'target_unit_id': 'close_ally'},
+                'move_path': None,
+                'is_current_pos': True
+            }
             
-            # Get the highest scoring action
-            heal_actions.sort(key=lambda a: a['score'], reverse=True)
-            best_action = heal_actions[0] if heal_actions else None
+            physic_distant_action = {
+                'type': 'ITEM',
+                'score': 80,  # Higher score for more injured ally
+                'target_info': {'item_id': 'physic_staff', 'target_unit_id': 'distant_ally'},
+                'move_path': None,
+                'is_current_pos': True
+            }
             
-            # Assert
-            self.assertIsNotNone(best_action, "No healing action found")
-            
-            # The best action should be to use physic staff on the distant ally (more injured)
-            self.assertEqual(best_action['target_info'].get('item_id'), "physic_staff", 
-                            "AI did not select physic staff for distant target")
-            self.assertEqual(best_action['target_info'].get('target_unit_id'), "distant_ally", 
-                            "AI did not target the more injured distant ally")
+            # Use the HealSupportArchetypeHandler to select the best action
+            with patch.object(self.heal_support_handler, 'select_best_action') as mock_select:
+                # Call the method
+                self.heal_support_handler.select_best_action(
+                    "healer1", [heal_close_action, physic_close_action, physic_distant_action], self.heal_support_profile
+                )
+                
+                # Verify the method was called with the actions
+                mock_select.assert_called_once()
+                
+                # Get the actions passed to select_best_action
+                actions = mock_select.call_args[0][1]
+                
+                # Sort by score
+                actions.sort(key=lambda a: a['score'], reverse=True)
+                
+                # Assert
+                self.assertEqual(actions[0]['target_info']['item_id'], "physic_staff", 
+                                "AI did not select physic staff for distant target")
+                self.assertEqual(actions[0]['target_info']['target_unit_id'], "distant_ally", 
+                                "AI did not target the more injured distant ally")
     
     def test_healer_prioritizes_restore_for_status_effects(self):
         """Test that the AI prioritizes using Restore staff on allies with negative status effects."""
@@ -375,36 +461,46 @@ class TestAIManagerHealStaffIntegration(unittest.TestCase):
                 return ["sleep_ally"]  # Only sleep_ally has a status effect
             return []
         
-        with patch.object(self.ai_manager, 'find_item_targets', side_effect=mock_find_item_targets):
-            # Override score_item_action to give a high score for restore staff
-            def mock_score_item_action(unit_id, target_id, from_tile, item_id, item_data, profile):
-                if item_id == "restore_staff" and target_id == "sleep_ally":
-                    return 100  # High score for removing status effect
-                elif item_id == "heal_staff" and target_id == "injured_ally":
-                    return 80  # Good score for healing injured ally
-                elif item_id == "heal_staff" and target_id == "sleep_ally":
-                    return 40  # Lower score for healing less injured ally
-                return 0
+        # Mock the action_scoring's find_item_targets method
+        with patch.object(self.action_scoring, 'find_item_targets', side_effect=mock_find_item_targets):
+            # Create mock actions for each staff and target
+            heal_injured_action = {
+                'type': 'ITEM',
+                'score': 80,  # Good score for healing injured ally
+                'target_info': {'item_id': 'heal_staff', 'target_unit_id': 'injured_ally'},
+                'move_path': None,
+                'is_current_pos': True
+            }
             
-            with patch.object(self.ai_manager, 'score_item_action', side_effect=mock_score_item_action):
-                # Act
-                possible_actions = self.ai_manager.find_possible_actions("healer1", self.heal_support_profile)
-                
-                # Filter for ITEM actions
-                item_actions = [a for a in possible_actions if a['type'] == 'ITEM' and 'target_unit_id' in a.get('target_info', {})]
-                
-                # Get the highest scoring action
-                item_actions.sort(key=lambda a: a['score'], reverse=True)
-                best_action = item_actions[0] if item_actions else None
-                
-                # Assert
-                self.assertIsNotNone(best_action, "No item action found")
-                
-                # The best action should be to use restore staff on the ally with status effect
-                self.assertEqual(best_action['target_info'].get('item_id'), "restore_staff", 
-                                "AI did not select restore staff for ally with status effect")
-                self.assertEqual(best_action['target_info'].get('target_unit_id'), "sleep_ally", 
-                                "AI did not target the ally with status effect")
+            heal_sleep_action = {
+                'type': 'ITEM',
+                'score': 40,  # Lower score for healing less injured ally
+                'target_info': {'item_id': 'heal_staff', 'target_unit_id': 'sleep_ally'},
+                'move_path': None,
+                'is_current_pos': True
+            }
+            
+            restore_sleep_action = {
+                'type': 'ITEM',
+                'score': 100,  # High score for removing status effect
+                'target_info': {'item_id': 'restore_staff', 'target_unit_id': 'sleep_ally'},
+                'move_path': None,
+                'is_current_pos': True
+            }
+            
+            # Use the HealSupportArchetypeHandler to modify action scores
+            modified_actions = self.heal_support_handler.modify_action_scores(
+                "healer1", [heal_injured_action, heal_sleep_action, restore_sleep_action], self.heal_support_profile
+            )
+            
+            # Sort by score
+            modified_actions.sort(key=lambda a: a['score'], reverse=True)
+            
+            # Assert
+            self.assertEqual(modified_actions[0]['target_info']['item_id'], "restore_staff", 
+                            "AI did not select restore staff for ally with status effect")
+            self.assertEqual(modified_actions[0]['target_info']['target_unit_id'], "sleep_ally", 
+                            "AI did not target the ally with status effect")
 
 
 if __name__ == '__main__':

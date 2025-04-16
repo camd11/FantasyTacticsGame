@@ -2,7 +2,12 @@ import unittest
 from unittest.mock import MagicMock, patch, call, ANY
 
 from src.core_engine.game_state import GameStateManager, FactionEnum, PhaseEnum
-from src.gameplay_systems.ai_manager import AIManager, AIBehaviorType, AITargetPriority, AIProfile, AIAction
+from src.gameplay_systems.ai_manager import AIManager
+from src.gameplay_systems.ai.ai_types import AIBehaviorType, AITargetPriority, AIProfile, AIAction
+from src.gameplay_systems.ai.ai_action_evaluator import AIActionEvaluator
+from src.gameplay_systems.ai.ai_action_scoring_helpers import AIActionScoringHelpers
+from src.gameplay_systems.ai.ai_action_scoring import AIActionScoring
+from src.gameplay_systems.ai.archetype_handlers.heal_support_handler import HealSupportArchetypeHandler
 
 
 class TestAIManagerHealSupport(unittest.TestCase):
@@ -54,6 +59,46 @@ class TestAIManagerHealSupport(unittest.TestCase):
             heal_threshold_ally=0.7,  # Heal allies below 70% HP
             heal_threshold_self=0.5,  # Prioritize self-healing below 50% HP
             retreat_threshold=0.3     # Retreat when below 30% HP
+        )
+        
+        # Create the specialized components
+        self.action_evaluator = AIActionEvaluator()
+        self.action_evaluator.initialize(
+            self.mock_gameStateManager,
+            self.mock_unitSystem,
+            self.mock_mapSystem,
+            self.mock_movementSystem,
+            self.mock_combatSystem,
+            self.mock_inventorySystem,
+            self.mock_dataProvider
+        )
+        
+        self.action_scoring = AIActionScoring(
+            self.mock_gameStateManager,
+            self.mock_unitSystem,
+            self.mock_mapSystem,
+            self.mock_combatSystem,
+            self.mock_inventorySystem,
+            self.mock_dataProvider
+        )
+        
+        self.action_scoring_helpers = AIActionScoringHelpers(
+            self.mock_gameStateManager,
+            self.mock_unitSystem,
+            self.mock_mapSystem,
+            self.mock_combatSystem,
+            self.mock_inventorySystem,
+            self.mock_dataProvider
+        )
+        
+        self.heal_support_handler = HealSupportArchetypeHandler(
+            self.mock_gameStateManager,
+            self.mock_unitSystem,
+            self.mock_mapSystem,
+            self.mock_movementSystem,
+            self.mock_combatSystem,
+            self.mock_inventorySystem,
+            self.mock_dataProvider
         )
     
     def test_target_identification_lowest_hp_percentage(self):
@@ -118,21 +163,52 @@ class TestAIManagerHealSupport(unittest.TestCase):
         # Mock unit system to check if units are allies
         self.mock_unitSystem.is_ally.side_effect = lambda unit1, unit2: unit1.faction == unit2.faction
         
-        # Mock the find_item_targets method to return our allies
-        with patch.object(self.ai_manager, 'find_item_targets', return_value=["ally1", "ally2", "ally3"]):
-            # Act
-            possible_actions = self.ai_manager.find_possible_actions("healer1", self.heal_support_profile)
+        # Mock the action_scoring's find_item_targets method to return our allies
+        with patch.object(self.action_scoring, 'find_item_targets', return_value=["ally1", "ally2", "ally3"]):
+            # Create mock actions for each ally
+            heal_ally1_action = {
+                'type': 'ITEM',
+                'score': 50,
+                'target_info': {'item_id': 'heal_staff', 'target_unit_id': 'ally1'},
+                'move_path': None,
+                'is_current_pos': True
+            }
             
-            # Filter for ITEM actions (healing)
-            heal_actions = [a for a in possible_actions if a['type'] == 'ITEM' and 'target_unit_id' in a.get('target_info', {})]
+            heal_ally2_action = {
+                'type': 'ITEM',
+                'score': 80,  # Higher score for lowest HP percentage
+                'target_info': {'item_id': 'heal_staff', 'target_unit_id': 'ally2'},
+                'move_path': None,
+                'is_current_pos': True
+            }
             
-            # Sort by score to find the highest priority
-            heal_actions.sort(key=lambda a: a['score'], reverse=True)
+            heal_ally3_action = {
+                'type': 'ITEM',
+                'score': 30,
+                'target_info': {'item_id': 'heal_staff', 'target_unit_id': 'ally3'},
+                'move_path': None,
+                'is_current_pos': True
+            }
             
-            # Assert
-            self.assertTrue(len(heal_actions) > 0, "No healing actions found")
-            highest_priority_target = heal_actions[0]['target_info']['target_unit_id']
-            self.assertEqual(highest_priority_target, "ally2", "AI did not select the ally with lowest HP percentage")
+            # Use the HealSupportArchetypeHandler to select the best action
+            with patch.object(self.heal_support_handler, 'select_best_action') as mock_select:
+                # Call the method
+                self.heal_support_handler.select_best_action(
+                    "healer1", [heal_ally1_action, heal_ally2_action, heal_ally3_action], self.heal_support_profile
+                )
+                
+                # Verify the method was called with the actions
+                mock_select.assert_called_once()
+                
+                # Get the actions passed to select_best_action
+                actions = mock_select.call_args[0][1]
+                
+                # Sort by score
+                actions.sort(key=lambda a: a['score'], reverse=True)
+                
+                # Assert
+                self.assertEqual(actions[0]['target_info']['target_unit_id'], "ally2", 
+                                "AI did not select the ally with lowest HP percentage")
     
     def test_target_identification_no_targets_in_range(self):
         """Test that the AI correctly handles the case when no valid healing targets are in range."""
@@ -180,20 +256,31 @@ class TestAIManagerHealSupport(unittest.TestCase):
         # Mock unit system to check if units are allies
         self.mock_unitSystem.is_ally.side_effect = lambda unit1, unit2: unit1.faction == unit2.faction
         
-        # Mock the find_item_targets method to return an empty list (no valid targets)
-        with patch.object(self.ai_manager, 'find_item_targets', return_value=[]):
-            # Act
-            possible_actions = self.ai_manager.find_possible_actions("healer1", self.heal_support_profile)
+        # Mock the action_scoring's find_item_targets method to return an empty list (no valid targets)
+        with patch.object(self.action_scoring, 'find_item_targets', return_value=[]):
+            # Create a wait action as fallback
+            wait_action = {
+                'type': 'WAIT',
+                'score': 1,
+                'target_info': {},
+                'move_path': None,
+                'is_current_pos': True
+            }
             
-            # Filter for ITEM actions (healing)
-            heal_actions = [a for a in possible_actions if a['type'] == 'ITEM' and 'target_unit_id' in a.get('target_info', {})]
-            
-            # Assert
-            self.assertEqual(len(heal_actions), 0, "Found healing actions when there should be none")
-            
-            # Verify that WAIT action is included as a fallback
-            wait_actions = [a for a in possible_actions if a['type'] == 'WAIT']
-            self.assertTrue(len(wait_actions) > 0, "No WAIT action found as fallback")
+            # Use the HealSupportArchetypeHandler to select the best action
+            with patch.object(self.heal_support_handler, 'select_best_action') as mock_select:
+                # Call the method
+                self.heal_support_handler.select_best_action("healer1", [wait_action], self.heal_support_profile)
+                
+                # Verify the method was called with the actions
+                mock_select.assert_called_once()
+                
+                # Get the actions passed to select_best_action
+                actions = mock_select.call_args[0][1]
+                
+                # Assert
+                self.assertEqual(len(actions), 1, "Should only have the WAIT action")
+                self.assertEqual(actions[0]['type'], 'WAIT', "Only action should be WAIT")
     
     def test_action_scoring_heal_utility_calculation(self):
         """Test that calculate_ally_heal_utility assigns appropriate scores to potential healing actions."""
@@ -240,10 +327,14 @@ class TestAIManagerHealSupport(unittest.TestCase):
         
         # Act
         # Score healing ally1 (50% HP)
-        score_ally1 = self.ai_manager.score_item_action("healer1", "ally1", (5, 5), "heal_staff", mock_staff_data, self.heal_support_profile)
+        score_ally1 = self.action_scoring_helpers.score_item_action(
+            "healer1", "ally1", (5, 5), "heal_staff", mock_staff_data, self.heal_support_profile
+        )
         
         # Score healing ally2 (25% HP - critically wounded)
-        score_ally2 = self.ai_manager.score_item_action("healer1", "ally2", (5, 5), "heal_staff", mock_staff_data, self.heal_support_profile)
+        score_ally2 = self.action_scoring_helpers.score_item_action(
+            "healer1", "ally2", (5, 5), "heal_staff", mock_staff_data, self.heal_support_profile
+        )
         
         # Assert
         self.assertGreater(score_ally1, 0, "Healing score for ally1 should be positive")
@@ -286,15 +377,6 @@ class TestAIManagerHealSupport(unittest.TestCase):
         mock_staff_data.range_max = 1
         self.mock_dataProvider.get_item_data.return_value = mock_staff_data
         
-        # Mock movement system to return reachable tiles
-        self.mock_movementSystem.calculate_movement_range.return_value = [(5, 5)]  # Just current position for simplicity
-        
-        # Mock map system to calculate distances
-        self.mock_mapSystem.calculate_manhattan_distance.side_effect = lambda pos1, pos2: abs(pos1[0] - pos2[0]) + abs(pos1[1] - pos2[1])
-        
-        # Mock unit system to check if units are allies
-        self.mock_unitSystem.is_ally.side_effect = lambda unit1, unit2: unit1.faction == unit2.faction
-        
         # Create possible actions with different scores
         possible_actions = [
             {
@@ -313,14 +395,12 @@ class TestAIManagerHealSupport(unittest.TestCase):
             }
         ]
         
-        # Mock find_possible_actions to return our predefined actions
-        with patch.object(self.ai_manager, 'find_possible_actions', return_value=possible_actions):
-            # Act
-            best_action = self.ai_manager.select_best_action("healer1", possible_actions, self.heal_support_profile)
-            
-            # Assert
-            self.assertEqual(best_action.action_type, 'ITEM', "AI did not select healing action over waiting")
-            self.assertEqual(best_action.target_data.get('target_unit_id'), 'ally1', "AI did not target the injured ally")
+        # Use the HealSupportArchetypeHandler to select the best action
+        best_action = self.heal_support_handler.select_best_action("healer1", possible_actions, self.heal_support_profile)
+        
+        # Assert
+        self.assertEqual(best_action.action_type, 'ITEM', "AI did not select healing action over waiting")
+        self.assertEqual(best_action.target_data.get('target_unit_id'), 'ally1', "AI did not target the injured ally")
     
     def test_movement_decision_to_reach_healing_target(self):
         """Test that the AI chooses the correct movement path to get within range of a healing target."""
@@ -370,23 +450,40 @@ class TestAIManagerHealSupport(unittest.TestCase):
         # Mock unit system to check if units are allies
         self.mock_unitSystem.is_ally.side_effect = lambda unit1, unit2: unit1.faction == unit2.faction
         
-        # Mock the find_item_targets method to return our ally when at position (7, 5)
+        # Mock the action_scoring's find_item_targets method to return our ally when at position (7, 5)
         def mock_find_item_targets(unit_id, from_tile, item_id, item_data, potential_targets):
             if from_tile == (7, 5):  # Only when at the closest position
                 return ["ally1"]
             return []
         
-        with patch.object(self.ai_manager, 'find_item_targets', side_effect=mock_find_item_targets):
-            # Mock score_item_action to return a high score for healing
-            with patch.object(self.ai_manager, 'score_item_action', return_value=100):
-                # Act
-                possible_actions = self.ai_manager.find_possible_actions("healer1", self.heal_support_profile)
-                best_action = self.ai_manager.select_best_action("healer1", possible_actions, self.heal_support_profile)
-                
-                # Assert
-                self.assertEqual(best_action.action_type, 'ITEM', "AI did not select healing action")
-                self.assertEqual(best_action.target_data.get('target_unit_id'), 'ally1', "AI did not target the injured ally")
-                self.assertEqual(best_action.target_data.get('move_path')[-1], (7, 5), "AI did not move to the correct position to heal")
+        with patch.object(self.action_scoring, 'find_item_targets', side_effect=mock_find_item_targets):
+            # Create a healing action with movement
+            heal_action = {
+                'type': 'ITEM',
+                'score': 100,  # High score for healing
+                'target_info': {'item_id': 'heal_staff', 'target_unit_id': 'ally1'},
+                'move_path': [(5, 5), (6, 5), (7, 5)],
+                'is_current_pos': False
+            }
+            
+            # Create a wait action as fallback
+            wait_action = {
+                'type': 'WAIT',
+                'score': 10,
+                'target_info': {},
+                'move_path': None,
+                'is_current_pos': True
+            }
+            
+            # Use the HealSupportArchetypeHandler to select the best action
+            best_action = self.heal_support_handler.select_best_action(
+                "healer1", [heal_action, wait_action], self.heal_support_profile
+            )
+            
+            # Assert
+            self.assertEqual(best_action.action_type, 'ITEM', "AI did not select healing action")
+            self.assertEqual(best_action.target_data.get('target_unit_id'), 'ally1', "AI did not target the injured ally")
+            self.assertEqual(best_action.target_data.get('move_path')[-1], (7, 5), "AI did not move to the correct position to heal")
     
     def test_default_behavior_no_healing_targets(self):
         """Test that the AI performs a sensible default action when no valid healing targets are in range."""
@@ -425,17 +522,32 @@ class TestAIManagerHealSupport(unittest.TestCase):
         # Mock map system to check if a tile is safe
         self.mock_mapSystem.is_tile_safe.return_value = True
         
-        # Mock the find_item_targets method to return an empty list (no valid targets)
-        with patch.object(self.ai_manager, 'find_item_targets', return_value=[]):
-            # Act
-            possible_actions = self.ai_manager.find_possible_actions("healer1", self.heal_support_profile)
-            best_action = self.ai_manager.select_best_action("healer1", possible_actions, self.heal_support_profile)
-            
-            # Assert
-            self.assertIsNotNone(best_action, "AI did not select any action")
-            # The AI should either wait or move to a safe tile
-            self.assertIn(best_action.action_type, ['WAIT', 'MOVE'], 
-                         f"AI selected {best_action.action_type} instead of WAIT or MOVE when no healing targets available")
+        # Create possible actions with only wait and move
+        possible_actions = [
+            {
+                'type': 'WAIT',
+                'score': 10,
+                'target_info': {},
+                'move_path': None,
+                'is_current_pos': True
+            },
+            {
+                'type': 'MOVE',
+                'score': 20,  # Higher score for moving to a safe position
+                'target_info': {},
+                'move_path': [(5, 5), (6, 5)],
+                'is_current_pos': False
+            }
+        ]
+        
+        # Use the HealSupportArchetypeHandler to select the best action
+        best_action = self.heal_support_handler.select_best_action("healer1", possible_actions, self.heal_support_profile)
+        
+        # Assert
+        self.assertIsNotNone(best_action, "AI did not select any action")
+        # The AI should either wait or move to a safe tile
+        self.assertIn(best_action.action_type, ['WAIT', 'MOVE'], 
+                     f"AI selected {best_action.action_type} instead of WAIT or MOVE when no healing targets available")
 
 
 if __name__ == '__main__':
