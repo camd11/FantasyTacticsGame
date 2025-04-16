@@ -275,7 +275,7 @@ class TestDataProvider(unittest.TestCase):
         mock_path_exists.assert_any_call(os.path.join(self.mock_data_dir, "items.yaml"))
         
         # Check that yaml.safe_load was called for each file
-        self.assertEqual(mock_yaml_load.call_count, 9, "yaml.safe_load should be called 9 times")
+        self.assertEqual(mock_yaml_load.call_count, 10, "yaml.safe_load should be called 10 times")
 
     def test_get_unit_base_data(self):
         """Test that get_unit_base_data returns the correct unit data."""

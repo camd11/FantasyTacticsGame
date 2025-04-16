@@ -1,0 +1,147 @@
+# Berserk Status Effect Test Scenario
+# Tests the Berserk status effect which causes a unit to attack the nearest unit
+
+# Map definition
+id: berserk_status_test
+name: Berserk Status Test
+dimensions: [7, 7]
+terrain_grid:
+  - [P, P, P, P, P, P, P]
+  - [P, P, P, P, P, P, P]
+  - [P, P, P, P, P, P, P]
+  - [P, P, P, P, P, P, P]
+  - [P, P, P, P, P, P, P]
+  - [P, P, P, P, P, P, P]
+  - [P, P, P, P, P, P, P]
+
+# Unit placements
+placements:
+  # Player unit that will be berserked
+  - unit_id: LEIF
+    faction: PLAYER
+    position: [3, 3]
+    level: 10
+    start_inventory:
+      - IRON_SWORD
+    stats_override:
+      HP: 20
+      STR: 10
+      SKL: 10
+      SPD: 10
+      LUK: 10
+      DEF: 10
+
+  # Ally unit that could be targeted by berserked unit
+  - unit_id: FINN
+    faction: PLAYER
+    position: [1, 3]
+    level: 10
+    start_inventory:
+      - IRON_LANCE
+    stats_override:
+      HP: 20
+      STR: 8
+      SKL: 8
+      SPD: 8
+      LUK: 8
+      DEF: 8
+
+  # Enemy unit that could be targeted by berserked unit
+  - unit_id: ENEMY_FIGHTER
+    faction: ENEMY
+    position: [5, 3]
+    level: 10
+    start_inventory:
+      - IRON_AXE
+    stats_override:
+      HP: 20
+      STR: 8
+      SKL: 8
+      SPD: 8
+      LUK: 8
+      DEF: 8
+
+  # Enemy unit with berserk staff
+  - unit_id: ENEMY_MAGE
+    faction: ENEMY
+    position: [6, 6]
+    level: 10
+    start_inventory:
+      - BERSERK_STAFF
+    stats_override:
+      MAG: 15  # High magic to ensure berserk is applied
+      SKL: 15  # High skill to ensure berserk is applied
+
+# Status effect definitions
+status_effects:
+  - name: Berserk
+    description: "Unit uncontrollably attacks the nearest unit."
+    duration_type: "SCRIPTED_TURNS"
+    default_duration: 3
+    cure_methods: ["Restore Staff", "Chapter End"]
+    icon: "berserk_icon"
+    effects:
+      - type: "CONTROL_LOSS"
+        parameters:
+          target_type: "NEAREST"
+
+# Items for the scenario
+items:
+  BERSERK_STAFF:
+    id: "BERSERK_STAFF"
+    name: "Berserk Staff"
+    type: "STAFF"
+    weapon_type: "STAFF"
+    might: 0
+    hit: 60
+    crit: 0
+    weight: 6
+    range_min: 1
+    range_max: 10
+    max_durability: 3
+    required_rank: "B"
+    effects:
+      - type: "STATUS_ON_HIT"
+        parameters:
+          status: "Berserk"
+          chance: 100
+          duration: 3
+
+# Test assertions
+test_assertions:
+  # Test that berserk status is applied correctly
+  - type: STATUS_APPLIED
+    unit_id: LEIF
+    status: Berserk
+    expected:
+      duration: 3
+      source: "BERSERK_STAFF"
+
+  # Test that berserked unit attacks the nearest unit
+  - type: BERSERK_ATTACK
+    unit_id: LEIF
+    expected:
+      target_id: "FINN"  # Finn is closer than the enemy fighter
+      action: "attack"
+
+# Instructions for manual verification
+verification_instructions: |
+  To verify the Berserk status effect:
+  
+  1. Start the scenario and observe the initial positions of the units.
+  
+  2. Use the ENEMY_MAGE to cast the Berserk staff on LEIF.
+  
+  3. Once LEIF is berserked (indicated by a berserk icon or status message), end the turn.
+  
+  4. At the start of the next player phase, observe that:
+     - LEIF automatically attacks FINN (the nearest unit) without player input
+     - The player cannot control LEIF's actions
+  
+  5. End the turn again and observe that LEIF continues to act berserked in the next player phase.
+  
+  6. After 3 turns, verify that the berserk status wears off and LEIF can be controlled normally again.
+  
+  7. If available, use a Restore Staff to cure the berserk status and verify that LEIF can be controlled immediately.
+  
+  Note: The berserked unit should always target the nearest unit, regardless of whether it's an ally or enemy.

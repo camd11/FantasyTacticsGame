@@ -1,0 +1,70 @@
+# Status Effects Data for Fantasy Tactics Game
+# This file defines all status effects in the game
+
+POISON:
+  name: "Poison"
+  description: "Unit takes damage at the start of their turn."
+  duration_type: "UNTIL_CURED"
+  default_duration: -1  # -1 means until cured
+  cure_methods: ["Antitoxin", "Restore Staff", "Chapter End"]
+  icon: "poison_icon"
+  effects:
+    - type: "PERIODIC_DAMAGE"
+      parameters:
+        amount: 2  # Damage per turn
+
+SLEEP:
+  name: "Sleep"
+  description: "Unit cannot act until cured or attacked."
+  duration_type: "UNTIL_CURED"
+  default_duration: -1  # -1 means until cured
+  cure_methods: ["Restore Staff", "Chapter End", "Attacked"]
+  icon: "sleep_icon"
+  effects:
+    - type: "ACTION_RESTRICTION"
+      parameters:
+        all: true  # Restricts all actions
+
+SILENCE:
+  name: "Silence"
+  description: "Unit cannot use magic or staves."
+  duration_type: "SCRIPTED_TURNS"
+  default_duration: 3
+  cure_methods: ["Restore Staff", "Chapter End"]
+  icon: "silence_icon"
+  effects:
+    - type: "ACTION_RESTRICTION"
+      parameters:
+        action: "Magic"
+        allowed: false
+    - type: "ACTION_RESTRICTION"
+      parameters:
+        action: "Staff"
+        allowed: false
+
+BERSERK:
+  name: "Berserk"
+  description: "Unit uncontrollably attacks the nearest unit."
+  duration_type: "SCRIPTED_TURNS"
+  default_duration: 3
+  cure_methods: ["Restore Staff", "Chapter End"]
+  icon: "berserk_icon"
+  effects:
+    - type: "CONTROL_LOSS"
+      parameters:
+        target_type: "NEAREST"
+    - type: "ACTION_RESTRICTION"
+      parameters:
+        all: true  # Player cannot control the unit
+
+PETRIFY:
+  name: "Petrify"
+  description: "Unit is turned to stone and cannot act."
+  duration_type: "UNTIL_CURED"
+  default_duration: -1  # -1 means until cured
+  cure_methods: ["Kia Staff", "Chapter End"]
+  icon: "petrify_icon"
+  effects:
+    - type: "ACTION_RESTRICTION"
+      parameters:
+        all: true  # Restricts all actions

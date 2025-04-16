@@ -270,6 +270,7 @@ class DataProvider:
         self._skill_data: Dict[str, SkillData] = {}
         self._ballista_type_data: Dict[str, Any] = {}
         self._ballista_weapon_data: Dict[str, Any] = {}
+        self._status_effect_data: Dict[str, Any] = {}
         
         # Weapon triangle data (could be loaded from file but hardcoded for simplicity)
         self._weapon_triangle = {
@@ -319,6 +320,14 @@ class DataProvider:
                 os.path.join(data_directory, "terrain.yaml"),
                 TerrainData
             )
+            
+            # Load status effect data
+            status_effects_path = os.path.join(data_directory, "status_effects.yaml")
+            if os.path.exists(status_effects_path):
+                self._status_effect_data = self._load_yaml_or_json(status_effects_path)
+            else:
+                self._status_effect_data = {}
+                logging.warning(f"Status effects data file not found: {status_effects_path}")
             
             # Initialize empty collections for map data, placements, and events
             # These will be loaded on demand by get_map_data, get_unit_placements, and get_event_scripts
@@ -811,6 +820,18 @@ class DataProvider:
             SkillData object or None if not found
         """
         return self._skill_data.get(skill_id)
+    
+    def get_status_effect_data(self, status_effect_name: str) -> Optional[Any]:
+        """
+        Get the data for a specific status effect.
+        
+        Args:
+            status_effect_name: The name of the status effect
+            
+        Returns:
+            Status effect data or None if not found
+        """
+        return self._status_effect_data.get(status_effect_name)
     
     def get_ballista_type(self, ballista_type_id: str) -> Optional[Any]:
         """

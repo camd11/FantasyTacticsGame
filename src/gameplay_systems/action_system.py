@@ -28,14 +28,16 @@ class ActionSystem:
         self.combatSystem = None
         self.stealingSystem = None
         self.uiSystem = None
+        self.statusEffectManager = None
     
-    def initialize(self, gameStateManager_instance: GameStateManager, 
+    def initialize(self, gameStateManager_instance: GameStateManager,
                   dataProvider_instance: DataProvider,
                   mapSystem_instance,
                   inventorySystem_instance,
                   combatSystem_instance,
                   stealingSystem_instance=None,
-                  uiSystem_instance=None) -> None:
+                  uiSystem_instance=None,
+                  statusEffectManager_instance=None) -> None:
         """
         Initialize the ActionSystem with the necessary dependencies.
         
@@ -47,6 +49,7 @@ class ActionSystem:
             combatSystem_instance: Instance of the CombatSystem
             stealingSystem_instance: Instance of the StealingSystem (optional)
             uiSystem_instance: Instance of the UISystem (optional)
+            statusEffectManager_instance: Instance of the StatusEffectManager (optional)
         """
         self.gameStateManager = gameStateManager_instance
         self.dataProvider = dataProvider_instance
@@ -55,6 +58,7 @@ class ActionSystem:
         self.combatSystem = combatSystem_instance
         self.stealingSystem = stealingSystem_instance
         self.uiSystem = uiSystem_instance
+        self.statusEffectManager = statusEffectManager_instance
         logging.info("ActionSystem initialized.")
     
     def handle_steal_action(self, attacker, defender) -> bool:
@@ -159,6 +163,17 @@ class ActionSystem:
         # If unit has already acted, no actions are available
         if unit.has_acted_this_turn:
             return []
+        
+        # Check for status effects that prevent actions
+        if hasattr(self, 'statusEffectManager') and self.statusEffectManager:
+            # Check for Berserk status
+            if self.statusEffectManager.has_status(unit_id, "Berserk"):
+                return []  # No actions available for berserked units
+            
+            # Check for other action-preventing statuses
+            ai_override = self.statusEffectManager.get_ai_override(unit_id)
+            if ai_override:
+                return []  # No actions available for units with AI override
         
         available_actions = ["WAIT", "ATTACK"]  # Default actions
         
@@ -310,6 +325,37 @@ class ActionSystem:
         Returns:
             True if the action was executed successfully, False otherwise
         """
+        # Check if unit is berserked
+        if hasattr(self, 'statusEffectManager') and self.statusEffectManager:
+            if self.statusEffectManager.has_status(actor_id, "Berserk"):
+                logging.warning(f"Cannot execute action for berserked unit {actor_id}")
+                return False
+            
+            def can_unit_act(self, unit_id: str) -> bool:
+                """
+                Check if a unit can perform actions.
+                
+                Args:
+                    unit_id: ID of the unit
+                    
+                Returns:
+                    True if the unit can act, False otherwise
+                """
+                unit = self.gameStateManager.get_unit(unit_id)
+                if not unit:
+                    return False
+                
+                # Check if unit has already acted
+                if unit.has_acted:
+                    return False
+                
+                # Check for status effects that prevent actions
+                if hasattr(self, 'statusEffectManager') and self.statusEffectManager:
+                    if not self.statusEffectManager.can_perform_action(unit_id, "ANY"):
+                        return False
+                
+                return True
+        
         if action_type == "DANCE" and target_id:
             return self.execute_dance(actor_id, target_id)
         

@@ -4,8 +4,9 @@ Status Effects System Module
 This module implements the Status Effects system for the Fantasy Tactics Game,
 based on the mechanics found in Fire Emblem: Thracia 776.
 """
-
 from typing import Dict, List, Optional, Any, Union
+import logging
+
 
 
 class StatusEffectInstance:
@@ -85,6 +86,21 @@ class StatusEffectManager:
         self.data_provider = data_provider
         self.unit_system = unit_system
         self.event_system = event_system
+        
+        # Subscribe to relevant events
+        if event_system:
+            event_system.subscribe("TURN_START", self._handle_turn_start)
+            event_system.subscribe("TURN_END", self._handle_turn_end)
+    
+    def _handle_turn_start(self, event_data):
+        """Handle turn start events."""
+        if 'unit_id' in event_data:
+            self.process_turn_start_effects(event_data['unit_id'])
+    
+    def _handle_turn_end(self, event_data):
+        """Handle turn end events."""
+        if 'unit_id' in event_data:
+            self.process_turn_end(event_data['unit_id'])
     
     def apply_status(self, unit_id: str, status_effect_name: str, source=None, duration=None) -> bool:
         """
@@ -210,6 +226,7 @@ class StatusEffectManager:
         
         unit = self.game_state_manager.get_unit(unit_id)
         
+        # Process status effects that apply at turn start
         for status in self.active_statuses[unit_id]:
             if status.name == "Poison":
                 damage = status.get_effect_parameter("PERIODIC_DAMAGE", "amount", default=1)
@@ -217,6 +234,12 @@ class StatusEffectManager:
                 self.event_system.publish("POISON_DAMAGE", {
                     "unit": unit,
                     "damage": damage
+                })
+            elif status.name == "Berserk":
+                # Log that the unit is berserked
+                logging.info(f"Unit {unit_id} is berserked and will attack the nearest unit")
+                self.event_system.publish("BERSERK_ACTIVE", {
+                    "unit": unit
                 })
     
     def process_turn_end(self, unit_id: str):
@@ -230,20 +253,29 @@ class StatusEffectManager:
             return
         
         statuses_to_remove = []
+        unit = self.game_state_manager.get_unit(unit_id)
         
         for status in self.active_statuses[unit_id]:
             # Only decrement scripted duration statuses
             if status.duration_type == "SCRIPTED_TURNS":
                 if status.decrement_turn():
                     statuses_to_remove.append(status)
+                    # Log status expiry
+                    logging.info(f"Status {status.name} expired for unit {unit_id}")
         
         # Remove expired statuses
         for status in statuses_to_remove:
             self.active_statuses[unit_id].remove(status)
             self.event_system.publish("STATUS_EXPIRED", {
-                "unit": unit_id,
+                "unit_id": unit_id,
                 "status": status.name
             })
+            
+            # Special handling for Berserk expiry
+            if status.name == "Berserk":
+                self.event_system.publish("BERSERK_EXPIRED", {
+                    "unit_id": unit_id
+                })
         
         # Remove the unit entry if no statuses remain
         if unit_id in self.active_statuses and not self.active_statuses[unit_id]:
@@ -330,12 +362,17 @@ class StatusEffectManager:
             
         Notes:
             - Units with Sleep, Petrify, or Paralysis status cannot perform any actions
+            - Units with Berserk status cannot be controlled by the player
             - Units with Silence status cannot perform Magic or Staff actions
             - Other status effects may have specific action restrictions defined in their effects list
         """
         # Check for statuses that prevent all actions
         if self.has_status(unit_id, "Sleep") or self.has_status(unit_id, "Petrify") or self.has_status(unit_id, "Paralysis"):
             return False  # Cannot perform any action
+        
+        # Check for Berserk status
+        if self.has_status(unit_id, "Berserk"):
+            return False  # Cannot be controlled by the player
         
         # Check for Silence preventing magic/staff use
         if self.has_status(unit_id, "Silence") and action_type in ["Magic", "Staff"]:
@@ -354,7 +391,47 @@ class StatusEffectManager:
                         return False  # All actions restricted
                     if params.get("action") == action_type and params.get("allowed") is False:
                         return False
+        return True
+    
+    def can_perform_action(self, unit_id: str, action_type: str) -> bool:
+        """
+        Check if a unit can perform a specific action based on status effects.
         
+        Args:
+            unit_id: The ID of the unit
+            action_type: The type of action to check, or "ANY" to check if any action is possible
+            
+        Returns:
+            bool: True if the unit can perform the action, False otherwise
+        """
+        # Check for statuses that prevent all actions
+        if self.has_status(unit_id, "Sleep") or self.has_status(unit_id, "Petrify") or self.has_status(unit_id, "Paralysis"):
+            return False  # Cannot perform any action
+        
+        # Check for Berserk status
+        if self.has_status(unit_id, "Berserk"):
+            return False  # Cannot be controlled by the player
+        
+        # If checking for any action, we've already passed the main checks
+        if action_type == "ANY":
+            return True
+        
+        # Check for Silence preventing magic/staff use
+        if self.has_status(unit_id, "Silence") and action_type in ["Magic", "Staff"]:
+            return False
+        
+        # Check specific action restrictions from effects list
+        if unit_id in self.active_statuses:
+            for status in self.active_statuses[unit_id]:
+                for effect in status.effects:
+                    if effect.get("type") == "ACTION_RESTRICTION":
+                        params = effect.get("parameters", {})
+                        if params.get("all", False):
+                            return False  # All actions restricted
+                        if params.get("action") == action_type and params.get("allowed") is False:
+                            return False
+        
+        return True
         return True
     
     def get_ai_override(self, unit_id: str) -> Optional[str]:

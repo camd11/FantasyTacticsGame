@@ -119,7 +119,7 @@ class TestStatusEffectsSystem(unittest.TestCase):
         # Verify event was published for the expired status
         self.mock_event_system.publish.assert_called_once_with(
             "STATUS_EXPIRED", 
-            {"unit": unit_id, "status": mock_expiring_status.name}
+            {"unit_id": unit_id, "status": mock_expiring_status.name}
         )
 
     # TDD Anchor: test_status_effect_cleared_on_chapter_end
@@ -842,7 +842,7 @@ class TestStatusEffectsSystem(unittest.TestCase):
         # Verify event was published for the expired status
         self.mock_event_system.publish.assert_called_once_with(
             "STATUS_EXPIRED",
-            {"unit": unit_id, "status": mock_paralysis_status.name}
+            {"unit_id": unit_id, "status": mock_paralysis_status.name}
         )
         
     # Additional utility tests

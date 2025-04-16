@@ -23,10 +23,14 @@ class TurnManager:
         self.core_turn_manager = None
         self.gameStateManager = None
         self.statusEffectManager = None
+        self.actionSystem = None
+        self.berserkTurnLogic = None
     
-    def initialize(self, core_turn_manager: CoreTurnManager, 
+    def initialize(self, core_turn_manager: CoreTurnManager,
                   gameStateManager_instance: GameStateManager,
-                  statusEffectManager_instance=None):
+                  statusEffectManager_instance=None,
+                  actionSystem_instance=None,
+                  berserkTurnLogic_instance=None):
         """
         Initialize the TurnManager with the necessary dependencies.
         
@@ -34,10 +38,14 @@ class TurnManager:
             core_turn_manager: Instance of the core engine's TurnManager
             gameStateManager_instance: Instance of the GameStateManager
             statusEffectManager_instance: Instance of the StatusEffectManager (optional)
+            actionSystem_instance: Instance of the ActionSystem (optional)
+            berserkTurnLogic_instance: Instance of the BerserkTurnLogic (optional)
         """
         self.core_turn_manager = core_turn_manager
         self.gameStateManager = gameStateManager_instance
         self.statusEffectManager = statusEffectManager_instance
+        self.actionSystem = actionSystem_instance
+        self.berserkTurnLogic = berserkTurnLogic_instance
         logging.info("Gameplay TurnManager initialized.")
     
     def start_player_phase(self) -> bool:
@@ -74,3 +82,47 @@ class TurnManager:
             return False
         
         return self.statusEffectManager.has_action_preventing_status(unit_id)
+        
+    def process_unit_turn(self, unit_id: str) -> bool:
+        """
+        Process a unit's turn based on its status and faction.
+        
+        Args:
+            unit_id: ID of the unit
+            
+        Returns:
+            True if the turn was processed successfully, False otherwise
+        """
+        # Check if unit exists
+        unit = self.gameStateManager.get_unit(unit_id)
+        if not unit:
+            logging.error(f"TurnManager: Unit {unit_id} not found")
+            return False
+        
+        # Check for status effects that override normal turn processing
+        if self.statusEffectManager:
+            ai_override = self.statusEffectManager.get_ai_override(unit_id)
+            
+            if ai_override == "BERSERK_AI" and self.berserkTurnLogic:
+                # Process berserk turn
+                logging.info(f"TurnManager: Processing berserk turn for unit {unit_id}")
+                return self.berserkTurnLogic.execute_berserk_turn(unit_id)
+            elif ai_override == "NO_ACTION_AI":
+                # Unit cannot act due to status effect (Sleep, Petrify, etc.)
+                logging.info(f"TurnManager: Unit {unit_id} cannot act due to status effect")
+                if self.actionSystem:
+                    self.actionSystem.mark_unit_action_complete(unit_id)
+                return True
+        
+        # Process normal turn based on faction
+        if unit.faction == FactionEnum.PLAYER:
+            # Player units are controlled by the player, so we don't do anything here
+            # The player will control the unit through the UI
+            return True
+        else:
+            # AI-controlled units (Enemy, NPC)
+            # This would normally call the AI system to process the turn
+            # For now, just mark the unit as having acted
+            if self.actionSystem:
+                self.actionSystem.mark_unit_action_complete(unit_id)
+            return True
