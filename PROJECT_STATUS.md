@@ -8,6 +8,7 @@
     - Fatigue System
     - Event System
     - Status Effects System
+        - Implemented core status effects (Poison, Sleep, Petrify, Paralysis, Berserk, Silence).
     - Dismounting System
     - Support/Leadership System
     - Fog of War System

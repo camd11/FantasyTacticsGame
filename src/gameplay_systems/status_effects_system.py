@@ -327,6 +327,11 @@ class StatusEffectManager:
             
         Returns:
             bool: True if the unit can perform the action, False otherwise
+            
+        Notes:
+            - Units with Sleep, Petrify, or Paralysis status cannot perform any actions
+            - Units with Silence status cannot perform Magic or Staff actions
+            - Other status effects may have specific action restrictions defined in their effects list
         """
         # Check for statuses that prevent all actions
         if self.has_status(unit_id, "Sleep") or self.has_status(unit_id, "Petrify") or self.has_status(unit_id, "Paralysis"):
