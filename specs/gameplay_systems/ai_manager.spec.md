@@ -2,6 +2,8 @@
 
 **Version:** 2.0
 **Date:** 2025-04-16
+**Status:** Implemented (Thief AI section)
+
 
 ## 1. Introduction
 

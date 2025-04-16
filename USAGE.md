@@ -2,17 +2,37 @@
 
 This document explains how to run the Fantasy Tactics Game and interact with it.
 
-## Running the Game
+## Setup
 
-*(Instructions on how to start the game need to be added here. Assuming a standard Python execution for now.)*
+1.  Ensure you have Python 3 installed.
+2.  Clone the repository.
+3.  Navigate to the project's root directory in your terminal.
+4.  It's recommended to create and activate a virtual environment:
+    ```bash
+    python -m venv venv
+    # On Windows:
+    .\venv\Scripts\activate
+    # On macOS/Linux:
+    source venv/bin/activate
+    ```
+5.  Install the required dependencies:
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+## Running the Game
 
 To run the game, execute the main script from the project's root directory:
 
 ```bash
 python src/main.py
 ```
+### Command-Line Arguments
 
-*(Add any specific command-line arguments or setup steps if necessary, e.g., selecting a chapter or mode)*
+*   `--ai-vs-ai`: Runs the game in AI vs AI mode for testing purposes.
+*   `--ascii-display`: Enables an optional ASCII representation of the map in the console during gameplay.
+
+*(Note: Additional arguments for chapter selection might be added later.)*
 
 ## Interactive Player Input
 
