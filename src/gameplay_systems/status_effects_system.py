@@ -6,6 +6,7 @@ based on the mechanics found in Fire Emblem: Thracia 776.
 """
 from typing import Dict, List, Optional, Any, Union
 import logging
+from src.core_engine.data_provider import StatEnum
 
 
 
@@ -383,47 +384,42 @@ class StatusEffectManager:
         """
         modified_stats = base_stats.copy()
         
-        # Special handling for Petrify status - zeroes out combat stats
-        if self.has_status(unit_id, "Petrify"):
-            from src.core_engine.data_provider import StatEnum
-            # Zero out combat stats but leave other stats unchanged
-            modified_stats[StatEnum.STR] = 0
-            modified_stats[StatEnum.MAG] = 0
-            modified_stats[StatEnum.SKL] = 0
-            modified_stats[StatEnum.SPD] = 0
-            modified_stats[StatEnum.DEF] = 0
-            # LUK, CON, MOV, and HP are not zeroed
-        
-        # Check for statuses that modify stats
+        # Apply status effects
         if unit_id in self.active_statuses:
+            # Special handling for Petrify status - zeroes out combat stats first
+            if self.has_status(unit_id, "Petrify"):
+                # Zero out combat stats but leave other stats unchanged
+                modified_stats[StatEnum.STR] = 0
+                modified_stats[StatEnum.MAG] = 0
+                modified_stats[StatEnum.SKL] = 0
+                modified_stats[StatEnum.SPD] = 0
+                modified_stats[StatEnum.DEF] = 0  # Note: Petrify might also add flat DEF later
+                # LUK, CON, MOV, and HP are not zeroed by Petrify's zeroing effect
+            # Apply other stat modifications
             for status in self.active_statuses[unit_id]:
                 for effect in status.effects:
                     if effect["type"] == "SET_STAT" or effect["type"] == "STAT_OVERRIDE":
                         stat_name = effect["parameters"].get("stat")
                         stat_value = effect["parameters"].get("value")
                         if stat_name and stat_value is not None:
-                            from src.core_engine.data_provider import StatEnum
                             # Convert string stat name to enum if needed
-                            if stat_name == "Avoid":
-                                modified_stats["AVOID"] = stat_value
-                            elif stat_name in StatEnum.__members__:
-                                modified_stats[getattr(StatEnum, stat_name)] = stat_value
-                            else:
-                                # Handle string stat names directly
-                                modified_stats[stat_name] = stat_value
+                            # Use StatEnum if possible, otherwise use string key
+                            try:
+                                stat_enum = StatEnum[stat_name.upper()]
+                                modified_stats[stat_enum] = stat_value
+                            except KeyError:
+                                modified_stats[stat_name] = stat_value # Handle non-enum stats like AVOID
                     elif effect["type"] == "STAT_MODIFIER_FLAT":
                         stat_name = effect["parameters"].get("stat")
                         stat_value = effect["parameters"].get("value", 0)
                         if stat_name and stat_value is not None:
-                            # Convert string stat name to enum if needed
-                            if stat_name == "Def":
-                                modified_stats["DEF"] += stat_value
-                            elif stat_name == "Res":
-                                modified_stats["RES"] += stat_value
-                            elif stat_name in StatEnum.__members__:
-                                modified_stats[getattr(StatEnum, stat_name)] += stat_value
-                            else:
-                                # Handle string stat names directly
+                            # Use StatEnum if possible, otherwise use string key
+                            try:
+                                stat_enum = StatEnum[stat_name.upper()]
+                                if stat_enum in modified_stats: # Ensure stat exists before modifying
+                                     modified_stats[stat_enum] += stat_value
+                            except KeyError:
+                                # Handle non-enum stats like AVOID, DEF, RES directly if needed
                                 if stat_name in modified_stats:
                                     modified_stats[stat_name] += stat_value
         
@@ -447,32 +443,37 @@ class StatusEffectManager:
         Returns:
             bool: True if the unit can perform the action, False otherwise
         """
-        # Check for statuses that prevent all actions
-        if self.has_status(unit_id, "Sleep") or self.has_status(unit_id, "Petrify") or self.has_status(unit_id, "Paralysis"):
-            return False  # Cannot perform any action
+        # Statuses that prevent any player-controlled action
+        action_blocking_statuses = {"Sleep", "Petrify", "Paralysis", "Berserk"}
         
-        # Check for Berserk status
-        if self.has_status(unit_id, "Berserk"):
-            return False  # Cannot be controlled by the player
+        active_unit_statuses = self.get_active_statuses(unit_id)
+        unit_status_names = {status.name for status in active_unit_statuses}
+
+        if any(status in unit_status_names for status in action_blocking_statuses):
+             return False # Cannot perform any player-controlled action
         
         # If checking for any action, we've already passed the main checks
         if action_type == "ANY":
             return True
         
         # Check for Silence preventing magic/staff use
-        if self.has_status(unit_id, "Silence") and action_type in ["Magic", "Staff"]:
+        # Check for Silence preventing magic/staff use
+        if "Silence" in unit_status_names and action_type in ["Magic", "Staff"]:
             return False
         
         # Check specific action restrictions from effects list
-        if unit_id in self.active_statuses:
-            for status in self.active_statuses[unit_id]:
-                for effect in status.effects:
-                    if effect.get("type") == "ACTION_RESTRICTION" or effect.get("type") == "BLOCK_ACTION":
-                        params = effect.get("parameters", {})
-                        if params.get("all", False) or params.get("value") == "ALL":
-                            return False  # All actions restricted
-                        if params.get("action") == action_type and params.get("allowed") is False:
-                            return False
+        # Check specific action restrictions from effects list
+        for status in active_unit_statuses:
+            for effect in status.effects:
+                effect_type = effect.get("type")
+                if effect_type == "ACTION_RESTRICTION" or effect_type == "BLOCK_ACTION":
+                    params = effect.get("parameters", {})
+                    # Check if this effect blocks all actions
+                    if params.get("all", False) or params.get("value") == "ALL":
+                        return False
+                    # Check if this effect blocks the specific action type
+                    if params.get("action") == action_type and params.get("allowed") is False:
+                        return False
         return True
     
     def get_ai_override(self, unit_id: str) -> Optional[str]:
@@ -489,30 +490,8 @@ class StatusEffectManager:
         if unit_id not in self.active_statuses:
             return None
             
-        def can_unit_act(self, unit_id: str) -> bool:
-            """
-            Check if a unit can perform actions based on status effects.
-            
-            Sleep status completely prevents a unit from taking any action during their turn.
-            Petrify status completely prevents a unit from taking any action during their turn.
-            The unit's turn is effectively skipped when they have these statuses.
-            
-            Args:
-                unit_id: The ID of the unit
-                
-            Returns:
-                True if the unit can act, False otherwise
-            """
-            # Check for statuses that prevent all actions
-            if self.has_status(unit_id, "Sleep") or self.has_status(unit_id, "Petrify") or self.has_status(unit_id, "Paralysis"):
-                return False  # Cannot perform any action
-            
-            # Check for Berserk status (AI-controlled, but can still act)
-            if self.has_status(unit_id, "Berserk"):
-                return True  # Can act, but under AI control
-            
-            return True  # No action-preventing statuses
-        
+        # The nested function `can_unit_act` was unused and its logic is covered
+        # by the loop below and the `can_perform_action` method. Removed it.
         # Check for statuses that override AI
         for status in self.active_statuses[unit_id]:
             if status.name == "Berserk":

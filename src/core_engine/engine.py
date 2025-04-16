@@ -686,34 +686,51 @@ class EngineCore:
             logging.warning(f"Unknown phase: {phase}, defaulting to PLAYER faction")
             return FactionEnum.PLAYER
             
-    def _process_ai_actions_for_player_units(self):
+    def _process_ai_actions_for_faction(self, faction_units, faction_name):
         """
-        Process AI actions for player units in AI vs AI mode.
+        Process AI actions for units of a specific faction.
+        
+        Args:
+            faction_units: List of units belonging to the faction
+            faction_name: Name of the faction for logging purposes
         """
-        logging.info("=== AI vs AI mode: Processing AI actions for PLAYER units ===")
+        logging.info(f"=== Processing AI actions for {faction_name} units ===")
         
         # Determine unit order
-        ordered_units = self._sort_units_for_ai(self.active_faction_units)
+        ordered_units = self._sort_units_for_ai(faction_units)
         
-        logging.info(f"Processing {len(ordered_units)} player units in AI vs AI mode")
-        for i, unit in enumerate(ordered_units):
-            logging.info(f"Player unit {i+1}: {unit.name} at {unit.position}, has_acted={unit.has_acted}")
+        logging.info(f"Processing {len(ordered_units)} {faction_name} units")
+        
+        # Log detailed unit information for player units in AI vs AI mode
+        if faction_name == "PLAYER":
+            for i, unit in enumerate(ordered_units):
+                logging.info(f"{faction_name} unit {i+1}: {unit.name} at {unit.position}, has_acted={unit.has_acted}")
         
         for unit in ordered_units:
-            logging.info(f"Processing unit {unit.name}, has_acted={unit.has_acted}, game_over={self.game_over}, victory={self.victory}")
+            # Log more detailed processing info for player units
+            if faction_name == "PLAYER":
+                logging.info(f"Processing unit {unit.name}, has_acted={unit.has_acted}, game_over={self.game_over}, victory={self.victory}")
+            
             if not unit.has_acted and not self.game_over and not self.victory:
                 # Check status effects like Sleep/Berserk that prevent AI control
                 can_act = self._can_unit_act(unit)
-                logging.info(f"Unit {unit.name} can act: {can_act}")
+                
+                # Log ability to act for player units
+                if faction_name == "PLAYER":
+                    logging.info(f"Unit {unit.name} can act: {can_act}")
+                
                 if can_act:
-                    logging.info(f"AI determining action for player unit: {unit.name} at {unit.position}")
+                    logging.info(f"AI determining action for {faction_name} unit: {unit.name} at {unit.position}")
                     
                     # Get action from AIManager
                     ai_action = self.ai_manager.determine_action(unit, self.game_state_manager)
                     
                     if ai_action:
                         logging.info(f"AI selected action: {ai_action['type']} for {unit.name}")
-                        logging.info(f"Action details: {ai_action}")
+                        
+                        # Log more detailed action info for player units
+                        if faction_name == "PLAYER":
+                            logging.info(f"Action details: {ai_action}")
                         
                         # Delegate action processing to ActionHandler
                         try:
@@ -728,7 +745,11 @@ class EngineCore:
                                     self.input_handler.display.render_ascii_map(self.game_state_manager)
                             else:
                                 logging.warning(f"AI action failed for {unit.name}")
-                                logging.warning(f"Action data: {ai_action}")
+                                
+                                # Log more detailed failure info for player units
+                                if faction_name == "PLAYER":
+                                    logging.warning(f"Action data: {ai_action}")
+                                
                                 # Mark unit as acted even if action failed to prevent infinite loops
                                 unit.has_acted = True
                         except Exception as e:
@@ -737,12 +758,15 @@ class EngineCore:
                             # Mark unit as acted even if action failed to prevent infinite loops
                             unit.has_acted = True
                         
-                        # Display ASCII map after each AI action in AI vs AI mode if enabled
+                        # Display ASCII map after each AI action if enabled
                         if self.ascii_display and hasattr(self.input_handler, 'display'):
                             self.input_handler.display.render_ascii_map(self.game_state_manager)
                     else:
                         # AI decides to wait or cannot act
-                        logging.info(f"AI decided to wait for {unit.name} (no action returned)")
+                        wait_message = f"AI decided to wait for {unit.name}"
+                        if faction_name == "PLAYER":
+                            wait_message += " (no action returned)"
+                        logging.info(wait_message)
                         unit.has_acted = True
                 else:
                     logging.info(f"Unit {unit.name} cannot act due to status effects")
@@ -753,6 +777,13 @@ class EngineCore:
                 if self.game_over or self.victory:
                     break  # Stop processing AI if game ended
     
+    def _process_ai_actions_for_player_units(self):
+        """
+        Process AI actions for player units in AI vs AI mode.
+        """
+        logging.info("=== AI vs AI mode: Processing AI actions for PLAYER units ===")
+        self._process_ai_actions_for_faction(self.active_faction_units, "PLAYER")
+    
     def _process_ai_actions_for_enemy_units(self, current_phase):
         """
         Process AI actions for enemy/NPC units.
@@ -760,52 +791,4 @@ class EngineCore:
         Args:
             current_phase: The current phase (ENEMY or NPC)
         """
-        logging.info(f"=== Processing AI actions for {current_phase.name} units ===")
-        
-        # Determine unit order
-        ordered_units = self._sort_units_for_ai(self.active_faction_units)
-        
-        logging.info(f"Processing {len(ordered_units)} {current_phase.name} units")
-        
-        for unit in ordered_units:
-            if not unit.has_acted and not self.game_over and not self.victory:
-                # Check status effects like Sleep/Berserk that prevent AI control
-                if self._can_unit_act(unit):
-                    logging.info(f"AI determining action for {current_phase.name} unit: {unit.name} at {unit.position}")
-                    
-                    # Get action from AIManager
-                    ai_action = self.ai_manager.determine_action(unit, self.game_state_manager)
-                    
-                    if ai_action:
-                        logging.info(f"AI selected action: {ai_action['type']} for {unit.name}")
-                        
-                        # Delegate action processing to ActionHandler
-                        action_success = self.action_handler.process_action(
-                            unit.id,
-                            ai_action,
-                        )
-                        
-                        if action_success:
-                            logging.info(f"AI action executed successfully for {unit.name}")
-                            if self.ascii_display and hasattr(self.input_handler, 'display'):
-                                self.input_handler.display.render_ascii_map(self.game_state_manager)
-                        else:
-                            logging.warning(f"AI action failed for {unit.name}")
-                            # Mark unit as acted even if action failed to prevent infinite loops
-                            unit.has_acted = True
-                        
-                        # Display ASCII map after each AI action if enabled
-                        if self.ascii_display and hasattr(self.input_handler, 'display'):
-                            self.input_handler.display.render_ascii_map(self.game_state_manager)
-                    else:
-                        # AI decides to wait or cannot act
-                        logging.info(f"AI decided to wait for {unit.name}")
-                        unit.has_acted = True
-                else:
-                    logging.info(f"Unit {unit.name} cannot act due to status effects")
-                    unit.has_acted = True
-            
-            self.check_game_end_conditions()  # Action might trigger game end
-            
-            if self.game_over or self.victory:
-                break  # Stop processing AI if game ended
+        self._process_ai_actions_for_faction(self.active_faction_units, current_phase.name)
