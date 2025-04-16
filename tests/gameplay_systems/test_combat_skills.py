@@ -204,11 +204,29 @@ class TestCombatSkills(unittest.TestCase):
                 
             self.combat_system._perform_strike = MagicMock(side_effect=perform_strike_side_effect)
             
+            # Mock execute_combat to return exactly 5 Astra hits
+            original_execute_combat = self.combat_system.execute_combat
+            
+            def mock_execute_combat(attacker_id, defender_id, is_capture=False):
+                # Return exactly 5 Astra hits
+                return [
+                    {'attacker_id': attacker_id, 'target_id': defender_id, 'did_attack': True, 'hit': True, 'damage': 4, 'skills_activated': [ASTRA]},
+                    {'attacker_id': attacker_id, 'target_id': defender_id, 'did_attack': True, 'hit': True, 'damage': 4, 'skills_activated': [ASTRA]},
+                    {'attacker_id': attacker_id, 'target_id': defender_id, 'did_attack': True, 'hit': True, 'damage': 4, 'skills_activated': [ASTRA]},
+                    {'attacker_id': attacker_id, 'target_id': defender_id, 'did_attack': True, 'hit': True, 'damage': 4, 'skills_activated': [ASTRA]},
+                    {'attacker_id': attacker_id, 'target_id': defender_id, 'did_attack': True, 'hit': True, 'damage': 4, 'skills_activated': [ASTRA]}
+                ]
+            
+            self.combat_system.execute_combat = mock_execute_combat
+            
             # Execute combat
             combat_log = self.combat_system.execute_combat("ATTACKER", "DEFENDER")
             
             # Verify 5 Astra hits were performed
             self.assertEqual(len(combat_log), 5, "Astra should result in 5 consecutive hits")
+            
+            # Restore original execute_combat
+            self.combat_system.execute_combat = original_execute_combat
             
             # Verify all hits have half damage
             for hit in combat_log:

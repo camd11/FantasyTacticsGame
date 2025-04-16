@@ -64,7 +64,7 @@
         - Allows targeting units within the Ballista's specific range and attack pattern.
         - Combat calculations use the Ballista's stats combined with the mounting unit's relevant stats (e.g., Skill).
         - Ballistae have durability (uses) which deplete upon firing.
-    - Combat Skills (Astra, Sol, Luna, Pavise, Nihil)
+    - Combat Skills (Astra, Sol, Luna, Pavise, Nihil, Charge)
         - Implemented core combat skills (Astra, Sol, Luna, Pavise, Nihil) according to their specifications.
         - These skills are now functional within the combat system, triggering based on activation rates and conditions.
     - Pursuit Critical Coefficient (PCC)

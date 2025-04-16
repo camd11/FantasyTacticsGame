@@ -187,3 +187,15 @@ SKILL_DANCE:
       params: {}
   activation_condition: "PASSIVE"
   activation_chance: 100
+
+CHARGE:
+  id: "CHARGE"
+  name: "Charge"
+  description: "If unit's Attack Speed is 5 or more higher than the opponent's after a round of combat, initiates an immediate second round of combat. Activates only once per combat initiation."
+  effects:
+    - type: "INITIATE_SECOND_COMBAT_ROUND" # New effect type
+      params:
+        speed_difference_threshold: 5 # Assumed value
+        activation_limit: 1 # Per combat initiation
+  activation_condition: "POST_COMBAT_ROUND" # New condition type
+  activation_chance: 100

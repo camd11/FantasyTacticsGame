@@ -1,0 +1,130 @@
+# Charge Skill Test Scenario
+# This scenario tests the Charge skill which allows a unit to initiate a second round of combat
+# when their Attack Speed is 5 or more higher than their opponent's.
+
+map:
+  width: 10
+  height: 10
+  terrain:
+    - [PLAIN, PLAIN, PLAIN, PLAIN, PLAIN, PLAIN, PLAIN, PLAIN, PLAIN, PLAIN]
+    - [PLAIN, PLAIN, PLAIN, PLAIN, PLAIN, PLAIN, PLAIN, PLAIN, PLAIN, PLAIN]
+    - [PLAIN, PLAIN, PLAIN, PLAIN, PLAIN, PLAIN, PLAIN, PLAIN, PLAIN, PLAIN]
+    - [PLAIN, PLAIN, PLAIN, PLAIN, PLAIN, PLAIN, PLAIN, PLAIN, PLAIN, PLAIN]
+    - [PLAIN, PLAIN, PLAIN, PLAIN, PLAIN, PLAIN, PLAIN, PLAIN, PLAIN, PLAIN]
+    - [PLAIN, PLAIN, PLAIN, PLAIN, PLAIN, PLAIN, PLAIN, PLAIN, PLAIN, PLAIN]
+    - [PLAIN, PLAIN, PLAIN, PLAIN, PLAIN, PLAIN, PLAIN, PLAIN, PLAIN, PLAIN]
+    - [PLAIN, PLAIN, PLAIN, PLAIN, PLAIN, PLAIN, PLAIN, PLAIN, PLAIN, PLAIN]
+    - [PLAIN, PLAIN, PLAIN, PLAIN, PLAIN, PLAIN, PLAIN, PLAIN, PLAIN, PLAIN]
+    - [PLAIN, PLAIN, PLAIN, PLAIN, PLAIN, PLAIN, PLAIN, PLAIN, PLAIN, PLAIN]
+
+units:
+  # Player unit with Charge skill and high speed
+  - id: PLAYER_CHARGE
+    name: "Charge User"
+    class: MYRMIDON
+    level: 10
+    hp: 30
+    str: 12
+    mag: 2
+    skl: 15
+    spd: 15  # High speed for Charge activation
+    luk: 10
+    def: 8
+    res: 6
+    con: 9
+    mov: 6
+    faction: PLAYER
+    position: [2, 2]
+    inventory:
+      - item: IRON_SWORD
+        uses: 46
+    skills:
+      - CHARGE
+
+  # Player unit with Charge skill but lower speed (for threshold testing)
+  - id: PLAYER_SLOW_CHARGE
+    name: "Slow Charge User"
+    class: MYRMIDON
+    level: 10
+    hp: 30
+    str: 12
+    mag: 2
+    skl: 15
+    spd: 11  # Lower speed, but still has Charge
+    luk: 10
+    def: 8
+    res: 6
+    con: 9
+    mov: 6
+    faction: PLAYER
+    position: [2, 4]
+    inventory:
+      - item: IRON_SWORD
+        uses: 46
+    skills:
+      - CHARGE
+
+  # Enemy unit with moderate speed
+  - id: ENEMY_STANDARD
+    name: "Standard Enemy"
+    class: SOLDIER
+    level: 10
+    hp: 30
+    str: 10
+    mag: 2
+    skl: 10
+    spd: 8  # Moderate speed
+    luk: 8
+    def: 10
+    res: 5
+    con: 10
+    mov: 5
+    faction: ENEMY
+    position: [4, 2]
+    inventory:
+      - item: IRON_LANCE
+        uses: 46
+
+  # Enemy unit with Nihil skill (to test Nihil negating Charge)
+  - id: ENEMY_NIHIL
+    name: "Nihil Enemy"
+    class: SOLDIER
+    level: 10
+    hp: 30
+    str: 10
+    mag: 2
+    skl: 10
+    spd: 8  # Same speed as standard enemy
+    luk: 8
+    def: 10
+    res: 5
+    con: 10
+    mov: 5
+    faction: ENEMY
+    position: [4, 4]
+    inventory:
+      - item: IRON_LANCE
+        uses: 46
+    skills:
+      - NIHIL
+
+  # Player unit without Charge (for control testing)
+  - id: PLAYER_NO_CHARGE
+    name: "Regular Player"
+    class: MYRMIDON
+    level: 10
+    hp: 30
+    str: 12
+    mag: 2
+    skl: 15
+    spd: 15  # High speed but no Charge skill
+    luk: 10
+    def: 8
+    res: 6
+    con: 9
+    mov: 6
+    faction: PLAYER
+    position: [2, 6]
+    inventory:
+      - item: IRON_SWORD
+        uses: 46
