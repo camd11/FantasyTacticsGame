@@ -265,6 +265,74 @@ class GameStateManager:
     def __init__(self, data_provider: DataProvider):
         self.current_game_state: Optional[GameState] = None
         self.data_provider = data_provider
+        
+        # Mock pathfinding for AI testing
+        class MockPathfinding:
+            def find_path_to_attack_position(self, unit, target):
+                # Check if the target is within attack range
+                if hasattr(unit, 'position') and hasattr(target, 'position'):
+                    # Calculate Manhattan distance
+                    distance = abs(unit.position[0] - target.position[0]) + abs(unit.position[1] - target.position[1])
+                    
+                    # If the target is within attack range (assuming range 1 for simplicity)
+                    if distance <= 1:
+                        # Return a path that's just the unit's current position
+                        return [unit.position]
+                    
+                    # If the target is within movement range
+                    if hasattr(unit, 'movement_range') and distance <= unit.movement_range + 1:
+                        # Generate a simple path towards the target
+                        path = self._generate_path_towards(unit.position, target.position, unit.movement_range)
+                        return path
+                
+                return None
+                
+            def find_path_to_approach_target(self, unit, position):
+                # Generate a path towards the target position
+                if hasattr(unit, 'position') and position:
+                    # Calculate Manhattan distance
+                    distance = abs(unit.position[0] - position[0]) + abs(unit.position[1] - position[1])
+                    
+                    # If the target is already at the position, return just the current position
+                    if distance == 0:
+                        return [unit.position]
+                    
+                    # Generate a simple path towards the target
+                    movement_range = getattr(unit, 'movement_range', 5)  # Default to 5 if not specified
+                    path = self._generate_path_towards(unit.position, position, movement_range)
+                    return path
+                
+                return None
+                
+            def can_potentially_reach(self, unit, position):
+                return True
+                
+            def _generate_path_towards(self, start_pos, end_pos, max_steps):
+                """Generate a simple path from start_pos towards end_pos, limited by max_steps."""
+                path = [start_pos]
+                current_pos = start_pos
+                steps_taken = 0
+                
+                while current_pos != end_pos and steps_taken < max_steps:
+                    # Move one step towards the target in either x or y direction
+                    x, y = current_pos
+                    target_x, target_y = end_pos
+                    
+                    # Decide whether to move in x or y direction
+                    if abs(x - target_x) > abs(y - target_y):
+                        # Move in x direction
+                        x += 1 if target_x > x else -1
+                    else:
+                        # Move in y direction
+                        y += 1 if target_y > y else -1
+                    
+                    current_pos = (x, y)
+                    path.append(current_pos)
+                    steps_taken += 1
+                
+                return path
+                
+        self.pathfinding = MockPathfinding()
     
     def load_map(self, map_data: Any) -> None:
         """Initialize a new game state with the specified map data."""
@@ -289,7 +357,9 @@ class GameStateManager:
                             'P': TerrainTypeEnum.PLAIN,
                             'F': TerrainTypeEnum.FOREST,
                             'W': TerrainTypeEnum.RIVER,
+                            'R': TerrainTypeEnum.RIVER,  # Added 'R' for River
                             'D': TerrainTypeEnum.BRIDGE,
+                            'B': TerrainTypeEnum.BRIDGE,  # Added 'B' for Bridge
                             'V': TerrainTypeEnum.VILLAGE,
                             'S': TerrainTypeEnum.THRONE,  # Seize point is represented as throne
                             'M': TerrainTypeEnum.MOUNTAIN,
@@ -500,14 +570,27 @@ class GameStateManager:
         """Alias for get_unit to maintain compatibility with tests."""
         return self.get_unit(unit_id)
     
-    def get_units_by_faction(self, faction: FactionEnum) -> List[UnitState]:
+    def get_units_by_faction(self, faction: Union[FactionEnum, str]) -> List[UnitState]:
         """Get all active units of a specific faction."""
         if not self.current_game_state:
             return []
         
+        # Convert string faction to FactionEnum if needed
+        faction_enum = faction
+        if isinstance(faction, str):
+            if faction == 'PLAYER':
+                faction_enum = FactionEnum.PLAYER
+            elif faction == 'ENEMY':
+                faction_enum = FactionEnum.ENEMY
+            elif faction == 'NPC':
+                faction_enum = FactionEnum.NPC
+            else:
+                logging.warning(f"Unknown faction string '{faction}', defaulting to PLAYER")
+                faction_enum = FactionEnum.PLAYER
+        
         return [
             unit for unit in self.current_game_state.unit_states.values()
-            if unit.faction == faction and unit.disposition == DispositionEnum.ACTIVE
+            if unit.faction == faction_enum and unit.disposition == DispositionEnum.ACTIVE
         ]
     
     def get_units_within_range(self, position: Tuple[int, int], range_val: int, include_faction: Optional[FactionEnum] = None) -> List[UnitState]:

@@ -97,14 +97,31 @@ class GameApplication:
     
     def setup_logging(self):
         """Configure basic logging for the application."""
-        logging.basicConfig(
-            level=logging.DEBUG,
-            format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-            handlers=[
-                logging.StreamHandler()  # Output to console
-            ]
-        )
-        logging.info("Logging initialized")
+        # Create formatters
+        console_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        file_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        
+        # Create handlers
+        console_handler = logging.StreamHandler()  # Output to console
+        console_handler.setFormatter(console_formatter)
+        console_handler.setLevel(logging.INFO)
+        
+        # Create file handler for AI logs
+        ai_file_handler = logging.FileHandler('ai_behavior.log', mode='w')
+        ai_file_handler.setFormatter(file_formatter)
+        ai_file_handler.setLevel(logging.DEBUG)
+        
+        # Configure root logger
+        root_logger = logging.getLogger()
+        root_logger.setLevel(logging.DEBUG)
+        root_logger.addHandler(console_handler)
+        root_logger.addHandler(ai_file_handler)
+        
+        # Configure AI-specific loggers to ensure they output to the file
+        ai_logger = logging.getLogger('src.gameplay_systems.ai')
+        ai_logger.setLevel(logging.DEBUG)
+        
+        logging.info("Logging initialized with AI behavior logging to ai_behavior.log")
     
     def initialize_components(self):
         """Create and initialize all game components."""

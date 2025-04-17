@@ -1019,17 +1019,37 @@ class DataProvider:
         Returns:
             Dictionary containing scenario data or None if not found
         """
-        filepath = os.path.join("data", "scenarios", f"{scenario_name}.yaml")
-        if not os.path.exists(filepath):
-            filepath = os.path.join("data", "scenarios", f"{scenario_name}.json")
-
-        scenario_data = self._load_yaml_or_json(filepath)
-        if scenario_data:
-            logging.info(f"Loaded scenario data for '{scenario_name}' from {filepath}")
-            return scenario_data
-        else:
-            logging.error(f"Could not load scenario data for '{scenario_name}' from {filepath}")
-            return None
+        # Try different possible file paths
+        possible_paths = [
+            os.path.join("data", "scenarios", f"{scenario_name}.yaml"),
+            os.path.join("data", "scenarios", f"{scenario_name}.json"),
+            os.path.join("data", "scenarios", scenario_name, "scenario.yaml"),
+            os.path.join("data", "scenarios", scenario_name, "scenario.json")
+        ]
+        
+        logging.info(f"Attempting to load scenario '{scenario_name}'")
+        for filepath in possible_paths:
+            logging.info(f"Trying path: {filepath}")
+            if os.path.exists(filepath):
+                logging.info(f"Found scenario file at {filepath}")
+                scenario_data = self._load_yaml_or_json(filepath)
+                if scenario_data:
+                    logging.info(f"Loaded scenario data for '{scenario_name}' from {filepath}")
+                    return scenario_data
+        
+        # If we get here, we couldn't find the scenario file
+        logging.error(f"Could not find scenario data for '{scenario_name}' in any of the expected locations")
+        
+        # As a fallback, try loading directly from the file we know exists
+        direct_filepath = os.path.join("data", "scenarios", f"{scenario_name}.yaml")
+        logging.info(f"Attempting direct load from {direct_filepath}")
+        if os.path.exists(direct_filepath):
+            scenario_data = self._load_yaml_or_json(direct_filepath)
+            if scenario_data:
+                logging.info(f"Successfully loaded scenario data from {direct_filepath}")
+                return scenario_data
+        
+        return None
     
     def _load_yaml_or_json(self, filepath: str) -> Dict:
         """
