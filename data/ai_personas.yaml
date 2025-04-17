@@ -1,0 +1,119 @@
+# AI Persona Definitions
+# 
+# This file defines the behavioral characteristics of different AI unit types
+# through weighted preferences for different goals and considerations.
+#
+# Each persona has three sets of weights:
+# - goal_weights: Influence which goals are prioritized during Strategic Evaluation
+# - strategic_weights: Influence how goals are scored during Strategic Evaluation
+# - tactical_weights: Influence how actions are scored during Tactical Execution
+
+AGGRESSOR:
+  goal_weights:
+    ATTACK_UNIT: 1.0
+    ADVANCE_TO_OBJECTIVE: 0.7
+    SECURE_POSITION: 0.4
+    RETREAT_AND_RECOVER: 0.3
+    HEAL_UNIT: 0.2
+  
+  strategic_weights:
+    ThreatLevel: 1.0
+    KillOpportunity: 0.9
+    ObjectiveProgress: 0.7
+    TerrainAdvantage: 0.5
+    AlliedSupport: 0.3
+  
+  tactical_weights:
+    DamageDealt: 1.0
+    KillPotential: 0.9
+    SelfPreservation: 0.6
+    TerrainDefense: 0.5
+    AlliedFormation: 0.4
+
+DEFENDER:
+  goal_weights:
+    SECURE_POSITION: 1.0
+    ATTACK_UNIT: 0.7
+    HEAL_UNIT: 0.6
+    RETREAT_AND_RECOVER: 0.5
+    ADVANCE_TO_OBJECTIVE: 0.3
+  
+  strategic_weights:
+    TerrainAdvantage: 1.0
+    AlliedSupport: 0.8
+    ThreatLevel: 0.7
+    KillOpportunity: 0.6
+    ObjectiveProgress: 0.3
+  
+  tactical_weights:
+    TerrainDefense: 1.0
+    SelfPreservation: 0.9
+    AlliedFormation: 0.8
+    DamageDealt: 0.7
+    KillPotential: 0.6
+
+SUPPORT:
+  goal_weights:
+    HEAL_UNIT: 1.0
+    RETREAT_AND_RECOVER: 0.8
+    SECURE_POSITION: 0.7
+    ATTACK_UNIT: 0.3
+    ADVANCE_TO_OBJECTIVE: 0.2
+  
+  strategic_weights:
+    AlliedSupport: 1.0
+    TerrainAdvantage: 0.7
+    SelfPreservation: 0.9
+    ThreatLevel: 0.5
+    ObjectiveProgress: 0.2
+  
+  tactical_weights:
+    HealAllyAmount: 1.0
+    HealAllyPriority: 0.9
+    SelfPreservation: 0.8
+    TerrainDefense: 0.7
+    AlliedFormation: 0.6
+
+OBJECTIVE-FOCUSED:
+  goal_weights:
+    ADVANCE_TO_OBJECTIVE: 1.0
+    ATTACK_UNIT: 0.7
+    SECURE_POSITION: 0.6
+    RETREAT_AND_RECOVER: 0.4
+    HEAL_UNIT: 0.3
+  
+  strategic_weights:
+    ObjectiveProgress: 1.0
+    ThreatLevel: 0.7
+    KillOpportunity: 0.6
+    TerrainAdvantage: 0.5
+    AlliedSupport: 0.3
+  
+  tactical_weights:
+    ObjectiveProximity: 1.0
+    DamageDealt: 0.7
+    KillPotential: 0.6
+    SelfPreservation: 0.5
+    TerrainDefense: 0.4
+
+BALANCED:
+  goal_weights:
+    ATTACK_UNIT: 0.8
+    ADVANCE_TO_OBJECTIVE: 0.8
+    SECURE_POSITION: 0.7
+    RETREAT_AND_RECOVER: 0.6
+    HEAL_UNIT: 0.6
+  
+  strategic_weights:
+    ThreatLevel: 0.8
+    KillOpportunity: 0.8
+    ObjectiveProgress: 0.8
+    TerrainAdvantage: 0.7
+    AlliedSupport: 0.7
+  
+  tactical_weights:
+    DamageDealt: 0.8
+    KillPotential: 0.8
+    SelfPreservation: 0.8
+    TerrainDefense: 0.7
+    AlliedFormation: 0.7

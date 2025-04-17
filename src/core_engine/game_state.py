@@ -180,6 +180,16 @@ class UnitState:
         """
         return component_type in self.components
     
+    @property
+    def unit_id(self) -> str:
+        """
+        Alias for id to maintain compatibility with tests.
+        
+        Returns:
+            The unit's ID
+        """
+        return self.id
+    
     def set_immobile(self, immobile: bool) -> None:
         """
         Set whether the unit is immobile.
@@ -311,6 +321,93 @@ class GameStateManager:
         
         self.current_game_state = state
         logging.info(f"Map loaded: {map_data.id}")
+        
+    def initialize_from_scenario(self, scenario_data: Dict[str, Any]) -> None:
+        """
+        Initialize the game state from a scenario.
+        
+        Args:
+            scenario_data: The scenario data loaded from a YAML file
+        """
+        if not scenario_data:
+            logging.error("Cannot initialize from scenario: No scenario data provided")
+            return
+            
+        # Create a map data object from the scenario data
+        map_data_dict = {
+            'id': scenario_data.get('id', ''),
+            'name': scenario_data.get('name', ''),
+            'dimensions': scenario_data.get('dimensions', (0, 0)),
+            'terrain_grid': scenario_data.get('terrain_grid', [])
+        }
+        
+        # Create a simple object with the necessary attributes for load_map
+        class MapDataObj:
+            def __init__(self, data_dict):
+                self.id = data_dict['id']
+                self.name = data_dict['name']
+                self.dimensions = data_dict['dimensions']
+                self.terrain_grid = data_dict['terrain_grid']
+        
+        map_data = MapDataObj(map_data_dict)
+        
+        # Load the map
+        self.load_map(map_data)
+        
+        # Deploy units
+        if 'placements' in scenario_data:
+            # Create UnitPlacement objects from the placement dictionaries
+            class UnitPlacementObj:
+                def __init__(self, data_dict):
+                    self.unit_id = data_dict.get('unit_id', '')
+                    self.faction = data_dict.get('faction', '')
+                    self.position = data_dict.get('position', (0, 0))
+                    self.level = data_dict.get('level', 1)
+                    self.start_inventory = data_dict.get('start_inventory', [])
+                    self.starting_fatigue = data_dict.get('starting_fatigue', 0)
+                    self.needs_autolevel = data_dict.get('needs_autolevel', False)
+                    self.target_level = data_dict.get('target_level', 1)
+                    
+                    # Handle stats_override if present
+                    if 'stats_override' in data_dict:
+                        self.stats_override = data_dict['stats_override']
+            
+            unit_placements = [UnitPlacementObj(p) for p in scenario_data['placements']]
+            self.deploy_units(unit_placements, self.data_provider)
+            
+            # Apply stats overrides if present
+            for placement in scenario_data['placements']:
+                if 'stats_override' in placement:
+                    unit_id = placement['unit_id']
+                    unit = self.get_unit(unit_id)
+                    if unit:
+                        for stat, value in placement['stats_override'].items():
+                            if stat == 'current_hp':
+                                unit.current_hp = value
+                            else:
+                                unit.base_stats[stat] = value
+                
+                # Set AI persona if present
+                if 'ai_persona' in placement:
+                    unit_id = placement['unit_id']
+                    unit = self.get_unit(unit_id)
+                    if unit:
+                        unit.ai_persona = placement['ai_persona']
+        
+        # Set up objectives
+        if 'objectives' in scenario_data:
+            # Store objectives in the game state for reference
+            if not hasattr(self.current_game_state, 'objectives'):
+                self.current_game_state.objectives = []
+                
+            self.current_game_state.objectives = scenario_data['objectives']
+            
+            # Set seize point if there's a SEIZE objective
+            for objective in scenario_data['objectives']:
+                if objective.get('type') == 'SEIZE' and 'position' in objective:
+                    self.current_game_state.map_state.seize_point = tuple(objective['position'])
+        
+        logging.info(f"Game state initialized from scenario: {scenario_data.get('id', 'unknown')}")
     
     def deploy_units(self, unit_placements: List, data_provider: DataProvider) -> None:
         """Deploy units on the map based on the provided placements."""
@@ -398,6 +495,10 @@ class GameStateManager:
         if not self.current_game_state:
             return None
         return self.current_game_state.unit_states.get(unit_id)
+        
+    def get_unit_by_id(self, unit_id: str) -> Optional[UnitState]:
+        """Alias for get_unit to maintain compatibility with tests."""
+        return self.get_unit(unit_id)
     
     def get_units_by_faction(self, faction: FactionEnum) -> List[UnitState]:
         """Get all active units of a specific faction."""
@@ -444,6 +545,30 @@ class GameStateManager:
             return self.current_game_state.map_state.terrain_grid[y][x]
         
         return TerrainTypeEnum.INVALID
+        
+    def get_terrain_at(self, position: Tuple[int, int]) -> str:
+        """
+        Get the terrain type at a specific position as a string code.
+        This is an alias for get_terrain_type to maintain compatibility with tests.
+        
+        Returns:
+            String code representing the terrain (e.g., "P" for plain, "F" for forest)
+        """
+        terrain_type = self.get_terrain_type(position)
+        
+        # Map TerrainTypeEnum values to string codes
+        enum_to_code = {
+            TerrainTypeEnum.PLAIN: "P",
+            TerrainTypeEnum.FOREST: "F",
+            TerrainTypeEnum.MOUNTAIN: "M",
+            TerrainTypeEnum.RIVER: "W",
+            TerrainTypeEnum.BRIDGE: "D",
+            TerrainTypeEnum.VILLAGE: "V",
+            TerrainTypeEnum.THRONE: "T",
+            TerrainTypeEnum.CASTLE: "H"
+        }
+        
+        return enum_to_code.get(terrain_type, "?")
     
     def get_terrain_movement_cost(self, position: Tuple[int, int], unit_id: str) -> int:
         """Get the movement cost for a unit to move to a specific position."""

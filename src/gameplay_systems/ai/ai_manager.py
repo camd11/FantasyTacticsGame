@@ -11,11 +11,12 @@ The AIManager provides a clean interface for the game system to interact with th
 handling all the complexity of the decision-making process internally.
 """
 
-from typing import Optional
+from typing import Optional, Union
 
 from src.gameplay_systems.ai.strategic_evaluator import StrategicEvaluator
 from src.gameplay_systems.ai.tactical_executor import TacticalExecutor
 from src.gameplay_systems.ai.ai_types import AIAction
+from src.gameplay_systems.ai.ai_persona import AIPersona
 
 
 class AIManager:
@@ -29,7 +30,6 @@ class AIManager:
     It provides a clean interface for the game system to interact with the AI,
     handling all the complexity of the decision-making process internally.
     """
-    
     def __init__(self, strategic_evaluator: StrategicEvaluator, tactical_executor: TacticalExecutor, state_manager=None):
         """
         Initialize an AIManager.
@@ -41,6 +41,10 @@ class AIManager:
         """
         self.strategic_evaluator = strategic_evaluator
         self.tactical_executor = tactical_executor
+        self.state_manager = state_manager
+        
+        # Load AI personas
+        AIPersona.load_personas()
         self.state_manager = state_manager
     
     def determine_and_execute_action(self, unit_state, game_state_manager, persona=None) -> Optional[AIAction]:
@@ -59,9 +63,22 @@ class AIManager:
         Returns:
             AIAction: The selected action, or None if no valid action is possible
         """
+        # Get the unit's persona if not provided
+        if persona is None:
+            # Try to get persona from unit_state
+            persona_name = getattr(unit_state, 'ai_persona', 'BALANCED')
+            # Handle Mock objects in tests
+            if hasattr(persona_name, '__class__') and persona_name.__class__.__name__ == 'Mock':
+                persona_name = 'BALANCED'
+            # Get the persona object
+            persona = AIPersona.get_persona(persona_name)
+        elif isinstance(persona, str):
+            # If persona is provided as a string, get the persona object
+            persona = AIPersona.get_persona(persona)
+            
         # Phase 1: Strategic Goal Selection
         selected_goal = self.strategic_evaluator.select_best_goal(
-            unit_state, 
+            unit_state,
             game_state_manager,
             persona
         )

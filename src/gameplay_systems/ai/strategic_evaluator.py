@@ -14,9 +14,10 @@ It selects the goal with the highest utility score, which is then used to guide
 the Tactical Phase of AI decision-making.
 """
 
-from typing import List, Optional, Any, Dict, Type
+from typing import List, Optional, Any, Dict, Type, Union
 from src.gameplay_systems.ai.utility_scorer import UtilityScorer
 from src.gameplay_systems.ai.goals import Goal, AttackUnitGoal
+from src.gameplay_systems.ai.ai_persona import AIPersona
 from src.core_engine.game_state import FactionEnum
 
 
@@ -47,7 +48,7 @@ class StrategicEvaluator:
         Select the best goal for the given unit based on utility scoring.
         
         This method evaluates all valid potential goals and selects the one
-        with the highest utility score.
+        with the highest utility score, taking into account the unit's AI persona.
         
         Args:
             unit_state: The state of the AI unit
@@ -60,15 +61,33 @@ class StrategicEvaluator:
         best_goal = None
         highest_score = float('-inf')
         
+        # Get the unit's persona if not provided
+        if persona is None:
+            # Try to get persona from unit_state
+            persona_name = getattr(unit_state, 'ai_persona', 'BALANCED')
+            # Handle Mock objects in tests
+            if hasattr(persona_name, '__class__') and persona_name.__class__.__name__ == 'Mock':
+                persona_name = 'BALANCED'
+            # Get the persona object
+            persona = AIPersona.get_persona(persona_name)
+        elif isinstance(persona, str):
+            # If persona is provided as a string, get the persona object
+            persona = AIPersona.get_persona(persona)
+        
         # 1. Goal Enumeration & Validation
         potential_goals = self.generate_valid_goal_instances(unit_state, game_state_manager)
         
         # 2. Strategic Evaluation
         for goal in potential_goals:
-            score = self.utility_scorer.score_goal(goal, unit_state, game_state_manager)
+            # Get the base score from the utility scorer
+            base_score = self.utility_scorer.score_goal(goal, unit_state, game_state_manager)
             
-            if score > highest_score:
-                highest_score = score
+            # Apply persona-specific goal weight
+            goal_weight = persona.get_goal_weight(goal.goal_type)
+            weighted_score = base_score * goal_weight
+            
+            if weighted_score > highest_score:
+                highest_score = weighted_score
                 best_goal = goal
         
         # 3. Goal Selection

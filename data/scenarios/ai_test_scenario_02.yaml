@@ -1,0 +1,192 @@
+# AI Test Scenario 02: Tactical Action Execution
+# Tests the Two-Phase Goal-Oriented Utility AI's ability to select optimal actions to achieve goals
+
+# Map definition
+id: ai_test_scenario_02
+name: AI Tactical Action Execution Test
+dimensions: [10, 10]
+terrain_grid:
+  - [P, P, P, P, P, P, P, P, P, P]  # P = Plain
+  - [P, F, F, P, P, P, P, P, P, P]  # F = Forest (defensive terrain)
+  - [P, F, M, F, P, P, P, P, P, P]  # M = Mountain (high defense)
+  - [P, P, F, P, P, R, R, P, P, P]  # R = River (difficult to cross)
+  - [P, P, P, P, P, R, P, P, P, P]
+  - [P, P, P, P, P, R, P, P, P, P]
+  - [P, P, P, P, P, B, P, P, P, P]  # B = Bridge (crossing point)
+  - [P, P, P, P, P, P, P, F, F, P]
+  - [P, P, P, P, P, P, F, F, M, P]
+  - [P, P, P, P, P, P, P, F, P, P]
+
+# Unit placements
+placements:
+  # Player units
+  - unit_id: LEIF  # Player commander
+    faction: PLAYER
+    position: [8, 8]
+    level: 10
+    start_inventory:
+      - IRON_SWORD
+    stats_override:
+      HP: 30
+      current_hp: 15  # Half health to test healing priorities
+      STR: 12
+      SKL: 10
+      SPD: 11
+      DEF: 8
+      
+  - unit_id: FINN  # Player lance unit
+    faction: PLAYER
+    position: [7, 7]
+    level: 10
+    start_inventory:
+      - IRON_LANCE
+    stats_override:
+      HP: 32
+      current_hp: 32  # Full health
+      STR: 14
+      SKL: 12
+      SPD: 13
+      DEF: 10
+      
+  # Enemy units with different AI personas
+  - unit_id: ENEMY_FIGHTER  # Aggressor persona
+    faction: ENEMY
+    position: [2, 2]
+    level: 10
+    start_inventory:
+      - IRON_AXE
+    stats_override:
+      HP: 30
+      current_hp: 30
+      STR: 14
+      SKL: 8
+      SPD: 7
+      DEF: 9
+    ai_persona: AGGRESSOR  # Should choose optimal attack position
+    
+  - unit_id: ENEMY_KNIGHT  # Defender persona
+    faction: ENEMY
+    position: [3, 3]
+    level: 10
+    start_inventory:
+      - IRON_LANCE
+    stats_override:
+      HP: 35
+      current_hp: 35
+      STR: 12
+      SKL: 7
+      SPD: 5
+      DEF: 15
+    ai_persona: DEFENDER  # Should move to optimal defensive terrain
+    
+  - unit_id: ENEMY_CLERIC  # Support persona
+    faction: ENEMY
+    position: [1, 1]
+    level: 10
+    start_inventory:
+      - HEAL_STAFF
+    stats_override:
+      HP: 24
+      current_hp: 24
+      MAG: 10
+      SKL: 8
+      SPD: 9
+      DEF: 4
+    ai_persona: SUPPORT  # Should position optimally for healing
+    
+  - unit_id: ENEMY_THIEF  # Objective-focused persona
+    faction: ENEMY
+    position: [4, 4]
+    level: 10
+    start_inventory:
+      - IRON_SWORD
+    stats_override:
+      HP: 25
+      current_hp: 25
+      STR: 9
+      SKL: 12
+      SPD: 14
+      DEF: 5
+    ai_persona: OBJECTIVE-FOCUSED  # Should navigate efficiently to objective
+
+  # Additional enemy unit that needs healing
+  - unit_id: ENEMY_ARCHER
+    faction: ENEMY
+    position: [2, 1]
+    level: 10
+    start_inventory:
+      - IRON_BOW
+    stats_override:
+      HP: 28
+      current_hp: 10  # Low health to test healing priorities
+      STR: 11
+      SKL: 13
+      SPD: 10
+      DEF: 6
+    ai_persona: DEFENDER
+
+# Test assertions
+test_assertions:
+  # Test that Aggressor chooses optimal attack position
+  - type: AI_ACTION_SELECTION
+    unit_id: ENEMY_FIGHTER
+    expected:
+      action_type: MOVE_AND_ATTACK
+      target_position: [1, 2]  # Should move to forest for defense bonus before attacking
+      
+  # Test that Defender moves to optimal defensive terrain
+  - type: AI_ACTION_SELECTION
+    unit_id: ENEMY_KNIGHT
+    expected:
+      action_type: MOVE
+      target_position: [2, 2]  # Should move to mountain for maximum defense
+      
+  # Test that Support chooses optimal healing position
+  - type: AI_ACTION_SELECTION
+    unit_id: ENEMY_CLERIC
+    expected:
+      action_type: MOVE_AND_HEAL
+      target_unit_id: ENEMY_ARCHER
+      position: [1, 1]  # Should stay in forest for protection while healing
+      
+  # Test that Objective-focused navigates efficiently
+  - type: AI_ACTION_SELECTION
+    unit_id: ENEMY_THIEF
+    expected:
+      action_type: MOVE
+      path_includes: [6, 5]  # Should use bridge to cross river
+
+# Objectives for the scenario
+objectives:
+  - type: SEIZE
+    position: [8, 8]
+    faction: ENEMY  # Enemy units should try to reach this position
+
+# Instructions for manual verification
+verification_instructions: |
+  This scenario tests the AI's Tactical Action Execution phase based on different AI personas.
+  
+  To verify the AI behavior:
+  
+  1. Start the scenario and observe the initial state:
+     - ENEMY_FIGHTER (Aggressor) should be positioned near forest terrain
+     - ENEMY_KNIGHT (Defender) should be positioned near mountain terrain
+     - ENEMY_CLERIC (Support) should be positioned near a damaged ally
+     - ENEMY_THIEF (Objective-focused) should be positioned with a river between it and the objective
+  
+  2. End your turn to allow the enemy phase to begin.
+  
+  3. During the enemy phase, observe each AI unit's tactical decisions:
+     - ENEMY_FIGHTER should move to a forest tile before attacking, prioritizing terrain advantage
+     - ENEMY_KNIGHT should move to the mountain tile for maximum defensive advantage
+     - ENEMY_CLERIC should position optimally to heal ENEMY_ARCHER while staying safe
+     - ENEMY_THIEF should navigate efficiently toward the objective, using the bridge to cross the river
+  
+  4. The AI debug log should show:
+     - For ENEMY_FIGHTER: "Selected Action: MOVE_AND_ATTACK" with details about position selection
+     - For ENEMY_KNIGHT: "Selected Action: MOVE" with details about terrain-based positioning
+     - For ENEMY_CLERIC: "Selected Action: MOVE_AND_HEAL" with details about healing position
+     - For ENEMY_THIEF: "Selected Action: MOVE" with details about pathfinding through obstacles
+  
+  This confirms that the Tactical Executor is correctly selecting optimal actions based on goals,
+  which is the second phase of the Two-Phase Goal-Oriented Utility AI architecture.

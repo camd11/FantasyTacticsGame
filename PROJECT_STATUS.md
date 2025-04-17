@@ -8,11 +8,13 @@
     - Fatigue System
     - Event System
     - Status Effects System
-    - **Two-Phase Goal-Oriented Utility AI (v2)** (Partially Implemented - Core Components)
-        - Replaces the previous monolithic AI system.
-        - Separates decision-making into Strategic Goal Selection and Tactical Action Execution.
-        - Aims to improve strategic coherence, context awareness, and performance.
-        - Core framework (State Manager, basic Goal Library, Evaluator, Executor) implemented.
+    - **Two-Phase Goal-Oriented Utility AI (v2)** (Core Implementation Complete)
+        - Replaces the previous monolithic/archetype-based AI system.
+        - Separates decision-making into Strategic Goal Selection (`StrategicEvaluator`) and Tactical Action Execution (`TacticalExecutor`).
+        - **Implemented Goals:** Expanded initial goal library (e.g., `HealUnitGoal`, `MoveToSafetyGoal`, `SeizeTileGoal`).
+        - **Utility & Tactical Refinement:** Integrated AI Personas into `UtilityScorer` (weighting considerations) and `TacticalExecutor` (influencing action scoring).
+        - **Initial Scenario Testing:** Validated core logic using `ai_test_scenario_01.yaml` and `ai_test_scenario_02.yaml`.
+        - System is now ready for more complex AI vs AI testing scenarios or further goal/persona expansion.
         - Implemented core status effects (Poison, Sleep, Petrify, Paralysis, Berserk, Silence).
     - Dismounting System
     - Support/Leadership System
@@ -129,6 +131,7 @@
     - Fixed `AttributeError` by adding `get_units_in_range` method to `UnitSystem`.
     - Fixed phase/faction mismatch warnings and processing logic in `EngineCore`.
     - Fixed `AttributeError` by adding `get_unit` method to `UnitSystem`.
+    - **AI v2 Integration Fixes:** Resolved various `AttributeError` issues and engine integration problems encountered during AI v2 development and testing.
     - Enhanced ASCII Display
         - Improved rendering of units and terrain features.
         - Integrated Fog of War visualization (showing visible, explored, hidden tiles).
@@ -171,8 +174,8 @@
 - **CLI Development:**
 - **Testing:**
     - Develop more comprehensive testing scenarios covering edge cases and complex interactions.
-    - Complete AI v2 Implementation (Goals, Scoring, Personas): Flesh out the goal library, refine scoring considerations, and implement AI personas.
-    - Implement AI v2 Testing Regime: Create dedicated test maps and automated tests for the new AI architecture.
+    - Expand AI v2 Goal Library & Personas: Implement additional strategic goals and refine/expand AI personas for more diverse behaviors.
+    - Implement Complex AI v2 Testing: Develop more complex AI vs AI scenarios and potentially automated integration tests to stress-test the decision-making logic under various conditions.
 - **Future Enhancements:**
     - Potential GUI implementation.
 - **Bug Fixing:**

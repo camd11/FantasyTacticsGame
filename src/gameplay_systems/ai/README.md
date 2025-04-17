@@ -14,19 +14,25 @@ The AI operates in two main phases for each unit's turn:
 *   **`ai_manager.py` (`AIManager`):**
     *   **Responsibility:** Orchestrates the overall two-phase decision-making process for an AI unit's turn. It coordinates calls to the Strategic Evaluator and Tactical Executor. Likely manages the game state snapshot needed for consistent decision-making within a turn.
 *   **`goals.py` (Goal Library & Definitions):**
-    *   **Responsibility:** Defines the available strategic Goals (e.g., `ELIMINATE_THREAT`, `SUPPORT_ALLY`, `SECURE_POSITION`). Each goal definition includes logic for:
-        *   Determining its validity in the current context.
-        *   Scoring its relevance (used by the Strategic Evaluator).
-        *   Generating relevant actions (used by the Tactical Executor).
+    *   **Responsibility:** Defines the available strategic Goals. Each goal definition includes logic for determining validity, scoring relevance, generating actions, and evaluating actions within its context.
+    *   **Implemented Goals (Examples):**
+        *   `HealUnitGoal`: Focuses on restoring HP to allied units.
+        *   `MoveToSafetyGoal`: Prioritizes moving the unit away from immediate threats.
+        *   `SeizeTileGoal`: Aims to capture a specific objective tile (e.g., throne, gate).
+    *   **Goal Logic:** Each goal includes methods for:
+        *   `is_valid(unit, state)`: Checks if the goal is applicable.
+        *   `calculate_relevance(unit, state, persona)`: Scores the goal's importance.
+        *   `generate_actions(unit, state)`: Creates potential action sequences.
+        *   `evaluate_action(action, unit, state, persona)`: Scores a specific action for this goal.
         *   Evaluating actions specifically within the goal's context.
 *   **`strategic_evaluator.py` (`StrategicEvaluator`):**
     *   **Responsibility:** Implements Phase 1. It enumerates valid Goals from the Goal Library for the current unit, scores their relevance using weighted considerations (influenced by the AI Persona), and selects the highest-scoring Goal.
     *   **Dependencies:** `goals.py`, `utility_scorer.py`, AI Persona configurations.
 *   **`tactical_executor.py` (`TacticalExecutor`):**
-    *   **Responsibility:** Implements Phase 2. Given the selected Goal, it generates a pruned list of relevant actions, scores these actions using goal-specific utility considerations, selects the best action sequence, and translates it into game commands.
-    *   **Dependencies:** `goals.py`, `utility_scorer.py`, various game systems (Movement, Combat, etc.).
+    *   **Responsibility:** Implements Phase 2. Given the selected Goal, it generates relevant action sequences (move, attack, skill, item use), scores them using goal-specific utility considerations (factoring in Persona weights via `UtilityScorer`), selects the optimal sequence, and translates it into game commands.
+    *   **Dependencies:** `goals.py`, `utility_scorer.py`, AI Persona configurations, various game systems (Movement, Combat, Skill, Item, etc.).
 *   **`utility_scorer.py` (`UtilityScorer` / Scoring Functions):**
-    *   **Responsibility:** Provides a modular library of scoring functions (Considerations) used by both the Strategic Evaluator (for Goals) and the Tactical Executor (for Actions). Examples include scoring based on damage dealt/taken, healing potential, positional advantage, objective proximity, etc.
+    *   **Responsibility:** Provides a modular library of scoring functions (Considerations) used by both the `StrategicEvaluator` (for Goals) and the `TacticalExecutor` (for Actions). These functions evaluate factors like damage potential, risk, healing, positioning, etc. Crucially, the *weights* applied to these considerations are influenced by the unit's assigned **AI Persona**, allowing for varied behavior.
 *   **AI Personas (Configuration):**
     *   **Responsibility:** Defined externally (likely in YAML or similar data files, managed perhaps by `AIProfileManager` or loaded directly). Personas define behavioral tendencies by assigning different weights to Goals and utility considerations for different unit types (e.g., Aggressor, Defender, Support).
 
@@ -46,3 +52,12 @@ The AI operates in two main phases for each unit's turn:
 4.  **Execution:** The `AIManager` translates the chosen action sequence into commands for the game engine.
 
 This two-phase approach aims to create more strategically sound and contextually appropriate AI behavior compared to the previous system, while also offering potential performance benefits by pruning the action space early.
+
+## 4. Testing and Scenarios
+
+The AI system's behavior is tested using specific game scenarios defined in YAML files. These scenarios set up controlled situations to verify goal selection and action execution under different conditions.
+
+*   **`data/scenarios/ai_test_scenario_01.yaml`:** Tests basic combat goal prioritization and target selection.
+*   **`data/scenarios/ai_test_scenario_02.yaml`:** Tests support goals like healing (`HealUnitGoal`) and defensive positioning (`MoveToSafetyGoal`).
+
+These scenarios are crucial for iterating on AI logic, tuning Persona weights, and ensuring robust behavior.
