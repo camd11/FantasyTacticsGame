@@ -524,6 +524,72 @@ class TestTacticalExecutor:
         mock_game_state_manager.find_safe_tiles_for_unit.assert_called_once()
         mock_pathfinding.find_path_to_position.assert_called_once()
 
+    def test_determine_action_for_move_to_safety_goal_no_immediate_safe_tiles(self):
+        """
+        Test that the TacticalExecutor can determine an action to move towards safety when no safe tiles are immediately reachable.
+        
+        This test verifies that when there are no safe tiles within the unit's immediate movement range,
+        the TacticalExecutor will return a MOVE action towards the nearest identified safe area on the map,
+        even if it's currently unreachable.
+        """
+        # Arrange
+        # Create mock systems
+        mock_movement_system = Mock()
+        mock_combat_system = Mock()
+        
+        # Create mock AI unit
+        mock_ai_unit = Mock()
+        mock_ai_unit.unit_id = "threatened_unit_1"
+        mock_ai_unit.position = (5, 5)
+        mock_ai_unit.movement_range = 3
+        mock_ai_unit.faction = "enemy"
+        
+        # Create mock game state manager
+        mock_game_state_manager = Mock()
+        mock_game_state_manager.is_unit_threatened.return_value = True
+        
+        # Set up safe tiles - none within immediate movement range
+        mock_game_state_manager.find_safe_tiles_for_unit.return_value = []
+        
+        # But there are safe tiles elsewhere on the map
+        distant_safe_tiles = [(15, 15), (16, 16)]
+        mock_game_state_manager.find_all_safe_tiles.return_value = distant_safe_tiles
+        
+        # Set up pathfinding
+        mock_pathfinding = Mock()
+        # Path towards the closest safe tile (15, 15)
+        mock_approach_path = [(5, 5), (6, 6), (7, 7), (8, 8), (9, 9), (10, 10), (11, 11), (12, 12), (13, 13), (14, 14), (15, 15)]
+        mock_pathfinding.find_path_to_approach_target.return_value = mock_approach_path
+        mock_game_state_manager.pathfinding = mock_pathfinding
+        
+        # Create a MoveToSafetyGoal
+        safety_goal = MoveToSafetyGoal()
+        
+        # Create the TacticalExecutor
+        tactical_executor = TacticalExecutor(
+            movement_system=mock_movement_system,
+            combat_system=mock_combat_system
+        )
+        
+        # Act
+        action = tactical_executor.determine_action_for_goal(safety_goal, mock_ai_unit, mock_game_state_manager)
+        
+        # Assert
+        assert action is not None, "determine_action_for_goal should return an action"
+        assert isinstance(action, AIAction), "Action should be an AIAction instance"
+        assert action.action_type == "MOVE", "Action should be a MOVE action"
+        assert action.unit_id == mock_ai_unit.unit_id, "Action should be for the AI unit"
+        assert "move_path" in action.target_data, "Action should include a move path"
+        
+        # The path should be limited by the unit's movement range (3)
+        expected_limited_path = mock_approach_path[:mock_ai_unit.movement_range + 1]
+        assert action.target_data["move_path"] == expected_limited_path, "Move path should be limited by movement range"
+        
+        # Verify the correct methods were called
+        mock_game_state_manager.find_safe_tiles_for_unit.assert_called_once()
+        mock_game_state_manager.find_all_safe_tiles.assert_called_once()
+        mock_pathfinding.find_path_to_approach_target.assert_called_once_with(mock_ai_unit, distant_safe_tiles[0])
+    
     def test_determine_action_for_seize_tile_goal(self):
         """
         Test that the TacticalExecutor can determine an appropriate action for a SeizeTileGoal.
@@ -640,3 +706,71 @@ class TestTacticalExecutor:
         # Verify the correct methods were called
         mock_game_state_manager.is_valid_position.assert_called_with(target_position)
         mock_game_state_manager.is_objective_tile.assert_called_with(target_position)
+        
+    def test_determine_action_for_seize_tile_goal_unreachable_in_one_turn(self):
+        """
+        Test that the TacticalExecutor handles the case where the target tile cannot be reached in one turn.
+        
+        This test verifies that when the target tile cannot be reached in one turn, the TacticalExecutor
+        will return a MOVE action to get as close as possible to the target tile.
+        """
+        # Arrange
+        # Create mock systems
+        mock_movement_system = Mock()
+        mock_combat_system = Mock()
+        
+        # Create mock AI unit
+        mock_ai_unit = Mock()
+        mock_ai_unit.unit_id = "seizing_unit_1"
+        mock_ai_unit.position = (3, 3)
+        mock_ai_unit.movement_range = 3  # Limited movement range
+        mock_ai_unit.faction = "enemy"
+        
+        # Create target position that is too far to reach in one turn
+        target_position = (10, 10)
+        
+        # Create mock game state manager
+        mock_game_state_manager = Mock()
+        mock_game_state_manager.is_valid_position.return_value = True
+        mock_game_state_manager.is_objective_tile.return_value = True
+        
+        # Set up pathfinding
+        mock_pathfinding = Mock()
+        # Path to the target position that is longer than the unit's movement range
+        mock_path = [(3, 3), (4, 4), (5, 5), (6, 6), (7, 7), (8, 8), (9, 9), (10, 10)]
+        mock_pathfinding.find_path_to_position.return_value = mock_path
+        mock_game_state_manager.pathfinding = mock_pathfinding
+        
+        # Create a SeizeTileGoal
+        seize_goal = SeizeTileGoal(target_position=target_position)
+        
+        # Create the TacticalExecutor
+        tactical_executor = TacticalExecutor(
+            movement_system=mock_movement_system,
+            combat_system=mock_combat_system
+        )
+        
+        # Act
+        action = tactical_executor.determine_action_for_goal(seize_goal, mock_ai_unit, mock_game_state_manager)
+        
+        # Assert
+        assert action is not None, "determine_action_for_goal should return an action"
+        assert isinstance(action, AIAction), "Action should be an AIAction instance"
+        assert action.action_type == "MOVE", "Action should be a MOVE action"
+        assert action.unit_id == mock_ai_unit.unit_id, "Action should be for the AI unit"
+        assert "move_path" in action.target_data, "Action should include a move path"
+        
+        # The path should be limited by the unit's movement range (3)
+        expected_limited_path = mock_path[:mock_ai_unit.movement_range + 1]
+        assert action.target_data["move_path"] == expected_limited_path, "Move path should be limited by movement range"
+        
+        # The action should include the target position and objective
+        assert "target_position" in action.target_data, "Action should include the target position"
+        assert action.target_data["target_position"] == target_position, "Target position should match the goal"
+        assert "objective" in action.target_data, "Action should include the objective"
+        assert action.target_data["objective"] == "approach_seize_target", "Objective should be to approach the seize target"
+        
+        # Verify the correct methods were called
+        mock_game_state_manager.is_valid_position.assert_called_with(target_position)
+        mock_game_state_manager.is_objective_tile.assert_called_with(target_position)
+        mock_pathfinding.find_path_to_position.assert_called_once()

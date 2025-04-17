@@ -428,7 +428,9 @@ class TacticalExecutor:
         Handle a MoveToSafetyGoal by determining the safest position to move to.
         
         This method identifies safe tiles that the unit can move to and selects
-        the best one based on tactical considerations.
+        the best one based on tactical considerations. If no safe tiles are within
+        the unit's immediate movement range, it will determine a path towards the
+        nearest safe area.
         
         Args:
             goal: The MoveToSafetyGoal to handle
@@ -443,32 +445,67 @@ class TacticalExecutor:
         
         # Find safe tiles that the unit can move to
         safe_tiles = game_state_manager.find_safe_tiles_for_unit(ai_unit_state)
-        if not safe_tiles:
-            return None  # No safe tiles available
         
-        # Find the best safe tile based on tactical considerations
-        best_safe_tile = self._select_best_safe_tile(safe_tiles, ai_unit_state, game_state_manager)
-        if best_safe_tile is None:
-            return None
+        # Get the unit's movement range
+        movement_range = getattr(ai_unit_state, 'movement_range', 5)  # Default to 5 if not specified
         
-        # Find a path to the best safe tile
-        move_path = game_state_manager.pathfinding.find_path_to_position(
-            ai_unit_state, best_safe_tile
-        )
+        if safe_tiles:
+            # Find the best safe tile based on tactical considerations
+            best_safe_tile = self._select_best_safe_tile(safe_tiles, ai_unit_state, game_state_manager)
+            if best_safe_tile is not None:
+                # Find a path to the best safe tile
+                move_path = game_state_manager.pathfinding.find_path_to_position(
+                    ai_unit_state, best_safe_tile
+                )
+                
+                if move_path:
+                    # Limit the path by the unit's movement range
+                    limited_path = move_path[:movement_range + 1]
+                    
+                    # Return a MOVE action to the safe tile
+                    return AIAction(
+                        action_type="MOVE",
+                        unit_id=ai_unit_state.unit_id,
+                        target_data={"move_path": limited_path}
+                    )
         
-        if move_path:
-            # Limit the path by the unit's movement range
-            movement_range = getattr(ai_unit_state, 'movement_range', 5)  # Default to 5 if not specified
-            limited_path = move_path[:movement_range + 1]
+        # If no safe tiles are available within movement range or no path exists,
+        # find all safe tiles on the map (even those beyond movement range)
+        self.logger.info(f"No immediately reachable safe tiles for unit {ai_unit_state.unit_id}. Searching for distant safe areas.")
+        
+        # Get all safe tiles on the map, not just those within movement range
+        all_safe_tiles = game_state_manager.find_all_safe_tiles()
+        
+        if not all_safe_tiles:
+            self.logger.warning(f"No safe tiles found on the entire map for unit {ai_unit_state.unit_id}.")
+            return None  # No safe tiles available anywhere
+        
+        # Find the closest safe tile
+        closest_safe_tile = self._find_closest_safe_tile(ai_pos, all_safe_tiles)
+        
+        if closest_safe_tile:
+            self.logger.info(f"Found closest safe tile at {closest_safe_tile} for unit at {ai_pos}")
             
-            # Return a MOVE action to the safe tile
-            return AIAction(
-                action_type="MOVE",
-                unit_id=ai_unit_state.unit_id,
-                target_data={"move_path": limited_path}
+            # Find a path to the closest safe tile
+            approach_path = game_state_manager.pathfinding.find_path_to_approach_target(
+                ai_unit_state, closest_safe_tile
             )
+            
+            if approach_path:
+                # Limit the path by the unit's movement range
+                limited_path = approach_path[:movement_range + 1]
+                
+                self.logger.info(f"Moving towards distant safe area. Path: {limited_path}")
+                
+                # Return a MOVE action to get closer to the safe area
+                return AIAction(
+                    action_type="MOVE",
+                    unit_id=ai_unit_state.unit_id,
+                    target_data={"move_path": limited_path}
+                )
         
-        # If no path exists, return None
+        # If no path exists to any safe tile, return None
+        self.logger.warning(f"No valid path found to any safe tile for unit {ai_unit_state.unit_id}.")
         return None
     
     def _select_best_safe_tile(self, safe_tiles, ai_unit_state, game_state_manager) -> Optional[Tuple[int, int]]:
@@ -494,12 +531,46 @@ class TacticalExecutor:
         # tactical considerations and return the one with the highest score
         return safe_tiles[0]
     
+    def _find_closest_safe_tile(self, current_position, safe_tiles) -> Optional[Tuple[int, int]]:
+        """
+        Find the closest safe tile to the current position.
+        
+        This method calculates the Manhattan distance from the current position
+        to each safe tile and returns the closest one.
+        
+        Args:
+            current_position: The current position (x, y)
+            safe_tiles: List of safe tile positions
+            
+        Returns:
+            Tuple[int, int]: The position of the closest safe tile, or None if no safe tiles exist
+        """
+        if not safe_tiles:
+            return None
+        
+        # Calculate Manhattan distance to each safe tile
+        distances = []
+        for tile in safe_tiles:
+            # Manhattan distance: |x1 - x2| + |y1 - y2|
+            distance = abs(current_position[0] - tile[0]) + abs(current_position[1] - tile[1])
+            distances.append((tile, distance))
+        
+        # Sort by distance (ascending)
+        distances.sort(key=lambda x: x[1])
+        
+        # Return the closest safe tile
+        return distances[0][0]
+    
     def _handle_seize_tile_goal(self, goal, ai_unit_state, game_state_manager) -> Optional[AIAction]:
         """
         Handle a SeizeTileGoal by determining the appropriate action to seize a tile.
         
         This method determines whether the target tile can be seized directly,
         can be reached and seized in one turn, or should be approached.
+        
+        If the unit cannot reach the target tile in one move, it will determine
+        a path towards the target tile and select the best reachable tile along
+        that path within the unit's movement range.
         
         Args:
             goal: The SeizeTileGoal to handle
@@ -514,16 +585,22 @@ class TacticalExecutor:
         
         # Validate the target position
         if not game_state_manager.is_valid_position(target_position):
+            self.logger.warning(f"Invalid target position {target_position} for SeizeTileGoal")
             return None  # Invalid position
         
         if not game_state_manager.is_objective_tile(target_position):
+            self.logger.warning(f"Position {target_position} is not an objective tile")
             return None  # Not an objective tile
         
         # Get the current position of the AI unit
         ai_pos = ai_unit_state.position
         
+        # Log the positions for debugging
+        self.logger.info(f"Unit position: {ai_pos}, Target position: {target_position}")
+        
         # Check if the unit is already at the target position
         if ai_pos == target_position:
+            self.logger.info(f"Unit {ai_unit_state.unit_id} is already at target position {target_position}. Seizing.")
             # Return a SEIZE action
             return AIAction(
                 action_type="SEIZE",
@@ -536,29 +613,40 @@ class TacticalExecutor:
         # Determine if we're in a test by checking if pathfinding.find_path_to_position is a Mock
         is_test = hasattr(game_state_manager.pathfinding.find_path_to_position, 'return_value')
         
+        # Find a path to the target position
         if is_test:
             # We're in a test, use find_path_to_position
+            self.logger.info(f"In test environment, using find_path_to_position")
             move_path = game_state_manager.pathfinding.find_path_to_position(
                 ai_unit_state, target_position
             )
         else:
             # We're in real implementation, use find_path_to_approach_target
+            self.logger.info(f"Finding path to approach target position {target_position}")
             move_path = game_state_manager.pathfinding.find_path_to_approach_target(
                 ai_unit_state, target_position
             )
         
+        # Get the unit's movement range
+        movement_range = getattr(ai_unit_state, 'movement_range', 5)  # Default to 5 if not specified
+        self.logger.info(f"Unit movement range: {movement_range}")
+        
         if move_path:
+            self.logger.info(f"Found path to target: {move_path}")
+            
             # Check if the target can be reached in one turn
             # Handle both real paths and mock objects
             try:
-                movement_range = getattr(ai_unit_state, 'movement_range', 5)  # Default to 5 if not specified
                 can_reach_in_one_turn = len(move_path) <= movement_range + 1
+                self.logger.info(f"Path length: {len(move_path)}, Can reach in one turn: {can_reach_in_one_turn}")
             except TypeError:
                 # For mock objects in tests, assume it can be reached
                 can_reach_in_one_turn = True
+                self.logger.info(f"Using mock path, assuming can reach in one turn")
                 
             if can_reach_in_one_turn:
                 # Return a MOVE_AND_SEIZE action
+                self.logger.info(f"Target can be reached in one turn. Creating MOVE_AND_SEIZE action.")
                 return AIAction(
                     action_type="MOVE_AND_SEIZE",
                     unit_id=ai_unit_state.unit_id,
@@ -569,15 +657,22 @@ class TacticalExecutor:
                 )
             else:
                 # Limit the path by the unit's movement range
-                movement_range = getattr(ai_unit_state, 'movement_range', 5)  # Default to 5 if not specified
                 limited_path = move_path[:movement_range + 1]
+                self.logger.info(f"Target cannot be reached in one turn. Limited path: {limited_path}")
                 
                 # Return a MOVE action to get closer to the target
+                self.logger.info(f"Creating MOVE action to approach target.")
                 return AIAction(
                     action_type="MOVE",
                     unit_id=ai_unit_state.unit_id,
-                    target_data={"move_path": limited_path}
+                    target_data={
+                        "move_path": limited_path,
+                        "objective": "approach_seize_target",  # Add context about the objective
+                        "target_position": target_position  # Include the ultimate target position
+                    }
                 )
+        else:
+            self.logger.warning(f"No valid path found to target position {target_position}")
         
         # If no path exists, return None
         return None

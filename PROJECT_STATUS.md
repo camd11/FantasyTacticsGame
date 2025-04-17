@@ -11,11 +11,12 @@
     - **Two-Phase Goal-Oriented Utility AI (v2)** (Implementation Complete)
         - Replaces the previous monolithic/archetype-based AI system.
         - Separates decision-making into Strategic Goal Selection (`StrategicEvaluator`) and Tactical Action Execution (`TacticalExecutor`).
-        - **Enhanced Tactical Execution:** `TacticalExecutor` now intelligently handles movement towards targets when direct actions (attack, skill) are not immediately possible, improving goal pursuit (e.g., closing distance to attack).
+        - **Enhanced Tactical Execution:** `TacticalExecutor` now intelligently handles movement towards targets when direct actions (attack, skill) are not immediately possible, improving goal pursuit (e.g., closing distance to attack). This includes specific enhancements for `MoveToSafetyGoal` and `SeizeTileGoal` when targets are not immediately reachable.
         - **Implemented Goals:** Expanded initial goal library (e.g., `HealUnitGoal`, `MoveToSafetyGoal`, `SeizeTileGoal`, `AttackUnitGoal`, `AdvanceToObjectiveGoal`, `SecurePositionGoal`).
         - **Utility & Tactical Refinement:** Integrated AI Personas into `UtilityScorer` (weighting considerations) and `TacticalExecutor` (influencing action scoring).
         - **Initial Scenario Testing:** Validated core logic using specific test scenarios.
         - **Improved Logging:** Dedicated `AILogger` provides detailed insights into goal selection and action evaluation.
+        - **Increased Robustness:** The AI v2 system is now more robust in handling various tactical situations due to these enhancements.
         - Implemented core status effects (Poison, Sleep, Petrify, Paralysis, Berserk, Silence).
     - Dismounting System
     - Support/Leadership System
