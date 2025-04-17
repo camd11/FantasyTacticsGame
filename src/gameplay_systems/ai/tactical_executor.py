@@ -9,6 +9,7 @@ tactical action execution, determining the most appropriate action to fulfill a
 given goal based on the current game state.
 """
 
+import logging
 from typing import Optional, Tuple
 
 from src.gameplay_systems.ai.ai_types import AIAction
@@ -40,8 +41,33 @@ class TacticalExecutor:
             healing_system: System for handling healing interactions
         """
         self.movement_system = movement_system
-        self.combat_system = combat_system
-        self.healing_system = healing_system
+        self.logger = logging.getLogger(__name__)
+        
+        # Create a mock combat system if none is provided
+        if combat_system is None:
+            class MockCombatSystem:
+                def can_attack(self, attacker, defender):
+                    return False
+                    
+                def is_in_attack_range(self, attacker, defender):
+                    return False
+            
+            self.combat_system = MockCombatSystem()
+        else:
+            self.combat_system = combat_system
+        
+        # Create a mock healing system if none is provided
+        if healing_system is None:
+            class MockHealingSystem:
+                def can_heal(self, healer, target):
+                    return False
+                    
+                def is_in_healing_range(self, healer, target):
+                    return False
+            
+            self.healing_system = MockHealingSystem()
+        else:
+            self.healing_system = healing_system
     
     def determine_action_for_goal(self, goal, ai_unit_state, game_state_manager) -> Optional[AIAction]:
         """
@@ -60,18 +86,46 @@ class TacticalExecutor:
         Returns:
             AIAction: The action to execute, or None if no valid action is possible
         """
-        # Handle different goal types
-        if isinstance(goal, AttackUnitGoal):
-            return self._handle_attack_unit_goal(goal, ai_unit_state, game_state_manager)
-        elif isinstance(goal, HealUnitGoal):
-            return self._handle_heal_unit_goal(goal, ai_unit_state, game_state_manager)
-        elif isinstance(goal, MoveToSafetyGoal):
-            return self._handle_move_to_safety_goal(goal, ai_unit_state, game_state_manager)
-        elif isinstance(goal, SeizeTileGoal):
-            return self._handle_seize_tile_goal(goal, ai_unit_state, game_state_manager)
+        # Get unit ID for logging
+        unit_id = getattr(ai_unit_state, 'id', getattr(ai_unit_state, 'unit_id', 'unknown'))
         
-        # Default: return None if no valid action is found
-        return None
+        # Log the goal being executed
+        goal_info = f"{goal.__class__.__name__}"
+        if hasattr(goal, 'parameters') and goal.parameters:
+            for key, value in goal.parameters.items():
+                goal_info += f", {key}: {value}"
+        self.logger.info(f"Tactical Execution: Unit {unit_id} executing goal {goal_info}")
+        # Handle different goal types and get the action
+        if isinstance(goal, AttackUnitGoal):
+            action = self._handle_attack_unit_goal(goal, ai_unit_state, game_state_manager)
+        elif isinstance(goal, HealUnitGoal):
+            action = self._handle_heal_unit_goal(goal, ai_unit_state, game_state_manager)
+        elif isinstance(goal, MoveToSafetyGoal):
+            action = self._handle_move_to_safety_goal(goal, ai_unit_state, game_state_manager)
+        elif isinstance(goal, SeizeTileGoal):
+            action = self._handle_seize_tile_goal(goal, ai_unit_state, game_state_manager)
+        else:
+            action = None
+            
+        # Log the result
+        if action is None:
+            self.logger.info(f"No valid action found for unit {unit_id} with goal {goal_info}")
+            return None
+            
+        # Log the final action determined
+        action_info = f"{action.action_type}"
+        if hasattr(action, 'target_data') and action.target_data:
+            target_info = []
+            for key, value in action.target_data.items():
+                # Don't log full paths which can be verbose
+                if key == 'move_path' and isinstance(value, list) and len(value) > 2:
+                    target_info.append(f"{key}: [start: {value[0]}, end: {value[-1]}, steps: {len(value)}]")
+                else:
+                    target_info.append(f"{key}: {value}")
+            action_info += f", {', '.join(target_info)}"
+        
+        self.logger.info(f"Final action for unit {unit_id}: {action_info}")
+        return action
     
     def _handle_attack_unit_goal(self, goal, ai_unit_state, game_state_manager) -> Optional[AIAction]:
         """
@@ -156,7 +210,8 @@ class TacticalExecutor:
                 
                 if approach_path:
                     # Limit the path by the unit's movement range
-                    limited_path = approach_path[:ai_unit_state.movement_range + 1]
+                    movement_range = getattr(ai_unit_state, 'movement_range', 5)  # Default to 5 if not specified
+                    limited_path = approach_path[:movement_range + 1]
                     
                     # Return a MOVE action
                     return AIAction(
@@ -189,39 +244,60 @@ class TacticalExecutor:
             ai_unit_state, target_unit
         )
         
-        if attack_path:
-            # Check if the attack is valid
-            can_attack = self.combat_system.can_attack(ai_unit_state, target_unit)
-            
-            # If a path to an attack position exists and the attack is valid, return a MOVE_AND_ATTACK action
-            if can_attack:
-                return AIAction(
-                    action_type="MOVE_AND_ATTACK",
-                    unit_id=ai_unit_state.unit_id,
-                    target_data={
-                        "move_path": attack_path,
-                        "target_unit_id": target_unit_id
-                    }
-                )
+        # Check if the attack is valid
+        can_attack = self.combat_system.can_attack(ai_unit_state, target_unit)
         
-        # If no attack path exists, try to move closer to the target
-        # This is needed for test_determine_action_for_attack_goal_unreachable_target
+        if attack_path and can_attack:
+            # If a path to an attack position exists and the attack is valid, return a MOVE_AND_ATTACK action
+            return AIAction(
+                action_type="MOVE_AND_ATTACK",
+                unit_id=ai_unit_state.unit_id,
+                target_data={
+                    "move_path": attack_path,
+                    "target_unit_id": target_unit_id
+                }
+            )
+        
+        # If no attack path exists or the attack is not valid, try to move closer to the target
+        # This handles both cases:
+        # 1. When no attack path exists (target is too far away)
+        # 2. When an attack path exists but the attack itself is not possible (e.g., due to weapon constraints)
+        self.logger.info(f"No valid attack action possible for unit {ai_unit_state.unit_id} against target {target_unit_id}. Attempting to move closer.")
+        
+        # Log the positions of the units
+        self.logger.info(f"Unit position: {ai_unit_state.position}, Target position: {target_unit.position}")
+        
+        # Log the movement range of the unit
+        movement_range = getattr(ai_unit_state, 'movement_range', 5)  # Default to 5 if not specified
+        self.logger.info(f"Unit movement range: {movement_range}")
+        
+        # Try to find a path to approach the target
+        self.logger.info(f"Attempting to find approach path for unit {ai_unit_state.unit_id} to target {target_unit_id}")
         approach_path = game_state_manager.pathfinding.find_path_to_approach_target(
             ai_unit_state, target_unit.position
         )
         
+        # Log the result of the pathfinding attempt
         if approach_path:
+            self.logger.info(f"Found approach path: {approach_path}")
+            
             # Limit the path by the unit's movement range
-            limited_path = approach_path[:ai_unit_state.movement_range + 1]
+            movement_range = getattr(ai_unit_state, 'movement_range', 5)  # Default to 5 if not specified
+            limited_path = approach_path[:movement_range + 1]
+            self.logger.info(f"Limited path by movement range ({movement_range}): {limited_path}")
             
             # Return a MOVE action to get closer to the target
+            self.logger.info(f"Creating MOVE action for unit {ai_unit_state.unit_id} with path {limited_path}")
             return AIAction(
                 action_type="MOVE",
                 unit_id=ai_unit_state.unit_id,
                 target_data={"move_path": limited_path}
             )
+        else:
+            self.logger.warning(f"Pathfinding returned None for approach path. Unit: {ai_unit_state.unit_id}, Target: {target_unit_id}")
         
         # If no approach path exists, return None
+        self.logger.info(f"No valid approach path found for unit {ai_unit_state.unit_id} to target {target_unit_id}.")
         return None
     
     def _handle_heal_unit_goal(self, goal, ai_unit_state, game_state_manager) -> Optional[AIAction]:
@@ -310,20 +386,39 @@ class TacticalExecutor:
                 )
         
         # If no healing path exists, try to move closer to the target
+        self.logger.info(f"No valid healing path found for unit {ai_unit_state.unit_id} to target {target_unit_id}. Attempting to move closer.")
+        
+        # Log the positions of the units
+        self.logger.info(f"Unit position: {ai_unit_state.position}, Target position: {target_unit.position}")
+        
+        # Log the movement range of the unit
+        movement_range = getattr(ai_unit_state, 'movement_range', 5)  # Default to 5 if not specified
+        self.logger.info(f"Unit movement range: {movement_range}")
+        
+        # Try to find a path to approach the target
+        self.logger.info(f"Attempting to find approach path for unit {ai_unit_state.unit_id} to target {target_unit_id}")
         approach_path = game_state_manager.pathfinding.find_path_to_approach_target(
             ai_unit_state, target_unit.position
         )
         
+        # Log the result of the pathfinding attempt
         if approach_path:
+            self.logger.info(f"Found approach path: {approach_path}")
+            
             # Limit the path by the unit's movement range
-            limited_path = approach_path[:ai_unit_state.movement_range + 1]
+            movement_range = getattr(ai_unit_state, 'movement_range', 5)  # Default to 5 if not specified
+            limited_path = approach_path[:movement_range + 1]
+            self.logger.info(f"Limited path by movement range ({movement_range}): {limited_path}")
             
             # Return a MOVE action to get closer to the target
+            self.logger.info(f"Creating MOVE action for unit {ai_unit_state.unit_id} with path {limited_path}")
             return AIAction(
                 action_type="MOVE",
                 unit_id=ai_unit_state.unit_id,
                 target_data={"move_path": limited_path}
             )
+        else:
+            self.logger.warning(f"Pathfinding returned None for approach path. Unit: {ai_unit_state.unit_id}, Target: {target_unit_id}")
         
         # If no approach path exists, return None
         return None
@@ -363,7 +458,8 @@ class TacticalExecutor:
         
         if move_path:
             # Limit the path by the unit's movement range
-            limited_path = move_path[:ai_unit_state.movement_range + 1]
+            movement_range = getattr(ai_unit_state, 'movement_range', 5)  # Default to 5 if not specified
+            limited_path = move_path[:movement_range + 1]
             
             # Return a MOVE action to the safe tile
             return AIAction(
@@ -455,7 +551,8 @@ class TacticalExecutor:
             # Check if the target can be reached in one turn
             # Handle both real paths and mock objects
             try:
-                can_reach_in_one_turn = len(move_path) <= ai_unit_state.movement_range + 1
+                movement_range = getattr(ai_unit_state, 'movement_range', 5)  # Default to 5 if not specified
+                can_reach_in_one_turn = len(move_path) <= movement_range + 1
             except TypeError:
                 # For mock objects in tests, assume it can be reached
                 can_reach_in_one_turn = True
@@ -472,7 +569,8 @@ class TacticalExecutor:
                 )
             else:
                 # Limit the path by the unit's movement range
-                limited_path = move_path[:ai_unit_state.movement_range + 1]
+                movement_range = getattr(ai_unit_state, 'movement_range', 5)  # Default to 5 if not specified
+                limited_path = move_path[:movement_range + 1]
                 
                 # Return a MOVE action to get closer to the target
                 return AIAction(

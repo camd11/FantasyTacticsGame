@@ -461,3 +461,182 @@ class SeizeTileGoal(Goal):
             List[Any]: A list of scoring considerations for seizing
         """
         return persona.get_scorers_for_goal(self.goal_type)
+
+
+class SecurePositionGoal(Goal):
+    """
+    Goal to secure a defensive position.
+    
+    This goal represents the strategic objective of moving to and securing
+    a position with good defensive properties. It is valid if there are
+    defensive tiles that can be reached by the AI unit.
+    """
+    
+    def __init__(self, ai_unit=None):
+        """
+        Initialize a SecurePositionGoal.
+        
+        Args:
+            ai_unit: The unit that will pursue this goal
+        """
+        super().__init__(ai_unit)
+        self.goal_type = "SECURE_POSITION"
+        self.parameters = {}  # No specific parameters needed initially
+    
+    def is_valid(self, unit, game_state_manager) -> bool:
+        """
+        Check if securing a position is a valid goal.
+        
+        A goal is valid if:
+        - There are defensive tiles on the map
+        - At least one defensive tile can potentially be reached
+        
+        Args:
+            unit: The unit considering this goal
+            game_state_manager: The current game state
+            
+        Returns:
+            bool: True if the goal is valid, False otherwise
+        """
+        # Find defensive tiles
+        defensive_tiles = game_state_manager.find_defensive_tiles()
+        
+        # Check if there are any defensive tiles
+        if not defensive_tiles:
+            return False
+            
+        # Check if at least one defensive tile is potentially reachable
+        for tile in defensive_tiles:
+            if game_state_manager.pathfinding.can_potentially_reach(unit, tile):
+                return True
+                
+        return False
+    
+    def generate_potential_actions(self, unit, game_state_manager) -> List[Any]:
+        """
+        Generate potential movement actions to defensive tiles.
+        
+        Args:
+            unit: The unit pursuing this goal
+            game_state_manager: The current game state
+            
+        Returns:
+            List[Any]: A list of potential movement actions
+        """
+        actions = []
+        
+        # Find defensive tiles that the unit can move to
+        defensive_tiles = game_state_manager.find_defensive_tiles()
+        
+        for tile in defensive_tiles:
+            if game_state_manager.pathfinding.is_reachable(unit, tile):
+                # Create Move+Wait action instances
+                # The actual action class would depend on the game's implementation
+                action = {"type": "MoveWait", "target_position": tile}
+                actions.append(action)
+                
+        return actions
+    
+    def get_tactical_scorers(self, persona) -> List[Any]:
+        """
+        Provide scorers relevant to securing positions.
+        
+        Args:
+            persona: The AI persona/profile that influences scoring
+            
+        Returns:
+            List[Any]: A list of scoring considerations for securing positions
+        """
+        return persona.get_scorers_for_goal(self.goal_type)
+
+
+class AdvanceToObjectiveGoal(Goal):
+    """
+    Goal to advance toward a map objective.
+    
+    This goal represents the strategic objective of moving toward a map objective,
+    such as a throne, gate, or escape point. It is valid if there is a map objective
+    that can potentially be reached by the AI unit.
+    """
+    
+    def __init__(self, ai_unit=None):
+        """
+        Initialize an AdvanceToObjectiveGoal.
+        
+        Args:
+            ai_unit: The unit that will pursue this goal
+        """
+        super().__init__(ai_unit)
+        self.goal_type = "ADVANCE_TO_OBJECTIVE"
+        self.parameters = {}  # No specific parameters needed initially
+    
+    def is_valid(self, unit, game_state_manager) -> bool:
+        """
+        Check if advancing to an objective is a valid goal.
+        
+        A goal is valid if:
+        - There is at least one map objective
+        - At least one map objective can potentially be reached
+        
+        Args:
+            unit: The unit considering this goal
+            game_state_manager: The current game state
+            
+        Returns:
+            bool: True if the goal is valid, False otherwise
+        """
+        # Find map objectives
+        objectives = game_state_manager.get_map_objectives(unit.faction)
+        
+        # Check if there are any objectives
+        if not objectives:
+            return False
+            
+        # Check if at least one objective is potentially reachable
+        for objective in objectives:
+            if game_state_manager.pathfinding.can_potentially_reach(unit, objective.position):
+                return True
+                
+        return False
+    
+    def generate_potential_actions(self, unit, game_state_manager) -> List[Any]:
+        """
+        Generate potential movement actions toward objectives.
+        
+        Args:
+            unit: The unit pursuing this goal
+            game_state_manager: The current game state
+            
+        Returns:
+            List[Any]: A list of potential movement actions
+        """
+        actions = []
+        
+        # Find map objectives for the unit's faction
+        objectives = game_state_manager.get_map_objectives(unit.faction)
+        
+        for objective in objectives:
+            # Find reachable positions that advance toward the objective
+            advancing_positions = game_state_manager.get_advancing_positions(
+                unit, objective.position
+            )
+            
+            for pos in advancing_positions:
+                # Create Move+Wait action instances
+                # The actual action class would depend on the game's implementation
+                action = {"type": "MoveWait", "target_position": pos}
+                actions.append(action)
+                
+        return actions
+    
+    def get_tactical_scorers(self, persona) -> List[Any]:
+        """
+        Provide scorers relevant to advancing toward objectives.
+        
+        Args:
+            persona: The AI persona/profile that influences scoring
+            
+        Returns:
+            List[Any]: A list of scoring considerations for advancing
+        """
+        return persona.get_scorers_for_goal(self.goal_type)

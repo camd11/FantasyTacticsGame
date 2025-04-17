@@ -19,20 +19,24 @@ The AI operates in two main phases for each unit's turn:
         *   `HealUnitGoal`: Focuses on restoring HP to allied units.
         *   `MoveToSafetyGoal`: Prioritizes moving the unit away from immediate threats.
         *   `SeizeTileGoal`: Aims to capture a specific objective tile (e.g., throne, gate).
+        *   `AttackUnitGoal`: Focuses on attacking enemy units.
+        *   `AdvanceToObjectiveGoal`: Moves towards a designated map objective.
+        *   `SecurePositionGoal`: Holds a defensive position.
     *   **Goal Logic:** Each goal includes methods for:
         *   `is_valid(unit, state)`: Checks if the goal is applicable.
         *   `calculate_relevance(unit, state, persona)`: Scores the goal's importance.
         *   `generate_actions(unit, state)`: Creates potential action sequences.
         *   `evaluate_action(action, unit, state, persona)`: Scores a specific action for this goal.
-        *   Evaluating actions specifically within the goal's context.
 *   **`strategic_evaluator.py` (`StrategicEvaluator`):**
     *   **Responsibility:** Implements Phase 1. It enumerates valid Goals from the Goal Library for the current unit, scores their relevance using weighted considerations (influenced by the AI Persona), and selects the highest-scoring Goal.
     *   **Dependencies:** `goals.py`, `utility_scorer.py`, AI Persona configurations.
 *   **`tactical_executor.py` (`TacticalExecutor`):**
-    *   **Responsibility:** Implements Phase 2. Given the selected Goal, it generates relevant action sequences (move, attack, skill, item use), scores them using goal-specific utility considerations (factoring in Persona weights via `UtilityScorer`), selects the optimal sequence, and translates it into game commands.
+    *   **Responsibility:** Implements Phase 2. Given the selected Goal, it generates relevant action sequences (move, attack, skill, item use). **Crucially, if no direct action (like attack or skill use) is immediately feasible but the goal involves a target (e.g., ATTACK_UNIT, ADVANCE_TO_OBJECTIVE), the `TacticalExecutor` will generate a 'move-towards-target' action sequence to close the distance.** Actions are scored using goal-specific utility considerations (factoring in Persona weights via `UtilityScorer`), the optimal sequence is selected, and translated into game commands.
     *   **Dependencies:** `goals.py`, `utility_scorer.py`, AI Persona configurations, various game systems (Movement, Combat, Skill, Item, etc.).
 *   **`utility_scorer.py` (`UtilityScorer` / Scoring Functions):**
     *   **Responsibility:** Provides a modular library of scoring functions (Considerations) used by both the `StrategicEvaluator` (for Goals) and the `TacticalExecutor` (for Actions). These functions evaluate factors like damage potential, risk, healing, positioning, etc. Crucially, the *weights* applied to these considerations are influenced by the unit's assigned **AI Persona**, allowing for varied behavior.
+*   **`ai_logger.py` (`AILogger`):**
+    *   **Responsibility:** Provides a dedicated logging system for detailed insights into the AI's decision-making process. Logs strategic goal selection (including scores) and tactical action evaluation (including considered actions and their scores). This is invaluable for debugging and tuning AI behavior. Log output is typically directed to `ai_behavior.log`.
 *   **AI Personas (Configuration):**
     *   **Responsibility:** Defined externally (likely in YAML or similar data files, managed perhaps by `AIProfileManager` or loaded directly). Personas define behavioral tendencies by assigning different weights to Goals and utility considerations for different unit types (e.g., Aggressor, Defender, Support).
 
@@ -46,18 +50,22 @@ The AI operates in two main phases for each unit's turn:
     *   Each Goal is scored based on the current state, unit capabilities, and Persona weights, using functions from `utility_scorer.py`.
     *   The highest-scoring Goal is selected.
 3.  **Phase 2: Action Execution (via `TacticalExecutor`)**
-    *   Actions relevant *only* to the selected Goal are generated (using logic within the Goal definition and game systems).
+    *   Actions relevant *only* to the selected Goal are generated (using logic within the Goal definition and game systems). This includes move-towards-target actions if direct actions aren't possible.
     *   These actions are scored using goal-specific utility considerations (from `utility_scorer.py` and the Goal definition).
     *   The highest-scoring action sequence is chosen.
 4.  **Execution:** The `AIManager` translates the chosen action sequence into commands for the game engine.
 
 This two-phase approach aims to create more strategically sound and contextually appropriate AI behavior compared to the previous system, while also offering potential performance benefits by pruning the action space early.
 
-## 4. Testing and Scenarios
+## 4. Testing and Observation
 
-The AI system's behavior is tested using specific game scenarios defined in YAML files. These scenarios set up controlled situations to verify goal selection and action execution under different conditions.
+### 4.1 Scenario-Based Testing
+The AI system's core logic (goal selection, action evaluation) is tested using specific game scenarios defined in YAML files (e.g., `data/scenarios/ai_test_*.yaml`). These scenarios set up controlled situations to verify behavior under specific conditions.
 
-*   **`data/scenarios/ai_test_scenario_01.yaml`:** Tests basic combat goal prioritization and target selection.
-*   **`data/scenarios/ai_test_scenario_02.yaml`:** Tests support goals like healing (`HealUnitGoal`) and defensive positioning (`MoveToSafetyGoal`).
+### 4.2 AI vs AI Testing Framework
+A dedicated framework (`run_ai_vs_ai_test.py`, `test_ai_vs_ai_fixed.py`) allows for running full simulations where AI controls units on opposing teams. This provides a dynamic environment to observe emergent behaviors and interactions between different AI personas or configurations over multiple turns.
+*   **Purpose:** Useful for identifying high-level strategic flaws, balancing personas, and observing long-term goal pursuit.
+*   **Output:** Generates detailed logs (`ai_vs_ai_test.log`) capturing the state and decisions turn-by-turn.
+*   **Further Details:** See `AI_VS_AI_TESTING.md` for instructions on running tests, interpreting logs, and creating new scenarios.
 
-These scenarios are crucial for iterating on AI logic, tuning Persona weights, and ensuring robust behavior.
+Both scenario-based tests and the AI vs AI framework, combined with the detailed logging system (`ai_logger.py`), are crucial for iterating on AI logic, tuning Persona weights, and ensuring robust and intended behavior.

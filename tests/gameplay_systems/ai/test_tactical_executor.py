@@ -253,6 +253,79 @@ class TestTacticalExecutor:
         mock_pathfinding.find_path_to_attack_position.assert_called_once()
         mock_pathfinding.find_path_to_approach_target.assert_called_once()
 
+    def test_determine_action_for_attack_goal_invalid_attack(self):
+        """
+        Test that the TacticalExecutor handles the case where an attack path exists but the attack is not valid.
+        
+        This test verifies that when a path to the target exists but the attack itself is not possible
+        (e.g., due to weapon constraints, status effects), the TacticalExecutor will return a MOVE action
+        to get closer to the target.
+        """
+        # Arrange
+        # Create mock systems
+        mock_movement_system = Mock()
+        mock_combat_system = Mock()
+        
+        # Create mock AI unit
+        mock_ai_unit = Mock()
+        mock_ai_unit.unit_id = "ai_unit_1"
+        mock_ai_unit.position = (3, 3)
+        mock_ai_unit.movement_range = 3
+        mock_ai_unit.faction = "enemy"
+        
+        # Create mock target unit
+        mock_target_unit = Mock()
+        mock_target_unit.unit_id = "player_unit_1"
+        mock_target_unit.position = (7, 7)  # Within pathfinding range but not attackable
+        mock_target_unit.faction = "player"
+        
+        # Create mock game state manager
+        mock_game_state_manager = Mock()
+        mock_game_state_manager.get_unit_by_id.return_value = mock_target_unit
+        
+        # Set up pathfinding to return a valid attack path
+        mock_pathfinding = Mock()
+        mock_attack_path = [(3, 3), (4, 4), (5, 5), (6, 6)]  # Path to attack position
+        mock_pathfinding.find_path_to_attack_position.return_value = mock_attack_path
+        
+        # But also set up an approach path for moving closer
+        mock_approach_path = [(3, 3), (4, 4), (5, 5)]
+        mock_pathfinding.find_path_to_approach_target.return_value = mock_approach_path
+        mock_game_state_manager.pathfinding = mock_pathfinding
+        
+        # Set up combat system to indicate the attack is NOT valid
+        mock_combat_system.can_attack.return_value = False
+        mock_combat_system.get_weapon_range.return_value = (1, 1)  # Melee weapon
+        
+        # Create an AttackUnitGoal
+        target_unit_id = "player_unit_1"
+        attack_goal = AttackUnitGoal(target_unit_id=target_unit_id)
+        
+        # Create the TacticalExecutor
+        tactical_executor = TacticalExecutor(
+            movement_system=mock_movement_system,
+            combat_system=mock_combat_system
+        )
+        
+        # Act
+        action = tactical_executor.determine_action_for_goal(attack_goal, mock_ai_unit, mock_game_state_manager)
+        
+        # Assert
+        assert action is not None, "determine_action_for_goal should return an action"
+        assert isinstance(action, AIAction), "Action should be an AIAction instance"
+        assert action.action_type == "MOVE", "Action should be a MOVE action"
+        assert action.unit_id == mock_ai_unit.unit_id, "Action should be for the AI unit"
+        assert "move_path" in action.target_data, "Action should include a move path"
+        assert action.target_data["move_path"] == mock_approach_path[:mock_ai_unit.movement_range + 1], "Move path should be limited by movement range"
+        
+        # Verify the correct methods were called
+        mock_game_state_manager.get_unit_by_id.assert_called_with(target_unit_id)
+        mock_pathfinding.find_path_to_attack_position.assert_called_once()
+        # We expect can_attack to be called, but we don't assert exactly how many times
+        # as the implementation may call it multiple times for different checks
+        assert mock_combat_system.can_attack.called
+        mock_pathfinding.find_path_to_approach_target.assert_called_once()
+
     def test_determine_action_for_heal_unit_goal(self):
         """
         Test that the TacticalExecutor can determine an appropriate action for a HealUnitGoal.

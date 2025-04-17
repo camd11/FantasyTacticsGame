@@ -14,6 +14,7 @@ It selects the goal with the highest utility score, which is then used to guide
 the Tactical Phase of AI decision-making.
 """
 
+import logging
 from typing import List, Optional, Any, Dict, Type, Union
 from src.gameplay_systems.ai.utility_scorer import UtilityScorer
 from src.gameplay_systems.ai.goals import Goal, AttackUnitGoal
@@ -42,6 +43,7 @@ class StrategicEvaluator:
         """
         self.utility_scorer = utility_scorer
         self.goal_library = goal_library or [AttackUnitGoal]  # Default to AttackUnitGoal if none provided
+        self.logger = logging.getLogger(__name__)
     
     def select_best_goal(self, unit_state, game_state_manager, persona=None) -> Optional[Goal]:
         """
@@ -58,6 +60,8 @@ class StrategicEvaluator:
         Returns:
             Goal: The selected goal, or None if no valid goals are available
         """
+        # Get unit ID for logging
+        unit_id = getattr(unit_state, 'id', getattr(unit_state, 'unit_id', 'unknown'))
         best_goal = None
         highest_score = float('-inf')
         
@@ -73,11 +77,16 @@ class StrategicEvaluator:
         elif isinstance(persona, str):
             # If persona is provided as a string, get the persona object
             persona = AIPersona.get_persona(persona)
+            
+        # Log unit info and persona
+        persona_name = getattr(persona, 'name', str(persona))
+        self.logger.info(f"Strategic Evaluation: Unit {unit_id} with persona {persona_name}")
         
         # 1. Goal Enumeration & Validation
         potential_goals = self.generate_valid_goal_instances(unit_state, game_state_manager)
-        
+        self.logger.info(f"Valid goals considered: {len(potential_goals)}")
         # 2. Strategic Evaluation
+        goal_scores = []
         for goal in potential_goals:
             # Get the base score from the utility scorer
             base_score = self.utility_scorer.score_goal(goal, unit_state, game_state_manager)
@@ -86,11 +95,31 @@ class StrategicEvaluator:
             goal_weight = persona.get_goal_weight(goal.goal_type)
             weighted_score = base_score * goal_weight
             
+            # Log goal and score
+            goal_info = f"{goal.goal_type}"
+            if hasattr(goal, 'parameters') and goal.parameters:
+                for key, value in goal.parameters.items():
+                    goal_info += f", {key}: {value}"
+            goal_scores.append((goal, weighted_score, goal_info))
+            
             if weighted_score > highest_score:
                 highest_score = weighted_score
                 best_goal = goal
         
+        # Log all goal scores
+        for goal, score, goal_info in goal_scores:
+            self.logger.info(f"Goal {goal_info} - Score: {score:.2f}")
+        
         # 3. Goal Selection
+        if best_goal:
+            best_goal_info = f"{best_goal.goal_type}"
+            if hasattr(best_goal, 'parameters') and best_goal.parameters:
+                for key, value in best_goal.parameters.items():
+                    best_goal_info += f", {key}: {value}"
+            self.logger.info(f"Selected goal: {best_goal_info} with score {highest_score:.2f}")
+        else:
+            self.logger.info("No valid goal selected")
+        
         return best_goal
     
     def generate_valid_goal_instances(self, unit, game_state) -> List[Goal]:

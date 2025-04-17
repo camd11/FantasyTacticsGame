@@ -11,6 +11,7 @@ The AIManager provides a clean interface for the game system to interact with th
 handling all the complexity of the decision-making process internally.
 """
 
+import logging
 from typing import Optional, Union
 
 from src.gameplay_systems.ai.strategic_evaluator import StrategicEvaluator
@@ -46,6 +47,9 @@ class AIManager:
         # Load AI personas
         AIPersona.load_personas()
         self.state_manager = state_manager
+        
+        # Set up logger
+        self.logger = logging.getLogger(__name__)
     
     def determine_and_execute_action(self, unit_state, game_state_manager, persona=None) -> Optional[AIAction]:
         """
@@ -63,6 +67,9 @@ class AIManager:
         Returns:
             AIAction: The selected action, or None if no valid action is possible
         """
+        # Log the start of AI turn processing
+        unit_id = getattr(unit_state, 'id', getattr(unit_state, 'unit_id', 'unknown'))
+        self.logger.info(f"AI Turn Start: Processing unit {unit_id}")
         # Get the unit's persona if not provided
         if persona is None:
             # Try to get persona from unit_state
@@ -93,6 +100,7 @@ class AIManager:
             unit_state,
             game_state_manager
         )
-        
         # Return the selected action
+        self.logger.info(f"AI Turn End: Unit {unit_id} action determined: {selected_action.action_type if selected_action else 'None'}")
+        return selected_action
         return selected_action

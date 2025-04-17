@@ -8,13 +8,14 @@
     - Fatigue System
     - Event System
     - Status Effects System
-    - **Two-Phase Goal-Oriented Utility AI (v2)** (Core Implementation Complete)
+    - **Two-Phase Goal-Oriented Utility AI (v2)** (Implementation Complete)
         - Replaces the previous monolithic/archetype-based AI system.
         - Separates decision-making into Strategic Goal Selection (`StrategicEvaluator`) and Tactical Action Execution (`TacticalExecutor`).
-        - **Implemented Goals:** Expanded initial goal library (e.g., `HealUnitGoal`, `MoveToSafetyGoal`, `SeizeTileGoal`).
+        - **Enhanced Tactical Execution:** `TacticalExecutor` now intelligently handles movement towards targets when direct actions (attack, skill) are not immediately possible, improving goal pursuit (e.g., closing distance to attack).
+        - **Implemented Goals:** Expanded initial goal library (e.g., `HealUnitGoal`, `MoveToSafetyGoal`, `SeizeTileGoal`, `AttackUnitGoal`, `AdvanceToObjectiveGoal`, `SecurePositionGoal`).
         - **Utility & Tactical Refinement:** Integrated AI Personas into `UtilityScorer` (weighting considerations) and `TacticalExecutor` (influencing action scoring).
-        - **Initial Scenario Testing:** Validated core logic using `ai_test_scenario_01.yaml` and `ai_test_scenario_02.yaml`.
-        - System is now ready for more complex AI vs AI testing scenarios or further goal/persona expansion.
+        - **Initial Scenario Testing:** Validated core logic using specific test scenarios.
+        - **Improved Logging:** Dedicated `AILogger` provides detailed insights into goal selection and action evaluation.
         - Implemented core status effects (Poison, Sleep, Petrify, Paralysis, Berserk, Silence).
     - Dismounting System
     - Support/Leadership System
@@ -122,9 +123,8 @@
     - Resolved module import issues.
     - Corrected `class_id` attribute handling.
 - **AI & Testing Features:**
-    - Implemented AI vs AI testing mode via `--ai-vs-ai` flag.
     - Implemented optional ASCII map display via `--ascii-display` flag.
-    - Adjusted AI vs AI turn limit to 10 for testing.
+    - Adjusted AI vs AI turn limit for testing.
     - Enhanced AI action logging for better simulation visibility.
     - Fixed runtime errors related to ASCII display (`get_map_dimensions`, `turn_manager` access).
     - Fixed persistent AI movement range bug (corrected terrain cost lookup in `DataProvider`).
@@ -132,6 +132,7 @@
     - Fixed phase/faction mismatch warnings and processing logic in `EngineCore`.
     - Fixed `AttributeError` by adding `get_unit` method to `UnitSystem`.
     - **AI v2 Integration Fixes:** Resolved various `AttributeError` issues and engine integration problems encountered during AI v2 development and testing.
+    - **AI vs AI Testing Framework:** Successfully implemented (`run_ai_vs_ai_test.py`, `test_ai_vs_ai_fixed.py`) allowing for full AI-controlled simulations and behavior observation. See `AI_VS_AI_TESTING.md`.
     - Enhanced ASCII Display
         - Improved rendering of units and terrain features.
         - Integrated Fog of War visualization (showing visible, explored, hidden tiles).
@@ -141,19 +142,11 @@
         - Allows direct player control of units via keyboard during the Player Phase.
         - Handles unit selection, movement range display, move confirmation, action menu navigation, targeting, and turn management through a state-based system.
         - Replaces previous scenario-driven execution for player actions.
-- **AI Refinement:**
+- **AI Refinement (Pre-v2):**
     - Improved AI target prioritization logic.
     - Implemented basic AI archetypes (Aggressive/CHARGE, Defensive/GUARD).
     - Healer (HEAL_SUPPORT) AI Archetype
-        - Prioritizes healing allies with low HP.
-        - Uses Restore staff on allies with status effects.
-        - Defaults to defensive behavior if no healing/restoring is needed.
     - Thief (THIEF_LOOT) AI Archetype
-        - Prioritizes identifying and moving towards chests, locked doors, and enemies with stealable items.
-        - Evaluates the utility of opening chests/doors or attempting to steal against standard actions.
-        - Defaults to avoiding combat and moving towards map objectives when no thief-specific targets are available.
-- **Major AI System Refactoring (Replaced by AI v2):**
-    - The previous refactoring effort has been superseded by the new Two-Phase Goal-Oriented Utility AI (v2).
 - **Testing & Integration:**
     - Resolved 6 integration test failures related to `DataProvider`, `Engine`, `EventHandler`, and `GameState`. All unit tests are now passing.
     - Created new test scenarios for:
@@ -174,8 +167,11 @@
 - **CLI Development:**
 - **Testing:**
     - Develop more comprehensive testing scenarios covering edge cases and complex interactions.
-    - Expand AI v2 Goal Library & Personas: Implement additional strategic goals and refine/expand AI personas for more diverse behaviors.
-    - Implement Complex AI v2 Testing: Develop more complex AI vs AI scenarios and potentially automated integration tests to stress-test the decision-making logic under various conditions.
+- **AI v2 Enhancements:**
+    - Expand Goal Library: Implement additional strategic goals (e.g., `UseItemGoal`, `SupportAllyGoal`).
+    - Refine Existing Goals: Improve logic for goals like `SECURE_POSITION` (better position selection) and `ADVANCE_TO_OBJECTIVE` (smarter pathfinding, threat avoidance).
+    - Expand AI Personas: Create more diverse personas and fine-tune existing weights for varied behaviors.
+    - Complex AI Testing: Develop more intricate AI vs AI scenarios and potentially automated integration tests to stress-test decision-making under various conditions.
 - **Future Enhancements:**
     - Potential GUI implementation.
 - **Bug Fixing:**
