@@ -400,9 +400,10 @@ class TestStatusEffectsSystem(unittest.TestCase):
         # Configure mocks
         self.mock_game_state_manager.get_unit.return_value = mock_unit
         
-        # Test with Sleep status
-        self.status_effect_manager.has_status = MagicMock(side_effect=lambda unit, status:
-            status == "Sleep" if unit == unit_id else False)
+        # Mock get_active_statuses to return a mock Sleep status instance
+        mock_sleep_status_instance = MagicMock(spec=StatusEffectInstance)
+        mock_sleep_status_instance.name = "Sleep"
+        self.status_effect_manager.get_active_statuses = MagicMock(return_value=[mock_sleep_status_instance])
         
         # Act & Assert
         for action_type in action_types:
@@ -659,9 +660,12 @@ class TestStatusEffectsSystem(unittest.TestCase):
         # Configure mocks
         self.mock_game_state_manager.get_unit.return_value = mock_unit
         
-        # Test with Petrify status
-        self.status_effect_manager.has_status = MagicMock(side_effect=lambda unit, status:
-            status == "Petrify" if unit == unit_id else False)
+        # Mock get_active_statuses to return a mock Petrify status instance
+        mock_petrify_status_instance = MagicMock(spec=StatusEffectInstance)
+        mock_petrify_status_instance.name = "Petrify"
+        # Ensure effects list exists for iteration in can_perform_action, even if empty for this test
+        mock_petrify_status_instance.effects = []
+        self.status_effect_manager.get_active_statuses = MagicMock(return_value=[mock_petrify_status_instance])
         
         # Act & Assert
         for action_type in action_types:
@@ -683,9 +687,16 @@ class TestStatusEffectsSystem(unittest.TestCase):
         # Configure mocks
         self.mock_game_state_manager.get_unit.return_value = mock_unit
         
-        # Test with Petrify status
-        self.status_effect_manager.has_status = MagicMock(side_effect=lambda unit, status:
-            status == "Petrify" if unit == unit_id else False)
+        # Mock has_status for the check within get_modified_stats
+        self.status_effect_manager.has_status = MagicMock(side_effect=lambda u_id, s_name:
+            s_name == "Petrify" if u_id == unit_id else False)
+
+        # IMPORTANT: Ensure the unit_id exists in active_statuses for the outer check
+        # We can add a dummy status or the actual mock status
+        mock_petrify_status_instance = MagicMock(spec=StatusEffectInstance)
+        mock_petrify_status_instance.name = "Petrify"
+        mock_petrify_status_instance.effects = [] # Add effects attribute
+        self.status_effect_manager.active_statuses[unit_id] = [mock_petrify_status_instance]
         
         # Act
         result = self.status_effect_manager.get_modified_stats(unit_id, base_stats)

@@ -790,8 +790,8 @@ class CLIDisplay:
                                 cell_color = Colors.YELLOW
                     else:
                         # No unit, display terrain
-                        terrain_type = self.map_system.get_terrain_type(position)
-                        terrain_key = terrain_type.name if hasattr(terrain_type, 'name') else str(terrain_type)
+                        terrain_id = self.map_system.get_terrain_id_at(position)
+                        terrain_key = terrain_id.name if hasattr(terrain_id, 'name') else str(terrain_id)
                         
                         # Get terrain symbol and color
                         cell_char = ASCII_TERRAIN.get(terrain_key, '?')
@@ -901,8 +901,8 @@ class CLIDisplay:
                 
                 elif visibility == VISIBILITY_VISIBLE:
                     # Get terrain
-                    terrain_type = map_system.get_terrain_type(position)
-                    terrain_key = terrain_type.name if hasattr(terrain_type, 'name') else str(terrain_type)
+                    terrain_id = map_system.get_terrain_id_at(position)
+                    terrain_key = terrain_id.name if hasattr(terrain_id, 'name') else str(terrain_id)
                     char, fg_color, bg_color = TERRAIN_REPRESENTATION.get(terrain_key, TERRAIN_REPRESENTATION["INVALID"])
                     
                     # Check for unit

@@ -1,0 +1,49 @@
+# Chapter 2 Map
+# A placeholder map file for Chapter 2
+
+map_id: "chapter_2_map"
+name: "Chapter 2: The Journey Continues"
+width: 20
+height: 15
+
+# Map layout using terrain IDs
+# PLAINS (.), FOREST (F), FORT (O), MOUNTAIN (^), RIVER (~), BRIDGE (=), WALL (#), DOOR (D)
+layout: |
+  ....................
+  ....................
+  ....................
+  ....................
+  ....................
+  ....................
+  ....................
+  ....................
+  ....................
+  ....................
+  ....................
+  ....................
+  ....................
+  ....................
+  ....................
+
+# Special tiles
+special_tiles:
+  - position: [10, 7]
+    type: "VILLAGE"
+    name: "Village"
+    description: "A placeholder village."
+    
+  - position: [5, 5]
+    type: "FORT"
+    name: "Fort"
+    description: "A placeholder fort."
+    
+  - position: [15, 10]
+    type: "FORT"
+    name: "Enemy Fort"
+    description: "A placeholder enemy fort."
+    is_throne: true
+
+# Starting positions
+starting_positions:
+  player: [[2, 2], [3, 2], [2, 3], [3, 3]]
+  enemy: [[15, 10], [14, 10], [15, 9], [14, 9]]

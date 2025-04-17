@@ -1,0 +1,96 @@
+# Unit placements for AI Test Small Defeat Scenario
+placements:
+  # Player units
+  - unit_id: HALVAN
+    name: PlayerFighter
+    faction: PLAYER
+    position: [1, 1]
+    level: 5
+    start_inventory:
+      - IRON_AXE
+    stats_override:
+      HP: 24
+      STR: 7
+      MAG: 0
+      SKL: 5
+      SPD: 6
+      LUK: 3
+      DEF: 5
+      CON: 8
+      MOV: 5
+
+  - unit_id: TANYA
+    name: PlayerArcher
+    faction: PLAYER
+    position: [1, 2]
+    level: 5
+    start_inventory:
+      - IRON_BOW
+    stats_override:
+      HP: 18
+      STR: 4
+      MAG: 0
+      SKL: 5
+      SPD: 8
+      LUK: 6
+      DEF: 2
+      CON: 5
+      MOV: 5
+
+  # Enemy units
+  - unit_id: ENEMY_SOLDIER_1
+    name: EnemySoldier1
+    faction: ENEMY
+    position: [8, 8]
+    level: 7
+    start_inventory:
+      - IRON_LANCE
+    stats_override:
+      HP: 22
+      STR: 6
+      MAG: 0
+      SKL: 5
+      SPD: 5
+      LUK: 0
+      DEF: 5
+      CON: 7
+      MOV: 5
+    ai_archetype: CHARGE
+
+  - unit_id: ENEMY_SOLDIER_2
+    name: EnemySoldier2
+    faction: ENEMY
+    position: [7, 8]
+    level: 7
+    start_inventory:
+      - IRON_LANCE
+    stats_override:
+      HP: 22
+      STR: 6
+      MAG: 0
+      SKL: 5
+      SPD: 5
+      LUK: 0
+      DEF: 5
+      CON: 7
+      MOV: 5
+    ai_archetype: CHARGE
+
+  - unit_id: ENEMY_SOLDIER_3
+    name: EnemySoldier3
+    faction: ENEMY
+    position: [8, 7]
+    level: 7
+    start_inventory:
+      - IRON_LANCE
+    stats_override:
+      HP: 22
+      STR: 6
+      MAG: 0
+      SKL: 5
+      SPD: 5
+      LUK: 0
+      DEF: 5
+      CON: 7
+      MOV: 5
+    ai_archetype: CHARGE

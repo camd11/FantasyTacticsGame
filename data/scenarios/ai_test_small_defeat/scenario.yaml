@@ -1,0 +1,24 @@
+# AI Test Small Defeat Scenario
+# Tests AI behavior in a small map where player is likely to be defeated
+
+# Scenario metadata
+id: ai_test_small_defeat
+name: AI Test Small Defeat
+
+# Instructions for manual verification
+verification_instructions: |
+  This scenario tests AI behavior in a small map where the player is likely to be defeated.
+  
+  1. The enemy units have the CHARGE AI archetype, which means they will aggressively
+     move toward and attack player units.
+  
+  2. Observe how the enemy units coordinate their attacks against your units.
+  
+  3. The map is small (10x10) with minimal terrain obstacles, allowing the enemy units
+     to quickly reach and surround your units.
+  
+  4. The player has only two units (a Fighter and an Archer) against three enemy Soldiers,
+     creating a challenging situation.
+  
+  5. The enemy units are positioned at a distance that allows them to coordinate their
+     approach and attack within a few turns.

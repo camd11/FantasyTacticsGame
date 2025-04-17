@@ -1,0 +1,43 @@
+# Chapter 2 Main Configuration
+# References all other chapter data files
+
+chapter_id: "ch2_the_journey_continues"
+chapter_title: "The Journey Continues"
+description: "Leif and his companions continue their journey, facing new challenges."
+
+# References to other data files
+map_file: "data/chapters/chapter_2/map.yaml"
+units_file: "data/chapters/chapter_2/units.yaml"
+objectives_file: "data/chapters/chapter_2/objectives.yaml"
+events_file: "data/chapters/chapter_2/events.yaml"
+
+# Chapter-specific settings
+starting_turn: 1
+max_turns: 25
+weather: "clear"
+music_track: "battle_theme_02"
+
+# Initial camera position
+initial_camera_position: [2, 2]
+
+# Opening cutscene dialogue
+opening_dialogue:
+  - speaker: "LEIF"
+    line: "We've made it through the first challenge, but our journey is far from over."
+  - speaker: "FINN"
+    line: "Lord Leif, scouts report enemy forces ahead. They appear to be waiting for us."
+  - speaker: "EYVEL"
+    line: "We should proceed with caution. This terrain offers both advantages and challenges."
+  - speaker: "LEIF"
+    line: "Everyone, prepare for battle. We'll overcome this obstacle just as we did the last."
+
+# Ending cutscene dialogue
+ending_dialogue:
+  - speaker: "LEIF"
+    line: "Another victory, but at what cost? We must continue to grow stronger."
+  - speaker: "FINN"
+    line: "You're becoming a fine leader, Lord Leif. Your tactical decisions were sound."
+  - speaker: "EYVEL"
+    line: "The path ahead will only grow more difficult. We should rest while we can."
+  - speaker: "LEIF"
+    line: "Agreed. Tomorrow we continue our march. Our true goal still lies ahead."

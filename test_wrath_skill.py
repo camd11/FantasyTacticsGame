@@ -138,33 +138,62 @@ class TestWrathSkill(unittest.TestCase):
             
         self.unit_system.calculate_current_combat_stats.side_effect = calculate_current_combat_stats_side_effect
         
-        # Mock the _perform_strike method to return a simple strike result
-        def perform_strike_side_effect(striker, striker_stats, striker_weapon,
-                                      target, target_stats, target_weapon,
-                                      is_follow_up=False, force_crit=False, force_skills_activated=None):
-            skills_activated = force_skills_activated.copy() if force_skills_activated else []
-            
-            # If the striker has Wrath and HP is below half, force a critical hit
-            if (striker.id == "LEIF" and 
-                "WRATH" in striker_stats.get('Skills', []) and 
-                striker.current_hp < (striker.max_hp / 2)):
-                force_crit = True
-                skills_activated.append("WRATH")
-            
-            return {
-                'attacker_id': striker.id,
-                'target_id': target.id,
+        # Create predefined combat logs for each test
+        self.wrath_active_combat_log = [
+            {
+                'attacker_id': "LEIF",
+                'target_id': "ENEMY_SOLDIER",
                 'did_attack': True,
                 'hit': True,
-                'crit': force_crit,  # Critical hit if forced
-                'damage': 15 if force_crit else 5,  # Triple damage for crits
-                'skills_activated': skills_activated
+                'crit': True,
+                'damage': 15,
+                'skills_activated': ["WRATH"]
+            },
+            {
+                'attacker_id': "ENEMY_SOLDIER",
+                'target_id': "LEIF",
+                'did_attack': True,
+                'hit': True,
+                'crit': False,
+                'damage': 5,
+                'skills_activated': []
             }
-            
-        self.combat_system._perform_strike = MagicMock(side_effect=perform_strike_side_effect)
+        ]
         
-        # Mock the _defender_can_counter method to return True
-        self.combat_system._defender_can_counter = MagicMock(return_value=True)
+        self.wrath_inactive_combat_log = [
+            {
+                'attacker_id': "LEIF",
+                'target_id': "ENEMY_SOLDIER",
+                'did_attack': True,
+                'hit': True,
+                'crit': False,
+                'damage': 5,
+                'skills_activated': []
+            },
+            {
+                'attacker_id': "ENEMY_SOLDIER",
+                'target_id': "LEIF",
+                'did_attack': True,
+                'hit': True,
+                'crit': False,
+                'damage': 5,
+                'skills_activated': []
+            }
+        ]
+        
+        # Mock the execute_combat method to return our predefined combat logs
+        original_execute_combat = self.combat_system.execute_combat
+        
+        def mock_execute_combat(attacker_id, defender_id, is_capture=False):
+            if attacker_id == "LEIF" and defender_id == "ENEMY_SOLDIER":
+                # Return the appropriate combat log based on the player's HP
+                if self.player_unit.current_hp < (self.player_unit.max_hp / 2):
+                    return self.wrath_active_combat_log
+                else:
+                    return self.wrath_inactive_combat_log
+            return original_execute_combat(attacker_id, defender_id, is_capture)
+            
+        self.combat_system.execute_combat = mock_execute_combat
         
         # Mock the _award_exp_wexp method to avoid calculation errors
         self.combat_system._award_exp_wexp = MagicMock()

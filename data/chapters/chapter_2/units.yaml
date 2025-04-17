@@ -1,0 +1,80 @@
+# Chapter 2 Units
+# Defines initial unit placements, stats overrides, inventory, and AI
+
+units:
+  player:
+    - unit_id: "LEIF"
+      position: [2, 2]
+      stats_override:
+        level: 1
+        hp: 20
+      inventory:
+        - "IRON_SWORD"
+        - "RAPIER"
+        - "VULNERARY"
+      
+    - unit_id: "FINN"
+      position: [3, 2]
+      inventory:
+        - "IRON_LANCE"
+        - "JAVELIN"
+        - "VULNERARY"
+      
+    - unit_id: "EYVEL"
+      position: [2, 3]
+      inventory:
+        - "IRON_SWORD"
+        - "FLAME_SWORD"
+        - "VULNERARY"
+      
+    - unit_id: "OTHIN"
+      position: [3, 3]
+      inventory:
+        - "IRON_AXE"
+        - "HAND_AXE"
+        - "VULNERARY"
+
+  enemy:
+    - unit_id: "ENEMY_SOLDIER_1"
+      position: [14, 9]
+      class_override: "SOLDIER"
+      level_override: 3
+      inventory:
+        - "IRON_LANCE"
+      ai_archetype: "aggressive_melee"
+      
+    - unit_id: "ENEMY_SOLDIER_2"
+      position: [15, 9]
+      class_override: "SOLDIER"
+      level_override: 3
+      inventory:
+        - "IRON_LANCE"
+      ai_archetype: "aggressive_melee"
+      
+    - unit_id: "ENEMY_ARCHER_1"
+      position: [14, 10]
+      class_override: "ARCHER"
+      level_override: 3
+      inventory:
+        - "IRON_BOW"
+      ai_archetype: "stationary_ranged"
+      
+    - unit_id: "ENEMY_BOSS"
+      position: [15, 10]
+      class_override: "FIGHTER"
+      level_override: 6
+      inventory:
+        - "STEEL_AXE"
+        - "VULNERARY"
+      ai_archetype: "boss_stationary"
+      is_boss: true
+      name_override: "Chapter 2 Boss"
+
+  npc:
+    - unit_id: "VILLAGER"
+      position: [10, 7]
+      class_override: "CIVILIAN"
+      level_override: 1
+      inventory: []
+      ai_archetype: "civilian_stationary"
+      name_override: "Villager"

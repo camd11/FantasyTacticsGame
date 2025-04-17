@@ -100,6 +100,14 @@ class TestCombatResolver(unittest.TestCase):
         
         self.combat_system._defender_can_counter = MagicMock(return_value=True)
         
+        # Ensure no brave weapons or skills that might cause additional strikes
+        self.combat_system._is_brave_weapon = MagicMock(return_value=False)
+        self.combat_system._unit_has_skill = MagicMock(return_value=False)
+        
+        # Also mock these on the combatExecutor
+        self.combat_system.combatExecutor._is_brave_weapon = MagicMock(return_value=False)
+        self.combat_system.combatExecutor._unit_has_skill = MagicMock(return_value=False)
+        
         # Mock _perform_strike to simulate combat rounds
         # First strike: attacker hits for 6 damage
         # Second strike: defender counters for 4 damage
@@ -124,9 +132,15 @@ class TestCombatResolver(unittest.TestCase):
             }
         ]
         
-        # Create a list with enough strike results to avoid StopIteration
-        strike_results_extended = strike_results * 3  # Make sure we have enough results
-        self.combat_system._perform_strike = MagicMock(side_effect=strike_results_extended)
+        # Mock perform_strike to return exactly two results, then raise error
+        mock_perform_strike = MagicMock()
+        # Raise an exception if called more than twice
+        mock_perform_strike.side_effect = [
+            strike_results[0],
+            strike_results[1],
+            Exception("perform_strike called more than twice!")
+        ]
+        self.combat_system.combatEffectsHandler.perform_strike = mock_perform_strike
         
         # Simulate HP changes during combat
         def mock_apply_damage(unit_id, damage):

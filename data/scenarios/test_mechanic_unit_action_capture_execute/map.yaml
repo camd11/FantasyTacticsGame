@@ -1,0 +1,8 @@
+# Map definition for Capture Execute Test Scenario
+dimensions: [5, 5]
+terrain_grid:
+  - [P, P, P, P, P]
+  - [P, P, P, P, P]
+  - [P, P, P, P, P]
+  - [P, P, P, P, P]
+  - [P, P, P, P, P]

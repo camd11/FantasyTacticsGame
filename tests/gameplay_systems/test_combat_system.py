@@ -399,11 +399,11 @@ class TestCombatSystem(unittest.TestCase):
         
         # Create a list with enough strike results to avoid StopIteration
         strike_results_extended = strike_results * 3  # Make sure we have enough results
-        self.combat_system._perform_strike = MagicMock(side_effect=strike_results_extended)
+        self.combat_system.combatEffectsHandler.perform_strike = MagicMock(side_effect=strike_results_extended)
         
         # Mock other methods
-        self.combat_system._award_exp_wexp = MagicMock()
-        self.combat_system._set_unit_dead = MagicMock()
+        self.combat_system.combatExecutor._award_exp_wexp = MagicMock()
+        self.combat_system.combatExecutor._set_unit_dead = MagicMock()
         
         # Simulate HP changes during combat
         def mock_apply_damage(unit_id, damage):
@@ -438,10 +438,10 @@ class TestCombatSystem(unittest.TestCase):
         ])
         
         # Verify EXP/WExp was awarded
-        self.combat_system._award_exp_wexp.assert_called_once()
+        self.combat_system.combatExecutor._award_exp_wexp.assert_called_once()
         
         # Verify defender was marked as dead
-        self.combat_system._set_unit_dead.assert_called_once_with(defender_id)
+        self.combat_system.combatExecutor._set_unit_dead.assert_called_once_with(defender_id)
     
     def test_execute_combat_with_capture(self):
         """Test execute_combat correctly handles capture."""
@@ -506,7 +506,7 @@ class TestCombatSystem(unittest.TestCase):
         }.get(unit))
         
         # Mock _apply_capture_penalty_to_stats
-        self.combat_system._apply_capture_penalty_to_stats = MagicMock()
+        self.combat_system.combatExecutor._apply_capture_penalty_to_stats = MagicMock()
         
         # Mock _calculate_distance to return an integer
         self.combat_system._calculate_distance = MagicMock(return_value=1)
@@ -525,7 +525,7 @@ class TestCombatSystem(unittest.TestCase):
         
         # Create a list with enough strike results to avoid StopIteration
         strike_results = [strike_result] * 10  # Make sure we have plenty of results
-        self.combat_system._perform_strike = MagicMock(side_effect=strike_results)
+        self.combat_system.combatEffectsHandler.perform_strike = MagicMock(side_effect=strike_results)
         
         # Simulate HP changes during combat
         def mock_apply_damage(unit_id, damage):
@@ -538,9 +538,9 @@ class TestCombatSystem(unittest.TestCase):
         self.mock_game_state_manager.apply_damage = MagicMock(side_effect=mock_apply_damage)
         
         # Mock other methods
-        self.combat_system._award_exp_wexp = MagicMock()
-        self.combat_system._set_unit_captured = MagicMock()
-        self.combat_system._set_unit_dead = MagicMock()
+        self.combat_system.combatExecutor._award_exp_wexp = MagicMock()
+        self.combat_system.combatExecutor._set_unit_captured = MagicMock()
+        self.combat_system.combatExecutor._set_unit_dead = MagicMock()
         
         # Act
         result = self.combat_system.execute_combat(attacker_id, defender_id, is_capture)
@@ -549,11 +549,11 @@ class TestCombatSystem(unittest.TestCase):
         self.assertEqual(mock_defender.current_hp, 0)  # Defeated
         
         # Verify capture penalty was applied
-        self.combat_system._apply_capture_penalty_to_stats.assert_called_once()
+        self.combat_system.combatExecutor._apply_capture_penalty_to_stats.assert_called_once()
         
         # Verify defender was marked as captured, not dead
-        self.combat_system._set_unit_captured.assert_called_once_with(defender_id, attacker_id)
-        self.combat_system._set_unit_dead.assert_not_called()
+        self.combat_system.combatExecutor._set_unit_captured.assert_called_once_with(defender_id, attacker_id)
+        self.combat_system.combatExecutor._set_unit_dead.assert_not_called()
         # Verify unit stats were calculated
         self.mock_unit_system.calculate_current_combat_stats.assert_has_calls([
             call(attacker_id),
@@ -1064,7 +1064,7 @@ class TestCombatSystem(unittest.TestCase):
         
         # Create a list with enough strike results to avoid StopIteration
         strike_results_extended = strike_results * 3  # Make sure we have enough results
-        self.combat_system._perform_strike = MagicMock(side_effect=strike_results_extended)
+        self.combat_system.combatEffectsHandler.perform_strike = MagicMock(side_effect=strike_results_extended)
         
         # Simulate HP changes during combat
         def mock_apply_damage(unit_id, damage):
@@ -1080,7 +1080,7 @@ class TestCombatSystem(unittest.TestCase):
         self.mock_game_state_manager.apply_damage = MagicMock(side_effect=mock_apply_damage)
         
         # Mock other methods
-        self.combat_system._award_exp_wexp = MagicMock()
+        self.combat_system.combatExecutor._award_exp_wexp = MagicMock()
         
         # Act
         result = self.combat_system.execute_combat(attacker_id, defender_id)
@@ -1093,7 +1093,7 @@ class TestCombatSystem(unittest.TestCase):
         # First call should be for initial attack (is_follow_up=False)
         # Third call should be for follow-up attack (is_follow_up=True)
         # Verify that _perform_strike was called at least once
-        self.assertTrue(self.combat_system._perform_strike.called)
+        self.assertTrue(self.combat_system.combatEffectsHandler.perform_strike.called)
         
         # Verify the HP values are correct
         self.assertEqual(mock_attacker.current_hp, 15)  # 20 - 5

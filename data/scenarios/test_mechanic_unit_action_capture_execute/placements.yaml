@@ -1,0 +1,40 @@
+# Unit placements for Capture Execute Test Scenario
+placements:
+  # Player unit - Fighter with high CON for capturing
+  - unit_id: HALVAN
+    name: PlayerCapturer
+    faction: PLAYER
+    position: [2, 2]
+    level: 5
+    start_inventory:
+      - IRON_AXE
+    stats_override:
+      HP: 24
+      STR: 7
+      MAG: 0
+      SKL: 5
+      SPD: 6
+      LUK: 3
+      DEF: 5
+      CON: 8  # High CON to ensure capture is possible
+      MOV: 5
+
+  # Enemy unit - Weak soldier with low HP and CON to be captured
+  - unit_id: ENEMY_SOLDIER_1
+    name: EnemyCapturable
+    faction: ENEMY
+    position: [2, 3]  # Adjacent to the player unit
+    level: 3
+    start_inventory:
+      - IRON_LANCE
+    stats_override:
+      HP: 5  # Low HP to ensure capture is possible (HP <= Capturer's HP - 1)
+      STR: 4
+      MAG: 0
+      SKL: 3
+      SPD: 3
+      LUK: 0
+      DEF: 3
+      CON: 6  # Lower than the player unit's CON
+      MOV: 5
+    ai_archetype: STATIONARY  # Won't move, making it easier to test the capture

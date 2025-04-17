@@ -1,0 +1,27 @@
+# Chapter 2 Objectives
+# Defines win and loss conditions for the chapter
+
+objectives:
+  win:
+    - type: "seize_throne"
+      target_position: [15, 10]
+      required_unit: "LEIF"
+      description: "Seize the enemy fort with Leif"
+    
+    # Alternative win condition
+    - type: "defeat_boss"
+      target_unit_id: "ENEMY_BOSS"
+      description: "Defeat the enemy commander"
+
+  loss:
+    - type: "protagonist_defeated"
+      target_unit_id: "LEIF"
+      description: "Leif is defeated"
+    
+    - type: "turn_limit_exceeded"
+      turn_count: 25
+      description: "Failed to complete objectives within 25 turns"
+    
+    - type: "npc_defeated"
+      target_unit_id: "VILLAGER"
+      description: "Villager is defeated"

@@ -73,7 +73,9 @@ class CaptureHandler:
         captured_unit.is_captured = True
         
         # Make captured unit's inventory accessible
-        captured_unit.inventory.set_accessible(True)
+        # Handle different inventory types (in tests, inventory might be a list)
+        if hasattr(captured_unit.inventory, 'set_accessible'):
+            captured_unit.inventory.set_accessible(True)
         
         # Update combat log
         combat_log.set_capture_success()

@@ -1,0 +1,139 @@
+# Chapter 2 Events
+# Defines event triggers, events, and reinforcements
+
+# Event Triggers
+event_triggers:
+  - trigger_id: "turn_4_reinforcements"
+    type: "turn_start"
+    value: 4
+    
+  - trigger_id: "area_trigger"
+    type: "area_entered"
+    area: [[8, 8], [12, 10]]
+    faction: "player"
+    
+  - trigger_id: "talk_leif_finn"
+    type: "talk_available"
+    unit1_id: "LEIF"
+    unit2_id: "FINN"
+    
+  - trigger_id: "boss_defeated_trigger"
+    type: "unit_defeated"
+    target_unit_id: "ENEMY_BOSS"
+    
+  - trigger_id: "village_visited_trigger"
+    type: "village_visited"
+    target_position: [10, 7]
+    visiting_unit_faction: "player"
+
+# Events
+events:
+  - event_id: "reinforcements_appear"
+    trigger: "turn_4_reinforcements"
+    actions:
+      - type: "spawn_reinforcements"
+        group_id: "enemy_reinforcements"
+      - type: "show_dialogue"
+        dialogue_id: "reinforcement_warning"
+        
+  - event_id: "area_ambush"
+    trigger: "area_trigger"
+    actions:
+      - type: "show_dialogue"
+        dialogue_id: "area_ambush_dialogue"
+      - type: "spawn_reinforcements"
+        group_id: "area_ambushers"
+      - type: "set_trigger_inactive"
+        target_trigger_id: "area_trigger"
+        
+  - event_id: "leif_finn_conversation"
+    trigger: "talk_leif_finn"
+    actions:
+      - type: "enable_talk_option"
+        unit1_id: "LEIF"
+        unit2_id: "FINN"
+        dialogue_id: "leif_finn_convo"
+        
+  - event_id: "boss_drops_item"
+    trigger: "boss_defeated_trigger"
+    actions:
+      - type: "drop_item_at"
+        item_id: "DOOR_KEY"
+        position_from_trigger: true
+      - type: "show_dialogue"
+        dialogue_id: "boss_defeated_dialogue"
+        
+  - event_id: "village_reward"
+    trigger: "village_visited_trigger"
+    actions:
+      - type: "give_item_to_unit"
+        item_id: "VULNERARY"
+        recipient_unit_triggering: true
+      - type: "show_dialogue"
+        dialogue_id: "village_thanks"
+      - type: "set_trigger_inactive"
+        target_trigger_id: "village_visited_trigger"
+
+# Reinforcements
+reinforcements:
+  - group_id: "enemy_reinforcements"
+    units:
+      - unit_id: "ENEMY_SOLDIER_3"
+        position: [0, 0]
+        ai_archetype: "aggressive_melee"
+        inventory:
+          - "IRON_LANCE"
+      - unit_id: "ENEMY_SOLDIER_4"
+        position: [0, 1]
+        ai_archetype: "aggressive_melee"
+        inventory:
+          - "IRON_LANCE"
+    trigger: "turn_4_reinforcements"
+    
+  - group_id: "area_ambushers"
+    units:
+      - unit_id: "ENEMY_ARCHER_2"
+        position: [10, 8]
+        ai_archetype: "stationary_ranged"
+        inventory:
+          - "IRON_BOW"
+      - unit_id: "ENEMY_SOLDIER_5"
+        position: [10, 9]
+        ai_archetype: "aggressive_melee"
+        inventory:
+          - "IRON_LANCE"
+    trigger: "area_trigger"
+
+# Dialogue data (simplified, could be in a separate file)
+dialogue:
+  reinforcement_warning:
+    - speaker: "FINN"
+      line: "Lord Leif, enemy reinforcements are approaching!"
+    - speaker: "LEIF"
+      line: "We need to move quickly. Let's secure our position."
+      
+  area_ambush_dialogue:
+    - speaker: "EYVEL"
+      line: "Be careful, I sense an ambush ahead."
+    - speaker: "ENEMY_SOLDIER_5"
+      line: "Attack! Don't let them advance any further!"
+      
+  leif_finn_convo:
+    - speaker: "LEIF"
+      line: "Finn, what do you think about our current situation?"
+    - speaker: "FINN"
+      line: "We must proceed with caution, Lord Leif. The enemy seems well-prepared."
+    - speaker: "LEIF"
+      line: "I trust your judgment. Let's move forward carefully."
+      
+  boss_defeated_dialogue:
+    - speaker: "ENEMY_BOSS"
+      line: "Impossible... I cannot be defeated here..."
+    - speaker: "LEIF"
+      line: "Another victory, but our journey is far from over."
+      
+  village_thanks:
+    - speaker: "VILLAGER"
+      line: "Thank you for protecting our village! Please take this, it might help you."
+    - speaker: "LEIF"
+      line: "We're glad to help. Stay safe until peace returns to these lands."

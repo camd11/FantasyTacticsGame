@@ -1,0 +1,13 @@
+# Map definition for AI Test Small Defeat Scenario
+dimensions: [10, 10]
+terrain_grid:
+  - [P, P, P, P, P, P, P, P, P, P]
+  - [P, P, P, P, P, P, P, P, P, P]
+  - [P, P, F, P, P, P, P, P, P, P]
+  - [P, P, P, P, P, P, P, P, P, P]
+  - [P, P, P, P, F, F, P, P, P, P]
+  - [P, P, P, P, F, F, P, P, P, P]
+  - [P, P, P, P, P, P, P, P, P, P]
+  - [P, P, P, P, P, P, P, F, P, P]
+  - [P, P, P, P, P, P, P, P, P, P]
+  - [P, P, P, P, P, P, P, P, P, P]

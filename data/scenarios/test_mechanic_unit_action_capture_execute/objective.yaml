@@ -1,0 +1,5 @@
+# Objective for Capture Execute Test Scenario
+objective:
+  type: defeat_target
+  target: EnemyCapturable
+  description: "Capture the enemy soldier using the Capture command"

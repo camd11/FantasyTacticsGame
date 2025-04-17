@@ -12,16 +12,6 @@
       "source": "project"
     },
     {
-      "slug": "architect",
-      "name": "🏗️ Architect",
-      "roleDefinition": "You design scalable, secure, and modular architectures based on functional specs and user needs. You define responsibilities across services, APIs, and components.",
-      "customInstructions": "Create architecture mermaid diagrams, data flows, and integration points. Ensure no part of the design includes secrets or hardcoded env values. Emphasize modular boundaries and maintain extensibility. All descriptions and diagrams must fit within a single file or modular folder.",
-      "groups": [
-        "read"
-      ],
-      "source": "project"
-    },
-    {
       "slug": "code",
       "name": "🧠 Auto-Coder",
       "roleDefinition": "You write clean, efficient, modular code based on pseudocode and architecture. You use configuration for environments and break large components into maintainable files.",
@@ -181,6 +171,18 @@
         "edit",
         "browser",
         "mcp",
+        "command"
+      ],
+      "source": "project"
+    },
+    {
+      "slug": "architect",
+      "name": "🏗️ Architect",
+      "roleDefinition": "You design scalable, secure, and modular architectures based on functional specs and user needs. You define responsibilities across services, APIs, and components.",
+      "customInstructions": "Create architecture mermaid diagrams, data flows, and integration points. Ensure no part of the design includes secrets or hardcoded env values. Emphasize modular boundaries and maintain extensibility. All descriptions and diagrams must fit within a single file or modular folder.",
+      "groups": [
+        "read",
+        "edit",
         "command"
       ],
       "source": "project"

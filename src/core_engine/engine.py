@@ -236,7 +236,7 @@ class EngineCore:
         
         # Display ASCII map at the start of each phase if enabled
         # if self.ascii_display and hasattr(self.input_handler, 'display'):
-        #     self.input_handler.display.render_ascii_map(self.game_state_manager)
+        #     self.input_handler.display.render_ascii_map()
         
         # Get active faction units
         phase_enum = self.turn_manager._convert_to_phase_enum(current_phase)
@@ -293,7 +293,7 @@ class EngineCore:
                 
                 # Display ASCII map at the start of AI vs AI player phase if enabled
                 if self.ascii_display and hasattr(self.input_handler, 'display'):
-                    self.input_handler.display.render_ascii_map(self.game_state_manager)
+                    self.input_handler.display.render_ascii_map()
                 
                 # Debug information about active units
                 logging.info(f"ENGINE DEBUGGING: AI vs AI mode active for PLAYER phase")
@@ -332,7 +332,7 @@ class EngineCore:
                                     if action_success:
                                         logging.info(f"ENGINE DEBUGGING: AI action executed successfully for {unit.name}")
                                         if self.ascii_display and hasattr(self.input_handler, 'display'):
-                                            self.input_handler.display.render_ascii_map(self.game_state_manager)
+                                            self.input_handler.display.render_ascii_map()
                                     else:
                                         logging.warning(f"ENGINE DEBUGGING: AI action failed for {unit.name}")
                                         logging.warning(f"ENGINE DEBUGGING: Action data: {ai_action}")
@@ -346,7 +346,7 @@ class EngineCore:
                                 
                                 # Display ASCII map after each AI action in AI vs AI mode if enabled
                                 if self.ascii_display and hasattr(self.input_handler, 'display'):
-                                    self.input_handler.display.render_ascii_map(self.game_state_manager)
+                                    self.input_handler.display.render_ascii_map()
                             else:
                                 # AI decides to wait or cannot act
                                 logging.info(f"ENGINE DEBUGGING: AI decided to wait for {unit.name} (no action returned)")
@@ -399,7 +399,7 @@ class EngineCore:
             
             # Display ASCII map at the start of enemy/NPC phase if enabled
             if self.ascii_display and hasattr(self.input_handler, 'display'):
-                self.input_handler.display.render_ascii_map(self.game_state_manager)
+                self.input_handler.display.render_ascii_map()
             
             # Determine unit order (e.g., based on deployment list or initiative)
             ordered_units = self._sort_units_for_ai(self.active_faction_units)
@@ -433,7 +433,7 @@ class EngineCore:
                             
                             # Display ASCII map after each AI action if enabled
                             if self.ascii_display and hasattr(self.input_handler, 'display'):
-                                self.input_handler.display.render_ascii_map(self.game_state_manager)
+                                self.input_handler.display.render_ascii_map()
                         else:
                             # AI decides to wait or cannot act
                             logging.info(f"AI decided to wait for {unit.name}")
@@ -742,7 +742,7 @@ class EngineCore:
                             if action_success:
                                 logging.info(f"AI action executed successfully for {unit.name}")
                                 if self.ascii_display and hasattr(self.input_handler, 'display'):
-                                    self.input_handler.display.render_ascii_map(self.game_state_manager)
+                                    self.input_handler.display.render_ascii_map()
                             else:
                                 logging.warning(f"AI action failed for {unit.name}")
                                 
@@ -760,7 +760,7 @@ class EngineCore:
                         
                         # Display ASCII map after each AI action if enabled
                         if self.ascii_display and hasattr(self.input_handler, 'display'):
-                            self.input_handler.display.render_ascii_map(self.game_state_manager)
+                            self.input_handler.display.render_ascii_map()
                     else:
                         # AI decides to wait or cannot act
                         wait_message = f"AI decided to wait for {unit.name}"
