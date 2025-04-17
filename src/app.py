@@ -19,7 +19,10 @@ from src.core_engine.engine import EngineCore
 from src.core_engine.engine_api import GameEngineAPI
 
 # Import gameplay systems
-from src.gameplay_systems.ai_manager import AIManager
+from src.gameplay_systems.ai.ai_manager import AIManager
+from src.gameplay_systems.ai.strategic_evaluator import StrategicEvaluator
+from src.gameplay_systems.ai.tactical_executor import TacticalExecutor
+from src.gameplay_systems.ai.utility_scorer import UtilityScorer
 from src.gameplay_systems.combat_system import CombatSystem
 from src.gameplay_systems.map_system import MapSystem
 from src.gameplay_systems.movement_system import MovementSystem
@@ -128,7 +131,11 @@ class GameApplication:
         self.event_handler = EventHandler()
         
         # Gameplay systems
-        self.ai_manager = AIManager()
+        # Create AI components
+        utility_scorer = UtilityScorer(self.game_state_manager)
+        strategic_evaluator = StrategicEvaluator(utility_scorer)
+        tactical_executor = TacticalExecutor()
+        self.ai_manager = AIManager(strategic_evaluator, tactical_executor, self.game_state_manager)
         self.combat_system = CombatSystem()
         self.map_system = MapSystem()
         self.movement_system = MovementSystem()
@@ -207,16 +214,10 @@ class GameApplication:
         self.inventory_system.initialize(self.game_state_manager, self.data_provider)
         
         # Initialize AI manager with dependencies
-        self.ai_manager.initialize(
-            gameStateManager_instance=self.game_state_manager,
-            unitSystem_instance=self.unit_system,
-            mapSystem_instance=self.map_system,
-            movementSystem_instance=self.movement_system,
-            combatSystem_instance=self.combat_system,
-            actionHandler_instance=self.action_handler,
-            dataProvider_instance=self.data_provider,
-            inventorySystem_instance=self.inventory_system
-        )
+        # Initialize tactical executor with required systems
+        tactical_executor = self.ai_manager.tactical_executor
+        tactical_executor.movement_system = self.movement_system
+        tactical_executor.combat_system = self.combat_system
         
         # Initialize systems in the correct order (dependencies first)
         # First, systems with fewer dependencies
@@ -295,9 +296,8 @@ class GameApplication:
             logging.info(f"Initializing chapter: {chapter_id}")
             self.engine.initialize_chapter(chapter_id)
         
-        # Load AI profiles now that game state is initialized
-        logging.info("Loading AI profiles...")
-        self.ai_manager._load_ai_profiles()  # Call the private method to load profiles
+        # Initialize AI components now that game state is initialized
+        logging.info("Initializing AI components...")
         logging.info("AI profiles loaded.")
         
         return True

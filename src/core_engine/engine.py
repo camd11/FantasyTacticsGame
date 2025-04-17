@@ -316,7 +316,7 @@ class EngineCore:
                             logging.info(f"ENGINE DEBUGGING: AI determining action for player unit: {unit.name} at {unit.position}")
                             
                             # Get action from AIManager
-                            ai_action = self.ai_manager.determine_action(unit, self.game_state_manager)
+                            ai_action = self.ai_manager.determine_and_execute_action(unit, self.game_state_manager)
                             
                             if ai_action:
                                 logging.info(f"ENGINE DEBUGGING: AI selected action: {ai_action['type']} for {unit.name}")
@@ -413,7 +413,7 @@ class EngineCore:
                         logging.info(f"AI determining action for {current_phase.name} unit: {unit.name} at {unit.position}")
                         
                         # Get action from AIManager
-                        ai_action = self.ai_manager.determine_action(unit, self.game_state_manager)
+                        ai_action = self.ai_manager.determine_and_execute_action(unit, self.game_state_manager)
 
                         if ai_action:
                             logging.info(f"AI selected action: {ai_action['type']} for {unit.name}")
@@ -723,7 +723,7 @@ class EngineCore:
                     logging.info(f"AI determining action for {faction_name} unit: {unit.name} at {unit.position}")
                     
                     # Get action from AIManager
-                    ai_action = self.ai_manager.determine_action(unit, self.game_state_manager)
+                    ai_action = self.ai_manager.determine_and_execute_action(unit, self.game_state_manager)
                     
                     if ai_action:
                         logging.info(f"AI selected action: {ai_action['type']} for {unit.name}")

@@ -8,6 +8,11 @@
     - Fatigue System
     - Event System
     - Status Effects System
+    - **Two-Phase Goal-Oriented Utility AI (v2)** (Partially Implemented - Core Components)
+        - Replaces the previous monolithic AI system.
+        - Separates decision-making into Strategic Goal Selection and Tactical Action Execution.
+        - Aims to improve strategic coherence, context awareness, and performance.
+        - Core framework (State Manager, basic Goal Library, Evaluator, Executor) implemented.
         - Implemented core status effects (Poison, Sleep, Petrify, Paralysis, Berserk, Silence).
     - Dismounting System
     - Support/Leadership System
@@ -144,9 +149,8 @@
         - Prioritizes identifying and moving towards chests, locked doors, and enemies with stealable items.
         - Evaluates the utility of opening chests/doors or attempting to steal against standard actions.
         - Defaults to avoiding combat and moving towards map objectives when no thief-specific targets are available.
-- **Major AI System Refactoring:**
-    - Re-architected the monolithic `AIManager` into modular components (`AIProfileManager`, `AIActionEvaluator`, `AIActionScoring`, `ArchetypeHandlers`).
-    - Improved separation of concerns, testability, and extensibility.
+- **Major AI System Refactoring (Replaced by AI v2):**
+    - The previous refactoring effort has been superseded by the new Two-Phase Goal-Oriented Utility AI (v2).
 - **Testing & Integration:**
     - Resolved 6 integration test failures related to `DataProvider`, `Engine`, `EventHandler`, and `GameState`. All unit tests are now passing.
     - Created new test scenarios for:
@@ -167,6 +171,8 @@
 - **CLI Development:**
 - **Testing:**
     - Develop more comprehensive testing scenarios covering edge cases and complex interactions.
+    - Complete AI v2 Implementation (Goals, Scoring, Personas): Flesh out the goal library, refine scoring considerations, and implement AI personas.
+    - Implement AI v2 Testing Regime: Create dedicated test maps and automated tests for the new AI architecture.
 - **Future Enhancements:**
     - Potential GUI implementation.
 - **Bug Fixing:**
