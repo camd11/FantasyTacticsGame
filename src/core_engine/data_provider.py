@@ -207,6 +207,8 @@ class MapData:
         self.terrain_grid = data_dict.get('terrain_grid', [])
         self.seize_point = data_dict.get('seize_point', None)
         self.escape_points = data_dict.get('escape_points', [])
+        # Store the fog_of_war flag if present
+        self.fog_of_war = data_dict.get('fog_of_war', False)
 
 class UnitPlacement:
     """Represents the placement of a unit on a map."""
@@ -902,22 +904,32 @@ class DataProvider:
         Returns:
             MapData object or None if not found
         """
-        # Determine the filepath based on whether we're loading a scenario or a chapter
+        map_dict = None
         if scenario_name:
-            filepath = os.path.join("data", "scenarios", scenario_name, "map.json")
-            # Try YAML if JSON doesn't exist
-            if not os.path.exists(filepath):
-                filepath = os.path.join("data", "scenarios", scenario_name, "map.yaml")
+            # Load the scenario file itself
+            scenario_data = self._load_yaml_or_json(scenario_name)
+            if scenario_data:
+                # Map data is at the top level of the scenario YAML, use the whole dict
+                map_dict = scenario_data 
+                # Check if essential map keys are present before creating MapData
+                if not all(key in map_dict for key in ['id', 'dimensions', 'terrain_grid']):
+                     logging.warning(f"Scenario file {scenario_name} loaded, but missing essential map keys (id, dimensions, terrain_grid).")
+                     map_dict = None # Invalidate if keys are missing
+            else:
+                logging.warning(f"Could not load scenario file: {scenario_name}")
         else:
+            # Fallback to chapter-based loading (original logic)
             filepath = os.path.join("data", "chapters", chapter_id, "map.json")
-            # Try YAML if JSON doesn't exist
             if not os.path.exists(filepath):
                 filepath = os.path.join("data", "chapters", chapter_id, "map.yaml")
+            map_dict = self._load_yaml_or_json(filepath)
                 
-        map_dict = self._load_yaml_or_json(filepath)
+        # map_dict = self._load_yaml_or_json(filepath) <<< Removed original path logic
         if map_dict:
             # Convert dict to MapData object
             return MapData(map_dict)
+        
+        logging.warning(f"Could not find or load map data for chapter '{chapter_id}'/scenario '{scenario_name}'")
         return None
 
     def get_unit_placements(self, chapter_id: str, scenario_name: Optional[str] = None) -> List[UnitPlacement]:
@@ -931,32 +943,47 @@ class DataProvider:
         Returns:
             List of UnitPlacement objects (empty list if none found)
         """
-        # Determine the filepath based on whether we're loading a scenario or a chapter
+        placements_list = []
         if scenario_name:
-            filepath = os.path.join("data", "scenarios", scenario_name, "placements.json")
-            # Try YAML if JSON doesn't exist
-            if not os.path.exists(filepath):
-                filepath = os.path.join("data", "scenarios", scenario_name, "placements.yaml")
+            # Load the scenario file itself
+            scenario_data = self._load_yaml_or_json(scenario_name)
+            if scenario_data:
+                # Placements should be under the 'placements' key
+                placements_list_raw = scenario_data.get('placements')
+                if isinstance(placements_list_raw, list):
+                    placements_list = [UnitPlacement(p) for p in placements_list_raw]
+                elif placements_list_raw is not None: # Log if key exists but is not a list
+                     logging.warning(f"Scenario file {scenario_name} loaded, but 'placements' key is not a list (type: {type(placements_list_raw)}).")
+                else: # Log if key doesn't exist
+                     logging.warning(f"Scenario file {scenario_name} loaded, but key 'placements' not found.")
+            else:
+                 logging.warning(f"Could not load scenario file for placements: {scenario_name}")
         else:
+            # Fallback to chapter-based loading
             filepath = os.path.join("data", "chapters", chapter_id, "placements.json")
-            # Try YAML if JSON doesn't exist
             if not os.path.exists(filepath):
                 filepath = os.path.join("data", "chapters", chapter_id, "placements.yaml")
-                
-        placements_data = self._load_yaml_or_json(filepath)
+            
+            placements_data = self._load_yaml_or_json(filepath)
+            
+            # Handle both formats: direct list or dictionary with "placements" key
+            if isinstance(placements_data, dict) and "placements" in placements_data:
+                placements_list_raw = placements_data["placements"]
+                if isinstance(placements_list_raw, list):
+                    placements_list = [UnitPlacement(p) for p in placements_list_raw]
+            elif isinstance(placements_data, list):
+                 placements_list = [UnitPlacement(p) for p in placements_data]
+            elif placements_data: # Log if loaded but unexpected format
+                 logging.warning(f"Expected a list or dict with 'placements' key in chapter file {filepath}, but got {type(placements_data)}")
+
+        # Original loading logic removed
+        # placements_data = self._load_yaml_or_json(filepath)
+        # ... handling logic ...
         
-        # Handle both formats: direct list or dictionary with "placements" key
-        if isinstance(placements_data, dict) and "placements" in placements_data:
-            placements_list = placements_data["placements"]
-            if isinstance(placements_list, list):
-                return [UnitPlacement(p) for p in placements_list]
-        elif isinstance(placements_data, list):
-            return [UnitPlacement(p) for p in placements_data]
-        
-        if placements_data:
-            logging.warning(f"Expected a list or dict with 'placements' key in {filepath}, but got {type(placements_data)}")
-        
-        return []
+        if not placements_list:
+             logging.warning(f"No unit placements found or loaded for chapter '{chapter_id}'/scenario '{scenario_name}'.")
+
+        return placements_list
 
     def get_ballista_placements(self, chapter_id: str, scenario_name: Optional[str] = None) -> List:
         """

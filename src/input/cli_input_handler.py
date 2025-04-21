@@ -17,11 +17,12 @@ class CommandLineInputHandler:
     It supports natural language commands for a more intuitive gameplay experience.
     """
     
-    def __init__(self, interactive=True):
+    def __init__(self, display: CLIDisplay, interactive=True):
         """
         Initialize the CommandLineInputHandler.
         
         Args:
+            display: The CLIDisplay instance to use for output.
             interactive: Whether to enable interactive prompts for user input
         """
         self.game_state_manager = None
@@ -31,13 +32,14 @@ class CommandLineInputHandler:
         self.inventory_system = None
         self.data_provider = None
         self.interactive = interactive
-        self.display = CLIDisplay()
+        self.display = display # Use the provided display instance
         self.selected_unit_id = None  # Currently selected unit
         
     def initialize(self, game_state_manager, unit_system, movement_system, map_system,
                   inventory_system, data_provider):
         """
         Initialize the CliInputHandler with the necessary dependencies.
+        (No longer initializes the display here)
         
         Args:
             game_state_manager: Instance of the GameStateManager
@@ -54,15 +56,8 @@ class CommandLineInputHandler:
         self.inventory_system = inventory_system
         self.data_provider = data_provider
         
-        # Initialize the display module
-        self.display.initialize(
-            game_state_manager=game_state_manager,
-            unit_system=unit_system,
-            movement_system=movement_system,
-            map_system=map_system,
-            data_provider=data_provider,
-            combat_system=None  # Will be set later when combat_system is available
-        )
+        # Display is now initialized externally by GameApplication
+        # self.display.initialize(...)
         
         logging.info("CliInputHandler initialized.")
     

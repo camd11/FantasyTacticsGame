@@ -397,6 +397,7 @@ class GameStateManager:
         state.map_state = MapState()
         state.map_state.map_id = map_data.id
         state.map_state.dimensions = map_data.dimensions
+        state.map_state.map_data = map_data # Store the full MapData object
         
         # Convert string terrain codes to TerrainTypeEnum values
         terrain_grid = []
@@ -817,6 +818,12 @@ class GameStateManager:
             for unit in self.current_game_state.unit_states.values()
         )
     
+    def get_all_units(self) -> List[Any]:
+        """Return a list of all active units in the current game state."""
+        if self.current_game_state and hasattr(self.current_game_state, 'unit_states'):
+            return list(self.current_game_state.unit_states.values())
+        return []
+    
     # --- Modification Functions ---
     
     def move_unit(self, unit_id: str, new_position: Tuple[int, int]) -> bool:
@@ -1157,3 +1164,53 @@ class GameStateManager:
         # Check for rank up (simplified, would need actual WExp thresholds)
         # This is just a placeholder for the actual rank up logic
         logging.info(f"Unit {unit_id} gained {wexp_amount} WExp in {weapon_type}")
+
+    def is_unit_threatened(self, unit) -> bool:
+        """Check if the given unit is currently threatened by any enemy unit."""
+        if not unit or not self.current_game_state:
+            return False
+
+        unit_pos = unit.position
+        enemy_faction = FactionEnum.ENEMY if unit.faction == FactionEnum.PLAYER else FactionEnum.PLAYER
+        enemy_units = self.get_units_by_faction(enemy_faction)
+
+        for enemy in enemy_units:
+            # Simple range check for now. Assumes enemies have weapons.
+            # A more sophisticated check would involve pathfinding, weapon data, etc.
+            if hasattr(enemy, 'get_attack_range'):
+                min_range, max_range = enemy.get_attack_range()
+                distance = abs(unit_pos[0] - enemy.position[0]) + abs(unit_pos[1] - enemy.position[1])
+                if min_range <= distance <= max_range:
+                    # Further check: Ensure enemy is capable of attacking (not slept, etc.)
+                    # This check might belong in the AI logic itself rather than here.
+                    # For now, just being in range counts as a threat.
+                    # logging.debug(f"Unit {unit.id} at {unit_pos} threatened by {enemy.id} at {enemy.position} (Range: {distance}, Enemy Range: {min_range}-{max_range})")
+                    return True
+            else:
+                # Fallback for units without get_attack_range: assume standard 1-range attack
+                distance = abs(unit_pos[0] - enemy.position[0]) + abs(unit_pos[1] - enemy.position[1])
+                if distance <= 1:
+                     return True
+                     
+        return False
+
+    def find_defensive_tiles(self) -> List[Tuple[int, int]]:
+        """Find all tiles on the map that offer defensive bonuses."""
+        defensive_tiles = []
+        if not self.current_game_state or not self.current_game_state.map_state or not self.data_provider:
+            logging.warning("Cannot find defensive tiles: Game state, map state, or data provider not available.")
+            return defensive_tiles
+
+        rows, cols = self.current_game_state.map_state.dimensions
+        for r in range(rows):
+            for c in range(cols):
+                pos = (c, r)
+                terrain_type_enum = self.get_terrain_type(pos)
+                if terrain_type_enum:
+                    # Use DataProvider to check for bonuses
+                    bonuses = self.data_provider.get_terrain_bonuses(terrain_type_enum)
+                    # Check if DEF or AVO bonus exists and is positive
+                    if bonuses.get('def', 0) > 0 or bonuses.get('avo', 0) > 0:
+                        defensive_tiles.append(pos)
+        
+        return defensive_tiles

@@ -9,9 +9,12 @@ and enforces turn-based rules.
 import logging
 import random
 from enum import Enum, auto
-from typing import Dict, List, Tuple, Optional, Any, Set, Union
+from typing import Dict, List, Tuple, Optional, Any, Set, Union, TYPE_CHECKING
 
 from src.core_engine.game_state import GameStateManager, FactionEnum, PhaseEnum
+
+if TYPE_CHECKING:
+    from src.utils.visual_logger import VisualScenarioLogger
 
 
 class TurnPhase(Enum):
@@ -32,6 +35,7 @@ class TurnManager:
     def __init__(self):
         """Initialize the TurnManager."""
         self.gameStateManager = None
+        self.visual_logger: Optional['VisualScenarioLogger'] = None
         self.eventHandler = None
         self.unitSystem = None
         self.aiManager = None
@@ -47,7 +51,8 @@ class TurnManager:
         # Removed pursuit_star_rates as PCC is handled in CombatSystem
     
     def initialize(self, gameStateManager_instance, eventHandler_instance=None, unitSystem_instance=None,
-                  aiManager_instance=None, mapSystem_instance=None, dataProvider_instance=None):
+                  aiManager_instance=None, mapSystem_instance=None, dataProvider_instance=None,
+                  visual_logger=None):
         """
         Initialize the TurnManager with the necessary dependencies.
 
@@ -58,6 +63,7 @@ class TurnManager:
             aiManager_instance: Instance of the AIManager (optional)
             mapSystem_instance: Instance of the MapSystem (optional)
             dataProvider_instance: Instance of the DataProvider (optional)
+            visual_logger: Instance of VisualScenarioLogger (optional)
         """
         self.gameStateManager = gameStateManager_instance
         self.eventHandler = eventHandler_instance
@@ -65,6 +71,7 @@ class TurnManager:
         self.aiManager = aiManager_instance
         self.mapSystem = mapSystem_instance
         self.dataProvider = dataProvider_instance
+        self.visual_logger = visual_logger
         # Check if fatigue is enabled based on chapter
         if self.gameStateManager and self.dataProvider:
             current_chapter_id = self.gameStateManager.current_game_state.chapter_id if self.gameStateManager.current_game_state else None
@@ -138,6 +145,10 @@ class TurnManager:
         Returns:
             True if the turn started successfully, False otherwise
         """
+        # Log turn start using visual logger
+        if self.visual_logger:
+            self.visual_logger.log_turn_start(self.current_turn)
+        
         # Update game state
         self.gameStateManager.current_game_state.current_turn = self.current_turn
         
@@ -166,6 +177,10 @@ class TurnManager:
             True if the phase started successfully, False otherwise
         """
         self.current_phase = phase
+        
+        # Log phase start using visual logger
+        if self.visual_logger:
+            self.visual_logger.log_phase_start(self._convert_to_phase_enum(phase))
         
         # Update game state
         self.gameStateManager.current_game_state.current_phase = self._convert_to_phase_enum(phase)
@@ -220,16 +235,20 @@ class TurnManager:
         # Log the current phase ending
         logging.info(f"{self.current_phase.name} ended.")
         
-        # If we've completed all phases, end the turn
+        # If we've completed all phases, end the turn and log the state BEFORE starting the new turn
         if next_phase == TurnPhase.PLAYER_PHASE:
+            # Log end-of-turn state BEFORE incrementing turn and starting next
+            if self.visual_logger:
+                self.visual_logger.log_end_of_turn_state(self.current_turn)
+            
             # Increment the turn counter
             self.current_turn += 1
-            # Start the new turn
+            # Start the new turn (this will log the turn start)
             self.start_turn()
         else:
             # Update the current phase
             self.current_phase = next_phase
-            # Start the next phase
+            # Start the next phase (this will log the phase start)
             self.start_phase(next_phase)
         
         return True

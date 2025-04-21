@@ -9,9 +9,23 @@ and context, then executes valid actions by coordinating with other systems.
 import logging
 import random
 from enum import Enum, auto
-from typing import Dict, List, Tuple, Optional, Any, Set, Union
+from typing import Dict, List, Tuple, Optional, Any, Set, Union, TYPE_CHECKING
 
 from src.core_engine.game_state import GameStateManager, FactionEnum, PhaseEnum, StatusEffectEnum
+from src.gameplay_systems.ai.ai_types import AIAction # Add import for AIAction
+
+if TYPE_CHECKING:
+    # Import types for systems to avoid circular imports
+    from src.core_engine.data_provider import DataProvider
+    from src.core_engine.event_handler import EventHandler
+    from src.core_engine.turn_manager import TurnManager as CoreTurnManager
+    from src.gameplay_systems.turn_manager import TurnManager as GameplayTurnManager
+    from src.gameplay_systems.unit_system import UnitSystem
+    from src.gameplay_systems.map_system import MapSystem
+    from src.gameplay_systems.movement_system import MovementSystem
+    from src.gameplay_systems.combat_system import CombatSystem
+    from src.gameplay_systems.inventory_system import InventorySystem
+    from src.utils.visual_logger import VisualScenarioLogger
 
 
 class ActionType(Enum):
@@ -79,6 +93,7 @@ class ActionHandler:
         self.inventorySystem = None
         self.turnManager = None # Gameplay TurnManager
         self.coreTurnManager = None # Core Engine TurnManager
+        self.visual_logger: Optional['VisualScenarioLogger'] = None # Add visual logger
         self.eventHandler = None
         self.dataProvider = None
         self.ai_vs_ai = False  # Flag for AI vs AI mode
@@ -86,7 +101,7 @@ class ActionHandler:
     def initialize(self, gameStateManager_instance, unitSystem_instance, mapSystem_instance,
                   movementSystem_instance, combatSystem_instance, inventorySystem_instance,
                   turnManager_instance, eventHandler_instance, dataProvider_instance,
-                  core_turn_manager_instance):
+                  core_turn_manager_instance, visual_logger: Optional['VisualScenarioLogger'] = None):
         """
         Initialize the ActionHandler with the necessary dependencies.
         
@@ -101,6 +116,7 @@ class ActionHandler:
             core_turn_manager_instance: Instance of the Core Engine TurnManager
             eventHandler_instance: Instance of the EventHandler
             dataProvider_instance: Instance of the DataProvider
+            visual_logger: Optional instance of VisualScenarioLogger
         """
         self.gameStateManager = gameStateManager_instance
         self.unitSystem = unitSystem_instance
@@ -112,34 +128,40 @@ class ActionHandler:
         self.coreTurnManager = core_turn_manager_instance # Store Core Engine TurnManager
         self.eventHandler = eventHandler_instance
         self.dataProvider = dataProvider_instance
+        self.visual_logger = visual_logger # Store visual logger
         
         logging.info("ActionHandler initialized.")
     
-    def process_action(self, unit_id: str, action_data: Dict[str, Any]) -> bool:
+    def process_action(self, unit_id: str, action_data: Union[Dict[str, Any], AIAction]) -> bool:
         """
         Process an action for a unit based on the action data.
         
         Args:
             unit_id: ID of the unit performing the action
-            action_data: Dictionary containing action type and parameters
+            action_data: Dictionary or AIAction object containing action type and parameters
             
         Returns:
             True if the action was processed successfully, False otherwise
         """
-        action_type_str = action_data.get('type', '')
-        logging.debug(f"ActionHandler.process_action received action_data: {action_data}") # DEBUG LOGGING
-        logging.debug(f"ActionHandler.process_action determined action_type_str: '{action_type_str}'") # DEBUG LOGGING
         
-        # Get unit information for logging
-        unit = self.gameStateManager.get_unit(unit_id)
-        if not unit:
-            logging.error(f"Cannot process action: Unit {unit_id} not found")
+        # Extract action type and target data regardless of input type
+        action_type_str = ''
+        action_params = {}
+        
+        if isinstance(action_data, AIAction):
+            action_type_str = action_data.action_type
+            action_params = action_data.target_data # target_data is already a dict
+            logging.debug(f"ActionHandler.process_action received AIAction: type={action_type_str}, params={action_params}")
+        elif isinstance(action_data, dict):
+            action_type_str = action_data.get('type', '')
+            action_params = action_data # The whole dict is the params
+            logging.debug(f"ActionHandler.process_action received Dict: type={action_type_str}, params={action_params}")
+        else:
+            logging.error(f"ActionHandler.process_action received invalid action_data type: {type(action_data)}")
             return False
             
-        # Determine if this is an AI-controlled action in AI vs AI mode
-        current_phase = self.gameStateManager.current_game_state.current_phase
-        is_ai_controlled = True  # Assume AI-controlled for logging purposes
-        faction_label = "PLAYER" if current_phase == PhaseEnum.PLAYER else "ENEMY"
+        # Original logging remains useful
+        logging.debug(f"ActionHandler.process_action determined action_type_str: '{action_type_str}'")
         
         # Get unit information for logging
         unit = self.gameStateManager.get_unit(unit_id)
@@ -157,7 +179,8 @@ class ActionHandler:
             # Handle combined actions like MOVE_AND_WAIT
             if action_type_str == 'MOVE_AND_WAIT':
                 # Process move action
-                move_data = action_data.get('move_data', {})
+                # Use action_params dictionary now
+                move_data = action_params.get('move_data', {})
                 move_result = self.handle_move(unit_id, move_data.get('path', []))
                 
                 if not move_result or not move_result.success:
@@ -180,7 +203,7 @@ class ActionHandler:
                 
             elif action_type_str == 'MOVE_AND_ATTACK':
                 # Process move action
-                move_data = action_data.get('move_data', {})
+                move_data = action_params.get('move_data', {})
                 move_result = self.handle_move(unit_id, move_data.get('path', []))
                 
                 if not move_result or not move_result.success:
@@ -188,7 +211,7 @@ class ActionHandler:
                     return False
                 
                 # Process attack action
-                attack_data = action_data.get('action_data', {})
+                attack_data = action_params.get('action_data', {})
                 target_info = attack_data.get('target_info', {})
                 attack_result = self.handle_attack(unit_id, target_info.get('target_unit_id'))
                 
@@ -224,23 +247,15 @@ class ActionHandler:
                     logging.error(f"Unknown action type: {action_type_str}")
                     return False
                 
-                # Extract target data
-                target_data = action_data.get('target_info', {})
-                
-                # For move actions, extract path
-                if action_type == ActionType.MOVE:
-                    target_data = {'path': action_data.get('path', [])}
-                
                 # Process the action
-                result = self.perform_action(unit_id, action_type, target_data)
+                result = self.perform_action(unit_id, action_type, action_params)
                 
                 if not result or not result.success:
                     logging.error(f"Action failed: {result.message if result else 'Unknown error'}")
                     return False
                 
                 # Log the action execution with detailed information if it's an AI action
-                if is_ai_controlled:
-                    self._log_action_execution(unit, action_type_str, target_data, faction_label)
+                # Removed - Logging handled elsewhere
                 
                 return True
             
@@ -330,6 +345,11 @@ class ActionHandler:
         if outcome and outcome.success:
             # Trade is a free action and doesn't consume the turn
             if action_type != ActionType.TRADE:
+                # Log successful action result here (before potential Canto/MovementStar resets)
+                # The specific result details are often logged within the handle_ methods
+                # We might log a generic success or let handle_ methods do it.
+                # For now, let handle_ methods log specifics.
+                
                 # Make sure to set the has_acted flag
                 unit = self.gameStateManager.get_unit(unit_id)
                 if unit:
@@ -342,55 +362,97 @@ class ActionHandler:
                     logging.warning("CoreTurnManager not available for fatigue recording.")
                 
                 # Check for Canto
-                if self._can_unit_canto(unit_id) and self._is_action_canto_eligible(action_type):
-                    remaining_movement = self._get_remaining_movement(unit_id)
-                    if remaining_movement > 0:
-                        # Set unit state to pending Canto move
-                        self._set_unit_state(unit_id, UnitState.CANTO_MOVE_PENDING)
-                        logging.info(f"{unit.name} can Canto with {remaining_movement} movement remaining.")
+                # FIXME: Canto logic needs proper implementation. Temporarily disabled.
+                # Ensure this block remains commented out until implemented
+                #if self._can_unit_canto(unit_id) and self._is_action_canto_eligible(action_type):
+                #    remaining_movement = self._get_remaining_movement(unit_id)
+                #    if remaining_movement > 0:
+                #        # Set unit state to pending Canto move
+                #        self._set_unit_state(unit_id, UnitState.CANTO_MOVE_PENDING)
+                #        logging.info(f"{unit.name} can Canto with {remaining_movement} movement remaining.")
                 
                 # Check for Movement Star (if not Canto pending)
                 # Note: check_movement_star might belong to CoreTurnManager as well? Assuming Gameplay TM for now.
-                if not self._get_unit_state(unit_id) == UnitState.CANTO_MOVE_PENDING:
+                # FIXME: Replace _get_unit_state with proper state check if implemented
+                # if not self._get_unit_state(unit_id) == UnitState.CANTO_MOVE_PENDING: 
+                if True: # Temporarily bypass Canto check for Movement Star
                     if self.turnManager and hasattr(self.turnManager, 'check_movement_star') and self.turnManager.check_movement_star(unit_id):
                         # Unit state is reset by TurnManager, allow another action
                         unit.has_acted = False
                         unit.has_moved = False
                         self._set_unit_state(unit_id, UnitState.IDLE)
         
+        # Log failure outcome if visual logger is enabled (if not logged in handle_ method)
+        # Note: Most failures should be logged within the specific handle_ method
+        # This is tricky, might lead to double logging. Prefer logging in handle_ methods.
+        # Example: self.visual_logger.log_action_result(f"Action FAILED: {outcome.message}")
+        elif self.visual_logger and outcome and not outcome.success:
+            # Check if a more specific message was already logged by handle_ method
+            # This is tricky, might lead to double logging. Prefer logging in handle_ methods.
+            # Example: self.visual_logger.log_action_result(f"Action FAILED: {outcome.message}")
+            pass # Avoid double logging - handle methods should log failures
+        
         return outcome
     
-    # --- Action Handlers ---
+    # --- Action Handlers (modified to include logging) ---
     
     def handle_move(self, unit_id: str, path: List[Tuple[int, int]]) -> ActionOutcome:
         """
         Handle a move action.
         
         Args:
-            unit_id: ID of the unit
-            path: List of positions representing the path
+            unit_id: ID of the moving unit
+            path: List of coordinates representing the movement path
             
         Returns:
             ActionOutcome object
         """
-        if not path:
-            return ActionOutcome(success=False, message="No path provided.")
+        # Log action start
+        log_details = f"to {path[-1] if path else 'invalid destination'} via path length {len(path)}"
+        if self.visual_logger:
+            self.visual_logger.log_action(unit_id, "MOVE", log_details)
         
-        # Validate path using MovementSystem
-        if not self.movementSystem.is_valid_destination(unit_id, path[-1]):
-            return ActionOutcome(success=False, message="Invalid move path.")
+        # Basic validation
+        if not path:
+            message = "Move path cannot be empty."
+            if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+            return ActionOutcome(success=False, message=message)
+            
+        unit = self.gameStateManager.get_unit(unit_id)
+        start_pos = unit.position
+        end_pos = path[-1]
+        
+        # Validate destination using MovementSystem's is_valid_destination
+        # Note: Path itself assumed to be valid if generated by a reliable source (e.g., pathfinder)
+        if not self.movementSystem.is_valid_destination(unit_id, end_pos):
+            message = f"Invalid move destination: {end_pos}."
+            if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+            return ActionOutcome(success=False, message=message)
         
         # Execute move
-        logging.debug(f"ACTION_HANDLER: Attempting MOVE for unit {unit_id} with path {path}")
-        success = self.movementSystem.execute_move(unit_id, path)
+        # Use MovementSystem's execute_move for consistency (if it exists and handles state)
+        # Or directly call GameStateManager if MovementSystem doesn't have execute_move
+        # success = self.movementSystem.move_unit(unit_id, end_pos) # Assuming move_unit exists in MovementSystem
+        success = self.gameStateManager.move_unit(unit_id, end_pos) # Directly use GameStateManager
+        
         if success:
-            # Movement itself doesn't consume the action; subsequent action does
-            unit = self.gameStateManager.get_unit(unit_id)
+            # Mark unit as moved
             unit.has_moved = True
-            self._set_unit_state(unit_id, UnitState.MOVED)
-            return ActionOutcome(success=True)
+            
+            # Record movement fatigue
+            if self.coreTurnManager:
+                self.coreTurnManager.record_action_fatigue(unit_id, "MOVE")
+            
+            # Log successful move
+            if self.visual_logger:
+                self.visual_logger.log_action_result(f"Successfully moved to {end_pos}")
+            
+            return ActionOutcome(success=True, data={'new_position': end_pos})
         else:
-            return ActionOutcome(success=False, message="Failed to execute move.")
+            # This case might indicate an internal error if validation passed
+            message = f"Failed to update unit {unit_id} position in GameState."
+            if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+            return ActionOutcome(success=False, message=message)
     
     def handle_wait(self, unit_id: str) -> ActionOutcome:
         """
@@ -402,11 +464,16 @@ class ActionHandler:
         Returns:
             ActionOutcome object
         """
-        unit = self.gameStateManager.get_unit(unit_id)
-        if not unit:
-            return ActionOutcome(success=False, message="Unit not found.")
+        # Log action start
+        if self.visual_logger:
+            self.visual_logger.log_action(unit_id, "WAIT")
         
-        logging.info(f"{unit.name} waits.")
+        # Wait action always succeeds if the unit can act
+        # The perform_action method already checks if the unit can act
+        # and sets the has_acted flag upon successful return.
+        if self.visual_logger:
+            self.visual_logger.log_action_result("Unit waits.")
+        
         return ActionOutcome(success=True)
     
     def handle_attack(self, unit_id: str, target_unit_id: str) -> ActionOutcome:
@@ -420,6 +487,16 @@ class ActionHandler:
         Returns:
             ActionOutcome object
         """
+        # Log action start
+        target_name = "Unknown Target"
+        if target_unit_id:
+            target_unit = self.gameStateManager.get_unit(target_unit_id)
+            if target_unit: target_name = target_unit.name
+        
+        log_details = f"on {target_name} ({target_unit_id})"
+        if self.visual_logger:
+            self.visual_logger.log_action(unit_id, "ATTACK", log_details)
+        
         attacker = self.gameStateManager.get_unit(unit_id)
         defender = self.gameStateManager.get_unit(target_unit_id)
         
@@ -433,17 +510,62 @@ class ActionHandler:
         # Check if attacker has a weapon equipped
         weapon = self._get_equipped_weapon(unit_id)
         if not weapon:
-            return ActionOutcome(success=False, message="No weapon equipped.")
+            message = "No weapon equipped."
+            if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+            return ActionOutcome(success=False, message=message)
         
         # Check if target is in range
         distance = self._calculate_distance(attacker.position, defender.position)
         weapon_range = self._get_weapon_range(weapon)
         if distance not in weapon_range:
-            return ActionOutcome(success=False, message="Target out of range.")
+            message = "Target out of range."
+            if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+            return ActionOutcome(success=False, message=message)
         
         # Execute combat
-        logging.debug(f"ACTION_HANDLER: Attempting ATTACK for unit {unit_id} against {target_unit_id}, is_capture=False")
         combat_result = self.combatSystem.execute_combat(unit_id, target_unit_id, is_capture=False)
+        
+        # Log combat results extensively using visual logger
+        if self.visual_logger:
+            if isinstance(combat_result, list):
+                final_outcome_logged = False
+                for round_info in combat_result:
+                    actor = round_info.get('actor')
+                    target = round_info.get('target')
+                    damage = round_info.get('damage')
+                    hit = round_info.get('hit')
+                    crit = round_info.get('crit')
+                    target_hp_after = round_info.get('target_hp_after')
+                    target_defeated = round_info.get('target_defeated')
+                    
+                    actor_unit = self.gameStateManager.get_unit(actor)
+                    target_unit = self.gameStateManager.get_unit(target)
+                    actor_name = actor_unit.name if actor_unit else actor
+                    target_name = target_unit.name if target_unit else target
+                    
+                    if hit:
+                        crit_text = " (CRITICAL HIT!)" if crit else ""
+                        result_msg = f"{actor_name} hits {target_name} for {damage} damage{crit_text}."
+                        if target_defeated:
+                            result_msg += f" {target_name} defeated!"
+                            final_outcome_logged = True # Final outcome is defeat
+                        elif target_hp_after is not None:
+                            result_msg += f" ({target_name} HP: {target_hp_after})"
+                        self.visual_logger.log_action_result(result_msg)
+                    else:
+                        self.visual_logger.log_action_result(f"{actor_name}'s attack misses {target_name}.")
+                # If no explicit defeat was logged, log the end state if target survived
+                if not final_outcome_logged:
+                    defender_final = self.gameStateManager.get_unit(target_unit_id) # Re-fetch defender state
+                    if defender_final and defender_final.current_hp > 0:
+                        self.visual_logger.log_action_result(f"Combat ends. {defender_final.name} HP: {defender_final.current_hp}")
+                        
+            elif isinstance(combat_result, dict) and 'error' in combat_result:
+                self.visual_logger.log_action_result(f"FAILED: {combat_result['error']}")
+                return ActionOutcome(success=False, message=combat_result['error'])
+            else:
+                self.visual_logger.log_action_result(f"Combat finished (details unavailable: {type(combat_result)}).")
+        
         return ActionOutcome(success=True, data={'combat_result': combat_result})
     
     def handle_capture(self, unit_id: str, target_unit_id: str) -> ActionOutcome:
@@ -457,6 +579,16 @@ class ActionHandler:
         Returns:
             ActionOutcome object
         """
+        # Log action start
+        target_name = "Unknown Target"
+        if target_unit_id:
+            target_unit = self.gameStateManager.get_unit(target_unit_id)
+            if target_unit: target_name = target_unit.name
+        
+        log_details = f"on {target_name} ({target_unit_id})"
+        if self.visual_logger:
+            self.visual_logger.log_action(unit_id, "CAPTURE", log_details)
+        
         attacker = self.gameStateManager.get_unit(unit_id)
         target = self.gameStateManager.get_unit(target_unit_id)
         
@@ -486,1388 +618,996 @@ class ActionHandler:
         # Check if attacker has a weapon equipped
         weapon = self._get_equipped_weapon(unit_id)
         if not weapon:
-            return ActionOutcome(success=False, message="No weapon equipped for capture attempt.")
+            message = "No weapon equipped for capture attempt."
+            if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+            return ActionOutcome(success=False, message=message)
         
         # Check if target is in range
         distance = self._calculate_distance(attacker.position, target.position)
         weapon_range = self._get_weapon_range(weapon)
         if distance not in weapon_range:
-            return ActionOutcome(success=False, message="Target out of range for capture attempt.")
+            message = "Target out of range for capture attempt."
+            if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+            return ActionOutcome(success=False, message=message)
         
         # Check if target is unarmed or incapacitated (auto-capture)
         target_weapon = self._get_equipped_weapon(target_unit_id)
         if not target_weapon or not self._can_unit_act(target):
             logging.info(f"Target {target.name} is unarmed/incapacitated. Auto-capturing.")
             self._capture_unit(unit_id, target_unit_id)
+            if self.visual_logger: self.visual_logger.log_action_result(f"Successfully captured {target.name} (unarmed/incapacitated)." )
             return ActionOutcome(success=True, data={'auto_capture': True})
         
         # Execute capture combat (with penalties)
-        logging.debug(f"ACTION_HANDLER: Attempting CAPTURE for unit {unit_id} against {target_unit_id}, is_capture=True")
         combat_result = self.combatSystem.execute_combat(unit_id, target_unit_id, is_capture=True)
         
-        if combat_result.get('target_defeated', False):
-            self._capture_unit(unit_id, target_unit_id)
+        # Log combat results similarly to handle_attack
+        if self.visual_logger:
+            if isinstance(combat_result, list):
+                final_outcome_logged = False
+                for round_info in combat_result:
+                    # (Similar logging logic as in handle_attack)
+                    actor = round_info.get('actor')
+                    target_ = round_info.get('target') # Use target_ to avoid variable name conflict
+                    damage = round_info.get('damage')
+                    hit = round_info.get('hit')
+                    crit = round_info.get('crit')
+                    target_hp_after = round_info.get('target_hp_after')
+                    target_defeated = round_info.get('target_defeated') # Capture happens if target is defeated
+                    
+                    actor_unit = self.gameStateManager.get_unit(actor)
+                    target_unit = self.gameStateManager.get_unit(target_)
+                    actor_name = actor_unit.name if actor_unit else actor
+                    target_name_ = target_unit.name if target_unit else target_ # Use target_name_
+                    
+                    if hit:
+                        crit_text = " (CRITICAL HIT!)" if crit else ""
+                        result_msg = f"{actor_name} hits {target_name_} for {damage} damage{crit_text} (Capture)."
+                        if target_defeated:
+                            # Capture success is handled below, just log defeat here
+                            result_msg += f" {target_name_} defeated in capture attempt."
+                            final_outcome_logged = True # Final outcome is defeat
+                        elif target_hp_after is not None:
+                            result_msg += f" ({target_name_} HP: {target_hp_after})"
+                        self.visual_logger.log_action_result(result_msg)
+                    else:
+                        self.visual_logger.log_action_result(f"{actor_name}'s capture attack misses {target_name_}.")
+                # Log if target survived
+                if not final_outcome_logged:
+                    target_final = self.gameStateManager.get_unit(target_unit_id)
+                    if target_final and target_final.current_hp > 0:
+                        self.visual_logger.log_action_result(f"Capture combat ends. {target_final.name} HP: {target_final.current_hp}")
+                        
+            elif isinstance(combat_result, dict) and 'error' in combat_result:
+                self.visual_logger.log_action_result(f"FAILED: {combat_result['error']}")
+                return ActionOutcome(success=False, message=combat_result['error'])
+            else:
+                self.visual_logger.log_action_result(f"Capture combat finished (details unavailable: {type(combat_result)}).")
+        
+        # Check capture success based on combat outcome
+        if combat_result and isinstance(combat_result, list) and combat_result[-1].get('target_defeated', False):
+            if self._capture_unit(unit_id, target_unit_id):
+                if self.visual_logger: self.visual_logger.log_action_result(f"Successfully captured {target.name} after combat.")
             return ActionOutcome(success=True, data={'combat_result': combat_result})
+            else:
+                message = "Target defeated, but failed to apply captured status."
+                if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+                return ActionOutcome(success=False, message=message, data={'combat_result': combat_result})
         else:
             # Capture failed (target survived combat)
-            return ActionOutcome(success=False, message="Capture attempt failed.", data={'combat_result': combat_result})
+            message = "Capture attempt failed (target survived combat)."
+            # Check if combat system returned an error message
+            if combat_result and isinstance(combat_result, dict) and 'message' in combat_result:
+                message = f"Capture attempt failed: {combat_result['message']}"
+            elif combat_result and not isinstance(combat_result, list): # Handle non-list results that aren't errors explicitly
+                message = f"Capture attempt failed (unexpected combat result: {type(combat_result)})."
+            
+            if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+            return ActionOutcome(success=False, message=message, data={'combat_result': combat_result})
     
     def handle_item(self, unit_id: str, item_id: str, target_unit_id: str = None) -> ActionOutcome:
         """
-        Handle an item use action.
+        Handle using an item from the inventory.
         
         Args:
             unit_id: ID of the unit using the item
-            item_id: ID of the item to use
-            target_unit_id: ID of the target unit (if applicable)
+            item_id: ID of the item being used
+            target_unit_id: ID of the target unit (if applicable, e.g., healing staff)
             
         Returns:
             ActionOutcome object
         """
-        # Get the item from the unit's inventory
+        # Log action start
+        self._log_item_start(unit_id, item_id, target_unit_id)
+        
         item = self._get_item_from_inventory(unit_id, item_id)
-        if not item:
-            return ActionOutcome(success=False, message="Item not found in inventory.")
-        
-        if item.current_durability <= 0:
-            return ActionOutcome(success=False, message="Item has no uses left.")
-        
-        # Get item data
-        item_data = self.dataProvider.get_item_data(item_id)
-        if not item_data:
-            return ActionOutcome(success=False, message="Item data not found.")
+        item_name = item.name if item else f"Item_{item_id}"
         
         # Check if item is usable
-        if not getattr(item_data, 'is_usable', False):
-            return ActionOutcome(success=False, message="Item is not usable.")
-        
-        # Determine target (self or other unit)
-        target_id = unit_id if getattr(item_data, 'targets_self', True) else target_unit_id
-        if not target_id:
-            return ActionOutcome(success=False, message="Target required for this item.")
-        
-        # Validate target range if applicable
-        if target_id != unit_id:
-            target_unit = self.gameStateManager.get_unit(target_id)
-            if not target_unit:
-                return ActionOutcome(success=False, message="Target unit not found.")
+        item_data = self.dataProvider.get_item_data(item_id)
+        if not item_data or not item_data.is_usable:
+            message = f"Item {item_name} is not usable."
+            if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+            return ActionOutcome(success=False, message=message)
             
-            # Check distance
-            distance = self._calculate_distance(
-                self.gameStateManager.get_unit(unit_id).position,
-                target_unit.position
-            )
+        # Check durability
+        if item.durability is not None and item.durability <= 0:
+            message = f"Item {item_name} has no remaining uses."
+            if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+            return ActionOutcome(success=False, message=message)
             
-            item_range = getattr(item_data, 'range', 1)
-            if isinstance(item_range, int) and distance > item_range:
-                return ActionOutcome(success=False, message="Target out of range.")
-            elif isinstance(item_range, tuple) and (distance < item_range[0] or distance > item_range[1]):
-                return ActionOutcome(success=False, message="Target out of range.")
-        
-        # Use the item
-        success = self.inventorySystem.use_item(unit_id, item_id, target_id)
-        
-        if success:
-            return ActionOutcome(success=True)
+        # --- Action Specific Logic (Example: Healing Item) ---
+        # This would ideally be handled by a dedicated ItemSystem or effect handlers
+        # For demonstration, let's assume a simple healing item effect
+        if item_data.effect == "HEAL":
+            heal_amount = item_data.effect_potency.get("heal_amount", 10)
+            target_id_to_heal = target_unit_id if target_unit_id else unit_id # Self-heal if no target
+            
+            heal_outcome = self.handle_heal(unit_id, target_id_to_heal, source_item=item) # Pass item for durability
+            
+            # handle_heal should do its own logging, but we confirm item use here
+            if heal_outcome.success:
+                if self.visual_logger: self.visual_logger.log_action_result(f"Used {item_name}. {heal_outcome.message}")
+                # Decrement durability handled within handle_heal or item system ideally
+                return ActionOutcome(success=True, data={'heal_result': heal_outcome.data})
         else:
-            return ActionOutcome(success=False, message="Failed to use item.")
+                 # Failure already logged by handle_heal
+                return ActionOutcome(success=False, message=f"Failed to use {item_name}: {heal_outcome.message}")
+        else:
+            # Placeholder for other item effects
+            message = f"Item effect '{item_data.effect}' not implemented."
+            if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+            return ActionOutcome(success=False, message=message)
     
     def handle_trade(self, unit_id: str, partner_unit_id: str, item_transfers: List) -> ActionOutcome:
         """
-        Handle a trade action.
+        Handle trading items between two adjacent units.
         
         Args:
-            unit_id: ID of the initiating unit
-            partner_unit_id: ID of the partner unit
-            item_transfers: List of item transfers to perform
+            unit_id: ID of the unit initiating the trade
+            partner_unit_id: ID of the trading partner unit
+            item_transfers: List of items to transfer (details depend on InventorySystem)
             
         Returns:
-            ActionOutcome object
+            ActionOutcome object (Trade is usually a free action, success doesn't set has_acted)
         """
+        # Log action start
+        self._log_trade_start(unit_id, partner_unit_id)
+        
+        partner_unit = self.gameStateManager.get_unit(partner_unit_id)
+        partner_name = partner_unit.name if partner_unit else f"Unit_{partner_unit_id}"
+        
+        # Basic validation
         unit = self.gameStateManager.get_unit(unit_id)
-        partner = self.gameStateManager.get_unit(partner_unit_id)
-        captive_target_id = None
-        
-        if not partner:
-            # Check if partner_unit_id refers to a captive held by unit_id
-            captive = self._get_captive_unit(unit_id)
-            if captive and captive.id == partner_unit_id:
-                partner = captive
-                captive_target_id = partner.id
-                logging.info(f"Trading with captive: {partner.name}")
-            else:
-                return ActionOutcome(success=False, message="Trade partner not found.")
-        
-        # Check if partner is adjacent (unless trading with captive)
-        if not captive_target_id:
-            distance = self._calculate_distance(unit.position, partner.position)
+        if not partner_unit:
+            message = "Trading partner not found."
+            if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+            return ActionOutcome(success=False, message=message)
+            
+        # Check adjacency
+        distance = self._calculate_distance(unit.position, partner_unit.position)
             if distance != 1:
-                return ActionOutcome(success=False, message="Trade partner not adjacent.")
+            message = "Units must be adjacent to trade."
+            if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+            return ActionOutcome(success=False, message=message)
+            
+        # Check if units are valid trading partners (e.g., same faction or specific event)
+        if unit.faction != partner_unit.faction:
+             message = "Cannot trade with units of different factions."
+             if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+             return ActionOutcome(success=False, message=message)
+
+        # Execute trade via InventorySystem
+        trade_success = self.inventorySystem.execute_trade(unit_id, partner_unit_id, item_transfers)
         
-        # Perform trade logic via InventorySystem
-        success = self.inventorySystem.execute_trade(
-            unit_id, partner_unit_id, item_transfers,
-            is_captive_trade=(captive_target_id is not None)
-        )
-        
-        if success:
-            # Trade is a FREE action in Thracia - does not consume the turn
+        if trade_success:
+            if self.visual_logger: self.visual_logger.log_action_result(f"Successfully traded items with {partner_name}.")
+            # Trade does NOT set unit.has_acted = True
             return ActionOutcome(success=True)
         else:
-            return ActionOutcome(success=False, message="Trade failed.")
+            # InventorySystem should provide a more specific error message ideally
+            message = "Trade failed (e.g., inventory full, item invalid)."
+            if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+            return ActionOutcome(success=False, message=message)
     
     def handle_rescue(self, unit_id: str, target_unit_id: str) -> ActionOutcome:
         """
-        Handle a rescue action.
+        Handle rescuing an adjacent, valid target unit.
         
         Args:
             unit_id: ID of the rescuing unit
-            target_unit_id: ID of the unit to rescue
+            target_unit_id: ID of the unit to be rescued
             
         Returns:
             ActionOutcome object
         """
-        rescuer = self.gameStateManager.get_unit(unit_id)
-        target = self.gameStateManager.get_unit(target_unit_id)
+        # Log action start
+        self._log_rescue_start(unit_id, target_unit_id)
         
-        if not target:
-            return ActionOutcome(success=False, message="Target unit not found.")
+        target_unit = self.gameStateManager.get_unit(target_unit_id)
+        target_name = target_unit.name if target_unit else f"Unit_{target_unit_id}"
         
-        # Can only rescue player units (or NPCs?)
-        if target.faction != FactionEnum.PLAYER:
-            return ActionOutcome(success=False, message="Invalid rescue target.")
-        
-        # Check if target is adjacent
-        distance = self._calculate_distance(rescuer.position, target.position)
-        if distance != 1:
-            return ActionOutcome(success=False, message="Target not adjacent.")
-        
-        # Check if either unit is already involved in a rescue
-        if rescuer.carrying_unit_id is not None:
-            return ActionOutcome(success=False, message="Rescuer is already carrying a unit.")
-        
-        if self._is_unit_carried(target_unit_id):
-            return ActionOutcome(success=False, message="Target is already being carried.")
-        
-        # Check Con requirement (Rescuer Con > Target Con)
-        rescuer_con = rescuer.base_stats.get('CON', 0)
-        target_con = target.base_stats.get('CON', 0)
-        
-        if rescuer_con <= target_con:
-            return ActionOutcome(success=False, message="Constitution too low to rescue.")
+        # Basic validation
+        unit = self.gameStateManager.get_unit(unit_id)
+        if not target_unit:
+            message = "Rescue target not found."
+            if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+            return ActionOutcome(success=False, message=message)
+            
+        # Check adjacency
+        if self._calculate_distance(unit.position, target_unit.position) != 1:
+            message = "Target must be adjacent to rescue."
+            if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+            return ActionOutcome(success=False, message=message)
+            
+        # Check if rescuer can rescue (not carrying anyone)
+        if self._get_captive_unit(unit_id):
+            message = "Cannot rescue while carrying another unit."
+            if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+            return ActionOutcome(success=False, message=message)
+            
+        # Check if target can be rescued (not mounted, not carrying, CON check)
+        if self.gameStateManager.is_unit_mounted(target_unit_id):
+             message = "Cannot rescue a mounted unit."
+             if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+             return ActionOutcome(success=False, message=message)
+        if self._get_captive_unit(target_unit_id):
+             message = "Cannot rescue a unit carrying another."
+             if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+             return ActionOutcome(success=False, message=message)
+             
+        # CON Check: Rescuer CON > Target CON (unless Rescuer is Mounted)
+        rescuer_con = unit.base_stats.get('CON', 0)
+        target_con = target_unit.base_stats.get('CON', 0)
+        can_rescue_by_mount = self.gameStateManager.is_unit_mounted(unit_id)
+        if not (rescuer_con > target_con or can_rescue_by_mount):
+             message = "Constitution too low to rescue target."
+             if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+             return ActionOutcome(success=False, message=message)
         
         # Execute rescue
-        success = self._rescue_unit(unit_id, target_unit_id)
-        
-        if success:
+        if self._rescue_unit(unit_id, target_unit_id):
+            if self.visual_logger: self.visual_logger.log_action_result(f"Successfully rescued {target_name}.")
             return ActionOutcome(success=True)
         else:
-            return ActionOutcome(success=False, message="Rescue failed.")
+            # _rescue_unit should ideally provide a reason
+            message = "Rescue failed (internal error)."
+            if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+            return ActionOutcome(success=False, message=message)
     
     def handle_drop(self, unit_id: str, target_tile: Tuple[int, int]) -> ActionOutcome:
         """
-        Handle a drop action.
+        Handle dropping a carried unit onto an adjacent, valid tile.
         
         Args:
-            unit_id: ID of the unit dropping a carried unit
-            target_tile: Coordinates to drop the carried unit
+            unit_id: ID of the unit dropping the captive
+            target_tile: The (x, y) coordinates to drop the unit onto
             
         Returns:
             ActionOutcome object
         """
+        # Log action start
+        self._log_drop_start(unit_id, target_tile)
+        
+        captive_unit = self._get_captive_unit(unit_id)
+        captive_name = captive_unit.name if captive_unit else "Unknown Captive"
+        
         unit = self.gameStateManager.get_unit(unit_id)
         
-        # Check if unit is carrying someone
-        if not unit.carrying_unit_id:
-            return ActionOutcome(success=False, message="Unit is not carrying anyone.")
-        
-        carried_unit_id = unit.carrying_unit_id
-        
-        # Check if target tile is adjacent
-        distance = self._calculate_distance(unit.position, target_tile)
-        if distance != 1:
-            return ActionOutcome(success=False, message="Drop location not adjacent.")
-        
-        # Check if target tile is valid (not occupied, not impassable)
+        # Check adjacency of target tile
+        if self._calculate_distance(unit.position, target_tile) != 1:
+            message = "Drop location must be adjacent."
+            if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+            return ActionOutcome(success=False, message=message)
+            
+        # Check if target tile is valid drop location (passable, unoccupied)
+        if not self.mapSystem.is_tile_passable(target_tile, unit): # Check passability for dropping unit
+             message = "Drop location is impassable."
+             if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+             return ActionOutcome(success=False, message=message)
+             
         if self._is_tile_occupied(target_tile):
-            return ActionOutcome(success=False, message="Target tile is occupied.")
-        
-        # Check if target tile is passable for the carried unit
-        carried_unit = self.gameStateManager.get_unit(carried_unit_id)
-        if self.mapSystem.get_movement_cost(target_tile, carried_unit_id) >= float('inf'):
-            return ActionOutcome(success=False, message="Carried unit cannot be placed on that terrain.")
+             message = "Drop location is occupied."
+             if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+             return ActionOutcome(success=False, message=message)
         
         # Execute drop
-        success = self._drop_unit(unit_id, target_tile)
-        
-        if success:
+        if self._drop_unit(unit_id, target_tile):
+            if self.visual_logger: self.visual_logger.log_action_result(f"Successfully dropped {captive_name} at {target_tile}.")
             return ActionOutcome(success=True)
         else:
-            return ActionOutcome(success=False, message="Drop failed.")
+            message = "Drop failed (internal error)."
+            if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+            return ActionOutcome(success=False, message=message)
     
     def handle_take(self, unit_id: str, partner_unit_id: str) -> ActionOutcome:
         """
-        Handle a take action (taking a carried unit from an adjacent ally).
+        Handle taking a captive unit from an adjacent ally.
         
         Args:
-            unit_id: ID of the unit taking a carried unit
-            partner_unit_id: ID of the unit currently carrying the unit to be taken
+            unit_id: ID of the unit taking the captive
+            partner_unit_id: ID of the unit currently carrying the captive
             
         Returns:
             ActionOutcome object
         """
+        # Log action start
+        self._log_take_start(unit_id, partner_unit_id)
+
+        # Basic validation
         unit = self.gameStateManager.get_unit(unit_id)
-        partner = self.gameStateManager.get_unit(partner_unit_id)
-        
-        if not partner:
-            return ActionOutcome(success=False, message="Partner unit not found.")
-        
-        # Check if partner is carrying someone
-        if not partner.carrying_unit_id:
-            return ActionOutcome(success=False, message="Partner is not carrying anyone.")
-        
-        # Check if unit is already carrying someone
-        if unit.carrying_unit_id:
-            return ActionOutcome(success=False, message="Unit is already carrying someone.")
-        
-        # Check if partner is adjacent
-        distance = self._calculate_distance(unit.position, partner.position)
-        if distance != 1:
-            return ActionOutcome(success=False, message="Partner not adjacent.")
-        
-        carried_unit_id = partner.carrying_unit_id
-        carried_unit = self.gameStateManager.get_unit(carried_unit_id)
-        
-        # Check Con requirement (Taker Con > Carried Unit Con)
+        partner_unit = self.gameStateManager.get_unit(partner_unit_id)
+        captive_unit = self._get_captive_unit(partner_unit_id)
+        if not partner_unit:
+            message = "Partner unit not found."
+            if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+            return ActionOutcome(success=False, message=message)
+            
+        if not captive_unit:
+            message = f"{partner_unit.name} is not carrying anyone."
+            if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+            return ActionOutcome(success=False, message=message)
+            
+        # Check adjacency
+        if self._calculate_distance(unit.position, partner_unit.position) != 1:
+            message = "Units must be adjacent to take captive."
+            if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+            return ActionOutcome(success=False, message=message)
+            
+        # Check if taker can take (not carrying anyone)
+        if self._get_captive_unit(unit_id):
+            message = "Cannot take captive while carrying another unit."
+            if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+            return ActionOutcome(success=False, message=message)
+            
+        # Check CON requirement (Taker CON > Captive CON unless Taker is Mounted)
         taker_con = unit.base_stats.get('CON', 0)
-        carried_con = carried_unit.base_stats.get('CON', 0)
-        
-        if taker_con <= carried_con:
-            return ActionOutcome(success=False, message="Constitution too low to take carried unit.")
+        captive_con = captive_unit.base_stats.get('CON', 0)
+        can_take_by_mount = self.gameStateManager.is_unit_mounted(unit_id)
+        if not (taker_con > captive_con or can_take_by_mount):
+             message = "Constitution too low to take this captive."
+             if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+             return ActionOutcome(success=False, message=message)
         
         # Execute take
-        success = self._take_unit(unit_id, partner_unit_id)
-        
-        if success:
+        if self._take_unit(unit_id, partner_unit_id):
+            captive_name = captive_unit.name
+            partner_name = partner_unit.name
+            if self.visual_logger: self.visual_logger.log_action_result(f"Successfully took {captive_name} from {partner_name}.")
             return ActionOutcome(success=True)
         else:
-            return ActionOutcome(success=False, message="Take failed.")
+             message = "Take failed (internal error)."
+             if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+             return ActionOutcome(success=False, message=message)
     
     def handle_release(self, unit_id: str) -> ActionOutcome:
         """
-        Handle a release action (releasing a captured enemy).
+        Handle releasing a captured enemy unit.
         
         Args:
-            unit_id: ID of the unit releasing a captured enemy
+            unit_id: ID of the unit carrying the captive to be released
             
         Returns:
             ActionOutcome object
         """
-        unit = self.gameStateManager.get_unit(unit_id)
-        
-        # Check if unit is carrying a captured enemy
-        captive = self._get_captive_unit(unit_id)
-        if not captive:
-            return ActionOutcome(success=False, message="Unit is not holding a captive.")
-        
-        # Find an adjacent empty tile
-        adjacent_tiles = self._get_adjacent_tiles(unit.position)
-        valid_tiles = [tile for tile in adjacent_tiles if not self._is_tile_occupied(tile)]
-        
-        if not valid_tiles:
-            return ActionOutcome(success=False, message="No adjacent tile available for release.")
-        
-        # Choose the first valid tile (could be more sophisticated)
-        release_tile = valid_tiles[0]
+        # Log action start
+        captive_unit = self._get_captive_unit(unit_id)
+        captive_name = captive_unit.name if captive_unit else "Unknown Captive"
+        log_details = f"captive {captive_name}"
+        if self.visual_logger:
+            self.visual_logger.log_action(unit_id, "RELEASE", log_details)
+            
+        # Basic validation
+        if not captive_unit:
+            message = "Unit is not carrying anyone to release."
+            if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+            return ActionOutcome(success=False, message=message)
+            
+        # Can only release captured enemies
+        if captive_unit.faction != FactionEnum.ENEMY:
+             message = "Can only release captured enemies (not rescued allies)."
+             if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+             return ActionOutcome(success=False, message=message)
         
         # Execute release
-        success = self._release_captive(unit_id, release_tile)
-        
-        if success:
+        if self._release_captive(unit_id): # Assumes release simply removes the captive
+             if self.visual_logger: self.visual_logger.log_action_result(f"Successfully released captive {captive_name}.")
             return ActionOutcome(success=True)
         else:
-            return ActionOutcome(success=False, message="Release failed.")
+             message = "Release failed (internal error)."
+             if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+             return ActionOutcome(success=False, message=message)
     
     def handle_dismount(self, unit_id: str) -> ActionOutcome:
         """
-        Handle a dismount action.
+        Handle dismounting a mounted unit.
         
         Args:
-            unit_id: ID of the unit dismounting
+            unit_id: ID of the mounted unit
             
         Returns:
             ActionOutcome object
         """
+        # Log action start
+        if self.visual_logger:
+            self.visual_logger.log_action(unit_id, "DISMOUNT")
+
+        # Basic validation
         if not self.gameStateManager.is_unit_mounted(unit_id):
-            return ActionOutcome(success=False, message="Unit is not mounted.")
+            message = "Unit is not mounted."
+            if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+            return ActionOutcome(success=False, message=message)
         
-        # Check if already dismounted
-        unit = self.gameStateManager.get_unit(unit_id)
-        if hasattr(unit, 'is_dismounted') and unit.is_dismounted:
-            return ActionOutcome(success=False, message="Unit is already dismounted.")
-        
+        # Find adjacent valid tile to dismount to (similar to drop)
+        # This logic might need refinement - pick best tile? let player choose?
+        adjacent_tiles = self._get_adjacent_tiles(self.gameStateManager.get_unit(unit_id).position)
+        valid_dismount_tile = None
+        for tile in adjacent_tiles:
+            if self.mapSystem.is_tile_passable(tile, self.gameStateManager.get_unit(unit_id)) and not self._is_tile_occupied(tile):
+                valid_dismount_tile = tile
+                break
+
+        if not valid_dismount_tile:
+            message = "No valid adjacent tile to dismount onto."
+            if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+            return ActionOutcome(success=False, message=message)
+            
         # Execute dismount
-        success = self._dismount_unit(unit_id)
-        
-        if success:
-            return ActionOutcome(success=True)
+        if self._dismount_unit(unit_id, valid_dismount_tile):
+             if self.visual_logger: self.visual_logger.log_action_result(f"Successfully dismounted to {valid_dismount_tile}.")
+             return ActionOutcome(success=True, data={'dismount_pos': valid_dismount_tile})
         else:
-            return ActionOutcome(success=False, message="Dismount failed.")
+             message = "Dismount failed (internal error)."
+             if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+             return ActionOutcome(success=False, message=message)
     
     def handle_mount(self, unit_id: str) -> ActionOutcome:
         """
-        Handle a mount action.
+        Handle mounting for a dismounted unit.
         
         Args:
-            unit_id: ID of the unit mounting
+            unit_id: ID of the dismounted unit
             
         Returns:
             ActionOutcome object
         """
-        unit = self.gameStateManager.get_unit(unit_id)
-        
-        # Check if class can mount
+        # Log action start
+        if self.visual_logger:
+            self.visual_logger.log_action(unit_id, "MOUNT")
+
+        # Basic validation
+        if self.gameStateManager.is_unit_mounted(unit_id):
+            message = "Unit is already mounted."
+            if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+            return ActionOutcome(success=False, message=message)
+            
+        # Check if unit is eligible to mount (e.g., specific class, has mount 'item')
         if not self._can_unit_mount(unit_id):
-            return ActionOutcome(success=False, message="Unit class cannot mount.")
-        
-        # Check if already mounted
-        if not hasattr(unit, 'is_dismounted') or not unit.is_dismounted:
-            return ActionOutcome(success=False, message="Unit is already mounted.")
-        
-        # Check if indoors
-        if self.mapSystem.get_terrain_properties(unit.position).get('is_indoor', False):
-            return ActionOutcome(success=False, message="Cannot mount indoors.")
+            message = "Unit cannot mount."
+            if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+            return ActionOutcome(success=False, message=message)
+            
+        # Check terrain (e.g., cannot mount indoors?)
+        # TBD: Add terrain check logic if applicable
         
         # Execute mount
-        success = self._mount_unit(unit_id)
-        
-        if success:
+        if self._mount_unit(unit_id):
+             if self.visual_logger: self.visual_logger.log_action_result(f"Successfully mounted.")
             return ActionOutcome(success=True)
         else:
-            return ActionOutcome(success=False, message="Mount failed.")
+             message = "Mount failed (internal error)."
+             if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+             return ActionOutcome(success=False, message=message)
     
     def handle_visit(self, unit_id: str, target_tile: Tuple[int, int]) -> ActionOutcome:
         """
-        Handle a visit action.
+        Handle visiting a feature (village, house, etc.) at the target tile.
         
         Args:
-            unit_id: ID of the unit visiting
-            target_tile: Coordinates of the tile to visit
+            unit_id: ID of the visiting unit
+            target_tile: The (x, y) coordinates of the feature to visit
             
         Returns:
             ActionOutcome object
         """
+        # Log action start
+        self._log_visit_start(unit_id, target_tile)
+        
+        feature = self._get_tile_feature(target_tile)
+        feature_type = feature.get('type', 'Unknown Feature') if feature else 'No Feature'
+        
         unit = self.gameStateManager.get_unit(unit_id)
-        
-        # Check if unit is on the target tile
         if unit.position != target_tile:
-            return ActionOutcome(success=False, message="Unit must be on the tile to visit.")
-        
-        # Check if tile has a visitable feature (e.g., village)
-        tile_feature = self._get_tile_feature(target_tile)
-        if not tile_feature or tile_feature.get('type') != 'VILLAGE' or tile_feature.get('is_visited', False):
-            return ActionOutcome(success=False, message="Cannot visit this location.")
-        
-        # Trigger event associated with the village
-        if self.eventHandler:
-            event_triggered = self.eventHandler.trigger_map_event('VISIT', unit_id, target_tile)
-            if event_triggered:
-                # Mark feature as visited
+             message = "Unit must be on the target tile to visit."
+             if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+             return ActionOutcome(success=False, message=message)
+
+        if not feature:
+            message = f"No visitable feature at {target_tile}."
+            if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+            return ActionOutcome(success=False, message=message)
+            
+        if feature.get('visited', False):
+             message = f"Feature '{feature_type}' at {target_tile} has already been visited."
+             if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+             return ActionOutcome(success=False, message=message)
+             
+        # Trigger event associated with visiting
+        event_id = feature.get('event_id')
+        if event_id and self.eventHandler:
+            # Mark feature as visited *before* triggering event to prevent re-triggering
                 self._mark_feature_as_visited(target_tile)
-                return ActionOutcome(success=True)
+            
+            self.eventHandler.trigger_event(event_id, context={'unit_id': unit_id, 'tile': target_tile})
+            if self.visual_logger: self.visual_logger.log_action_result(f"Visited {feature_type} at {target_tile}, triggered event {event_id}.")
+            return ActionOutcome(success=True, data={'event_triggered': event_id})
+        elif event_id:
+             message = f"Visit failed: EventHandler not available to trigger event {event_id}."
+             if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+             return ActionOutcome(success=False, message=message)
             else:
-                return ActionOutcome(success=False, message="Visit event failed.")
-        else:
-            # If no event handler, just mark as visited
+            # If no event, just mark as visited (e.g., simple healing house)
             self._mark_feature_as_visited(target_tile)
+             if self.visual_logger: self.visual_logger.log_action_result(f"Visited {feature_type} at {target_tile} (no event).")
             return ActionOutcome(success=True)
     
     def handle_seize(self, unit_id: str, target_tile: Tuple[int, int]) -> ActionOutcome:
         """
-        Handle a seize action.
+        Handle seizing a specific point (throne, gate) by the lord unit.
         
         Args:
-            unit_id: ID of the unit seizing
-            target_tile: Coordinates of the tile to seize
+            unit_id: ID of the seizing unit (must be the lord)
+            target_tile: The (x, y) coordinates of the seize point
             
         Returns:
             ActionOutcome object
         """
+        # Log action start
+        self._log_seize_start(unit_id, target_tile)
+        
+        # Basic validation
         unit = self.gameStateManager.get_unit(unit_id)
-        
-        # Check if unit is the Lord (Leif)
         if not self._is_lord(unit_id):
-            return ActionOutcome(success=False, message="Only the Lord can seize.")
+            message = "Only the lord can seize."
+            if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+            return ActionOutcome(success=False, message=message)
         
-        # Check if unit is on the target tile
         if unit.position != target_tile:
-            return ActionOutcome(success=False, message="Must be on the seize point.")
-        
-        # Check if tile is a seize point
-        if not self.gameStateManager.is_tile_seize_point(target_tile):
-            return ActionOutcome(success=False, message="Not a valid seize point.")
-        
-        # Trigger seize event (usually ends chapter)
+             message = "Lord must be on the target tile to seize."
+             if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+             return ActionOutcome(success=False, message=message)
+             
+        # Check if the tile is a seize point
+        # This might involve checking MapData or a specific property from MapSystem
+        # Assume mapSystem has a method is_seize_point(tile)
+        if not self.mapSystem.is_seize_point(target_tile):
+            message = f"Tile {target_tile} is not a seize point."
+            if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+            return ActionOutcome(success=False, message=message)
+            
+        # Seizing usually triggers a victory/chapter end event
+        # Let EventHandler handle victory conditions based on seize
         if self.eventHandler:
-            event_triggered = self.eventHandler.trigger_map_event('SEIZE', unit_id, target_tile)
-            if event_triggered:
-                # Chapter end logic likely handled by EventHandler or GameStateManager
-                return ActionOutcome(success=True, data={'chapter_end': True})
+             # Trigger a generic "Seize" event or check conditions directly
+             self.eventHandler.check_victory_conditions(self.gameStateManager, self.coreTurnManager.get_current_turn())
+             # Assuming the event handler sets game state flags
+             if self.gameStateManager.current_game_state.event_flags.get('victory_achieved', False):
+                 if self.visual_logger: self.visual_logger.log_action_result(f"Successfully seized {target_tile}! Victory achieved.")
+                 return ActionOutcome(success=True, data={'victory': True})
             else:
-                return ActionOutcome(success=False, message="Seize event failed.")
+                 # This case shouldn't normally happen if seize = victory
+                 message = "Seized point, but victory condition not triggered."
+                 if self.visual_logger: self.visual_logger.log_action_result(f"INFO: {message}")
+                 return ActionOutcome(success=True, message=message) # Technically successful action
         else:
-            # If no event handler, just end the chapter
-            # This would be handled by the game engine in a real implementation
-            return ActionOutcome(success=True, data={'chapter_end': True})
+             message = "Seize failed: EventHandler not available to check victory."
+             if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+             return ActionOutcome(success=False, message=message)
     
     def handle_talk(self, unit_id: str, target_unit_id: str) -> ActionOutcome:
             """
-            Handle a talk action.
+        Handle a talk interaction between two adjacent units.
             
             Args:
                 unit_id: ID of the unit initiating the talk
-                target_unit_id: ID of the target unit to talk to
+            target_unit_id: ID of the target unit
                 
             Returns:
                 ActionOutcome object
             """
-            talker = self.gameStateManager.get_unit(unit_id)
-            target = self.gameStateManager.get_unit(target_unit_id)
+        # Log action start
+        target_unit = self.gameStateManager.get_unit(target_unit_id)
+        target_name = target_unit.name if target_unit else f"Unit_{target_unit_id}"
+        log_details = f"with {target_name} ({target_unit_id})"
+        if self.visual_logger:
+            self.visual_logger.log_action(unit_id, "TALK", log_details)
             
-            if not target:
-                return ActionOutcome(success=False, message="Talk target not found.")
+        # Basic validation
+        unit = self.gameStateManager.get_unit(unit_id)
+        if not target_unit:
+            message = "Talk target not found."
+            if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+            return ActionOutcome(success=False, message=message)
             
-            # Check if target is adjacent
-            distance = self._calculate_distance(talker.position, target.position)
-            if distance != 1:
-                return ActionOutcome(success=False, message="Talk target not adjacent.")
+        # Check adjacency
+        if self._calculate_distance(unit.position, target_unit.position) != 1:
+            message = "Units must be adjacent to talk."
+            if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+            return ActionOutcome(success=False, message=message)
             
-            # Check if a conversation exists between these two units
-            if self.eventHandler and self.eventHandler.has_talk_event(unit_id, target_unit_id):
-                event_triggered = self.eventHandler.trigger_talk_event(unit_id, target_unit_id)
-                if event_triggered:
-                    return ActionOutcome(success=True)
+        # Check if a talk event exists for this pair
+        if self.eventHandler:
+            event_id = self.eventHandler.find_talk_event(unit_id, target_unit_id)
+            if event_id:
+                 # Mark event as potentially triggered (EventHandler might handle single trigger)
+                 self.eventHandler.trigger_event(event_id, context={'unit1': unit_id, 'unit2': target_unit_id})
+                 if self.visual_logger: self.visual_logger.log_action_result(f"Talked with {target_name}, triggered event {event_id}.")
+                 return ActionOutcome(success=True, data={'event_triggered': event_id})
                 else:
-                    return ActionOutcome(success=False, message="Talk event failed to trigger.")
+                 message = f"No talk event found between {unit.name} and {target_name}."
+                 if self.visual_logger: self.visual_logger.log_action_result(f"INFO: {message}")
+                 # Still a successful 'Talk' action even if no event, consumes turn
+                 return ActionOutcome(success=True, message=message)
             else:
-                return ActionOutcome(success=False, message="No conversation available.")
+             message = "Talk failed: EventHandler not available."
+             if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+             return ActionOutcome(success=False, message=message)
+
     def handle_steal(self, unit_id: str, target_unit_id: str, item_id: str) -> ActionOutcome:
         """
-        Handle a steal action.
+        Handle stealing an item from an adjacent enemy unit.
         
         Args:
-            unit_id: ID of the thief
+            unit_id: ID of the stealing unit (thief)
             target_unit_id: ID of the target unit
             item_id: ID of the item to steal
                 
             Returns:
                 ActionOutcome object
         """
-        thief = self.gameStateManager.get_unit(unit_id)
-        target = self.gameStateManager.get_unit(target_unit_id)
-        
-        # Check if unit has the Steal skill
+        # Log action start
+        target_unit = self.gameStateManager.get_unit(target_unit_id)
+        target_name = target_unit.name if target_unit else f"Unit_{target_unit_id}"
+        item_instance = self._get_item_from_inventory(target_unit_id, item_id)
+        item_name = item_instance.name if item_instance else f"Item_{item_id}"
+        log_details = f"item {item_name} ({item_id}) from {target_name} ({target_unit_id})"
+        if self.visual_logger:
+            self.visual_logger.log_action(unit_id, "STEAL", log_details)
+            
+        # Basic validation
+        unit = self.gameStateManager.get_unit(unit_id)
+        if not target_unit:
+            message = "Steal target not found."
+            if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+            return ActionOutcome(success=False, message=message)
+            
+        if not item_instance:
+            message = f"Item {item_name} not found in target's inventory."
+            if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+            return ActionOutcome(success=False, message=message)
+
+        # Check adjacency
+        if self._calculate_distance(unit.position, target_unit.position) != 1:
+            message = "Units must be adjacent to steal."
+            if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+            return ActionOutcome(success=False, message=message)
+            
+        # Check if unit is a thief
         if not self._has_steal_skill(unit_id):
-            return ActionOutcome(success=False, message="Unit cannot steal.")
-        
-        if not target or target.faction == FactionEnum.PLAYER:
-            return ActionOutcome(success=False, message="Invalid steal target.")
-        
-        # Check if target is adjacent
-        distance = self._calculate_distance(thief.position, target.position)
-        if distance != 1:
-            return ActionOutcome(success=False, message="Target not adjacent.")
-        
-        # Check if thief's inventory is full
+            message = "Unit cannot steal (missing Steal skill)."
+            if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+            return ActionOutcome(success=False, message=message)
+            
+        # Check if target is enemy
+        if target_unit.faction == FactionEnum.PLAYER or target_unit.faction == FactionEnum.NPC:
+             message = "Cannot steal from allies."
+             if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+             return ActionOutcome(success=False, message=message)
+             
+        # Check speed requirement (Thief SPD > Target SPD)
+        thief_spd = self.unitSystem.get_unit_calculated_stats(unit_id)['AS']
+        target_spd = self.unitSystem.get_unit_calculated_stats(target_unit_id)['AS']
+        if not thief_spd > target_spd:
+             message = f"Cannot steal: Thief Speed ({thief_spd}) must be greater than Target Speed ({target_spd})."
+             if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+             return ActionOutcome(success=False, message=message)
+             
+        # Check inventory space
         if self._is_inventory_full(unit_id):
-            return ActionOutcome(success=False, message="Inventory full.")
+            message = "Cannot steal: Inventory is full."
+            if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+            return ActionOutcome(success=False, message=message)
+            
+        # Check if item is stealable (not equipped weapon/essential item?)
+        # TODO: Add logic to check if item_id is stealable
         
-        # Check if target has the item
-        item_to_steal = self._get_item_from_inventory(target_unit_id, item_id)
-        if not item_to_steal:
-            return ActionOutcome(success=False, message="Target does not have that item.")
+        # Execute steal via InventorySystem
+        steal_success = self.inventorySystem.transfer_item(target_unit_id, unit_id, item_id)
         
-        # Get item weight
-        item_data = self.dataProvider.get_item_data(item_id)
-        if not item_data:
-            return ActionOutcome(success=False, message="Item data not found.")
-        
-        item_weight = getattr(item_data, 'weight', 0)
-        
-        # Check Speed requirement (Thief AS > Target AS)
-        thief_as = self._get_attack_speed(unit_id)
-        target_as = self._get_attack_speed(target_unit_id)
-        if thief_as <= target_as:
-            return ActionOutcome(success=False, message="Thief not fast enough to steal.")
-        
-        # Check Con requirement (Thief Con >= Item Weight)
-        thief_con = thief.base_stats.get('CON', 0)
-        if thief_con < item_weight:
-            return ActionOutcome(success=False, message="Item too heavy to steal.")
-        
-        # Execute steal
-        success = self.inventorySystem.transfer_item(target_unit_id, unit_id, item_id)
-        
-        if success:
+        if steal_success:
+             if self.visual_logger: self.visual_logger.log_action_result(f"Successfully stole {item_name} from {target_name}.")
             return ActionOutcome(success=True)
         else:
-            return ActionOutcome(success=False, message="Steal transfer failed.")
+             message = "Steal failed (internal inventory transfer error)."
+             if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+             return ActionOutcome(success=False, message=message)
         
     def handle_open_door(self, unit_id: str, target_tile: Tuple[int, int], key_item_id: str = None) -> ActionOutcome:
             """
-            Handle an open door action.
+        Handle opening a door at the target tile using a key or skill.
             
             Args:
                 unit_id: ID of the unit opening the door
-                target_tile: Coordinates of the door to open
-                key_item_id: ID of the key item to use (optional)
+            target_tile: The (x, y) coordinates of the door
+            key_item_id: Optional ID of the key item used
                 
             Returns:
                 ActionOutcome object
             """
+        # Log action start
+        log_details = f"at {target_tile}"
+        if key_item_id:
+            key_item = self._get_item_from_inventory(unit_id, key_item_id)
+            key_name = key_item.name if key_item else f"Key_{key_item_id}"
+            log_details += f" using {key_name}"
+        else:
+            log_details += f" using skill"
+            
+        if self.visual_logger:
+            self.visual_logger.log_action(unit_id, "OPEN_DOOR", log_details)
+            
+        # Basic validation
             unit = self.gameStateManager.get_unit(unit_id)
             
-            # Check if target is adjacent
-            distance = self._calculate_distance(unit.position, target_tile)
-            if distance != 1:
-                return ActionOutcome(success=False, message="Door not adjacent.")
+        # Check adjacency to door
+        if self._calculate_distance(unit.position, target_tile) != 1:
+            message = "Must be adjacent to the door to open it."
+            if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+            return ActionOutcome(success=False, message=message)
             
-            # Check if tile has a door
-            tile_feature = self._get_tile_feature(target_tile)
-            if not tile_feature or tile_feature.get('type') != 'DOOR':
-                return ActionOutcome(success=False, message="No door at target location.")
-            
-            # Check if unit has a key or lockpick, or if a specific key was provided
+        # Check if target tile is a closed door
+        # Assume mapSystem has get_terrain_properties and it returns a dict with 'type' and 'state'
+        terrain_props = self.mapSystem.get_terrain_properties(target_tile)
+        if not terrain_props or terrain_props.get('type') != 'DOOR' or terrain_props.get('state') != 'CLOSED':
+             message = f"Tile {target_tile} is not a closed door."
+             if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+             return ActionOutcome(success=False, message=message)
+             
+        # Check if unit can open (has key or Lockpick skill)
             has_key = False
-            key_to_use = None
-            
             if key_item_id:
-                # Check if unit has the specified key
                 key_item = self._get_item_from_inventory(unit_id, key_item_id)
-                if key_item:
-                    key_to_use = key_item_id
+            # TODO: Check if key_item is the correct key for this door type?
+            if key_item and key_item.durability is not None and key_item.durability > 0:
                     has_key = True
             else:
-                # Check if unit has any key or lockpick
-                for item in self._get_inventory(unit_id):
-                    item_data = self.dataProvider.get_item_data(item.item_id)
-                    if item_data and item_data.type == 'KEY':
-                        key_to_use = item.item_id
-                        has_key = True
-                        break
-            
-            # Check if unit has the Lockpick skill (thieves can open doors without keys)
-            has_lockpick_skill = self._has_lockpick_skill(unit_id)
-            
-            if not has_key and not has_lockpick_skill:
-                return ActionOutcome(success=False, message="No key or lockpick skill to open door.")
-            
-            # Execute door opening
-            if has_key:
-                # Use the key (reduce durability)
-                self.inventorySystem.use_item(unit_id, key_to_use, None)
-            
-            # Open the door
-            success = self._open_door(target_tile)
-            
-            if success:
+                key_name = key_item.name if key_item else f"Key_{key_item_id}"
+                message = f"Invalid or used key: {key_name}."
+                if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+                return ActionOutcome(success=False, message=message)
+
+        has_lockpick = self._has_lockpick_skill(unit_id)
+
+        if not has_key and not has_lockpick:
+            message = "Cannot open door (needs key or Lockpick skill)."
+            if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+            return ActionOutcome(success=False, message=message)
+
+        # Execute open door (change map state)
+        if self._open_door(target_tile):
+             # Consume key durability if used
+             if has_key and key_item:
+                 self.inventorySystem.decrement_item_durability(unit_id, key_item_id)
+                 
+             if self.visual_logger: self.visual_logger.log_action_result(f"Successfully opened door at {target_tile}.")
                 return ActionOutcome(success=True)
             else:
-                return ActionOutcome(success=False, message="Failed to open door.")
+             message = "Failed to open door (internal map update error)."
+             if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+             return ActionOutcome(success=False, message=message)
     
-    def handle_heal(self, unit_id: str, target_unit_id: str) -> ActionOutcome:
+    def handle_heal(self, unit_id: str, target_unit_id: str, source_item=None) -> ActionOutcome:
         """
-        Handle a heal action.
+        Handle healing a target unit (potentially self) using a staff or item.
         
         Args:
-            unit_id: ID of the healing unit
-            target_unit_id: ID of the target unit
+            unit_id: ID of the healing unit (staff user or item user)
+            target_unit_id: ID of the target unit to heal
+            source_item: The ItemInstance used for healing (if applicable, for durability)
             
         Returns:
             ActionOutcome object
         """
-        # Import the HealingSystem if it's not already imported
-        from src.gameplay_systems.healing_system import HealingSystem
+        # Log action start
+        target_unit = self.gameStateManager.get_unit(target_unit_id)
+        target_name = target_unit.name if target_unit else f"Unit_{target_unit_id}"
+        source_name = f"item {source_item.name}" if source_item else "staff"
+        log_details = f"target {target_name} ({target_unit_id}) using {source_name}"
+        if self.visual_logger:
+            self.visual_logger.log_action(unit_id, "HEAL", log_details)
+
+        # Basic validation
+        unit = self.gameStateManager.get_unit(unit_id)
+        if not target_unit:
+            message = "Heal target not found."
+            if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+            return ActionOutcome(success=False, message=message)
+            
+        # Check if target needs healing
+        if target_unit.current_hp >= target_unit.max_hp:
+            message = f"Target {target_name} is already at full HP."
+            if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+            return ActionOutcome(success=False, message=message)
+            
+        # Determine heal amount (placeholder - depends on staff/item/magic stat)
+        # TODO: Implement proper heal calculation based on source (staff/item), user MAG etc.
+        heal_amount = 10 
         
-        # Get the healer and target units
-        healer = self.gameStateManager.get_unit(unit_id)
-        target = self.gameStateManager.get_unit(target_unit_id)
+        # Check range if using staff (assume adjacent for items)
+        if not source_item: # Assuming staff if no item provided
+            # TODO: Check staff range based on user's equipped staff
+            distance = self._calculate_distance(unit.position, target_unit.position)
+            staff_range = [1] # Placeholder range
+            if distance not in staff_range:
+                 message = "Target out of staff range."
+                 if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+                 return ActionOutcome(success=False, message=message)
+
+        # Apply healing via GameStateManager
+        actual_healed = self.gameStateManager.apply_healing(target_unit_id, heal_amount)
         
-        if not healer:
-            return ActionOutcome(success=False, message="Healer unit not found.")
-        
-        if not target:
-            return ActionOutcome(success=False, message="Target unit not found.")
-        
-        # Check if the healer has a healing item/staff equipped
-        healing_system = HealingSystem()
-        healing_system.initialize(
-            self.gameStateManager,
-            self.dataProvider,
-            self.unitSystem,
-            self.mapSystem
-        )
-        
-        # Check if healer can heal target
-        if not healing_system.can_heal(healer, target):
-            return ActionOutcome(success=False, message="Cannot heal target.")
-        
-        # Execute healing
-        logging.debug(f"ACTION_HANDLER: Attempting HEAL for unit {unit_id} on {target_unit_id}")
-        success = healing_system.execute_heal(unit_id, target_unit_id)
-        
-        if success:
-            return ActionOutcome(success=True)
+        if actual_healed > 0:
+             # Consume source item/staff durability
+             if source_item:
+                 self.inventorySystem.decrement_item_durability(unit_id, source_item.item_id)
+             elif self.inventorySystem: # Decrement equipped staff
+                 equipped_weapon = self._get_equipped_weapon(unit_id)
+                 if equipped_weapon:
+                    self.inventorySystem.decrement_item_durability(unit_id, equipped_weapon.item_id)
+
+             result_message = f"Successfully healed {target_name} for {actual_healed} HP (now {target_unit.current_hp}/{target_unit.max_hp})."
+             if self.visual_logger: self.visual_logger.log_action_result(result_message)
+             return ActionOutcome(success=True, message=result_message, data={'amount_healed': actual_healed})
         else:
-            return ActionOutcome(success=False, message="Healing failed.")
-    
-    # --- Helper Methods ---
-    
-    def _can_unit_act(self, unit) -> bool:
+             # This should only happen if apply_healing fails unexpectedly
+             message = "Healing failed (internal error)."
+             if self.visual_logger: self.visual_logger.log_action_result(f"FAILED: {message}")
+             return ActionOutcome(success=False, message=message)
+
+    # --- Internal Helper Methods ---
+
+    def _log_item_start(self, unit_id: str, item_id: str, target_unit_id: Optional[str]):
+        if not self.visual_logger: return
+        item = self._get_item_from_inventory(unit_id, item_id)
+        item_name = item.name if item else f"Item_{item_id}"
+        log_details = f"item {item_name} ({item_id})"
+        if target_unit_id:
+            target_unit = self.gameStateManager.get_unit(target_unit_id)
+            target_name = target_unit.name if target_unit else f"Unit_{target_unit_id}"
+            log_details += f" on {target_name} ({target_unit_id})"
+        self.visual_logger.log_action(unit_id, "ITEM", log_details)
+        
+    def _log_trade_start(self, unit_id: str, partner_unit_id: str):
+        if not self.visual_logger: return
+        partner_unit = self.gameStateManager.get_unit(partner_unit_id)
+        partner_name = partner_unit.name if partner_unit else f"Unit_{partner_unit_id}"
+        log_details = f"with {partner_name} ({partner_unit_id})"
+        self.visual_logger.log_action(unit_id, "TRADE", log_details)
+        
+    def _log_rescue_start(self, unit_id: str, target_unit_id: str):
+        if not self.visual_logger: return
+        target_unit = self.gameStateManager.get_unit(target_unit_id)
+        target_name = target_unit.name if target_unit else f"Unit_{target_unit_id}"
+        log_details = f"target {target_name} ({target_unit_id})"
+        self.visual_logger.log_action(unit_id, "RESCUE", log_details)
+        
+    def _log_drop_start(self, unit_id: str, target_tile: Tuple[int, int]):
+        if not self.visual_logger: return
+        captive_unit = self._get_captive_unit(unit_id)
+        captive_name = captive_unit.name if captive_unit else "Unknown Captive"
+        log_details = f"captive {captive_name} at {target_tile}"
+        self.visual_logger.log_action(unit_id, "DROP", log_details)
+
+    def _log_visit_start(self, unit_id: str, target_tile: Tuple[int, int]):
+        if not self.visual_logger: return
+        feature = self._get_tile_feature(target_tile)
+        feature_type = feature.get('type', 'Unknown Feature') if feature else 'No Feature'
+        log_details = f"feature '{feature_type}' at {target_tile}"
+        self.visual_logger.log_action(unit_id, "VISIT", log_details)
+        
+    def _log_seize_start(self, unit_id: str, target_tile: Tuple[int, int]):
+        if not self.visual_logger: return
+        log_details = f"point at {target_tile}"
+        self.visual_logger.log_action(unit_id, "SEIZE", log_details)
+
+    def _log_take_start(self, unit_id: str, partner_unit_id: str):
+        if not self.visual_logger: return
+        partner_unit = self.gameStateManager.get_unit(partner_unit_id)
+        partner_name = partner_unit.name if partner_unit else f"Unit_{partner_unit_id}"
+        captive_unit = self._get_captive_unit(partner_unit_id)
+        captive_name = captive_unit.name if captive_unit else "Unknown Captive"
+        log_details = f"captive {captive_name} from {partner_name} ({partner_unit_id})"
+        self.visual_logger.log_action(unit_id, "TAKE", log_details)
+        
+    def _log_release_start(self, unit_id: str):
+        if not self.visual_logger: return
+        captive_unit = self._get_captive_unit(unit_id)
+        captive_name = captive_unit.name if captive_unit else "Unknown Captive"
+        log_details = f"captive {captive_name}"
+        self.visual_logger.log_action(unit_id, "RELEASE", log_details)
+        
+    def _log_dismount_start(self, unit_id: str):
+        if not self.visual_logger: return
+        self.visual_logger.log_action(unit_id, "DISMOUNT")
+        
+    def _log_mount_start(self, unit_id: str):
+        if not self.visual_logger: return
+        self.visual_logger.log_action(unit_id, "MOUNT")
+        
+    def _log_talk_start(self, unit_id: str, target_unit_id: str):
+        if not self.visual_logger: return
+        target_unit = self.gameStateManager.get_unit(target_unit_id)
+        target_name = target_unit.name if target_unit else f"Unit_{target_unit_id}"
+        log_details = f"with {target_name} ({target_unit_id})"
+        self.visual_logger.log_action(unit_id, "TALK", log_details)
+        
+    def _log_steal_start(self, unit_id: str, target_unit_id: str, item_id: str):
+        if not self.visual_logger: return
+        target_unit = self.gameStateManager.get_unit(target_unit_id)
+        target_name = target_unit.name if target_unit else f"Unit_{target_unit_id}"
+        item_instance = self._get_item_from_inventory(target_unit_id, item_id)
+        item_name = item_instance.name if item_instance else f"Item_{item_id}"
+        log_details = f"item {item_name} ({item_id}) from {target_name} ({target_unit_id})"
+        self.visual_logger.log_action(unit_id, "STEAL", log_details)
+        
+    def _log_open_door_start(self, unit_id: str, target_tile: Tuple[int, int], key_item_id: Optional[str]):
+        if not self.visual_logger: return
+        log_details = f"at {target_tile}"
+        if key_item_id:
+            key_item = self._get_item_from_inventory(unit_id, key_item_id)
+            key_name = key_item.name if key_item else f"Key_{key_item_id}"
+            log_details += f" using {key_name}"
+        else:
+            log_details += f" using skill"
+        self.visual_logger.log_action(unit_id, "OPEN_DOOR", log_details)
+        
+    def _log_heal_start(self, unit_id: str, target_unit_id: str, source_item=None):
+        if not self.visual_logger: return
+        target_unit = self.gameStateManager.get_unit(target_unit_id)
+        target_name = target_unit.name if target_unit else f"Unit_{target_unit_id}"
+        source_name = f"item {source_item.name}" if source_item else "staff"
+        log_details = f"target {target_name} ({target_unit_id}) using {source_name}"
+        self.visual_logger.log_action(unit_id, "HEAL", log_details)
+
+    def _can_unit_act(self, unit: Any) -> bool:
         """
         Check if a unit can act (not affected by disabling status effects).
-        
         Args:
-            unit: The unit to check
-            
+            unit: The unit object (from GameStateManager)
         Returns:
             True if the unit can act, False otherwise
         """
-        # Check for statuses like Sleep, Petrify, etc.
-        return not unit.has_status(StatusEffectEnum.SLEEP) and not unit.has_status(StatusEffectEnum.BERSERK)
-    
-    def _is_correct_phase_for_faction(self, phase, faction) -> bool:
-            """
-            Check if the current phase corresponds to the unit's faction.
-            
-            Args:
-                phase: The current phase
-                faction: The unit's faction
-                
-            Returns:
-                True if the phase corresponds to the faction, False otherwise
-            """
-            logging.debug(f"Phase Check: Input phase={phase}, faction={faction}") # ADDED LOGGING
-            
-            # Check if AI vs AI mode is enabled
-            ai_vs_ai = getattr(self, 'ai_vs_ai', False)
-            if not ai_vs_ai and hasattr(self, 'turnManager') and self.turnManager and hasattr(self.turnManager, 'ai_vs_ai'):
-                ai_vs_ai = self.turnManager.ai_vs_ai
-            
-            logging.debug(f"Phase Check: ai_vs_ai flag is {ai_vs_ai}") # ADDED LOGGING
-            
-            # In AI vs AI mode, allow any unit to act in any phase
-            if ai_vs_ai:
-                logging.debug("Phase Check: AI vs AI mode enabled, bypassing phase check (returning True)") # ADDED LOGGING
-                return True
-                
-            # Convert string faction to FactionEnum if needed
-            if isinstance(faction, str):
-                if faction == "PLAYER":
-                    faction = FactionEnum.PLAYER
-                elif faction == "ENEMY":
-                    faction = FactionEnum.ENEMY
-                elif faction == "NPC":
-                    faction = FactionEnum.NPC
-            
-            # Normal phase-faction correspondence
-            result = False
-            if phase == PhaseEnum.PLAYER and faction == FactionEnum.PLAYER:
-                result = True
-            elif phase == PhaseEnum.ENEMY and faction == FactionEnum.ENEMY:
-                result = True
-            elif phase == PhaseEnum.NPC and faction == FactionEnum.NPC:
-                result = True
-                
-            logging.debug(f"Phase Check: Standard check result = {result}") # ADDED LOGGING
-            return result
-    
-    def _is_valid_combat_target(self, attacker, defender) -> bool:
-        """
-        Check if a target is valid for combat.
-        
-        Args:
-            attacker: The attacking unit
-            defender: The defending unit
-            
-        Returns:
-            True if the target is valid, False otherwise
-        """
-        # Check if target is an enemy
-        if attacker.faction == defender.faction:
-            return False
-        
-        # Check if target is already captured
-        if defender.is_captured:
-            return False
-        
-        # Check if target is active (not dead, escaped, etc.)
-        if not hasattr(defender, 'disposition') or defender.disposition != 'ACTIVE':
-            return False
-        
-        return True
-    
-    def _get_equipped_weapon(self, unit_id: str):
-        """
-        Get the equipped weapon for a unit.
-        
-        Args:
-            unit_id: ID of the unit
-            
-        Returns:
-            The equipped weapon or None if no weapon is equipped
-        """
-        unit = self.gameStateManager.get_unit(unit_id)
-        if not unit or unit.equipped_weapon_index < 0 or unit.equipped_weapon_index >= len(unit.inventory):
-            return None
-        
-        return unit.inventory[unit.equipped_weapon_index]
-    
-    def _get_weapon_range(self, weapon) -> List[int]:
-        """
-        Get the range of a weapon.
-        
-        Args:
-            weapon: The weapon
-            
-        Returns:
-            List of valid ranges
-        """
-        item_data = self.dataProvider.get_item_data(weapon.item_id)
-        if not item_data:
-            return [1]  # Default to melee range
-        
-        min_range = getattr(item_data, 'range_min', 1)
-        max_range = getattr(item_data, 'range_max', 1)
-        
-        return list(range(min_range, max_range + 1))
-    
-    def _calculate_distance(self, pos1: Tuple[int, int], pos2: Tuple[int, int]) -> int:
-        """
-        Calculate the Manhattan distance between two positions.
-        
-        Args:
-            pos1: First position (x, y)
-            pos2: Second position (x, y)
-            
-        Returns:
-            Manhattan distance
-        """
-        return abs(pos1[0] - pos2[0]) + abs(pos1[1] - pos2[1])
-    
-    def _capture_unit(self, captor_id: str, captive_id: str) -> bool:
-        """
-        Capture a unit.
-        
-        Args:
-            captor_id: ID of the capturing unit
-            captive_id: ID of the unit to capture
-            
-        Returns:
-            True if successful, False otherwise
-        """
-        captor = self.gameStateManager.get_unit(captor_id)
-        captive = self.gameStateManager.get_unit(captive_id)
-        
-        if not captor or not captive:
-            return False
-        
-        # Set captive as captured
-        captive.is_captured = True
-        
-        # Set captor as carrying the captive
-        captor.carrying_unit_id = captive_id
-        
-        # Remove captive from map
-        # This would be handled by the GameStateManager in a real implementation
-        
-        return True
-    
-    def _get_item_from_inventory(self, unit_id: str, item_id: str):
-        """
-        Get an item from a unit's inventory.
-        
-        Args:
-            unit_id: ID of the unit
-            item_id: ID of the item
-            
-        Returns:
-            The item or None if not found
-        """
-        unit = self.gameStateManager.get_unit(unit_id)
         if not unit:
-            return None
-        
-        for item in unit.inventory:
-            if item.item_id == item_id:
-                return item
-        
-        return None
-    
-    def _get_inventory(self, unit_id: str) -> List:
-        """
-        Get a unit's inventory.
-        
-        Args:
-            unit_id: ID of the unit
-            
-        Returns:
-            List of items in the unit's inventory
-        """
-        unit = self.gameStateManager.get_unit(unit_id)
-        if not unit:
-            return []
-        
-        return unit.inventory
-    
-    def _is_inventory_full(self, unit_id: str) -> bool:
-        """
-        Check if a unit's inventory is full.
-        
-        Args:
-            unit_id: ID of the unit
-            
-        Returns:
-            True if the inventory is full, False otherwise
-        """
-        unit = self.gameStateManager.get_unit(unit_id)
-        if not unit:
-            return True
-        
-        # Assuming max inventory size is 7 (Thracia 776)
-        return len(unit.inventory) >= 7
-    
-    def _get_captive_unit(self, unit_id: str):
-        """
-        Get the captive unit held by a unit.
-        
-        Args:
-            unit_id: ID of the unit
-            
-        Returns:
-            The captive unit or None if no captive is held
-        """
-        unit = self.gameStateManager.get_unit(unit_id)
-        if not unit or not unit.carrying_unit_id:
-            return None
-        
-        captive_id = unit.carrying_unit_id
-        return self.gameStateManager.get_unit(captive_id)
-    
-    def _is_unit_carried(self, unit_id: str) -> bool:
-        """
-        Check if a unit is being carried.
-        
-        Args:
-            unit_id: ID of the unit
-            
-        Returns:
-            True if the unit is being carried, False otherwise
-        """
-        # This would need to check all units to see if any are carrying this unit
-        for unit in self.gameStateManager.current_game_state.unit_states.values():
-            if unit.carrying_unit_id == unit_id:
-                return True
-        
         return False
+        # Check for statuses like Sleep, Petrify, etc.
+        # Assuming unit is a UnitState object which has the has_status method
+        # Use StatusEffectEnum directly
+        return not unit.has_status(StatusEffectEnum.SLEEP) and not unit.has_status(StatusEffectEnum.PETRIFY)
     
-    def _rescue_unit(self, rescuer_id: str, target_id: str) -> bool:
+    def _is_correct_phase_for_faction(self, current_phase: PhaseEnum, unit_faction: FactionEnum) -> bool:
         """
-        Rescue a unit.
-        
+        Check if the unit's faction matches the current game phase.
         Args:
-            rescuer_id: ID of the rescuing unit
-            target_id: ID of the unit to rescue
-            
+            current_phase: The current PhaseEnum
+            unit_faction: The FactionEnum of the unit
         Returns:
-            True if successful, False otherwise
+            True if the unit's faction can act in the current phase, False otherwise
         """
-        rescuer = self.gameStateManager.get_unit(rescuer_id)
-        target = self.gameStateManager.get_unit(target_id)
-        
-        if not rescuer or not target:
-            return False
-        
-        # Set rescuer as carrying the target
-        rescuer.carrying_unit_id = target_id
-        
-        # Remove target from map
-        # This would be handled by the GameStateManager in a real implementation
-        
+        if current_phase == PhaseEnum.PLAYER and unit_faction == FactionEnum.PLAYER:
         return True
-    
-    def _drop_unit(self, unit_id: str, target_tile: Tuple[int, int]) -> bool:
-        """
-        Drop a carried unit.
-        
-        Args:
-            unit_id: ID of the unit dropping a carried unit
-            target_tile: Coordinates to drop the carried unit
-            
-        Returns:
-            True if successful, False otherwise
-        """
-        unit = self.gameStateManager.get_unit(unit_id)
-        if not unit or not unit.carrying_unit_id:
-            return False
-        
-        carried_unit_id = unit.carrying_unit_id
-        carried_unit = self.gameStateManager.get_unit(carried_unit_id)
-        
-        if not carried_unit:
-            return False
-        
-        # Place carried unit at target tile
-        carried_unit.position = target_tile
-        
-        # Update map state
-        self.gameStateManager.current_game_state.map_state.unit_positions[carried_unit_id] = target_tile
-        
-        # Clear carrying state
-        unit.carrying_unit_id = None
-        
+        if current_phase == PhaseEnum.ENEMY and unit_faction == FactionEnum.ENEMY:
         return True
-    
-    def _take_unit(self, taker_id: str, partner_id: str) -> bool:
-        """
-        Take a carried unit from another unit.
-        
-        Args:
-            taker_id: ID of the unit taking a carried unit
-            partner_id: ID of the unit currently carrying the unit to be taken
-            
-        Returns:
-            True if successful, False otherwise
-        """
-        taker = self.gameStateManager.get_unit(taker_id)
-        partner = self.gameStateManager.get_unit(partner_id)
-        
-        if not taker or not partner or not partner.carrying_unit_id:
-            return False
-        
-        carried_unit_id = partner.carrying_unit_id
-        
-        # Transfer carried unit
-        taker.carrying_unit_id = carried_unit_id
-        partner.carrying_unit_id = None
-        
+        if current_phase == PhaseEnum.NPC and unit_faction == FactionEnum.NPC:
         return True
-    
-    def _release_captive(self, unit_id: str, release_tile: Tuple[int, int]) -> bool:
-        """
-        Release a captured enemy.
-        
-        Args:
-            unit_id: ID of the unit releasing a captured enemy
-            release_tile: Coordinates to release the captive
-            
-        Returns:
-            True if successful, False otherwise
-        """
-        unit = self.gameStateManager.get_unit(unit_id)
-        if not unit or not unit.carrying_unit_id:
+        # Add other phase/faction rules if necessary (e.g., Event phase)
             return False
-        
-        captive_id = unit.carrying_unit_id
-        captive = self.gameStateManager.get_unit(captive_id)
-        
-        if not captive or not captive.is_captured:
-            return False
-        
-        # Place captive at release tile
-        captive.position = release_tile
-        captive.is_captured = False
-        
-        # Update map state
-        self.gameStateManager.current_game_state.map_state.unit_positions[captive_id] = release_tile
-        
-        # Clear carrying state
-        unit.carrying_unit_id = None
-        
-        return True
-    
-    def _dismount_unit(self, unit_id: str) -> bool:
-        """
-        Dismount a unit.
-        
-        Args:
-            unit_id: ID of the unit dismounting
-            
-        Returns:
-            True if successful, False otherwise
-        """
-        unit = self.gameStateManager.get_unit(unit_id)
-        if not unit:
-            return False
-        
-        # Set dismounted state
-        unit.is_dismounted = True
-        
-        # Change class to dismounted version
-        class_data = self.dataProvider.get_class_data(unit.class_id)
-        if class_data and class_data.dismount_class_id:
-            unit.class_id = class_data.dismount_class_id
-        
-        return True
-    
-    def _mount_unit(self, unit_id: str) -> bool:
-        """
-        Mount a unit.
-        
-        Args:
-            unit_id: ID of the unit mounting
-            
-        Returns:
-            True if successful, False otherwise
-        """
-        unit = self.gameStateManager.get_unit(unit_id)
-        if not unit or not hasattr(unit, 'is_dismounted') or not unit.is_dismounted:
-            return False
-        
-        # Clear dismounted state
-        unit.is_dismounted = False
-        
-        # Change class back to mounted version
-        # This would require knowing the original mounted class
-        # For simplicity, we'll assume the current class has a reference to its mounted version
-        class_data = self.dataProvider.get_class_data(unit.class_id)
-        if class_data and hasattr(class_data, 'mount_class_id'):
-            unit.class_id = class_data.mount_class_id
-        
-        return True
-    
-    def _can_unit_mount(self, unit_id: str) -> bool:
-        """
-        Check if a unit can mount.
-        
-        Args:
-            unit_id: ID of the unit
-            
-        Returns:
-            True if the unit can mount, False otherwise
-        """
-        unit = self.gameStateManager.get_unit(unit_id)
-        if not unit:
-            return False
-        
-        # Check if unit is dismounted
-        if not hasattr(unit, 'is_dismounted') or not unit.is_dismounted:
-            return False
-        
-        # Check if class can mount
-        class_data = self.dataProvider.get_class_data(unit.class_id)
-        return class_data and hasattr(class_data, 'mount_class_id')
-    
-    def _get_tile_feature(self, tile: Tuple[int, int]) -> Dict:
-        """
-        Get the feature at a tile.
-        
-        Args:
-            tile: Coordinates of the tile
-            
-        Returns:
-            Dictionary of feature properties or None if no feature
-        """
-        # This would be handled by the MapSystem in a real implementation
-        return self.mapSystem.get_terrain_properties(tile)
-    
-    def _mark_feature_as_visited(self, tile: Tuple[int, int]) -> bool:
-        """
-        Mark a feature as visited.
-        
-        Args:
-            tile: Coordinates of the tile
-            
-        Returns:
-            True if successful, False otherwise
-        """
-        # This would be handled by the MapSystem in a real implementation
-        return True
-    
-    def _is_lord(self, unit_id: str) -> bool:
-        """
-        Check if a unit is the Lord (Leif).
-        
-        Args:
-            unit_id: ID of the unit
-            
-        Returns:
-            True if the unit is the Lord, False otherwise
-        """
-        # In Thracia 776, Leif is the Lord
-        return unit_id == "LEIF"
-    
-    def _has_steal_skill(self, unit_id: str) -> bool:
-        """
-        Check if a unit has the Steal skill.
-        
-        Args:
-            unit_id: ID of the unit
-            
-        Returns:
-            True if the unit has the Steal skill, False otherwise
-        """
-        unit = self.gameStateManager.get_unit(unit_id)
-        if not unit:
-            return False
-        
-        # Check if unit has the Steal skill
-        # This would be handled by the UnitSystem in a real implementation
-        return "STEAL" in getattr(unit, 'skills', [])
-    
-    def _has_lockpick_skill(self, unit_id: str) -> bool:
-        """
-        Check if a unit has the Lockpick skill.
-        
-        Args:
-            unit_id: ID of the unit
-            
-        Returns:
-            True if the unit has the Lockpick skill, False otherwise
-        """
-        unit = self.gameStateManager.get_unit(unit_id)
-        if not unit:
-            return False
-        
-        # Check if unit has the Lockpick skill
-        # This would be handled by the UnitSystem in a real implementation
-        return "LOCKPICK" in getattr(unit, 'skills', [])
-    
-    def _get_attack_speed(self, unit_id: str) -> int:
-        """
-        Get the attack speed of a unit.
-        
-        Args:
-            unit_id: ID of the unit
-            
-        Returns:
-            Attack speed
-        """
-        # This would be handled by the UnitSystem in a real implementation
-        return self.unitSystem.calculate_current_combat_stats(unit_id).get('AS', 0)
-    
-    def _get_adjacent_tiles(self, position: Tuple[int, int]) -> List[Tuple[int, int]]:
-        """
-        Get the adjacent tiles for a position.
-        
-        Args:
-            position: Position (x, y)
-            
-        Returns:
-            List of adjacent positions
-        """
-        x, y = position
-        return [
-            (x + 1, y),
-            (x - 1, y),
-            (x, y + 1),
-            (x, y - 1)
-        ]
-    
-    def _is_tile_occupied(self, position: Tuple[int, int]) -> bool:
-        """
-        Check if a tile is occupied.
-        
-        Args:
-            position: Position (x, y)
-            
-        Returns:
-            True if the tile is occupied, False otherwise
-        """
-        # This would be handled by the MapSystem in a real implementation
-        return position in self.gameStateManager.current_game_state.map_state.unit_positions.values()
-    
-    def _open_door(self, position: Tuple[int, int]) -> bool:
-        """
-        Open a door.
-        
-        Args:
-            position: Position (x, y) of the door
-            
-        Returns:
-            True if successful, False otherwise
-        """
-        # This would be handled by the MapSystem in a real implementation
-        return True
-    
-    def _can_unit_canto(self, unit_id: str) -> bool:
-        """
-        Check if a unit can Canto.
-        
-        Args:
-            unit_id: ID of the unit
-            
-        Returns:
-            True if the unit can Canto, False otherwise
-        """
-        # In Thracia 776, mounted units can Canto
-        return self.gameStateManager.is_unit_mounted(unit_id)
-    
-    def _is_action_canto_eligible(self, action_type: ActionType) -> bool:
-        """
-        Check if an action is eligible for Canto.
-        
-        Args:
-            action_type: Type of action
-            
-        Returns:
-            True if the action is eligible for Canto, False otherwise
-        """
-        # In Thracia 776, most actions except Attack and Capture allow Canto
-        return action_type not in [ActionType.ATTACK, ActionType.CAPTURE]
-    
-    def _get_remaining_movement(self, unit_id: str) -> int:
-        """
-        Get the remaining movement for a unit.
-        
-        Args:
-            unit_id: ID of the unit
-            
-        Returns:
-            Remaining movement points
-        """
-        # This would be calculated based on the unit's movement and how far they've moved
-        # For simplicity, we'll return a fixed value
-        return 2
-    
-    def _set_unit_state(self, unit_id: str, state: UnitState) -> None:
-        """
-        Set the state of a unit.
-        
-        Args:
-            unit_id: ID of the unit
-            state: New state
-        """
-        # This would be handled by the GameStateManager in a real implementation
-        pass
-    
-    def _get_unit_state(self, unit_id: str) -> UnitState:
-        """
-        Get the state of a unit.
-        
-        Args:
-            unit_id: ID of the unit
-            
-        Returns:
-            Current state
-        """
-        # This would be handled by the GameStateManager in a real implementation
-        # For now, return a default state
-        return UnitState.IDLE
-        
-    def _log_action_execution(self, unit, action_type: str, target_data: Dict, faction_label: str) -> None:
-        """
-        Log detailed information about an action execution.
-        
-        Args:
-            unit: The unit performing the action
-            action_type: The type of action being performed
-            target_data: Data about the action target
-            faction_label: String indicating which faction the AI is controlling ("PLAYER" or "ENEMY")
-        """
-        unit_name = unit.name
-        unit_pos = unit.position
-        
-        if action_type == "MOVE":
-            path = target_data.get('path', [])
-            if path:
-                dest_pos = path[-1]
-                logging.info(f"AI ({faction_label}): {unit_name} moves from {unit_pos} to {dest_pos}")
-            else:
-                logging.info(f"AI ({faction_label}): {unit_name} attempts to move but no path provided")
-                
-        elif action_type == "WAIT":
-            logging.info(f"AI ({faction_label}): {unit_name} waits at {unit_pos}")
-            
-        elif action_type == "ATTACK":
-            target_unit_id = target_data.get('target_unit_id')
-            target_unit = self.gameStateManager.get_unit(target_unit_id) if target_unit_id else None
-            
-            # Get weapon information
-            weapon = self._get_equipped_weapon(unit.id)
-            weapon_name = "Unknown Weapon"
-            if weapon:
-                weapon_data = self.dataProvider.get_item_data(weapon.item_id)
-                if weapon_data:
-                    weapon_name = getattr(weapon_data, 'name', weapon.item_id)
-            
-            if target_unit:
-                logging.info(f"AI ({faction_label}): {unit_name} attacks {target_unit.name} with {weapon_name}")
-            else:
-                logging.info(f"AI ({faction_label}): {unit_name} attempts to attack but no valid target")
-                
-        elif action_type == "CAPTURE":
-            target_unit_id = target_data.get('target_unit_id')
-            target_unit = self.gameStateManager.get_unit(target_unit_id) if target_unit_id else None
-            
-            if target_unit:
-                logging.info(f"AI ({faction_label}): {unit_name} attempts to capture {target_unit.name}")
-            else:
-                logging.info(f"AI ({faction_label}): {unit_name} attempts to capture but no valid target")
-                
-        elif action_type == "ITEM":
-            item_id = target_data.get('item_id')
-            target_unit_id = target_data.get('target_unit_id')
-            
-            item_name = "Unknown Item"
-            if item_id:
-                item_data = self.dataProvider.get_item_data(item_id)
-                if item_data:
-                    item_name = getattr(item_data, 'name', item_id)
-            
-            target_unit = self.gameStateManager.get_unit(target_unit_id) if target_unit_id else None
-            target_name = target_unit.name if target_unit else "self"
-            
-            logging.info(f"AI ({faction_label}): {unit_name} uses {item_name} on {target_name}")
-            
-        elif action_type == "TRADE":
-            partner_unit_id = target_data.get('partner_unit_id')
-            partner_unit = self.gameStateManager.get_unit(partner_unit_id) if partner_unit_id else None
-            
-            if partner_unit:
-                logging.info(f"AI ({faction_label}): {unit_name} trades with {partner_unit.name}")
-            else:
-                logging.info(f"AI ({faction_label}): {unit_name} attempts to trade but no valid partner")
-                
-        elif action_type == "VISIT":
-            target_tile = target_data.get('target_tile')
-            if target_tile:
-                logging.info(f"AI ({faction_label}): {unit_name} visits location at {target_tile}")
-            else:
-                logging.info(f"AI ({faction_label}): {unit_name} attempts to visit but no valid location")
-                
-        elif action_type == "SEIZE":
-            target_tile = target_data.get('target_tile')
-            if target_tile:
-                logging.info(f"AI ({faction_label}): {unit_name} seizes location at {target_tile}")
-            else:
-                logging.info(f"AI ({faction_label}): {unit_name} attempts to seize but no valid location")
-                
-        else:
-            # Generic log for other action types
-            logging.info(f"AI ({faction_label}): {unit_name} performs {action_type} action")
-            
-    def _log_heal_action(self, healer, target, faction_label: str) -> None:
-        """
-        Log detailed information about a heal action.
-        
-        Args:
-            healer: The healing unit
-            target: The target unit
-            faction_label: String indicating which faction the AI is controlling
-        """
-        healer_name = healer.name
-        target_name = target.name
-        
-        # Get healing item
-        healing_item = None
-        if hasattr(healer, 'inventory') and hasattr(healer, 'equipped_weapon_index'):
-            if 0 <= healer.equipped_weapon_index < len(healer.inventory):
-                item_instance = healer.inventory[healer.equipped_weapon_index]
-                healing_item = self.dataProvider.get_item_data(item_instance.item_id)
-        
-        item_name = "healing item"
-        if healing_item and hasattr(healing_item, 'name'):
-            item_name = healing_item.name
-        
-        logging.info(f"AI ({faction_label}): {healer_name} heals {target_name} with {item_name}")

@@ -53,6 +53,11 @@ ACTION_SEIZE = "SEIZE"
 FATIGUE_COMBAT = 1
 FATIGUE_SPECIAL_ACTION = 2
 
+# Input Handling (Assuming an InputHandler class exists or will be provided)
+from src.input.cli_input_handler import CommandLineInputHandler # Corrected class name
+from src.input.cli_display import CLIDisplay # For type hinting
+from src.utils.visual_logger import VisualScenarioLogger # Import visual logger
+
 class EngineCore:
     """
     The central orchestrator of the game. Manages the main game loop, controls turn and phase transitions,
@@ -74,6 +79,7 @@ class EngineCore:
                  input_handler: Optional[Any] = None, # Keep optional for now if UI/Input is separate
                  ai_vs_ai: bool = False, # Flag for AI vs AI mode
                  ascii_display: bool = False, # Flag for ASCII display mode
+                 visual_logger: Optional[VisualScenarioLogger] = None, # Add visual logger parameter
                  **kwargs): # Keep kwargs for flexibility
         """
         Initializes the EngineCore with all necessary system components.
@@ -90,6 +96,8 @@ class EngineCore:
             movement_system: Instance of the MovementSystem
             input_handler: Instance of the InputHandler (optional)
             ai_vs_ai: Flag to enable AI vs AI mode (default: False)
+            ascii_display: Flag for ASCII display mode (default: False)
+            visual_logger: Instance of the VisualScenarioLogger (optional)
             **kwargs: Additional keyword arguments for flexibility
         """
         self.game_state_manager = game_state_manager
@@ -106,6 +114,7 @@ class EngineCore:
         self.input_handler = input_handler
         self.ai_vs_ai = ai_vs_ai  # Store the AI vs AI flag
         self.ascii_display = ascii_display  # Store the ASCII display flag
+        self.visual_logger = visual_logger # Store visual logger instance
         
         # Game loop state - consider if TurnManager should own these
         # self.current_turn = 0 # Managed by TurnManager
@@ -114,6 +123,34 @@ class EngineCore:
         self.game_over = False
         self.victory = False
         self.turn_limit = 10  # Maximum number of turns for AI vs AI mode (reduced for testing)
+        
+        # Initialize turn manager now that game state is loaded <<< COMMENTING THIS OUT
+        # self.turn_manager.initialize(
+        #     gameStateManager_instance=self.game_state_manager,
+        #     eventHandler_instance=self.event_handler,
+        #     unitSystem_instance=self.unit_system,
+        #     aiManager_instance=self.ai_manager,
+        #     mapSystem_instance=self.map_system,
+        #     dataProvider_instance=self.data_provider
+        # )
+        
+        # Set AI vs AI flag in turn manager
+        if hasattr(self.turn_manager, 'ai_vs_ai'):
+            self.turn_manager.ai_vs_ai = self.ai_vs_ai
+
+        # Initialize Turn Manager for the start of the chapter <<< COMMENTING THIS OUT
+        # self.turn_manager.start_new_chapter()
+        # self.current_turn = 1 # Handled by TurnManager
+        # self.current_phase = PHASE_PLAYER # Handled by TurnManager
+        self.game_over = False
+        self.victory = False
+        
+        # logging.info(f"Chapter Initialized. Turn {self.turn_manager.get_current_turn()}, {self.turn_manager.get_current_phase().name} Phase.") <<< MOVED TO initialize_chapter
+        # Log initial state using the visual logger if available
+        # if self.visual_logger:
+        #     self.visual_logger.log_initial_state() # <<< MOVED TO initialize_chapter?
+            
+        # self.start_phase() # Start the first phase <<< COMMENTING THIS OUT
     
     def initialize_chapter(self, chapter_id: str, scenario_name: Optional[str] = None) -> None:
         """
@@ -138,7 +175,7 @@ class EngineCore:
         # Assuming deploy_units needs DataProvider to fetch unit base stats etc.
         self.game_state_manager.deploy_units(unit_placements, self.data_provider)
         
-        # Initialize event handler
+        # Initialize event handler here, after chapter_id and scenario_name are defined
         if self.event_handler:
             # Correct method name is load_chapter_events
             self.event_handler.load_chapter_events(chapter_id, scenario_name)
@@ -165,6 +202,10 @@ class EngineCore:
         self.victory = False
         
         logging.info(f"Chapter Initialized. Turn {self.turn_manager.get_current_turn()}, {self.turn_manager.get_current_phase().name} Phase.")
+        # Log initial state using the visual logger if available
+        if self.visual_logger:
+            self.visual_logger.log_initial_state()
+            
         self.start_phase() # Start the first phase
     
     def run_game_loop(self) -> None:
@@ -181,9 +222,10 @@ class EngineCore:
         while not self.game_over and not self.victory:
             # Process AI actions for the current phase
             current_phase = self.turn_manager.get_current_phase()
+            current_phase_enum = self.turn_manager._convert_phase_enum(current_phase) # Get enum for logger
             current_turn = self.turn_manager.get_current_turn()
             
-            logging.info(f"RUN_GAME_LOOP: Processing phase {current_phase.name} (Turn: {current_turn}, AI vs AI: {self.ai_vs_ai}")
+            logging.info(f"RUN_GAME_LOOP: Processing phase {current_phase.name} (Turn: {current_turn}, AI vs AI: {self.ai_vs_ai})")
             logging.info(f"RUN_GAME_LOOP: current_phase == PHASE_PLAYER: {current_phase == PHASE_PLAYER}")
             logging.info(f"RUN_GAME_LOOP: PHASE_PLAYER: {PHASE_PLAYER}")
             logging.info(f"RUN_GAME_LOOP: current_phase: {current_phase}")
@@ -225,6 +267,12 @@ class EngineCore:
             self.handle_victory()
         elif self.game_over:
             self.handle_game_over()
+        
+        # Game loop ended
+        logging.info(f"Game loop finished. Game Over: {self.game_over}, Victory: {self.victory}")
+        # Finalize visual log if enabled
+        if self.visual_logger:
+            self.visual_logger.finalize_log()
     
     def start_phase(self) -> None:
         """
@@ -316,18 +364,18 @@ class EngineCore:
                             logging.info(f"ENGINE DEBUGGING: AI determining action for player unit: {unit.name} at {unit.position}")
                             
                             # Get action from AIManager
-                            ai_action = self.ai_manager.determine_action(unit, self.game_state_manager)
+                            ai_action = self.ai_manager.determine_and_execute_action(unit, self.game_state_manager)
                             
                             if ai_action:
-                                logging.info(f"ENGINE DEBUGGING: AI selected action: {ai_action['type']} for {unit.name}")
+                                logging.info(f"ENGINE DEBUGGING: AI selected action: {ai_action.action_type} for {unit.name}")
                                 logging.info(f"ENGINE DEBUGGING: Action details: {ai_action}")
                                 
                                 # Log the action received from the AI system
-                                logging.debug(f"ENGINE: Received AI action for unit {unit.id}: type={ai_action['type']}, "
+                                logging.debug(f"ENGINE: Received AI action for unit {unit.id}: type={ai_action.action_type}, "
                                              f"details={ai_action}")
                                 
                                 # Determine the appropriate system to handle the action
-                                action_type = ai_action['type']
+                                action_type = ai_action.action_type
                                 
                                 # Delegate action processing to ActionHandler
                                 try:
@@ -432,17 +480,17 @@ class EngineCore:
                         logging.info(f"AI determining action for {current_phase.name} unit: {unit.name} at {unit.position}")
                         
                         # Get action from AIManager
-                        ai_action = self.ai_manager.determine_action(unit, self.game_state_manager)
+                        ai_action = self.ai_manager.determine_and_execute_action(unit, self.game_state_manager)
                         
                         if ai_action:
-                            logging.info(f"AI selected action: {ai_action['type']} for {unit.name}")
+                            logging.info(f"AI selected action: {ai_action.action_type} for {unit.name}")
                             
                             # Log the action received from the AI system
-                            logging.debug(f"ENGINE: Received AI action for unit {unit.id}: type={ai_action['type']}, "
+                            logging.debug(f"ENGINE: Received AI action for unit {unit.id}: type={ai_action.action_type}, "
                                       f"details={ai_action}")
                             
                             # Determine the appropriate system to handle the action
-                            action_type = ai_action['type']
+                            action_type = ai_action.action_type
                             
                             # Log which system will handle the action
                             if action_type == 'MOVE' or action_type.startswith('MOVE_AND_'):
@@ -761,21 +809,21 @@ class EngineCore:
                     logging.info(f"AI determining action for {faction_name} unit: {unit.name} at {unit.position}")
                     
                     # Get action from AIManager
-                    ai_action = self.ai_manager.determine_action(unit, self.game_state_manager)
+                    ai_action = self.ai_manager.determine_and_execute_action(unit, self.game_state_manager)
                     
                     if ai_action:
-                        logging.info(f"AI selected action: {ai_action['type']} for {unit.name}")
+                        logging.info(f"AI selected action: {ai_action.action_type} for {unit.name}")
                         
                         # Log more detailed action info for player units
                         if faction_name == "PLAYER":
                             logging.info(f"Action details: {ai_action}")
                         
                         # Log the action received from the AI system
-                        logging.debug(f"ENGINE: Received AI action for unit {unit.id}: type={ai_action['type']}, "
+                        logging.debug(f"ENGINE: Received AI action for unit {unit.id}: type={ai_action.action_type}, "
                                      f"details={ai_action}")
                         
                         # Determine the appropriate system to handle the action
-                        action_type = ai_action['type']
+                        action_type = ai_action.action_type
                         
                         # Log which system will handle the action
                         if action_type == 'MOVE' or action_type.startswith('MOVE_AND_'):

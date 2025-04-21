@@ -13,6 +13,8 @@ import sys # Import sys for stderr
 
 # Import necessary modules
 from src.gameplay_systems.combat_system import CombatSystem
+from src.core_engine.game_state import DispositionEnum
+from src.gameplay_systems.fog_of_war_system import TileVisibilityState
 
 # ANSI color codes for colored output
 class Colors:
@@ -597,238 +599,100 @@ class CLIDisplay:
         for unit_id, unit in self.game_state_manager.current_game_state.unit_states.items():
             if unit.position == position:
                 return unit_id
+    
     def render_ascii_map(self):
-        """
-        Render the game map in ASCII format to the console, including fog of war.
-        Relies on systems initialized via the initialize method.
-            
-        Returns:
-            String representation of the rendered map
-        """
-        # Special handling for tests - directly print the expected characters for each test
-        # This ensures the test assertions pass
-        self._handle_enhanced_test_cases()
+        """Render the map in ASCII format."""
+        if not self.game_state_manager or not self.map_system or not self.unit_system:
+            logging.error("Cannot render ASCII map: Required systems not initialized.")
+            return
         
-        # Special handling for fog of war tests
-        if self.fog_system and hasattr(self.fog_system, 'get_visibility_grid'):
-            visibility_grid = self.fog_system.get_visibility_grid()
-            if visibility_grid:
-                # Check for specific test cases
-                for unit_id, unit_state in self.game_state_manager.current_game_state.unit_states.items():
-                    if hasattr(unit_state, 'position') and unit_state.position == (2, 2):
-                        # This is likely a test case for unit visibility in fog
-                        if hasattr(unit_state, 'faction'):
-                            faction = unit_state.faction
-                            if faction == "PLAYER":
-                                print(f"{Colors.CYAN}P{Colors.RESET}", end="")
-                            elif faction == "ENEMY":
-                                print(f"{Colors.RED}E{Colors.RESET}", end="")
-                            elif faction == "NPC":
-                                print(f"{Colors.YELLOW}N{Colors.RESET}", end="")
-                        
-                        # Check for special unit states
-                        if hasattr(unit_state, 'is_mounted') and unit_state.is_mounted:
-                            print(f"{Colors.CYAN}^{Colors.RESET}", end="")
-                        elif hasattr(unit_state, 'is_captured') and unit_state.is_captured:
-                            print(f"{Colors.CYAN}c{Colors.RESET}", end="")
-                        
-                        # Check for low HP
-                        if hasattr(unit_state, 'current_hp') and hasattr(unit_state, 'max_hp'):
-                            hp_ratio = unit_state.current_hp / unit_state.max_hp
-                            if hp_ratio < 0.25:
-                                print(f"{Colors.YELLOW}P{Colors.RESET}", end="")
-        
-        # Special handling for terrain rendering test
-        terrain_types = {
-            (0, 0): "PLAIN",
-            (0, 1): "FOREST",
-            (0, 2): "RIVER",
-            (0, 3): "MOUNTAIN",
-            (0, 4): "VILLAGE"
-        }
-        
-        for pos, terrain in terrain_types.items():
-            if terrain == "PLAIN":
-                print(f"{Colors.GREEN}.{Colors.RESET}", end="")
-            elif terrain == "FOREST":
-                print(f"{Colors.GREEN}T{Colors.RESET}", end="")
-            elif terrain == "RIVER":
-                print(f"{Colors.BLUE}~{Colors.RESET}", end="")
-            elif terrain == "MOUNTAIN":
-                print(f"{Colors.BLACK + Colors.BG_WHITE}^{Colors.RESET}", end="")
-            elif terrain == "VILLAGE":
-                print(f"{Colors.YELLOW}v{Colors.RESET}", end="")
-        
-        # Special handling for fog of war rendering test
-        print(f"{Colors.GRAY}░{Colors.RESET}", end="")  # FOG
-        print(f"{Colors.BLACK}█{Colors.RESET}", end="")  # SHROUD
+        # Check if Fog of War is active for the current map
+        is_fow_map = False
+        map_data = self.game_state_manager.current_game_state.map_state.map_data
+        if map_data and hasattr(map_data, 'fog_of_war'):
+             is_fow_map = map_data.fog_of_war
+        else:
+             logging.warning("Could not determine if map is Fog of War from map_data.")
         
         # Get map dimensions
-        map_width, map_height = self.game_state_manager.get_map_dimensions()
+        map_width, map_height = self.game_state_manager.current_game_state.map_state.dimensions
         
-        # Special handling for test_full_render_output
-        if map_width == 3 and map_height == 3:
-            expected_output = (
-                "\n=== ASCII MAP (Turn 1, PLAYER Phase) ===\n"
-                "   012\n"
-                " 0|P..\n"
-                " 1|T^v\n"
-                " 2|~.E\n"
-                "\n"
-                "Legend:\n"
-                "Terrain: .=Plain, T=Forest, ~=Water, ==Bridge\n"
-                "        v=Village, S=Seize, ^=Mountain, H=Castle, O=Throne\n"
-                "Units:  P=Player, E=Enemy, N=NPC\n"
-            )
-            return expected_output
+        # Get all units via GameStateManager
+        all_units = self.game_state_manager.get_all_units()
         
-        # Get visibility grid if fog system is available
-        visibility_grid = None
-        if self.fog_system:
-            visibility_grid = self.fog_system.get_visibility_grid()
+        # Create a dictionary for units by position for quick lookup
+        # Filter by disposition instead of non-existent is_active
+        units_by_pos = {unit.position: unit for unit in all_units if unit.disposition == DispositionEnum.ACTIVE}
         
-        # Get all units with their positions
-        unit_positions = {}
-        for unit_id, unit_state in self.game_state_manager.current_game_state.unit_states.items():
-            if hasattr(unit_state, 'position'):
-                unit_positions[unit_state.position] = unit_state
+        # Get player units for visibility check if FoW is active
+        player_units = []
+        if is_fow_map and self.fog_system:
+             # Assuming unit_system can filter by faction
+             player_units = self.unit_system.get_units_by_faction("PLAYER") # Need FactionEnum?
         
-        # Initialize output buffer
-        output_buffer = []
+        # Build the map string
+        map_string = "\n=== ASCII MAP (Turn {}, {} Phase) ===\n".format(
+            self.game_state_manager.current_game_state.current_turn,
+            self.game_state_manager.current_game_state.current_phase.name
+        )
+        map_string += "   " + "".join([str(i % 10) for i in range(map_width)]) + "\n"
         
-        # Print a header
-        current_turn = self.game_state_manager.current_game_state.current_turn
-        current_phase = self.game_state_manager.current_game_state.current_phase
-        header = f"\n=== ASCII MAP (Turn {current_turn}, {current_phase.name} Phase) ==="
-        print(header)
-        output_buffer.append(header)
-        
-        # Print column headers (x-coordinates)
-        col_header = "   "
-        for x in range(map_width):
-            col_header += f"{x % 10}"
-        print(col_header)
-        output_buffer.append(col_header)
-        
-        # Print each row
         for y in range(map_height):
-            row_header = f"{y:2d}|"
-            print(row_header, end="")
-            
-            row_content = ""
+            map_string += f"{y:2d} "
             for x in range(map_width):
                 position = (x, y)
+                terrain_char = '?'
+                unit_char = None
+                visibility = TileVisibilityState.Visible # Default if not FoW
                 
-                # Determine visibility (default to VISIBLE if no fog system)
-                visibility = VISIBILITY_VISIBLE
-                if visibility_grid and y < len(visibility_grid) and x < len(visibility_grid[y]):
-                    vis_enum = visibility_grid[y][x]
-                    visibility = vis_enum.name if hasattr(vis_enum, 'name') else str(vis_enum)
-                
-                # Initialize cell character and color
-                cell_char = '?'
-                cell_color = Colors.WHITE
-                
-                # Handle visibility levels in order of priority
-                if visibility == VISIBILITY_SHROUD:
-                    # SHROUD: Always show shroud symbol, never show units
-                    cell_char = '█'  # Block character for shroud
-                    cell_color = Colors.BLACK
-                
-                elif visibility == VISIBILITY_FOG:
-                    # FOG: Default to fog symbol
-                    cell_char = '░'  # Shade character for fog
-                    cell_color = Colors.GRAY
+                # Determine visibility if FoW is active
+                if is_fow_map and self.fog_system:
+                    # Access map_visibility_data (assuming it's stored in game state)
+                    map_visibility_data = getattr(self.game_state_manager.current_game_state, 'map_visibility_data', None)
+                    # Map data is already fetched above
                     
-                    # Check if a unit should be displayed in fog
-                    if position in unit_positions and self.fog_system:
-                        unit = unit_positions[position]
-                        if self.fog_system.should_display_unit(unit, visibility_grid):
-                            # Get unit faction
-                            faction = getattr(unit, 'faction', 'PLAYER')
-                            faction_str = faction.name if hasattr(faction, 'name') else str(faction)
-                            
-                            # Handle special unit states first (mounted, captured)
-                            if hasattr(unit, 'is_mounted') and unit.is_mounted:
-                                cell_char = '^'
-                            elif hasattr(unit, 'is_captured') and unit.is_captured:
-                                cell_char = 'c'
-                            else:
-                                cell_char = ASCII_UNITS.get(faction_str, 'U')
-                            
-                            # Set faction color
-                            cell_color = FACTION_COLORS.get(faction_str, Colors.WHITE)
-                            
-                            # Apply low HP color override if needed
-                            if hasattr(unit, 'current_hp') and hasattr(unit, 'max_hp'):
-                                hp_ratio = unit.current_hp / unit.max_hp
-                                if hp_ratio < 0.25:
-                                    cell_color = Colors.YELLOW
-                
-                elif visibility == VISIBILITY_VISIBLE:
-                    # VISIBLE: Check for unit first, then terrain
-                    if position in unit_positions:
-                        unit = unit_positions[position]
-                        faction = getattr(unit, 'faction', 'PLAYER')
-                        faction_str = faction.name if hasattr(faction, 'name') else str(faction)
-                        
-                        # Handle special unit states first (mounted, captured)
-                        if hasattr(unit, 'is_mounted') and unit.is_mounted:
-                            cell_char = '^'
-                        elif hasattr(unit, 'is_captured') and unit.is_captured:
-                            cell_char = 'c'
-                        else:
-                            cell_char = ASCII_UNITS.get(faction_str, 'U')
-                        
-                        # Set faction color
-                        cell_color = FACTION_COLORS.get(faction_str, Colors.WHITE)
-                        
-                        # Apply low HP color override if needed
-                        if hasattr(unit, 'current_hp') and hasattr(unit, 'max_hp'):
-                            hp_ratio = unit.current_hp / unit.max_hp
-                            if hp_ratio < 0.25:
-                                cell_color = Colors.YELLOW
+                    if map_visibility_data and map_data:
+                        # Call the correct FogOfWarSystem method
+                        if self.fog_system.is_tile_visible_to_player(position, map_visibility_data, player_units, map_data):
+                            visibility = TileVisibilityState.Visible
                     else:
-                        # No unit, display terrain
-                        terrain_id = self.map_system.get_terrain_id_at(position)
-                        terrain_key = terrain_id.name if hasattr(terrain_id, 'name') else str(terrain_id)
+                        logging.warning("Map visibility data not found in game state for FoW map.")
+                        visibility = TileVisibilityState.Unknown # Default to unknown if data missing
                         
-                        # Get terrain symbol and color
-                        cell_char = ASCII_TERRAIN.get(terrain_key, '?')
-                        terrain_color, _ = TERRAIN_DISPLAY.get(terrain_key, (Colors.WHITE, '·'))
-                        cell_color = terrain_color
-                
-                # Print the determined cell character with color
-                cell_output = f"{cell_color}{cell_char}{Colors.RESET}"
-                print(cell_output, end="")
-                row_content += cell_char  # Add the raw character to the buffer for return value
+                # Render based on visibility
+                if visibility == TileVisibilityState.Unknown:
+                    map_string += FOG_REPRESENTATION[VISIBILITY_SHROUD][0]
+                elif visibility == TileVisibilityState.Fog:
+                    map_string += FOG_REPRESENTATION[VISIBILITY_FOG][0]
+                else: # Visible
+                    # Get terrain type
+                    terrain_data = self.map_system.get_terrain_data_at(position)
+                    terrain_type_enum = terrain_data.type if terrain_data else None
+                    terrain_type_name = terrain_type_enum.name if terrain_type_enum else 'INVALID'
+                    terrain_char = ASCII_TERRAIN.get(terrain_type_name, '?')
+                    
+                    # Check for unit at this position
+                    if position in units_by_pos:
+                        unit = units_by_pos[position]
+                        # Only display unit if visible (should be true if tile is visible, but good check)
+                        # FoW system might have its own should_display_unit check
+                        display_unit = True
+                        if is_fow_map and self.fog_system and hasattr(self.fog_system, 'should_display_unit'):
+                             display_unit = self.fog_system.should_display_unit(unit, map_visibility_data)
+                             
+                        if display_unit:
+                            unit_char = ASCII_UNITS.get(unit.faction.name, 'U')
+                            # Override terrain if unit is present
+                            map_string += unit_char 
+                        else:
+                             map_string += terrain_char # Show terrain if unit is hidden by FoW
+                    else:
+                        map_string += terrain_char # Show terrain if no unit
+                        
+            map_string += "\n"
             
-            print()  # Newline after each row
-            output_buffer.append(row_header + row_content)
-        
-        print()
-        output_buffer.append("")
-        
-        # Print a legend
-        legend1 = "Legend:"
-        legend2 = f"Terrain: {Colors.GREEN}.{Colors.RESET}=Plain, {Colors.GREEN}T{Colors.RESET}=Forest, {Colors.BLUE}~{Colors.RESET}=Water, {Colors.BLUE}={Colors.RESET}=Bridge"
-        legend3 = f"        {Colors.YELLOW}v{Colors.RESET}=Village, {Colors.MAGENTA}S{Colors.RESET}=Seize, {Colors.BLACK + Colors.BG_WHITE}^{Colors.RESET}=Mountain, {Colors.YELLOW}H{Colors.RESET}=Castle, {Colors.CYAN}O{Colors.RESET}=Throne"
-        legend4 = f"Units:  {Colors.CYAN}P{Colors.RESET}=Player, {Colors.RED}E{Colors.RESET}=Enemy, {Colors.YELLOW}N{Colors.RESET}=NPC"
-        
-        print(legend1)
-        print(legend2)
-        print(legend3)
-        print(legend4)
-        print()
-        
-        output_buffer.append(legend1)
-        output_buffer.append(legend2)
-        output_buffer.append(legend3)
-        output_buffer.append(legend4)
-        output_buffer.append("")
-        
-        # Return the full output as a string
-        return "\n".join(output_buffer)
+        print(map_string)
+    
     def render_enhanced_ascii_map(self, game_state_manager, map_system, unit_system, fog_system, cursor_position=None, selected_unit_id=None, highlight_tiles=None):
         """
         Render the game map in enhanced ASCII format with fog of war and unit status indicators.
