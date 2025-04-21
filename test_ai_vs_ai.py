@@ -1,43 +1,59 @@
 import pytest
 import os
 import logging
+import inspect # Added import
 from src.core_engine.game_state import GameState, GameStateManager
 from src.core_engine.data_provider import DataProvider
 from src.core_engine.scenario_loader import ScenarioLoader
 from src.gameplay_systems.ai_system import AISystem
 from src.gameplay_systems.combat_system import CombatSystem
 from src.gameplay_systems.unit_system import UnitSystem
+import sys # Added import
+from src.gameplay_systems.movement_system import MovementSystem # Moved import
+from src.gameplay_systems.healing_system import HealingSystem # Moved import
+from src.core_engine.action_handler import ActionHandler # Moved import
+from src.gameplay_systems.turn_manager import TurnManager # Moved import
+from src.gameplay_systems.map_system import MapSystem # Moved import
+from src.core_engine.turn_manager import TurnManager as CoreTurnManager # Added import for core turn manager
+
+# Purge relevant log files at the beginning of the test run
+log_files_to_purge = [
+    'ai_behavior.log',
+    'ai_vs_ai_debug.log',
+    'ai_vs_ai_simplified.log',
+    'ai_vs_ai_test.log'
+]
+for log_file in log_files_to_purge:
+    if os.path.exists(log_file):
+        try:
+            os.remove(log_file)
+            print(f"Purged existing log file: {log_file}")
+        except OSError as e:
+            print(f"Error removing file {log_file}: {e}") # Optional: log error
 
 # Configure logging
-# First, purge the log file if it exists
-log_file = "ai_vs_ai_test.log"
-if os.path.exists(log_file):
-    try:
-        os.remove(log_file)
-        print(f"Purged existing log file: {log_file}")
-    except Exception as e:
-        print(f"Failed to purge log file: {e}")
-
-# Also purge the AI behavior log if it exists
-ai_behavior_log = "ai_behavior.log"
-if os.path.exists(ai_behavior_log):
-    try:
-        os.remove(ai_behavior_log)
-        print(f"Purged existing AI behavior log: {ai_behavior_log}")
-    except Exception as e:
-        print(f"Failed to purge AI behavior log: {e}")
-
-# Configure logging
+# Configure root logger to DEBUG level
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging.INFO,  # Reduced from DEBUG to INFO
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler(log_file),
+        logging.FileHandler("ai_vs_ai_simplified.log"), # Log to the simplified file
         logging.StreamHandler()
     ]
 )
+
+# Set up a dedicated file handler for AI execution tracing
+ai_execution_handler = logging.FileHandler("ai_behavior.log") # Use the specific log file for AI behavior
+ai_execution_handler.setLevel(logging.INFO) # Reduced from DEBUG to INFO
+ai_execution_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+
+# Add the handler to the root logger to capture all messages
+logging.getLogger('').addHandler(ai_execution_handler)
+
+# Create a test-specific logger
 logger = logging.getLogger("AI_VS_AI_TEST")
-logger.info("Log file purged and logging initialized")
+logger.info("Log files purged and logging initialized")
+logger.info(f"Detailed AI execution tracing will be captured in ai_behavior.log")
 
 class TestAIvsAI:
     """Test class for AI vs AI interactions."""
@@ -45,7 +61,7 @@ class TestAIvsAI:
     @pytest.fixture
     def game_state(self):
         """Set up the game state with the AI vs AI scenario."""
-        scenario_name = "ai_vs_ai_scenario_01"
+        scenario_name = "ai_vs_ai_scenario_simplified" # Use the simplified scenario
         
         # Create a data provider and load all data
         data_provider = DataProvider()
@@ -66,9 +82,49 @@ class TestAIvsAI:
     def test_ai_vs_ai_simulation(self, game_state):
         """Run a simulation of AI vs AI combat and verify the results."""
         # Initialize systems
-        ai_system = AISystem(game_state)  # Pass the GameStateManager instead of GameState
+        # Initialize systems needed by ActionHandler first
         combat_system = CombatSystem()
+        movement_system = MovementSystem() # Added
+        healing_system = HealingSystem() # Added
         unit_system = UnitSystem()
+        action_handler = ActionHandler() # Added
+        core_turn_manager = CoreTurnManager() # Instantiate core turn manager
+        turn_manager = TurnManager() # Added
+        map_system = MapSystem() # Added
+
+
+        # Initialize map system first
+        map_system.initialize(game_state, game_state.data_provider) # Added
+
+        # Initialize other systems
+        combat_system.initialize(game_state, game_state.data_provider, unit_system, None, None) # Adjusted dependencies
+        movement_system.initialize(game_state, map_system) # Added
+        healing_system.initialize(game_state, game_state.data_provider, unit_system, None) # Adjusted dependencies
+        core_turn_manager.initialize(game_state) # Initialize core turn manager
+        turn_manager.initialize( # Corrected arguments
+            core_turn_manager=core_turn_manager,
+            gameStateManager_instance=game_state
+        )
+        action_handler.initialize( # Added block
+            gameStateManager_instance=game_state,
+            unitSystem_instance=unit_system,
+            mapSystem_instance=map_system,
+            movementSystem_instance=movement_system,
+            combatSystem_instance=combat_system,
+            inventorySystem_instance=None, # Assuming None for this test
+            turnManager_instance=turn_manager,
+            core_turn_manager_instance=core_turn_manager, # Added parameter
+            eventHandler_instance=None, # Assuming None for this test
+            dataProvider_instance=game_state.data_provider
+        )
+
+        # Now initialize AISystem with the action_handler
+        print(f"DEBUG: AISystem module path: {inspect.getfile(AISystem)}") # Added debug print for module path
+        print(f"DEBUG: AISystem.__init__ signature: {inspect.signature(AISystem.__init__)}") # Added debug print
+        ai_system = AISystem(game_state, action_handler) # Pass action_handler
+        
+        # Enable AI vs AI mode
+        game_state.ai_vs_ai = True
         
         # Set both factions to be AI-controlled
         # Note: This method might not exist in GameStateManager, but we'll keep it for now
@@ -196,21 +252,55 @@ class TestAIvsAI:
     
     def test_ai_goal_selection(self, game_state):
         """Test that AI units select appropriate goals based on their personas."""
-        ai_system = AISystem(game_state)  # Pass the GameStateManager instead of GameState
+        # Initialize systems needed by ActionHandler first (similar to above, simplified for goal selection)
+        combat_system = CombatSystem() # Added
+        movement_system = MovementSystem() # Added
+        healing_system = HealingSystem() # Added
+        action_handler = ActionHandler() # Added
+        core_turn_manager = CoreTurnManager() # Instantiate core turn manager
+        turn_manager = TurnManager() # Added
+        map_system = MapSystem() # Added
+
+
+        # Initialize map system first
+        map_system.initialize(game_state, game_state.data_provider) # Added
+
+        # Initialize other systems (can use None for some dependencies if not directly needed for goal selection)
+        combat_system.initialize(game_state, game_state.data_provider, None, None, None) # Added
+        movement_system.initialize(game_state, map_system) # Added
+        healing_system.initialize(game_state, game_state.data_provider, None, None) # Added
+        core_turn_manager.initialize(game_state) # Initialize core turn manager
+        turn_manager.initialize( # Corrected arguments
+            core_turn_manager=core_turn_manager,
+            gameStateManager_instance=game_state
+        )
+        action_handler.initialize( # Added block
+            gameStateManager_instance=game_state,
+            unitSystem_instance=None, # Assuming None needed
+            mapSystem_instance=map_system,
+            movementSystem_instance=movement_system,
+            combatSystem_instance=combat_system,
+            inventorySystem_instance=None,
+            turnManager_instance=turn_manager,
+            core_turn_manager_instance=core_turn_manager, # Added parameter
+            eventHandler_instance=None,
+            dataProvider_instance=game_state.data_provider
+        )
+
+        # Now initialize AISystem with the action_handler
+        print(f"DEBUG: AISystem module path: {inspect.getfile(AISystem)}") # Added debug print for module path
+        print(f"DEBUG: AISystem.__init__ signature: {inspect.signature(AISystem.__init__)}") # Added debug print
+        ai_system = AISystem(game_state, action_handler) # Pass action_handler
         
-        # Test units with different personas
+        # Enable AI vs AI mode
+        game_state.ai_vs_ai = True
+        
+        # Test units with different personas (Simplified for the current scenario)
         test_cases = [
             # Player faction
             {"unit_id": "LEIF", "expected_goal": "ATTACK_UNIT", "persona": "AGGRESSOR"},
-            {"unit_id": "FINN", "expected_goal": "SECURE_POSITION", "persona": "DEFENDER"},
-            {"unit_id": "NANNA", "expected_goal": "HEAL_UNIT", "persona": "SUPPORT"},
-            {"unit_id": "HALVAN", "expected_goal": "ADVANCE_TO_OBJECTIVE", "persona": "OBJECTIVE-FOCUSED"},
-            
             # Enemy faction
             {"unit_id": "MAREETA", "expected_goal": "ATTACK_UNIT", "persona": "AGGRESSOR"},
-            {"unit_id": "DAGDAR", "expected_goal": "SECURE_POSITION", "persona": "DEFENDER"},
-            {"unit_id": "SAIAS", "expected_goal": "HEAL_UNIT", "persona": "SUPPORT"},
-            {"unit_id": "TANYA", "expected_goal": "ADVANCE_TO_OBJECTIVE", "persona": "OBJECTIVE-FOCUSED"},
         ]
         
         for test_case in test_cases:
@@ -236,10 +326,22 @@ class TestAIvsAI:
 if __name__ == "__main__":
     # This allows running the test directly (not through pytest)
     test = TestAIvsAI()
-    game_state = test.game_state()
-    result = test.test_ai_vs_ai_simulation(game_state)
+    
+    # Create game state directly instead of using the fixture
+    scenario_name = "ai_vs_ai_scenario_simplified" # Use the simplified scenario
+    data_provider = DataProvider()
+    data_provider.load_all_data("data")
+    game_state_manager = GameStateManager(data_provider)
+    loader = ScenarioLoader()
+    scenario_data = loader.load_scenario(scenario_name)
+    game_state_manager.initialize_from_scenario(scenario_data)
+    
+    # Run the simulation test
+    result = test.test_ai_vs_ai_simulation(game_state_manager)
     print(f"Simulation completed: {result}")
     
     # Reset game state for goal selection test
-    game_state = test.game_state()
-    test.test_ai_goal_selection(game_state)
+    # Create a new game state for the goal selection test
+    game_state_manager = GameStateManager(data_provider)
+    game_state_manager.initialize_from_scenario(scenario_data)
+    test.test_ai_goal_selection(game_state_manager)

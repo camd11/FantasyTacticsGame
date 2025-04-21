@@ -134,6 +134,7 @@
     - Fixed `AttributeError` by adding `get_unit` method to `UnitSystem`.
     - **AI v2 Integration Fixes:** Resolved various `AttributeError` issues and engine integration problems encountered during AI v2 development and testing.
     - **AI vs AI Testing Framework:** Successfully implemented (`run_ai_vs_ai_test.py`, `test_ai_vs_ai_fixed.py`) allowing for full AI-controlled simulations and behavior observation. See `AI_VS_AI_TESTING.md`.
+    - **AI Action Execution Pipeline Debugged:** The core AI action execution loop (Goal Selection -> Tactical Execution -> Action Handling -> System Execution -> Game State Update) is now functioning correctly. This was verified using the `test_ai_vs_ai_fixed.py` simulation. Key bugs fixed include issues with system initialization, phase validation, path validation, action data structures, and tactical reachability checks.
     - Enhanced ASCII Display
         - Improved rendering of units and terrain features.
         - Integrated Fog of War visualization (showing visible, explored, hidden tiles).
@@ -170,7 +171,7 @@
     - Develop more comprehensive testing scenarios covering edge cases and complex interactions.
 - **AI v2 Enhancements:**
     - Expand Goal Library: Implement additional strategic goals (e.g., `UseItemGoal`, `SupportAllyGoal`).
-    - Refine Existing Goals: Improve logic for goals like `SECURE_POSITION` (better position selection) and `ADVANCE_TO_OBJECTIVE` (smarter pathfinding, threat avoidance).
+    - Refine Existing Goals: Implement full logic for `SecurePositionGoal` and `AdvanceToObjectiveGoal` (currently placeholder handlers). Improve logic for other goals as needed (e.g., better position selection for `SecurePositionGoal`, smarter pathfinding/threat avoidance for `AdvanceToObjectiveGoal` once implemented).
     - Expand AI Personas: Create more diverse personas and fine-tune existing weights for varied behaviors.
     - Complex AI Testing: Develop more intricate AI vs AI scenarios and potentially automated integration tests to stress-test decision-making under various conditions.
 - **Future Enhancements:**

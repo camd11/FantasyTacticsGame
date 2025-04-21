@@ -140,7 +140,7 @@ class ThiefLootArchetypeHandler(AIArchetypeHandler):
             
         # Filter out invalid actions (e.g., path not found for move-actions)
         valid_actions = [a for a in possible_actions if a['type'] == 'WAIT' or
-                          a['is_current_pos'] or a['move_path'] is not None]
+                          a['is_current_pos'] or a['path'] is not None]
         
         if not valid_actions:
             return None
@@ -162,8 +162,8 @@ class ThiefLootArchetypeHandler(AIArchetypeHandler):
             print(f"DEBUG: select_best_action - Selected thief action: {best_thief_action['type']} with score {best_thief_action['score']}")
             
             target_data = best_thief_action.get('target_info', {}).copy()
-            if best_thief_action.get('move_path'):
-                target_data['move_path'] = best_thief_action['move_path']
+            if best_thief_action.get('path'):
+                target_data['path'] = best_thief_action['path']
             return AIAction(best_thief_action['type'], unit_id, target_data)
         
         # Priority 2: Move towards Thief Targets
@@ -175,8 +175,8 @@ class ThiefLootArchetypeHandler(AIArchetypeHandler):
             print(f"DEBUG: select_best_action - Selected move-to-thief action with score {best_move_action['score']} towards {best_move_action['context'].get('target_type')}")
             
             target_data = best_move_action.get('target_info', {}).copy()
-            if best_move_action.get('move_path'):
-                target_data['move_path'] = best_move_action['move_path']
+            if best_move_action.get('path'):
+                target_data['path'] = best_move_action['path']
             return AIAction(best_move_action['type'], unit_id, target_data)
         
         # Priority 3: Default Behavior (No thief targets reachable/exist)
@@ -190,8 +190,8 @@ class ThiefLootArchetypeHandler(AIArchetypeHandler):
             best_safe_action = safe_actions[0]
             
             target_data = best_safe_action.get('target_info', {}).copy()
-            if best_safe_action.get('move_path'):
-                target_data['move_path'] = best_safe_action['move_path']
+            if best_safe_action.get('path'):
+                target_data['path'] = best_safe_action['path']
             return AIAction(best_safe_action['type'], unit_id, target_data)
         
         # Fall back to default selection if no specific actions found

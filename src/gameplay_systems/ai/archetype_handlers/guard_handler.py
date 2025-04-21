@@ -115,9 +115,9 @@ class GuardArchetypeHandler(AIArchetypeHandler):
                         else:
                             action['score'] *= 0.5  # Penalize attacks outside guard radius
             
-            elif action['type'] == 'MOVE' and not action['is_current_pos'] and action.get('move_path'):
+            elif action['type'] == 'MOVE' and not action['is_current_pos'] and action.get('path'):
                 # Penalize moves that take the unit far from its post
-                move_destination = action['move_path'][-1]
+                move_destination = action['path'][-1]
                 distance_from_post = self.mapSystem.calculate_manhattan_distance(move_destination, post_position)
                 
                 if distance_from_post > guard_radius:
@@ -165,7 +165,7 @@ class GuardArchetypeHandler(AIArchetypeHandler):
             
         # Filter out invalid actions (e.g., path not found for move-actions)
         valid_actions = [a for a in possible_actions if a['type'] == 'WAIT' or
-                          a['is_current_pos'] or a['move_path'] is not None]
+                          a['is_current_pos'] or a['path'] is not None]
         
         if not valid_actions:
             return None

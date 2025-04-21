@@ -322,8 +322,27 @@ class EngineCore:
                                 logging.info(f"ENGINE DEBUGGING: AI selected action: {ai_action['type']} for {unit.name}")
                                 logging.info(f"ENGINE DEBUGGING: Action details: {ai_action}")
                                 
+                                # Log the action received from the AI system
+                                logging.debug(f"ENGINE: Received AI action for unit {unit.id}: type={ai_action['type']}, "
+                                             f"details={ai_action}")
+                                
+                                # Determine the appropriate system to handle the action
+                                action_type = ai_action['type']
+                                
                                 # Delegate action processing to ActionHandler
                                 try:
+                                    # Log which system will handle the action
+                                    if action_type == 'MOVE' or action_type.startswith('MOVE_AND_'):
+                                        logging.debug(f"ENGINE: Delegating MOVE action to MovementSystem via ActionHandler")
+                                    elif action_type == 'ATTACK':
+                                        logging.debug(f"ENGINE: Delegating ATTACK action to CombatSystem via ActionHandler")
+                                    elif action_type == 'CAPTURE':
+                                        logging.debug(f"ENGINE: Delegating CAPTURE action to CaptureSystem via ActionHandler")
+                                    elif action_type == 'HEAL':
+                                        logging.debug(f"ENGINE: Delegating HEAL action to HealingSystem via ActionHandler")
+                                    elif action_type == 'WAIT':
+                                        logging.debug(f"ENGINE: Processing WAIT action")
+                                    
                                     action_success = self.action_handler.process_action(
                                         unit.id,
                                         ai_action,
@@ -414,9 +433,28 @@ class EngineCore:
                         
                         # Get action from AIManager
                         ai_action = self.ai_manager.determine_action(unit, self.game_state_manager)
-
+                        
                         if ai_action:
                             logging.info(f"AI selected action: {ai_action['type']} for {unit.name}")
+                            
+                            # Log the action received from the AI system
+                            logging.debug(f"ENGINE: Received AI action for unit {unit.id}: type={ai_action['type']}, "
+                                      f"details={ai_action}")
+                            
+                            # Determine the appropriate system to handle the action
+                            action_type = ai_action['type']
+                            
+                            # Log which system will handle the action
+                            if action_type == 'MOVE' or action_type.startswith('MOVE_AND_'):
+                                logging.debug(f"ENGINE: Delegating MOVE action to MovementSystem via ActionHandler")
+                            elif action_type == 'ATTACK':
+                                logging.debug(f"ENGINE: Delegating ATTACK action to CombatSystem via ActionHandler")
+                            elif action_type == 'CAPTURE':
+                                logging.debug(f"ENGINE: Delegating CAPTURE action to CaptureSystem via ActionHandler")
+                            elif action_type == 'HEAL':
+                                logging.debug(f"ENGINE: Delegating HEAL action to HealingSystem via ActionHandler")
+                            elif action_type == 'WAIT':
+                                logging.debug(f"ENGINE: Processing WAIT action")
                             
                             # Delegate action processing to ActionHandler
                             action_success = self.action_handler.process_action(
@@ -731,6 +769,25 @@ class EngineCore:
                         # Log more detailed action info for player units
                         if faction_name == "PLAYER":
                             logging.info(f"Action details: {ai_action}")
+                        
+                        # Log the action received from the AI system
+                        logging.debug(f"ENGINE: Received AI action for unit {unit.id}: type={ai_action['type']}, "
+                                     f"details={ai_action}")
+                        
+                        # Determine the appropriate system to handle the action
+                        action_type = ai_action['type']
+                        
+                        # Log which system will handle the action
+                        if action_type == 'MOVE' or action_type.startswith('MOVE_AND_'):
+                            logging.debug(f"ENGINE: Delegating MOVE action to MovementSystem via ActionHandler")
+                        elif action_type == 'ATTACK':
+                            logging.debug(f"ENGINE: Delegating ATTACK action to CombatSystem via ActionHandler")
+                        elif action_type == 'CAPTURE':
+                            logging.debug(f"ENGINE: Delegating CAPTURE action to CaptureSystem via ActionHandler")
+                        elif action_type == 'HEAL':
+                            logging.debug(f"ENGINE: Delegating HEAL action to HealingSystem via ActionHandler")
+                        elif action_type == 'WAIT':
+                            logging.debug(f"ENGINE: Processing WAIT action")
                         
                         # Delegate action processing to ActionHandler
                         try:

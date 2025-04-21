@@ -53,6 +53,14 @@ class AISystem:
         
         # Configure logging - use module name for better integration with app.py logging
         self.logger = logging.getLogger(__name__)
+        
+        # Set up a dedicated file handler for AI execution tracing
+        ai_execution_handler = logging.FileHandler("ai_behavior.log")
+        ai_execution_handler.setLevel(logging.DEBUG)
+        ai_execution_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+        
+        # Add the handler to this logger
+        self.logger.addHandler(ai_execution_handler)
     
     def process_unit_turn(self, unit):
         """
@@ -93,6 +101,10 @@ class AISystem:
         
         # Execute the action (in a real implementation, this would call the action handler)
         self.logger.info(f"Executing action for {unit.name}")
+        
+        # Log detailed information about the action for debugging
+        self.logger.debug(f"AI ACTION: Action details for {unit.id}: type={selected_action.action_type}, "
+                         f"target_data={selected_action.target_data}")
     
     def select_strategic_goal(self, unit) -> Optional[Goal]:
         """

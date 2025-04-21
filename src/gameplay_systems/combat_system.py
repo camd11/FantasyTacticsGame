@@ -233,6 +233,7 @@ class CombatSystem:
     # --- Combat Execution ---
     
     def execute_combat(self, attacker_id: str, defender_id: str, is_capture: bool = False) -> List[Dict[str, Any]]:
+        logging.debug(f"COMBAT_SYSTEM: execute_combat called for attacker {attacker_id}, defender {defender_id}, is_capture={is_capture}")
         """
         Execute combat between two units.
         
@@ -263,9 +264,52 @@ class CombatSystem:
         caller_name = stack[1].function if len(stack) > 1 else ""
         caller_module = stack[1].filename if len(stack) > 1 else ""
         
+        # Log detailed information about the attack action being processed
+        attacker = self.gameStateManager.get_unit(attacker_id)
+        defender = self.gameStateManager.get_unit(defender_id)
+        
+        if attacker and defender:
+            logging.debug(f"COMBAT: Processing attack action between {attacker_id} ({attacker.name}) and {defender_id} ({defender.name})")
+            logging.debug(f"COMBAT: Attacker position: {attacker.position}, HP: {attacker.current_hp}/{attacker.max_hp}")
+            logging.debug(f"COMBAT: Defender position: {defender.position}, HP: {defender.current_hp}/{defender.max_hp}")
+            logging.debug(f"COMBAT: Is capture attempt: {is_capture}")
+            
+            # Log equipped weapons
+            attacker_weapon = self._get_equipped_weapon_data(attacker)
+            defender_weapon = self._get_equipped_weapon_data(defender)
+            
+            if attacker_weapon:
+                logging.debug(f"COMBAT: Attacker weapon: {attacker_weapon.name if hasattr(attacker_weapon, 'name') else 'Unknown'}")
+            else:
+                logging.debug(f"COMBAT: Attacker has no equipped weapon")
+                
+            if defender_weapon:
+                logging.debug(f"COMBAT: Defender weapon: {defender_weapon.name if hasattr(defender_weapon, 'name') else 'Unknown'}")
+            else:
+                logging.debug(f"COMBAT: Defender has no equipped weapon")
         
         # Delegate to CombatExecutor
-        return self.combatExecutor.execute_combat(attacker_id, defender_id, is_capture)
+        combat_results = self.combatExecutor.execute_combat(attacker_id, defender_id, is_capture)
+        
+        # Log the result of applying combat effects
+        if combat_results and attacker and defender:
+            attacker_after = self.gameStateManager.get_unit(attacker_id)
+            defender_after = self.gameStateManager.get_unit(defender_id)
+            
+            if attacker_after:
+                logging.debug(f"COMBAT: After combat, attacker HP: {attacker_after.current_hp}/{attacker_after.max_hp}")
+            else:
+                logging.debug(f"COMBAT: After combat, attacker was defeated")
+                
+            if defender_after:
+                logging.debug(f"COMBAT: After combat, defender HP: {defender_after.current_hp}/{defender_after.max_hp}")
+            else:
+                logging.debug(f"COMBAT: After combat, defender was defeated")
+                
+            # Log number of strikes
+            logging.debug(f"COMBAT: Combat completed with {len(combat_results)} strikes")
+        
+        return combat_results
     
     # --- Staff Combat ---
     
@@ -1488,5 +1532,51 @@ class CombatSystem:
         # Return all strike results for this round
         return round_log
         
+    def can_attack(self, attacker_unit, target_unit) -> bool:
+        """
+        Determine if the attacker unit can attack the target unit.
+        
+        This method checks various conditions that determine if an attack is possible:
+        - Attacker must have an equipped weapon
+        - Target must be a valid opponent (different faction)
+        - Target must be within the attacker's weapon range
+        - Neither unit should have status effects preventing attacks
+        
+        Args:
+            attacker_unit: The unit attempting to attack
+            target_unit: The potential target unit
+            
+        Returns:
+            True if the attack is possible, False otherwise
+        """
+        # Check if attacker has an equipped weapon
+        attacker_weapon = self._get_equipped_weapon_data(attacker_unit)
+        if not attacker_weapon:
+            return False
+            
+        # Check if target is a valid opponent (different faction)
+        if attacker_unit.faction == target_unit.faction:
+            return False
+            
+        # Check if target is within weapon range
+        distance = self._calculate_distance(attacker_unit.position, target_unit.position)
+        weapon_min_range = getattr(attacker_weapon, 'range_min', 1)
+        weapon_max_range = getattr(attacker_weapon, 'range_max', 1)
+        
+        if not (weapon_min_range <= distance <= weapon_max_range):
+            return False
+            
+        # Check for status effects that prevent attacks
+        if self.statusEffectManager:
+            # Check if attacker has status effects preventing attacks
+            attacker_status_effects = self.statusEffectManager.get_unit_status_effects(attacker_unit.id)
+            if attacker_status_effects:
+                for status in attacker_status_effects:
+                    # Status effects like Sleep, Petrify prevent attacks
+                    if status.status_id in [StatusEffectEnum.SLEEP, StatusEffectEnum.PETRIFY]:
+                        return False
+        
+        # All checks passed, attack is possible
+        return True
 
 

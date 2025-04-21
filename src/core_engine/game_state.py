@@ -265,6 +265,7 @@ class GameStateManager:
     def __init__(self, data_provider: DataProvider):
         self.current_game_state: Optional[GameState] = None
         self.data_provider = data_provider
+        self.ai_vs_ai = False  # Flag for AI vs AI mode
         
         # Mock pathfinding for AI testing
         class MockPathfinding:
@@ -283,6 +284,34 @@ class GameStateManager:
                     if hasattr(unit, 'movement_range') and distance <= unit.movement_range + 1:
                         # Generate a simple path towards the target
                         path = self._generate_path_towards(unit.position, target.position, unit.movement_range)
+                        
+                        # Check if any position in the path is occupied by another unit
+                        # Only do this check if we have access to the game state
+                        if path and len(path) > 1 and hasattr(self, 'current_game_state') and self.current_game_state:
+                            valid_path = [path[0]]  # Start with just the starting position
+                            
+                            # Check each subsequent position in the path
+                            for i in range(1, len(path)):
+                                pos = path[i]
+                                is_occupied = False
+                                
+                                # Check if this position is occupied by a unit other than the target
+                                for unit_id, unit_pos in self.current_game_state.map_state.unit_positions.items():
+                                    if unit_pos == pos and unit_id != unit.id and unit_id != target.id:
+                                        # Position is occupied by another unit (not the target)
+                                        logging.debug(f"Attack path position {pos} is occupied by unit {unit_id}, stopping path here")
+                                        is_occupied = True
+                                        break
+                                
+                                if is_occupied:
+                                    # Stop the path at the last valid position
+                                    break
+                                else:
+                                    # Add this position to the valid path
+                                    valid_path.append(pos)
+                            
+                            path = valid_path
+                        
                         return path
                 
                 return None
@@ -300,6 +329,34 @@ class GameStateManager:
                     # Generate a simple path towards the target
                     movement_range = getattr(unit, 'movement_range', 5)  # Default to 5 if not specified
                     path = self._generate_path_towards(unit.position, position, movement_range)
+                    
+                    # Check if any position in the path is occupied by another unit
+                    # Only do this check if we have access to the game state
+                    if path and len(path) > 1 and hasattr(self, 'current_game_state') and self.current_game_state:
+                        valid_path = [path[0]]  # Start with just the starting position
+                        
+                        # Check each subsequent position in the path
+                        for i in range(1, len(path)):
+                            pos = path[i]
+                            is_occupied = False
+                            
+                            # Check if this position is occupied
+                            for unit_id, unit_pos in self.current_game_state.map_state.unit_positions.items():
+                                if unit_pos == pos and unit_id != unit.id:
+                                    # Position is occupied by another unit
+                                    logging.debug(f"Path position {pos} is occupied by unit {unit_id}, stopping path here")
+                                    is_occupied = True
+                                    break
+                            
+                            if is_occupied:
+                                # Stop the path at the last valid position
+                                break
+                            else:
+                                # Add this position to the valid path
+                                valid_path.append(pos)
+                        
+                        path = valid_path
+                    
                     return path
                 
                 return None
@@ -777,7 +834,10 @@ class GameStateManager:
         # Update map_state.unit_positions dictionary
         self.current_game_state.map_state.unit_positions[unit_id] = tuple(new_position)
         
+        # Log detailed information about the position change
         logging.info(f"Unit {unit_id} moved from {old_position} to {new_position}")
+        logging.debug(f"GAMESTATE: Updated position for unit {unit_id} ({unit.name}) from {old_position} to {new_position}")
+        
         return True
     
     def apply_damage(self, unit_id: str, damage: int, is_capture_attempt: bool = False, status_effect_manager=None) -> bool:
@@ -800,24 +860,36 @@ class GameStateManager:
         if not unit:
             return False
         
+        old_hp = unit.current_hp
         unit.current_hp = max(0, unit.current_hp - damage)
+        
+        # Log detailed information about the HP change
         logging.info(f"Unit {unit_id} takes {damage} damage. HP: {unit.current_hp}/{unit.max_hp}")
+        logging.debug(f"GAMESTATE: Updated HP for unit {unit_id} ({unit.name}) from {old_hp} to {unit.current_hp}")
         
         # Handle status effects that should be removed when taking damage
         if status_effect_manager and damage > 0:
             status_effect_manager.handle_damage_taken(unit_id, damage)
+            logging.debug(f"GAMESTATE: Processed status effects for unit {unit_id} after taking damage")
         
         if unit.current_hp <= 0:
+            old_disposition = unit.disposition
+            
             if is_capture_attempt:
                 # Unit is captured by the attacker
                 logging.info(f"Unit {unit_id} was captured!")
                 unit.disposition = DispositionEnum.CAPTURED_BY_ENEMY
+                logging.debug(f"GAMESTATE: Changed unit {unit_id} disposition from {old_disposition} to {unit.disposition} (captured)")
             else:
                 unit.disposition = DispositionEnum.DEAD
                 logging.info(f"Unit {unit_id} has fallen!")
+                logging.debug(f"GAMESTATE: Changed unit {unit_id} disposition from {old_disposition} to {unit.disposition} (defeated)")
+                
                 # Remove unit from map positions
                 if unit_id in self.current_game_state.map_state.unit_positions:
+                    old_position = self.current_game_state.map_state.unit_positions[unit_id]
                     del self.current_game_state.map_state.unit_positions[unit_id]
+                    logging.debug(f"GAMESTATE: Removed unit {unit_id} from map position {old_position}")
         
         return True
     
@@ -830,8 +902,13 @@ class GameStateManager:
         if not unit:
             return False
         
+        old_hp = unit.current_hp
         unit.current_hp = min(unit.max_hp, unit.current_hp + amount)
+        
+        # Log detailed information about the HP change
         logging.info(f"Unit {unit_id} healed for {amount}. HP: {unit.current_hp}/{unit.max_hp}")
+        logging.debug(f"GAMESTATE: Updated HP for unit {unit_id} ({unit.name}) from {old_hp} to {unit.current_hp} (healing)")
+        
         return True
     
     def add_status_effect(self, unit_id: str, status_type: StatusEffectEnum, duration: int, magnitude: int = 0) -> bool:
@@ -848,8 +925,15 @@ class GameStateManager:
         
         if existing_status:
             # Update existing status
+            old_duration = existing_status.duration
+            old_magnitude = existing_status.magnitude
             existing_status.duration = duration
             existing_status.magnitude = magnitude
+            
+            # Log detailed information about the status effect update
+            logging.info(f"Unit {unit_id} status effect {status_type.name} refreshed")
+            logging.debug(f"GAMESTATE: Updated status effect {status_type.name} for unit {unit_id} ({unit.name}): "
+                         f"duration {old_duration}->{duration}, magnitude {old_magnitude}->{magnitude}")
         else:
             # Add new status
             unit.status_effects.append(StatusEffectInstance(
@@ -857,8 +941,12 @@ class GameStateManager:
                 duration=duration,
                 magnitude=magnitude
             ))
+            
+            # Log detailed information about the new status effect
+            logging.info(f"Unit {unit_id} afflicted with {status_type.name}")
+            logging.debug(f"GAMESTATE: Added new status effect {status_type.name} to unit {unit_id} ({unit.name}): "
+                         f"duration={duration}, magnitude={magnitude}")
         
-        logging.info(f"Unit {unit_id} afflicted with {status_type.name}")
         return True
     
     def remove_status_effect(self, unit_id: str, status_type: StatusEffectEnum) -> bool:
@@ -870,8 +958,18 @@ class GameStateManager:
         if not unit:
             return False
         
+        # Check if the status effect exists before removing
+        has_status = any(s.type == status_type for s in unit.status_effects)
+        
         unit.status_effects = [s for s in unit.status_effects if s.type != status_type]
-        logging.info(f"Unit {unit_id} cured of {status_type.name}")
+        
+        # Log detailed information about the status effect removal
+        if has_status:
+            logging.info(f"Unit {unit_id} cured of {status_type.name}")
+            logging.debug(f"GAMESTATE: Removed status effect {status_type.name} from unit {unit_id} ({unit.name})")
+        else:
+            logging.debug(f"GAMESTATE: Attempted to remove status effect {status_type.name} from unit {unit_id}, but it wasn't present")
+            
         return True
     
     def update_fatigue(self, unit_id: str, amount: int) -> bool:
@@ -883,8 +981,13 @@ class GameStateManager:
         if not unit:
             return False
         
+        old_fatigue = unit.current_fatigue
         unit.current_fatigue += amount
+        
+        # Log detailed information about the fatigue change
         logging.info(f"Unit {unit_id} fatigue increased by {amount}. Current: {unit.current_fatigue}")
+        logging.debug(f"GAMESTATE: Updated fatigue for unit {unit_id} ({unit.name}) from {old_fatigue} to {unit.current_fatigue}")
+        
         return True
     
     def apply_combat_results(self, combat_result: Dict[str, Any]) -> bool:
@@ -963,6 +1066,23 @@ class GameStateManager:
                 logging.info(f"Unit {unit.id} was left behind and captured")
         
         logging.info("Escape map captures finalized")
+        
+    def get_unit_acted_status(self, unit_id: str) -> bool:
+        """
+        Get whether a unit has already acted in the current turn.
+        
+        Args:
+            unit_id: ID of the unit to check
+            
+        Returns:
+            True if the unit has acted, False otherwise or if the unit doesn't exist
+        """
+        unit = self.get_unit(unit_id)
+        if not unit:
+            logging.debug(f"get_unit_acted_status: Unit {unit_id} not found")
+            return False
+            
+        return unit.has_acted
     
     # --- Helper Functions ---
     

@@ -1098,3 +1098,67 @@ class TestCombatSystem(unittest.TestCase):
         # Verify the HP values are correct
         self.assertEqual(mock_attacker.current_hp, 15)  # 20 - 5
         self.assertEqual(mock_defender.current_hp, 1)   # 25 - 8 - 16
+        
+    # TDD: Test can_attack method
+    def test_can_attack_basic_scenario(self):
+        """Test can_attack returns True for a valid attack scenario."""
+        # Arrange
+        mock_attacker = MagicMock()
+        mock_attacker.id = "U001"
+        mock_attacker.name = "Leif"
+        mock_attacker.faction = "PLAYER"
+        mock_attacker.position = (5, 5)
+        mock_attacker.equipped_weapon_index = 0
+        mock_attacker.inventory = [MagicMock()]
+        
+        mock_target = MagicMock()
+        mock_target.id = "U002"
+        mock_target.name = "Enemy"
+        mock_target.faction = "ENEMY"
+        mock_target.position = (6, 5)  # Adjacent to attacker
+        
+        # Mock weapon data
+        mock_weapon = MagicMock()
+        mock_weapon.range_min = 1
+        mock_weapon.range_max = 1
+        
+        # Configure mocks
+        self.combat_system._get_equipped_weapon_data = MagicMock(return_value=mock_weapon)
+        
+        # Act
+        result = self.combat_system.can_attack(mock_attacker, mock_target)
+        
+        # Assert
+        self.assertTrue(result)
+        self.combat_system._get_equipped_weapon_data.assert_called_once_with(mock_attacker)
+    
+    def test_can_attack_out_of_range(self):
+        """Test can_attack returns False when target is out of weapon range."""
+        # Arrange
+        mock_attacker = MagicMock()
+        mock_attacker.id = "U001"
+        mock_attacker.name = "Leif"
+        mock_attacker.faction = "PLAYER"
+        mock_attacker.position = (5, 5)
+        mock_attacker.equipped_weapon_index = 0
+        mock_attacker.inventory = [MagicMock()]
+        
+        mock_target = MagicMock()
+        mock_target.id = "U002"
+        mock_target.name = "Enemy"
+        mock_target.faction = "ENEMY"
+        mock_target.position = (10, 5)  # 5 tiles away, out of range
+        
+        # Mock weapon data
+        mock_weapon = MagicMock()
+        mock_weapon.range_min = 1
+        mock_weapon.range_max = 2  # Max range of 2
+        
+        # Configure mocks
+        self.combat_system._get_equipped_weapon_data = MagicMock(return_value=mock_weapon)
+        
+        # Act
+        result = self.combat_system.can_attack(mock_attacker, mock_target)
+        
+        # Assert
+        self.assertFalse(result)

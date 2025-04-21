@@ -35,6 +35,7 @@ class ActionType(Enum):
     OPEN_DOOR = auto()
     STAFF = auto()
     DANCE = auto()
+    HEAL = auto()
 
 
 class UnitState(Enum):
@@ -76,13 +77,16 @@ class ActionHandler:
         self.movementSystem = None
         self.combatSystem = None
         self.inventorySystem = None
-        self.turnManager = None
+        self.turnManager = None # Gameplay TurnManager
+        self.coreTurnManager = None # Core Engine TurnManager
         self.eventHandler = None
         self.dataProvider = None
+        self.ai_vs_ai = False  # Flag for AI vs AI mode
     
     def initialize(self, gameStateManager_instance, unitSystem_instance, mapSystem_instance,
                   movementSystem_instance, combatSystem_instance, inventorySystem_instance,
-                  turnManager_instance, eventHandler_instance, dataProvider_instance):
+                  turnManager_instance, eventHandler_instance, dataProvider_instance,
+                  core_turn_manager_instance):
         """
         Initialize the ActionHandler with the necessary dependencies.
         
@@ -93,7 +97,8 @@ class ActionHandler:
             movementSystem_instance: Instance of the MovementSystem
             combatSystem_instance: Instance of the CombatSystem
             inventorySystem_instance: Instance of the InventorySystem
-            turnManager_instance: Instance of the TurnManager
+            turnManager_instance: Instance of the Gameplay TurnManager
+            core_turn_manager_instance: Instance of the Core Engine TurnManager
             eventHandler_instance: Instance of the EventHandler
             dataProvider_instance: Instance of the DataProvider
         """
@@ -103,7 +108,8 @@ class ActionHandler:
         self.movementSystem = movementSystem_instance
         self.combatSystem = combatSystem_instance
         self.inventorySystem = inventorySystem_instance
-        self.turnManager = turnManager_instance
+        self.turnManager = turnManager_instance # Gameplay TurnManager
+        self.coreTurnManager = core_turn_manager_instance # Store Core Engine TurnManager
         self.eventHandler = eventHandler_instance
         self.dataProvider = dataProvider_instance
         
@@ -121,6 +127,8 @@ class ActionHandler:
             True if the action was processed successfully, False otherwise
         """
         action_type_str = action_data.get('type', '')
+        logging.debug(f"ActionHandler.process_action received action_data: {action_data}") # DEBUG LOGGING
+        logging.debug(f"ActionHandler.process_action determined action_type_str: '{action_type_str}'") # DEBUG LOGGING
         
         # Get unit information for logging
         unit = self.gameStateManager.get_unit(unit_id)
@@ -196,7 +204,7 @@ class ActionHandler:
                 return True
             
             # Handle simple actions
-            elif action_type_str in ['MOVE', 'WAIT', 'ATTACK', 'CAPTURE', 'ITEM', 'TRADE', 'VISIT', 'SEIZE']:
+            elif action_type_str in ['MOVE', 'WAIT', 'ATTACK', 'CAPTURE', 'ITEM', 'TRADE', 'VISIT', 'SEIZE', 'HEAL']:
                 # Map string action type to enum
                 action_type_map = {
                     'MOVE': ActionType.MOVE,
@@ -206,10 +214,12 @@ class ActionHandler:
                     'ITEM': ActionType.ITEM,
                     'TRADE': ActionType.TRADE,
                     'VISIT': ActionType.VISIT,
-                    'SEIZE': ActionType.SEIZE
+                    'SEIZE': ActionType.SEIZE,
+                    'HEAL': ActionType.HEAL
                 }
                 
                 action_type = action_type_map.get(action_type_str)
+                logging.debug(f"ActionHandler.process_action mapped to action_type: {action_type}") # DEBUG LOGGING
                 if not action_type:
                     logging.error(f"Unknown action type: {action_type_str}")
                     return False
@@ -274,6 +284,8 @@ class ActionHandler:
         
         # 2. Action-Specific Validation & Execution
         outcome = None
+        logging.debug(f"ActionHandler.perform_action dispatching based on action_type: {action_type}") # ADDED DEBUG LOGGING
+        logging.debug(f"ActionHandler.perform_action processing action_type: {action_type} with target_data: {target_data}") # DEBUG LOGGING
         
         if action_type == ActionType.MOVE:
             outcome = self.handle_move(unit_id, target_data.get('path', []))
@@ -309,6 +321,8 @@ class ActionHandler:
             outcome = self.handle_steal(unit_id, target_data.get('target_unit_id'), target_data.get('item_id'))
         elif action_type == ActionType.OPEN_DOOR:
             outcome = self.handle_open_door(unit_id, target_data.get('target_tile'), target_data.get('key_item_id'))
+        elif action_type == ActionType.HEAL:
+            outcome = self.handle_heal(unit_id, target_data.get('target_unit_id'))
         else:
             outcome = ActionOutcome(success=False, message=f"Unsupported action type: {action_type}")
         
@@ -321,8 +335,11 @@ class ActionHandler:
                 if unit:
                     unit.has_acted = True
                 
-                # Record fatigue for the action
-                self.turnManager.record_action_fatigue(unit_id, action_type.name)
+                # Record fatigue for the action using CoreTurnManager
+                if self.coreTurnManager:
+                    self.coreTurnManager.record_action_fatigue(unit_id, action_type.name)
+                else:
+                    logging.warning("CoreTurnManager not available for fatigue recording.")
                 
                 # Check for Canto
                 if self._can_unit_canto(unit_id) and self._is_action_canto_eligible(action_type):
@@ -333,8 +350,9 @@ class ActionHandler:
                         logging.info(f"{unit.name} can Canto with {remaining_movement} movement remaining.")
                 
                 # Check for Movement Star (if not Canto pending)
+                # Note: check_movement_star might belong to CoreTurnManager as well? Assuming Gameplay TM for now.
                 if not self._get_unit_state(unit_id) == UnitState.CANTO_MOVE_PENDING:
-                    if self.turnManager.check_movement_star(unit_id):
+                    if self.turnManager and hasattr(self.turnManager, 'check_movement_star') and self.turnManager.check_movement_star(unit_id):
                         # Unit state is reset by TurnManager, allow another action
                         unit.has_acted = False
                         unit.has_moved = False
@@ -363,6 +381,7 @@ class ActionHandler:
             return ActionOutcome(success=False, message="Invalid move path.")
         
         # Execute move
+        logging.debug(f"ACTION_HANDLER: Attempting MOVE for unit {unit_id} with path {path}")
         success = self.movementSystem.execute_move(unit_id, path)
         if success:
             # Movement itself doesn't consume the action; subsequent action does
@@ -423,6 +442,7 @@ class ActionHandler:
             return ActionOutcome(success=False, message="Target out of range.")
         
         # Execute combat
+        logging.debug(f"ACTION_HANDLER: Attempting ATTACK for unit {unit_id} against {target_unit_id}, is_capture=False")
         combat_result = self.combatSystem.execute_combat(unit_id, target_unit_id, is_capture=False)
         return ActionOutcome(success=True, data={'combat_result': combat_result})
     
@@ -482,6 +502,7 @@ class ActionHandler:
             return ActionOutcome(success=True, data={'auto_capture': True})
         
         # Execute capture combat (with penalties)
+        logging.debug(f"ACTION_HANDLER: Attempting CAPTURE for unit {unit_id} against {target_unit_id}, is_capture=True")
         combat_result = self.combatSystem.execute_combat(unit_id, target_unit_id, is_capture=True)
         
         if combat_result.get('target_defeated', False):
@@ -1054,6 +1075,52 @@ class ActionHandler:
             else:
                 return ActionOutcome(success=False, message="Failed to open door.")
     
+    def handle_heal(self, unit_id: str, target_unit_id: str) -> ActionOutcome:
+        """
+        Handle a heal action.
+        
+        Args:
+            unit_id: ID of the healing unit
+            target_unit_id: ID of the target unit
+            
+        Returns:
+            ActionOutcome object
+        """
+        # Import the HealingSystem if it's not already imported
+        from src.gameplay_systems.healing_system import HealingSystem
+        
+        # Get the healer and target units
+        healer = self.gameStateManager.get_unit(unit_id)
+        target = self.gameStateManager.get_unit(target_unit_id)
+        
+        if not healer:
+            return ActionOutcome(success=False, message="Healer unit not found.")
+        
+        if not target:
+            return ActionOutcome(success=False, message="Target unit not found.")
+        
+        # Check if the healer has a healing item/staff equipped
+        healing_system = HealingSystem()
+        healing_system.initialize(
+            self.gameStateManager,
+            self.dataProvider,
+            self.unitSystem,
+            self.mapSystem
+        )
+        
+        # Check if healer can heal target
+        if not healing_system.can_heal(healer, target):
+            return ActionOutcome(success=False, message="Cannot heal target.")
+        
+        # Execute healing
+        logging.debug(f"ACTION_HANDLER: Attempting HEAL for unit {unit_id} on {target_unit_id}")
+        success = healing_system.execute_heal(unit_id, target_unit_id)
+        
+        if success:
+            return ActionOutcome(success=True)
+        else:
+            return ActionOutcome(success=False, message="Healing failed.")
+    
     # --- Helper Methods ---
     
     def _can_unit_act(self, unit) -> bool:
@@ -1069,34 +1136,51 @@ class ActionHandler:
         # Check for statuses like Sleep, Petrify, etc.
         return not unit.has_status(StatusEffectEnum.SLEEP) and not unit.has_status(StatusEffectEnum.BERSERK)
     
-    def _is_correct_phase_for_faction(self, phase: PhaseEnum, faction: FactionEnum) -> bool:
-        """
-        Check if the current phase corresponds to the unit's faction.
-        
-        Args:
-            phase: The current phase
-            faction: The unit's faction
+    def _is_correct_phase_for_faction(self, phase, faction) -> bool:
+            """
+            Check if the current phase corresponds to the unit's faction.
             
-        Returns:
-            True if the phase corresponds to the faction, False otherwise
-        """
-        # Check if AI vs AI mode is enabled
-        ai_vs_ai = False
-        if hasattr(self, 'turnManager') and self.turnManager and hasattr(self.turnManager, 'ai_vs_ai'):
-            ai_vs_ai = self.turnManager.ai_vs_ai
-        
-        # In AI vs AI mode, allow any unit to act in any phase
-        if ai_vs_ai:
-            return True
+            Args:
+                phase: The current phase
+                faction: The unit's faction
+                
+            Returns:
+                True if the phase corresponds to the faction, False otherwise
+            """
+            logging.debug(f"Phase Check: Input phase={phase}, faction={faction}") # ADDED LOGGING
             
-        # Normal phase-faction correspondence
-        if phase == PhaseEnum.PLAYER and faction == FactionEnum.PLAYER:
-            return True
-        elif phase == PhaseEnum.ENEMY and faction == FactionEnum.ENEMY:
-            return True
-        elif phase == PhaseEnum.NPC and faction == FactionEnum.NPC:
-            return True
-        return False
+            # Check if AI vs AI mode is enabled
+            ai_vs_ai = getattr(self, 'ai_vs_ai', False)
+            if not ai_vs_ai and hasattr(self, 'turnManager') and self.turnManager and hasattr(self.turnManager, 'ai_vs_ai'):
+                ai_vs_ai = self.turnManager.ai_vs_ai
+            
+            logging.debug(f"Phase Check: ai_vs_ai flag is {ai_vs_ai}") # ADDED LOGGING
+            
+            # In AI vs AI mode, allow any unit to act in any phase
+            if ai_vs_ai:
+                logging.debug("Phase Check: AI vs AI mode enabled, bypassing phase check (returning True)") # ADDED LOGGING
+                return True
+                
+            # Convert string faction to FactionEnum if needed
+            if isinstance(faction, str):
+                if faction == "PLAYER":
+                    faction = FactionEnum.PLAYER
+                elif faction == "ENEMY":
+                    faction = FactionEnum.ENEMY
+                elif faction == "NPC":
+                    faction = FactionEnum.NPC
+            
+            # Normal phase-faction correspondence
+            result = False
+            if phase == PhaseEnum.PLAYER and faction == FactionEnum.PLAYER:
+                result = True
+            elif phase == PhaseEnum.ENEMY and faction == FactionEnum.ENEMY:
+                result = True
+            elif phase == PhaseEnum.NPC and faction == FactionEnum.NPC:
+                result = True
+                
+            logging.debug(f"Phase Check: Standard check result = {result}") # ADDED LOGGING
+            return result
     
     def _is_valid_combat_target(self, attacker, defender) -> bool:
         """
@@ -1762,3 +1846,28 @@ class ActionHandler:
         else:
             # Generic log for other action types
             logging.info(f"AI ({faction_label}): {unit_name} performs {action_type} action")
+            
+    def _log_heal_action(self, healer, target, faction_label: str) -> None:
+        """
+        Log detailed information about a heal action.
+        
+        Args:
+            healer: The healing unit
+            target: The target unit
+            faction_label: String indicating which faction the AI is controlling
+        """
+        healer_name = healer.name
+        target_name = target.name
+        
+        # Get healing item
+        healing_item = None
+        if hasattr(healer, 'inventory') and hasattr(healer, 'equipped_weapon_index'):
+            if 0 <= healer.equipped_weapon_index < len(healer.inventory):
+                item_instance = healer.inventory[healer.equipped_weapon_index]
+                healing_item = self.dataProvider.get_item_data(item_instance.item_id)
+        
+        item_name = "healing item"
+        if healing_item and hasattr(healing_item, 'name'):
+            item_name = healing_item.name
+        
+        logging.info(f"AI ({faction_label}): {healer_name} heals {target_name} with {item_name}")

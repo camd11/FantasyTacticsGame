@@ -424,6 +424,41 @@ class TestGameStateManager(unittest.TestCase):
         self.game_state_manager.current_game_state = None
         result = self.game_state_manager.update_fatigue("LEIF", FATIGUE_COMBAT)
         self.assertFalse(result, "update_fatigue should return False when no game state exists")
+        
+    # TDD Anchor: Test get_unit_acted_status returns correct acted status
+    def test_get_unit_acted_status(self):
+        """Test that get_unit_acted_status correctly returns a unit's acted status."""
+        # First, load a map and deploy units
+        self._setup_game_state_with_units()
+        
+        # Initially, all units should not have acted
+        leif_acted = self.game_state_manager.get_unit_acted_status("LEIF")
+        finn_acted = self.game_state_manager.get_unit_acted_status("FINN")
+        
+        # Assertions
+        self.assertFalse(leif_acted, "Newly deployed unit should not have acted")
+        self.assertFalse(finn_acted, "Newly deployed unit should not have acted")
+        
+        # Set a unit as having acted
+        leif = self.game_state_manager.get_unit("LEIF")
+        leif.has_acted = True
+        
+        # Check again
+        leif_acted = self.game_state_manager.get_unit_acted_status("LEIF")
+        finn_acted = self.game_state_manager.get_unit_acted_status("FINN")
+        
+        # Assertions
+        self.assertTrue(leif_acted, "Unit should be marked as having acted")
+        self.assertFalse(finn_acted, "Unit should still be marked as not having acted")
+        
+        # Test with non-existent unit
+        nonexistent_acted = self.game_state_manager.get_unit_acted_status("NONEXISTENT")
+        self.assertFalse(nonexistent_acted, "Non-existent unit should return False")
+        
+        # Test with no game state
+        self.game_state_manager.current_game_state = None
+        leif_acted = self.game_state_manager.get_unit_acted_status("LEIF")
+        self.assertFalse(leif_acted, "Should return False when no game state exists")
 
     # Helper method to set up a game state with units for testing
     def _setup_game_state_with_units(self):

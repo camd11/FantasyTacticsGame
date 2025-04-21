@@ -20,8 +20,8 @@ The AI operates in two main phases for each unit's turn:
         *   `MoveToSafetyGoal`: Prioritizes moving the unit away from immediate threats.
         *   `SeizeTileGoal`: Aims to capture a specific objective tile (e.g., throne, gate).
         *   `AttackUnitGoal`: Focuses on attacking enemy units.
-        *   `AdvanceToObjectiveGoal`: Moves towards a designated map objective.
-        *   `SecurePositionGoal`: Holds a defensive position.
+        *   `AdvanceToObjectiveGoal`: Moves towards a designated map objective (Note: Currently uses placeholder logic; full implementation pending).
+        *   `SecurePositionGoal`: Holds a defensive position (Note: Currently uses placeholder logic; full implementation pending).
     *   **Goal Logic:** Each goal includes methods for:
         *   `is_valid(unit, state)`: Checks if the goal is applicable.
         *   `calculate_relevance(unit, state, persona)`: Scores the goal's importance.
@@ -54,6 +54,7 @@ The AI operates in two main phases for each unit's turn:
     *   These actions are scored using goal-specific utility considerations (from `utility_scorer.py` and the Goal definition).
     *   The highest-scoring action sequence is chosen.
 4.  **Execution:** The `AIManager` translates the chosen action sequence into commands for the game engine.
+5.  **Status:** The core execution pipeline (Goal Selection -> Tactical Execution -> Action Handling -> System Execution -> Game State Update) has been successfully debugged and is functional, as verified by AI vs AI testing (`test_ai_vs_ai_fixed.py`).
 
 This two-phase approach aims to create more strategically sound and contextually appropriate AI behavior compared to the previous system, while also offering potential performance benefits by pruning the action space early.
 

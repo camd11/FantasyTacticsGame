@@ -137,7 +137,7 @@ class HealSupportArchetypeHandler(AIArchetypeHandler):
             
         # Filter out invalid actions (e.g., path not found for move-actions)
         valid_actions = [a for a in possible_actions if a['type'] == 'WAIT' or
-                          a['is_current_pos'] or a['move_path'] is not None]
+                          a['is_current_pos'] or a['path'] is not None]
         
         if not valid_actions:
             return None
@@ -164,14 +164,14 @@ class HealSupportArchetypeHandler(AIArchetypeHandler):
             # If the best support action has a reasonable score, choose it
             if best_support['score'] >= 20:
                 target_data = best_support.get('target_info', {}).copy()
-                if best_support.get('move_path'):
-                    target_data['move_path'] = best_support['move_path']
+                if best_support.get('path'):
+                    target_data['path'] = best_support['path']
                 return AIAction(best_support['type'], unit_id, target_data)
         
         # If no good support action, prioritize safety
         # Find safe positions away from enemies
         safe_move_actions = [a for a in valid_actions if a['type'] == 'MOVE' and
-                            self._is_safe_position(unit_id, a.get('move_path', [])[-1] if a.get('move_path') else None)]
+                            self._is_safe_position(unit_id, a.get('path', [])[-1] if a.get('path') else None)]
         
         if safe_move_actions:
             # Sort by score
@@ -179,8 +179,8 @@ class HealSupportArchetypeHandler(AIArchetypeHandler):
             best_safe_move = safe_move_actions[0]
             
             target_data = best_safe_move.get('target_info', {}).copy()
-            if best_safe_move.get('move_path'):
-                target_data['move_path'] = best_safe_move['move_path']
+            if best_safe_move.get('path'):
+                target_data['path'] = best_safe_move['path']
             return AIAction(best_safe_move['type'], unit_id, target_data)
         
         # Fall back to default selection if no specific actions found

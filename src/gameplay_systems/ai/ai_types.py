@@ -187,7 +187,7 @@ class AIAction:
             action_type: Type of action (e.g., 'MOVE', 'ATTACK', 'ITEM', 'WAIT')
             unit_id: ID of the unit performing the action
             target_data: Dictionary containing data about the action target and parameters.
-                       For movement actions, this may include a 'move_path' key.
+                       For movement actions, this may include a 'path' key.
                        For attacks, this may include a 'target_unit_id' key.
                        For item usage, this may include 'item_id' and 'target_unit_id' keys.
         """

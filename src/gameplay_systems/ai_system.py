@@ -22,12 +22,13 @@ class AISystem:
     It provides methods for processing unit turns and selecting strategic goals.
     """
     
-    def __init__(self, game_state_or_manager):
+    def __init__(self, game_state_or_manager, action_handler=None):
         """
         Initialize an AISystem.
         
         Args:
             game_state_or_manager: The current game state or game state manager
+            action_handler: The action handler to execute actions (optional)
         """
         # Determine if we're given a GameState or GameStateManager
         if hasattr(game_state_or_manager, 'current_game_state'):
@@ -38,6 +39,9 @@ class AISystem:
             # It's a GameState
             self.game_state = game_state_or_manager
             self.game_state_manager = None
+        
+        # Store the action handler
+        self.action_handler = action_handler
         
         # Initialize utility scorer
         self.utility_scorer = UtilityScorer(self.game_state)
@@ -91,8 +95,53 @@ class AISystem:
         
         self.logger.info(f"Selected action: {selected_action.action_type}")
         
-        # Execute the action (in a real implementation, this would call the action handler)
+        # Execute the action using the action handler if available
         self.logger.info(f"Executing action for {unit.name}")
+        
+        if self.action_handler and selected_action:
+            action_data = {
+                'type': selected_action.action_type,
+                'target_info': selected_action.target_data
+            }
+            
+            # For MOVE actions, extract the path from target_data and place it at the top level
+            if selected_action.action_type == "MOVE" and 'path' in selected_action.target_data:
+                action_data['path'] = selected_action.target_data['path']
+            
+            # For combined actions like MOVE_AND_ATTACK, restructure the data
+            elif selected_action.action_type == "MOVE_AND_ATTACK" and 'path' in selected_action.target_data and 'target_unit_id' in selected_action.target_data:
+                action_data['move_data'] = {'path': selected_action.target_data['path']}
+                action_data['action_data'] = {'target_info': {'target_unit_id': selected_action.target_data['target_unit_id']}}
+            
+            # For MOVE_AND_HEAL, restructure the data
+            elif selected_action.action_type == "MOVE_AND_HEAL" and 'path' in selected_action.target_data and 'target_unit_id' in selected_action.target_data:
+                action_data['move_data'] = {'path': selected_action.target_data['path']}
+                action_data['action_data'] = {'target_info': {'target_unit_id': selected_action.target_data['target_unit_id']}}
+            
+            # For MOVE_AND_SEIZE, restructure the data
+            elif selected_action.action_type == "MOVE_AND_SEIZE" and 'path' in selected_action.target_data and 'target_position' in selected_action.target_data:
+                action_data['move_data'] = {'path': selected_action.target_data['path']}
+                action_data['action_data'] = {'target_info': {'target_tile': selected_action.target_data['target_position']}}
+            
+            # For MOVE_AND_WAIT, restructure the data
+            elif selected_action.action_type == "MOVE_AND_WAIT" and 'path' in selected_action.target_data:
+                action_data['move_data'] = {'path': selected_action.target_data['path']}
+            
+            # Log the action being executed
+            self.logger.info(f"Calling action_handler.process_action with action_type={selected_action.action_type}")
+            self.logger.debug(f"AISystem sending action_data: {action_data}") # DEBUG LOGGING
+            
+            # Execute the action
+            success = self.action_handler.process_action(unit.id, action_data)
+            
+            if success:
+                self.logger.info(f"Action executed successfully for {unit.name}")
+            else:
+                self.logger.warning(f"Action execution failed for {unit.name}")
+        elif not self.action_handler:
+            self.logger.warning(f"No action handler available to execute action for {unit.name}")
+        elif not selected_action:
+            self.logger.warning(f"No action selected for {unit.name}")
     
     def select_strategic_goal(self, unit) -> Optional[Goal]:
         """

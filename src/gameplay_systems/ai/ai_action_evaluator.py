@@ -108,7 +108,7 @@ class AIActionEvaluator:
             - type: Action type (e.g., 'ATTACK', 'MOVE', 'ITEM', 'WAIT')
             - score: Numerical score representing action utility
             - target_info: Dictionary with target-specific data
-            - move_path: List of coordinates for movement (if applicable)
+            - path: List of coordinates for movement (if applicable)
             - is_current_pos: Boolean indicating if action is from current position
         """
         actions = []
@@ -171,7 +171,7 @@ class AIActionEvaluator:
             'type': 'WAIT',
             'score': 1,  # Low score as a fallback option
             'target_info': {},
-            'move_path': None,
+            'path': None,
             'is_current_pos': True
         })
         
@@ -208,7 +208,7 @@ class AIActionEvaluator:
             - type: Action type (e.g., 'ATTACK', 'MOVE', 'ITEM', 'CAPTURE')
             - score: Numerical score representing action utility
             - target_info: Dictionary with target-specific data
-            - move_path: List of coordinates for movement (if applicable)
+            - path: List of coordinates for movement (if applicable)
             - is_current_pos: Boolean indicating if action is from current position
             - context: Optional additional context information for the action
         """
@@ -228,13 +228,13 @@ class AIActionEvaluator:
             potential_targets = []
         
         # Get move path if not current position
-        move_path = None
+        path = None
         if not is_current_pos:
             try:
                 unit = self.gameStateManager.get_unit(unit_id)
-                move_path = self.mapSystem.pathfinder.reconstruct_path(unit.position, tile, unit_id)
-                if self.debug_mode and move_path:
-                    logging.info(f"Found path to tile {tile}: {move_path}")
+                path = self.mapSystem.pathfinder.reconstruct_path(unit.position, tile, unit_id)
+                if self.debug_mode and path:
+                    logging.info(f"Found path to tile {tile}: {path}")
             except Exception as e:
                 logging.error(f"Error finding path: {e}")
         
@@ -278,14 +278,14 @@ class AIActionEvaluator:
                                             'type': 'ATTACK',
                                             'score': score,
                                             'target_info': {'target_unit_id': target_unit_id},
-                                            'move_path': move_path if not is_current_pos else None,
+                                            'path': path if not is_current_pos else None,
                                             'is_current_pos': is_current_pos
                                         })
             except Exception as e:
                 logging.error(f"Error evaluating attack actions: {e}")
         
         # Check if the destination tile is occupied before adding a MOVE action
-        if not is_current_pos and move_path:
+        if not is_current_pos and path:
             # Check if the destination tile is occupied by any unit
             occupying_unit_id = self.mapSystem._get_unit_at(tile)
             
@@ -307,7 +307,7 @@ class AIActionEvaluator:
                     'type': 'MOVE',
                     'score': move_score,
                     'target_info': {},
-                    'move_path': move_path,
+                    'path': path,
                     'is_current_pos': is_current_pos
                 }
                 
@@ -320,7 +320,7 @@ class AIActionEvaluator:
             else:
                 print(f"DEBUG: evaluate_actions_from_tile - NOT adding MOVE action to occupied tile {tile}. Occupied by unit: {occupying_unit_id}")
         else:
-            print(f"DEBUG: evaluate_actions_from_tile - NOT adding MOVE action to tile {tile}. is_current_pos: {is_current_pos}, move_path: {move_path is not None}")
+            print(f"DEBUG: evaluate_actions_from_tile - NOT adding MOVE action to tile {tile}. is_current_pos: {is_current_pos}, path: {path is not None}")
             
         # If we can't get a real weapon, create a dummy one for testing
         if not weapon:
@@ -355,7 +355,7 @@ class AIActionEvaluator:
                                 'type': 'ATTACK',
                                 'score': 100,  # Higher than move to prioritize attacks
                                 'target_info': {'target_unit_id': target_unit_id},
-                                'move_path': move_path,
+                                'path': path,
                                 'is_current_pos': is_current_pos
                             })
                             
@@ -413,7 +413,7 @@ class AIActionEvaluator:
                                             'type': 'CAPTURE',
                                             'score': score,
                                             'target_info': {'target_unit_id': target_unit_id},
-                                            'move_path': move_path,
+                                            'path': path,
                                             'is_current_pos': is_current_pos
                                         })
         
@@ -467,7 +467,7 @@ class AIActionEvaluator:
                             'type': 'ITEM',
                             'score': score,
                             'target_info': {'item_id': item_id, 'target_unit_id': target_unit_id},
-                            'move_path': move_path,
+                            'path': path,
                             'is_current_pos': is_current_pos
                         })
         return evaluated_actions

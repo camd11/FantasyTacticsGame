@@ -12,6 +12,7 @@ The AI vs AI testing framework allows developers to:
 4.  Analyze emergent AI behavior in complex tactical situations over multiple turns.
 5.  Provide a basis for regression testing of the AI system.
 6.  **Confirmation:** Latest tests using this framework confirm improved behavior for `MoveToSafetyGoal` and `SeizeTileGoal`, particularly when targets are distant, significantly reducing scenarios where the AI previously failed to find a valid action.
+7.  **Debugging Success:** This framework was crucial in identifying and verifying fixes for the core AI action execution pipeline (Goal Selection -> Tactical Execution -> Action Handling -> System Execution -> Game State Update), resolving issues related to system initialization, phase validation, path validation, action data structures, and tactical reachability checks, as confirmed by `test_ai_vs_ai_fixed.py`.
 
 ## Components
 

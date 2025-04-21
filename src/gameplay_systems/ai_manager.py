@@ -208,6 +208,14 @@ class AIManager:
         # Use archetype-specific action determination
         action_dict = self._determine_action_by_archetype(unit, ai_profile)
         
+        # Log the action being returned to the GameEngine
+        if action_dict:
+            logging.debug(f"AI ACTION: Returning action for unit {unit_id}: type={action_dict.get('type')}, "
+                         f"target_info={action_dict.get('target_info', {})}, "
+                         f"has_path={'move_data' in action_dict}")
+        else:
+            logging.debug(f"AI ACTION: No action determined for unit {unit_id}")
+        
         # Restore the original game state manager
         self.gameStateManager = original_gsm
         
@@ -288,9 +296,9 @@ class AIManager:
             self._log_ai_action_details(unit, best_action, faction_label)
             
             # Execute Move first if needed
-            if best_action.target_data.get('move_path'):
-                print(f"DEBUG: process_unit_turn - Executing MOVE action with path: {best_action.target_data.get('move_path')}")
-                move_path = best_action.target_data.get('move_path')
+            if best_action.target_data.get('path'):
+                print(f"DEBUG: process_unit_turn - Executing MOVE action with path: {best_action.target_data.get('path')}")
+                move_path = best_action.target_data.get('path')
                 move_outcome = self.actionHandler.perform_action(
                     unit_id,
                     'MOVE',
@@ -307,7 +315,7 @@ class AIManager:
             action_outcome = self.actionHandler.perform_action(
                 unit_id,
                 best_action.action_type,
-                {k: v for k, v in best_action.target_data.items() if k != 'move_path'}
+                {k: v for k, v in best_action.target_data.items() if k != 'path'}
             )
             
             if not action_outcome.success:
@@ -342,7 +350,7 @@ class AIManager:
         """
         print(f"DEBUG: select_best_action - Selecting from {len(possible_actions)} possible actions")
         for i, action in enumerate(possible_actions):
-            print(f"DEBUG: select_best_action - Action {i+1}: type={action.get('type')}, score={action.get('score')}, is_current_pos={action.get('is_current_pos')}, has_move_path={action.get('move_path') is not None}")
+            print(f"DEBUG: select_best_action - Action {i+1}: type={action.get('type')}, score={action.get('score')}, is_current_pos={action.get('is_current_pos')}, has_path={action.get('path') is not None}")
         
         if not possible_actions:
             print("DEBUG: select_best_action - No possible actions")
@@ -356,7 +364,7 @@ class AIManager:
         # Default selection logic if no archetype handler is available
         # Filter out invalid actions (e.g., path not found for move-actions)
         valid_actions = [a for a in possible_actions if a['type'] == 'WAIT' or
-                          a['is_current_pos'] or a['move_path'] is not None]
+                          a['is_current_pos'] or a['path'] is not None]
         
         if not valid_actions:
             return None
@@ -369,12 +377,12 @@ class AIManager:
         target_data = best_action.get('target_info', {}).copy()
         
         # Add move path to target data if needed
-        if best_action.get('move_path'):
-            target_data['move_path'] = best_action['move_path']
-            print(f"DEBUG: select_best_action - Selected action with move_path: {best_action['move_path']}")
+        if best_action.get('path'):
+            target_data['path'] = best_action['path']
+            print(f"DEBUG: select_best_action - Selected action with path: {best_action['path']}")
             
         action = AIAction(best_action['type'], unit_id, target_data)
-        print(f"DEBUG: select_best_action - Final action: type={action.action_type}, has_move_path={action.target_data.get('move_path') is not None}")
+        print(f"DEBUG: select_best_action - Final action: type={action.action_type}, has_path={action.target_data.get('path') is not None}")
         return action
     
     def _determine_action_by_archetype(self, unit, ai_profile):
@@ -437,9 +445,9 @@ class AIManager:
             }
             
             # Add move path if present
-            if 'move_path' in best_action.target_data:
+            if 'path' in best_action.target_data:
                 if best_action.action_type == 'MOVE':
-                    action_dict['path'] = best_action.target_data['move_path']
+                    action_dict['path'] = best_action.target_data['path']
                 else:
                     # For combined actions like MOVE_AND_ATTACK
                     action_dict = {
@@ -448,7 +456,7 @@ class AIManager:
                         'move_data': {
                             'type': 'MOVE',
                             'unit_id': unit_id,
-                            'path': best_action.target_data['move_path']
+                            'path': best_action.target_data['path']
                         },
                         'action_data': {
                             'type': best_action.action_type,
@@ -456,16 +464,19 @@ class AIManager:
                         }
                     }
                     
-                    # Remove move_path from target_data to avoid duplication
+                    # Remove path from target_data to avoid duplication
                     target_data_copy = best_action.target_data.copy()
-                    target_data_copy.pop('move_path', None)
+                    target_data_copy.pop('path', None)
                     
                     # Add remaining target data to action_data
                     action_dict['action_data'].update(target_data_copy)
             
             # Add target info if present
-            if best_action.target_data and 'move_path' not in best_action.target_data:
+            if best_action.target_data and 'path' not in best_action.target_data:
                 action_dict['target_info'] = best_action.target_data
+            
+            # Log the final action dictionary being returned
+            logging.debug(f"AI ACTION: Final action dictionary for unit {unit_id}: {action_dict}")
             
             return action_dict
         else:
@@ -499,8 +510,8 @@ class AIManager:
         
         if action_type == "MOVE":
             # Extract the destination from the move path
-            if 'move_path' in action.target_data and action.target_data['move_path']:
-                dest_pos = action.target_data['move_path'][-1]
+            if 'path' in action.target_data and action.target_data['path']:
+                dest_pos = action.target_data['path'][-1]
                 logging.info(f"AI ({faction_label}): {unit_name} moves from {unit_pos} to {dest_pos}")
             else:
                 logging.info(f"AI ({faction_label}): {unit_name} attempts to move but no path found")

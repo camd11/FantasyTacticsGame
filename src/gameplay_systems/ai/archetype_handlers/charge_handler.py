@@ -85,7 +85,7 @@ class ChargeArchetypeHandler(AIArchetypeHandler):
                 action['score'] *= 1.3  # 30% boost to attack scores
             elif action['type'] == 'MOVE':
                 # Check if the move is towards an enemy
-                if self._is_move_towards_enemy(unit_id, action.get('move_path', [])):
+                if self._is_move_towards_enemy(unit_id, action.get('path', [])):
                     action['score'] *= 1.5  # 50% boost to moves towards enemies
         
         return possible_actions
@@ -125,7 +125,7 @@ class ChargeArchetypeHandler(AIArchetypeHandler):
             
         # Filter out invalid actions (e.g., path not found for move-actions)
         valid_actions = [a for a in possible_actions if a['type'] == 'WAIT' or
-                          a['is_current_pos'] or a['move_path'] is not None]
+                          a['is_current_pos'] or a['path'] is not None]
         
         if not valid_actions:
             return None
@@ -138,27 +138,27 @@ class ChargeArchetypeHandler(AIArchetypeHandler):
             best_attack = attack_actions[0]
             
             target_data = best_attack.get('target_info', {}).copy()
-            if best_attack.get('move_path'):
-                target_data['move_path'] = best_attack['move_path']
+            if best_attack.get('path'):
+                target_data['path'] = best_attack['path']
             return AIAction(best_attack['type'], unit_id, target_data)
         
         # If no attacks, prioritize moves towards enemies
-        move_actions = [a for a in valid_actions if a['type'] == 'MOVE' and 
-                        self._is_move_towards_enemy(unit_id, a.get('move_path', []))]
+        move_actions = [a for a in valid_actions if a['type'] == 'MOVE' and
+                        self._is_move_towards_enemy(unit_id, a.get('path', []))]
         if move_actions:
             # Sort move actions by score
             move_actions.sort(key=lambda a: a['score'], reverse=True)
             best_move = move_actions[0]
             
             target_data = best_move.get('target_info', {}).copy()
-            if best_move.get('move_path'):
-                target_data['move_path'] = best_move['move_path']
+            if best_move.get('path'):
+                target_data['path'] = best_move['path']
             return AIAction(best_move['type'], unit_id, target_data)
         
         # Fall back to default selection if no specific actions found
         return super().select_best_action(unit_id, valid_actions, ai_profile)
     
-    def _is_move_towards_enemy(self, unit_id: str, move_path: List[Tuple[int, int]]) -> bool:
+    def _is_move_towards_enemy(self, unit_id: str, path: List[Tuple[int, int]]) -> bool:
         """
         Check if a move is towards an enemy unit.
         
@@ -180,12 +180,12 @@ class ChargeArchetypeHandler(AIArchetypeHandler):
         
         Args:
             unit_id: ID of the unit considering the move
-            move_path: Path of coordinates (x, y) to move along
+            path: Path of coordinates (x, y) to move along
             
         Returns:
             True if the move brings the unit closer to an enemy, False otherwise
         """
-        if not move_path:
+        if not path:
             return False
             
         unit = self.unitSystem.get_unit(unit_id)
@@ -194,7 +194,7 @@ class ChargeArchetypeHandler(AIArchetypeHandler):
             
         # Get the current position and the destination
         current_pos = unit.position
-        destination = move_path[-1]
+        destination = path[-1]
         
         # Find the nearest enemy from the current position
         nearest_enemy_pos = None

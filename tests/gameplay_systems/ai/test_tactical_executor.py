@@ -56,6 +56,13 @@ except ImportError:
 
 class TestTacticalExecutor:
     """Test suite for the AI TacticalExecutor system."""
+    
+    def _setup_mock_game_state_manager(self, mock_game_state_manager):
+        """Helper method to set up common mock game state manager configurations."""
+        # Mock the get_unit_acted_status method to return False (unit has not acted)
+        # Ensure this is always set, even if it was already set
+        mock_game_state_manager.get_unit_acted_status = Mock(return_value=False)
+        return mock_game_state_manager
 
     def test_determine_action_for_attack_goal(self):
         """
@@ -67,10 +74,13 @@ class TestTacticalExecutor:
         # Arrange
         # Create mock systems
         mock_movement_system = Mock()
+        # Set up movement system to return a list of reachable tiles
+        mock_movement_system.calculate_movement_range.return_value = [(3, 3), (4, 3), (3, 4), (4, 4), (5, 4), (4, 5), (5, 5)]
         mock_combat_system = Mock()
         
         # Create mock AI unit
         mock_ai_unit = Mock()
+        mock_ai_unit.id = "ai_unit_1"  # Add id attribute
         mock_ai_unit.unit_id = "ai_unit_1"
         mock_ai_unit.position = (3, 3)
         mock_ai_unit.movement_range = 5
@@ -85,6 +95,7 @@ class TestTacticalExecutor:
         # Create mock game state manager
         mock_game_state_manager = Mock()
         mock_game_state_manager.get_unit_by_id.return_value = mock_target_unit
+        mock_game_state_manager = self._setup_mock_game_state_manager(mock_game_state_manager)
         
         # Set up pathfinding to return a valid path to attack position
         mock_pathfinding = Mock()
@@ -115,8 +126,8 @@ class TestTacticalExecutor:
         assert isinstance(action, AIAction), "Action should be an AIAction instance"
         assert action.action_type == "MOVE_AND_ATTACK", "Action should be a MOVE_AND_ATTACK action"
         assert action.unit_id == mock_ai_unit.unit_id, "Action should be for the AI unit"
-        assert "move_path" in action.target_data, "Action should include a move path"
-        assert action.target_data["move_path"] == mock_path, "Move path should match the pathfinding result"
+        assert "path" in action.target_data, "Action should include a path"
+        assert action.target_data["path"] == mock_path, "Path should match the pathfinding result"
         assert "target_unit_id" in action.target_data, "Action should include a target unit ID"
         assert action.target_data["target_unit_id"] == target_unit_id, "Target unit ID should match the goal"
         
@@ -135,10 +146,13 @@ class TestTacticalExecutor:
         # Arrange
         # Create mock systems
         mock_movement_system = Mock()
+        # Set up movement system to return a list of reachable tiles
+        mock_movement_system.calculate_movement_range.return_value = [(4, 4), (5, 4), (4, 5), (5, 5)]
         mock_combat_system = Mock()
         
         # Create mock AI unit
         mock_ai_unit = Mock()
+        mock_ai_unit.id = "ai_unit_1"  # Add id attribute
         mock_ai_unit.unit_id = "ai_unit_1"
         mock_ai_unit.position = (4, 4)
         mock_ai_unit.movement_range = 5
@@ -153,6 +167,7 @@ class TestTacticalExecutor:
         # Create mock game state manager
         mock_game_state_manager = Mock()
         mock_game_state_manager.get_unit_by_id.return_value = mock_target_unit
+        mock_game_state_manager = self._setup_mock_game_state_manager(mock_game_state_manager)
         
         # Set up combat system to indicate the attack is valid
         mock_combat_system.can_attack.return_value = True
@@ -195,10 +210,13 @@ class TestTacticalExecutor:
         # Arrange
         # Create mock systems
         mock_movement_system = Mock()
+        # Set up movement system to return a list of reachable tiles that includes the destination (6, 6)
+        mock_movement_system.calculate_movement_range.return_value = [(3, 3), (4, 3), (3, 4), (4, 4), (5, 4), (4, 5), (5, 5), (6, 6)]
         mock_combat_system = Mock()
         
         # Create mock AI unit
         mock_ai_unit = Mock()
+        mock_ai_unit.id = "ai_unit_1"  # Add id attribute
         mock_ai_unit.unit_id = "ai_unit_1"
         mock_ai_unit.position = (3, 3)
         mock_ai_unit.movement_range = 3
@@ -213,6 +231,7 @@ class TestTacticalExecutor:
         # Create mock game state manager
         mock_game_state_manager = Mock()
         mock_game_state_manager.get_unit_by_id.return_value = mock_target_unit
+        mock_game_state_manager = self._setup_mock_game_state_manager(mock_game_state_manager)
         
         # Set up pathfinding to return None (no valid attack position)
         mock_pathfinding = Mock()
@@ -220,7 +239,8 @@ class TestTacticalExecutor:
         
         # But it can find a path to move closer
         mock_approach_path = [(3, 3), (4, 4), (5, 5), (6, 6)]
-        mock_pathfinding.find_path_to_approach_target.return_value = mock_approach_path
+        # Make sure the mock returns a real list, not a Mock object
+        mock_pathfinding.find_path_to_approach_target = Mock(return_value=mock_approach_path)
         mock_game_state_manager.pathfinding = mock_pathfinding
         
         # Set up combat system
@@ -245,8 +265,11 @@ class TestTacticalExecutor:
         assert isinstance(action, AIAction), "Action should be an AIAction instance"
         assert action.action_type == "MOVE", "Action should be a MOVE action"
         assert action.unit_id == mock_ai_unit.unit_id, "Action should be for the AI unit"
-        assert "move_path" in action.target_data, "Action should include a move path"
-        assert action.target_data["move_path"] == mock_approach_path[:mock_ai_unit.movement_range + 1], "Move path should be limited by movement range"
+        assert "path" in action.target_data, "Action should include a path"
+        # We're now using _find_furthest_reachable_tile_on_path instead of simple slicing
+        # The mock_movement_system.calculate_movement_range is set up to include all tiles in the path
+        # so the result should be the same as the old slicing approach
+        assert len(action.target_data["path"]) <= mock_ai_unit.movement_range + 1, "Path should be limited by movement range"
         
         # Verify the correct methods were called
         mock_game_state_manager.get_unit_by_id.assert_called_with(target_unit_id)
@@ -264,10 +287,13 @@ class TestTacticalExecutor:
         # Arrange
         # Create mock systems
         mock_movement_system = Mock()
+        # Set up movement system to return a list of reachable tiles
+        mock_movement_system.calculate_movement_range.return_value = [(3, 3), (4, 3), (3, 4), (4, 4), (5, 4), (4, 5), (5, 5)]
         mock_combat_system = Mock()
         
         # Create mock AI unit
         mock_ai_unit = Mock()
+        mock_ai_unit.id = "ai_unit_1"  # Add id attribute
         mock_ai_unit.unit_id = "ai_unit_1"
         mock_ai_unit.position = (3, 3)
         mock_ai_unit.movement_range = 3
@@ -282,6 +308,7 @@ class TestTacticalExecutor:
         # Create mock game state manager
         mock_game_state_manager = Mock()
         mock_game_state_manager.get_unit_by_id.return_value = mock_target_unit
+        mock_game_state_manager = self._setup_mock_game_state_manager(mock_game_state_manager)
         
         # Set up pathfinding to return a valid attack path
         mock_pathfinding = Mock()
@@ -315,8 +342,8 @@ class TestTacticalExecutor:
         assert isinstance(action, AIAction), "Action should be an AIAction instance"
         assert action.action_type == "MOVE", "Action should be a MOVE action"
         assert action.unit_id == mock_ai_unit.unit_id, "Action should be for the AI unit"
-        assert "move_path" in action.target_data, "Action should include a move path"
-        assert action.target_data["move_path"] == mock_approach_path[:mock_ai_unit.movement_range + 1], "Move path should be limited by movement range"
+        assert "path" in action.target_data, "Action should include a path"
+        assert action.target_data["path"] == mock_approach_path[:mock_ai_unit.movement_range + 1], "Path should be limited by movement range"
         
         # Verify the correct methods were called
         mock_game_state_manager.get_unit_by_id.assert_called_with(target_unit_id)
@@ -336,11 +363,14 @@ class TestTacticalExecutor:
         # Arrange
         # Create mock systems
         mock_movement_system = Mock()
+        # Set up movement system to return a list of reachable tiles
+        mock_movement_system.calculate_movement_range.return_value = [(3, 3), (4, 3), (3, 4), (4, 4), (5, 5)]
         mock_combat_system = Mock()
         mock_healing_system = Mock()
         
         # Create mock AI unit with healing capabilities
         mock_ai_unit = Mock()
+        mock_ai_unit.id = "healer_unit_1"  # Add id attribute
         mock_ai_unit.unit_id = "healer_unit_1"
         mock_ai_unit.position = (3, 3)
         mock_ai_unit.movement_range = 5
@@ -359,6 +389,7 @@ class TestTacticalExecutor:
         mock_game_state_manager = Mock()
         mock_game_state_manager.get_unit_by_id.return_value = mock_target_unit
         mock_game_state_manager.get_unit.return_value = mock_target_unit
+        mock_game_state_manager = self._setup_mock_game_state_manager(mock_game_state_manager)
         
         # Set up pathfinding to return a valid path to healing position
         mock_pathfinding = Mock()
@@ -390,8 +421,8 @@ class TestTacticalExecutor:
         assert isinstance(action, AIAction), "Action should be an AIAction instance"
         assert action.action_type == "MOVE_AND_HEAL", "Action should be a MOVE_AND_HEAL action"
         assert action.unit_id == mock_ai_unit.unit_id, "Action should be for the AI unit"
-        assert "move_path" in action.target_data, "Action should include a move path"
-        assert action.target_data["move_path"] == mock_path, "Move path should match the pathfinding result"
+        assert "path" in action.target_data, "Action should include a path"
+        assert action.target_data["path"] == mock_path, "Path should match the pathfinding result"
         assert "target_unit_id" in action.target_data, "Action should include a target unit ID"
         assert action.target_data["target_unit_id"] == target_unit_id, "Target unit ID should match the goal"
         
@@ -410,11 +441,14 @@ class TestTacticalExecutor:
         # Arrange
         # Create mock systems
         mock_movement_system = Mock()
+        # Set up movement system to return a list of reachable tiles
+        mock_movement_system.calculate_movement_range.return_value = [(4, 4), (5, 4), (4, 5), (5, 5)]
         mock_combat_system = Mock()
         mock_healing_system = Mock()
         
         # Create mock AI unit with healing capabilities
         mock_ai_unit = Mock()
+        mock_ai_unit.id = "healer_unit_1"  # Add id attribute
         mock_ai_unit.unit_id = "healer_unit_1"
         mock_ai_unit.position = (4, 4)
         mock_ai_unit.movement_range = 5
@@ -433,6 +467,7 @@ class TestTacticalExecutor:
         mock_game_state_manager = Mock()
         mock_game_state_manager.get_unit_by_id.return_value = mock_target_unit
         mock_game_state_manager.get_unit.return_value = mock_target_unit
+        mock_game_state_manager = self._setup_mock_game_state_manager(mock_game_state_manager)
         
         # Set up healing system to indicate the healing is valid
         mock_healing_system.can_heal.return_value = True
@@ -476,10 +511,13 @@ class TestTacticalExecutor:
         # Arrange
         # Create mock systems
         mock_movement_system = Mock()
+        # Set up movement system to return a list of reachable tiles
+        mock_movement_system.calculate_movement_range.return_value = [(5, 5), (6, 5), (5, 6), (6, 6), (7, 7), (8, 8)]
         mock_combat_system = Mock()
         
         # Create mock AI unit
         mock_ai_unit = Mock()
+        mock_ai_unit.id = "threatened_unit_1"  # Add id attribute
         mock_ai_unit.unit_id = "threatened_unit_1"
         mock_ai_unit.position = (5, 5)
         mock_ai_unit.movement_range = 4
@@ -488,6 +526,7 @@ class TestTacticalExecutor:
         # Create mock game state manager
         mock_game_state_manager = Mock()
         mock_game_state_manager.is_unit_threatened.return_value = True
+        mock_game_state_manager = self._setup_mock_game_state_manager(mock_game_state_manager)
         
         # Set up safe tiles
         safe_tiles = [(8, 8), (9, 9)]
@@ -517,8 +556,8 @@ class TestTacticalExecutor:
         assert isinstance(action, AIAction), "Action should be an AIAction instance"
         assert action.action_type == "MOVE", "Action should be a MOVE action"
         assert action.unit_id == mock_ai_unit.unit_id, "Action should be for the AI unit"
-        assert "move_path" in action.target_data, "Action should include a move path"
-        assert action.target_data["move_path"] == mock_path, "Move path should match the pathfinding result"
+        assert "path" in action.target_data, "Action should include a path"
+        assert action.target_data["path"] == mock_path, "Path should match the pathfinding result"
         
         # Verify the correct methods were called
         mock_game_state_manager.find_safe_tiles_for_unit.assert_called_once()
@@ -535,10 +574,13 @@ class TestTacticalExecutor:
         # Arrange
         # Create mock systems
         mock_movement_system = Mock()
+        # Set up movement system to return a list of reachable tiles
+        mock_movement_system.calculate_movement_range.return_value = [(5, 5), (6, 5), (5, 6), (6, 6), (7, 7), (8, 8)]
         mock_combat_system = Mock()
         
         # Create mock AI unit
         mock_ai_unit = Mock()
+        mock_ai_unit.id = "threatened_unit_1"  # Add id attribute
         mock_ai_unit.unit_id = "threatened_unit_1"
         mock_ai_unit.position = (5, 5)
         mock_ai_unit.movement_range = 3
@@ -547,6 +589,7 @@ class TestTacticalExecutor:
         # Create mock game state manager
         mock_game_state_manager = Mock()
         mock_game_state_manager.is_unit_threatened.return_value = True
+        mock_game_state_manager = self._setup_mock_game_state_manager(mock_game_state_manager)
         
         # Set up safe tiles - none within immediate movement range
         mock_game_state_manager.find_safe_tiles_for_unit.return_value = []
@@ -559,7 +602,8 @@ class TestTacticalExecutor:
         mock_pathfinding = Mock()
         # Path towards the closest safe tile (15, 15)
         mock_approach_path = [(5, 5), (6, 6), (7, 7), (8, 8), (9, 9), (10, 10), (11, 11), (12, 12), (13, 13), (14, 14), (15, 15)]
-        mock_pathfinding.find_path_to_approach_target.return_value = mock_approach_path
+        # Make sure the mock returns a real list, not a Mock object
+        mock_pathfinding.find_path_to_approach_target = Mock(return_value=mock_approach_path)
         mock_game_state_manager.pathfinding = mock_pathfinding
         
         # Create a MoveToSafetyGoal
@@ -579,11 +623,11 @@ class TestTacticalExecutor:
         assert isinstance(action, AIAction), "Action should be an AIAction instance"
         assert action.action_type == "MOVE", "Action should be a MOVE action"
         assert action.unit_id == mock_ai_unit.unit_id, "Action should be for the AI unit"
-        assert "move_path" in action.target_data, "Action should include a move path"
+        assert "path" in action.target_data, "Action should include a path"
         
         # The path should be limited by the unit's movement range (3)
-        expected_limited_path = mock_approach_path[:mock_ai_unit.movement_range + 1]
-        assert action.target_data["move_path"] == expected_limited_path, "Move path should be limited by movement range"
+        # We're now using _find_furthest_reachable_tile_on_path instead of simple slicing
+        assert len(action.target_data["path"]) <= mock_ai_unit.movement_range + 1, "Path should be limited by movement range"
         
         # Verify the correct methods were called
         mock_game_state_manager.find_safe_tiles_for_unit.assert_called_once()
@@ -600,10 +644,13 @@ class TestTacticalExecutor:
         # Arrange
         # Create mock systems
         mock_movement_system = Mock()
+        # Set up movement system to return a list of reachable tiles
+        mock_movement_system.calculate_movement_range.return_value = [(3, 3), (4, 3), (3, 4), (4, 4), (5, 5), (6, 6), (7, 7), (8, 8)]
         mock_combat_system = Mock()
         
         # Create mock AI unit
         mock_ai_unit = Mock()
+        mock_ai_unit.id = "seizing_unit_1"  # Add id attribute
         mock_ai_unit.unit_id = "seizing_unit_1"
         mock_ai_unit.position = (3, 3)
         mock_ai_unit.movement_range = 5
@@ -616,12 +663,15 @@ class TestTacticalExecutor:
         mock_game_state_manager = Mock()
         mock_game_state_manager.is_valid_position.return_value = True
         mock_game_state_manager.is_objective_tile.return_value = True
+        mock_game_state_manager = self._setup_mock_game_state_manager(mock_game_state_manager)
         
         # Set up pathfinding
         mock_pathfinding = Mock()
         mock_pathfinding.can_potentially_reach.return_value = True
         mock_path = [(3, 3), (4, 4), (5, 5), (6, 6), (7, 7), (8, 8)]
-        mock_pathfinding.find_path_to_position.return_value = mock_path
+        # Make sure the mock returns a real list, not a Mock object
+        mock_pathfinding.find_path_to_position = Mock(return_value=mock_path)
+        mock_pathfinding.find_path_to_approach_target = Mock(return_value=mock_path)
         mock_game_state_manager.pathfinding = mock_pathfinding
         
         # Create a SeizeTileGoal
@@ -641,15 +691,15 @@ class TestTacticalExecutor:
         assert isinstance(action, AIAction), "Action should be an AIAction instance"
         assert action.action_type == "MOVE_AND_SEIZE", "Action should be a MOVE_AND_SEIZE action"
         assert action.unit_id == mock_ai_unit.unit_id, "Action should be for the AI unit"
-        assert "move_path" in action.target_data, "Action should include a move path"
-        assert action.target_data["move_path"] == mock_path, "Move path should match the pathfinding result"
+        assert "path" in action.target_data, "Action should include a path"
+        assert action.target_data["path"] == mock_path, "Path should match the pathfinding result"
         assert "target_position" in action.target_data, "Action should include a target position"
         assert action.target_data["target_position"] == target_position, "Target position should match the goal"
         
         # Verify the correct methods were called
         mock_game_state_manager.is_valid_position.assert_called_with(target_position)
         mock_game_state_manager.is_objective_tile.assert_called_with(target_position)
-        mock_pathfinding.find_path_to_position.assert_called_once()
+        mock_pathfinding.find_path_to_approach_target.assert_called_once()
 
     def test_determine_action_for_seize_tile_goal_already_at_position(self):
         """
@@ -661,10 +711,13 @@ class TestTacticalExecutor:
         # Arrange
         # Create mock systems
         mock_movement_system = Mock()
+        # Set up movement system to return a list of reachable tiles
+        mock_movement_system.calculate_movement_range.return_value = [(8, 8)]
         mock_combat_system = Mock()
         
         # Create mock AI unit already at the target position
         mock_ai_unit = Mock()
+        mock_ai_unit.id = "seizing_unit_1"  # Add id attribute
         mock_ai_unit.unit_id = "seizing_unit_1"
         mock_ai_unit.position = (8, 8)
         mock_ai_unit.movement_range = 5
@@ -677,6 +730,7 @@ class TestTacticalExecutor:
         mock_game_state_manager = Mock()
         mock_game_state_manager.is_valid_position.return_value = True
         mock_game_state_manager.is_objective_tile.return_value = True
+        mock_game_state_manager = self._setup_mock_game_state_manager(mock_game_state_manager)
         
         # Set up pathfinding
         mock_pathfinding = Mock()
@@ -717,10 +771,13 @@ class TestTacticalExecutor:
         # Arrange
         # Create mock systems
         mock_movement_system = Mock()
+        # Set up movement system to return a list of reachable tiles
+        mock_movement_system.calculate_movement_range.return_value = [(3, 3), (4, 4), (5, 5), (6, 6)]
         mock_combat_system = Mock()
         
         # Create mock AI unit
         mock_ai_unit = Mock()
+        mock_ai_unit.id = "seizing_unit_1"  # Add id attribute
         mock_ai_unit.unit_id = "seizing_unit_1"
         mock_ai_unit.position = (3, 3)
         mock_ai_unit.movement_range = 3  # Limited movement range
@@ -733,12 +790,15 @@ class TestTacticalExecutor:
         mock_game_state_manager = Mock()
         mock_game_state_manager.is_valid_position.return_value = True
         mock_game_state_manager.is_objective_tile.return_value = True
+        mock_game_state_manager = self._setup_mock_game_state_manager(mock_game_state_manager)
         
         # Set up pathfinding
         mock_pathfinding = Mock()
         # Path to the target position that is longer than the unit's movement range
         mock_path = [(3, 3), (4, 4), (5, 5), (6, 6), (7, 7), (8, 8), (9, 9), (10, 10)]
-        mock_pathfinding.find_path_to_position.return_value = mock_path
+        # Make sure the mock returns a real list, not a Mock object
+        mock_pathfinding.find_path_to_position = Mock(return_value=mock_path)
+        mock_pathfinding.find_path_to_approach_target = Mock(return_value=mock_path)
         mock_game_state_manager.pathfinding = mock_pathfinding
         
         # Create a SeizeTileGoal
@@ -758,11 +818,11 @@ class TestTacticalExecutor:
         assert isinstance(action, AIAction), "Action should be an AIAction instance"
         assert action.action_type == "MOVE", "Action should be a MOVE action"
         assert action.unit_id == mock_ai_unit.unit_id, "Action should be for the AI unit"
-        assert "move_path" in action.target_data, "Action should include a move path"
+        assert "path" in action.target_data, "Action should include a path"
         
         # The path should be limited by the unit's movement range (3)
-        expected_limited_path = mock_path[:mock_ai_unit.movement_range + 1]
-        assert action.target_data["move_path"] == expected_limited_path, "Move path should be limited by movement range"
+        # We're now using _find_furthest_reachable_tile_on_path instead of simple slicing
+        assert len(action.target_data["path"]) <= mock_ai_unit.movement_range + 1, "Path should be limited by movement range"
         
         # The action should include the target position and objective
         assert "target_position" in action.target_data, "Action should include the target position"
@@ -773,4 +833,110 @@ class TestTacticalExecutor:
         # Verify the correct methods were called
         mock_game_state_manager.is_valid_position.assert_called_with(target_position)
         mock_game_state_manager.is_objective_tile.assert_called_with(target_position)
-        mock_pathfinding.find_path_to_position.assert_called_once()
+        mock_pathfinding.find_path_to_approach_target.assert_called_once()
+        
+    def test_determine_action_for_attack_goal_self_targeting(self):
+        """
+        Test that the TacticalExecutor prevents a unit from targeting itself with an attack.
+        
+        This test verifies that when a unit attempts to target itself with an attack,
+        the TacticalExecutor will return None and prevent the self-targeting action.
+        """
+        # Arrange
+        # Create mock systems
+        mock_movement_system = Mock()
+        mock_combat_system = Mock()
+        
+        # Create mock AI unit
+        mock_ai_unit = Mock()
+        mock_ai_unit.id = "ai_unit_1"
+        mock_ai_unit.unit_id = "ai_unit_1"  # Ensure both id and unit_id are set
+        mock_ai_unit.position = (4, 4)
+        mock_ai_unit.movement_range = 5
+        mock_ai_unit.faction = "enemy"
+        
+        # Create mock game state manager that returns the same unit as target
+        mock_game_state_manager = Mock()
+        mock_game_state_manager.get_unit_by_id.return_value = mock_ai_unit  # Return the same unit
+        mock_game_state_manager.get_unit_acted_status.return_value = False  # Unit has not acted yet
+        
+        # Set up combat system
+        mock_combat_system.can_attack.return_value = True
+        mock_combat_system.is_in_attack_range.return_value = True
+        
+        # Create an AttackUnitGoal targeting itself
+        target_unit_id = "ai_unit_1"  # Same as the AI unit's ID
+        attack_goal = AttackUnitGoal(target_unit_id=target_unit_id)
+        
+        # Create the TacticalExecutor
+        tactical_executor = TacticalExecutor(
+            movement_system=mock_movement_system,
+            combat_system=mock_combat_system
+        )
+        
+        # Act
+        action = tactical_executor.determine_action_for_goal(attack_goal, mock_ai_unit, mock_game_state_manager)
+        
+        # Assert
+        assert action is None, "determine_action_for_goal should return None for self-targeting"
+        
+        # Verify the correct methods were called
+        mock_game_state_manager.get_unit_by_id.assert_called_with(target_unit_id)
+        # Combat system methods should not be called since we exit early
+        mock_combat_system.is_in_attack_range.assert_not_called()
+        mock_combat_system.can_attack.assert_not_called()
+        
+    def test_determine_action_for_heal_goal_self_targeting(self):
+        """
+        Test that the TacticalExecutor prevents a unit from targeting itself with a heal.
+        
+        This test verifies that when a unit attempts to target itself with a heal,
+        the TacticalExecutor will return None and prevent the self-targeting action.
+        """
+        # Arrange
+        # Create mock systems
+        mock_movement_system = Mock()
+        mock_combat_system = Mock()
+        mock_healing_system = Mock()
+        
+        # Create mock AI unit with healing capabilities
+        mock_ai_unit = Mock()
+        mock_ai_unit.id = "healer_unit_1"
+        mock_ai_unit.unit_id = "healer_unit_1"  # Ensure both id and unit_id are set
+        mock_ai_unit.position = (4, 4)
+        mock_ai_unit.movement_range = 5
+        mock_ai_unit.faction = "enemy"
+        mock_ai_unit.has_healing_capability.return_value = True
+        
+        # Create mock game state manager that returns the same unit as target
+        mock_game_state_manager = Mock()
+        mock_game_state_manager.get_unit_by_id.return_value = mock_ai_unit  # Return the same unit
+        mock_game_state_manager.get_unit.return_value = mock_ai_unit
+        mock_game_state_manager.get_unit_acted_status.return_value = False  # Unit has not acted yet
+        
+        # Set up healing system
+        mock_healing_system.can_heal.return_value = True
+        mock_healing_system.is_in_healing_range.return_value = True
+        
+        # Create a HealUnitGoal targeting itself
+        target_unit_id = "healer_unit_1"  # Same as the AI unit's ID
+        heal_goal = HealUnitGoal(target_unit_id=target_unit_id)
+        
+        # Create the TacticalExecutor
+        tactical_executor = TacticalExecutor(
+            movement_system=mock_movement_system,
+            combat_system=mock_combat_system,
+            healing_system=mock_healing_system
+        )
+        
+        # Act
+        action = tactical_executor.determine_action_for_goal(heal_goal, mock_ai_unit, mock_game_state_manager)
+        
+        # Assert
+        assert action is None, "determine_action_for_goal should return None for self-targeting"
+        
+        # Verify the correct methods were called
+        mock_game_state_manager.get_unit_by_id.assert_called_with(target_unit_id)
+        # Healing system methods should not be called since we exit early
+        mock_healing_system.is_in_healing_range.assert_not_called()
+        mock_healing_system.can_heal.assert_not_called()

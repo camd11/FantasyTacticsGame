@@ -168,7 +168,7 @@ class AIArchetypeHandler:
             
         # Filter out invalid actions (e.g., path not found for move-actions)
         valid_actions = [a for a in possible_actions if a['type'] == 'WAIT' or
-                          a['is_current_pos'] or a['move_path'] is not None]
+                          a['is_current_pos'] or a['path'] is not None]
         
         if not valid_actions:
             return None
@@ -181,8 +181,8 @@ class AIArchetypeHandler:
         target_data = best_action.get('target_info', {}).copy()
         
         # Add move path to target data if needed
-        if best_action.get('move_path'):
-            target_data['move_path'] = best_action['move_path']
+        if best_action.get('path'):
+            target_data['path'] = best_action['path']
             
         return AIAction(best_action['type'], unit_id, target_data)
     

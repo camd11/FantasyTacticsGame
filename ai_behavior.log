@@ -1,0 +1,474 @@
+2025-04-21 13:40:54,014 - src.gameplay_systems.ai.tactical_executor - DEBUG - TacticalExecutor initialized.
+2025-04-21 13:40:54,014 - src.gameplay_systems.ai.tactical_executor - DEBUG - Using provided CombatSystem.
+2025-04-21 13:40:54,014 - src.gameplay_systems.ai.tactical_executor - DEBUG - Using provided HealingSystem.
+2025-04-21 13:40:54,014 - src.gameplay_systems.ai.tactical_executor - DEBUG - TacticalExecutor initialized.
+2025-04-21 13:40:54,014 - src.gameplay_systems.ai.tactical_executor - DEBUG - Using MockCombatSystem.
+2025-04-21 13:40:54,014 - src.gameplay_systems.ai.tactical_executor - DEBUG - Using MockHealingSystem.
+2025-04-21 13:40:54,022 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: determine_action_for_goal for Unit LEIF with goal AttackUnitGoal, target_unit_id: LEIF
+2025-04-21 13:40:54,022 - src.gameplay_systems.ai.tactical_executor - INFO - Tactical Execution: Unit LEIF executing goal AttackUnitGoal, target_unit_id: LEIF
+2025-04-21 13:40:54,022 - src.gameplay_systems.ai.tactical_executor - WARNING - _handle_attack_unit_goal: Unit LEIF is attempting to target itself. Skipping.
+2025-04-21 13:40:54,022 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: _handle_attack_unit_goal for unit LEIF - returning None (self-targeting)
+2025-04-21 13:40:54,022 - src.gameplay_systems.ai.tactical_executor - WARNING - No valid action determined for unit LEIF with goal AttackUnitGoal, target_unit_id: LEIF
+2025-04-21 13:40:54,022 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: determine_action_for_goal for Unit LEIF - returning None
+2025-04-21 13:40:54,022 - AI_SYSTEM - WARNING - No valid action found for Leif
+2025-04-21 13:40:54,023 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: determine_action_for_goal for Unit FINN with goal SecurePositionGoal
+2025-04-21 13:40:54,023 - src.gameplay_systems.ai.tactical_executor - INFO - Tactical Execution: Unit FINN executing goal SecurePositionGoal
+2025-04-21 13:40:54,023 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: _handle_secure_position_goal for unit FINN
+2025-04-21 13:40:54,023 - src.gameplay_systems.ai.tactical_executor - INFO - Unit FINN executing SecurePositionGoal. No specific action determined (holding position).
+2025-04-21 13:40:54,023 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: _handle_secure_position_goal for unit FINN - returning None
+2025-04-21 13:40:54,023 - src.gameplay_systems.ai.tactical_executor - WARNING - No valid action determined for unit FINN with goal SecurePositionGoal
+2025-04-21 13:40:54,023 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: determine_action_for_goal for Unit FINN - returning None
+2025-04-21 13:40:54,023 - AI_SYSTEM - WARNING - No valid action found for Finn
+2025-04-21 13:40:54,024 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: determine_action_for_goal for Unit NANNA with goal HealUnitGoal, target_unit_id: MAREETA
+2025-04-21 13:40:54,024 - src.gameplay_systems.ai.tactical_executor - INFO - Tactical Execution: Unit NANNA executing goal HealUnitGoal, target_unit_id: MAREETA
+2025-04-21 13:40:54,028 - src.gameplay_systems.ai.tactical_executor - INFO - Final movement decision for NANNA: Move to (5, 4) to approach heal target MAREETA
+2025-04-21 13:40:54,029 - src.gameplay_systems.ai.tactical_executor - INFO - Final action determined for unit NANNA: MOVE, path: [(3, 3), (4, 3), (4, 4), (5, 4)]
+2025-04-21 13:40:54,029 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: determine_action_for_goal for Unit NANNA - returning action MOVE
+2025-04-21 13:40:54,029 - root - WARNING - CoreTurnManager not available for fatigue recording.
+2025-04-21 13:40:54,029 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: determine_action_for_goal for Unit HALVAN with goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,029 - src.gameplay_systems.ai.tactical_executor - INFO - Tactical Execution: Unit HALVAN executing goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,029 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: _handle_advance_to_objective_goal for unit HALVAN
+2025-04-21 13:40:54,030 - src.gameplay_systems.ai.tactical_executor - INFO - Unit HALVAN executing AdvanceToObjectiveGoal. No specific action determined (needs objective definition).
+2025-04-21 13:40:54,030 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: _handle_advance_to_objective_goal for unit HALVAN - returning None
+2025-04-21 13:40:54,030 - src.gameplay_systems.ai.tactical_executor - WARNING - No valid action determined for unit HALVAN with goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,030 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: determine_action_for_goal for Unit HALVAN - returning None
+2025-04-21 13:40:54,030 - AI_SYSTEM - WARNING - No valid action found for Halvan
+2025-04-21 13:40:54,030 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: determine_action_for_goal for Unit MAREETA with goal AttackUnitGoal, target_unit_id: NANNA
+2025-04-21 13:40:54,030 - src.gameplay_systems.ai.tactical_executor - INFO - Tactical Execution: Unit MAREETA executing goal AttackUnitGoal, target_unit_id: NANNA
+2025-04-21 13:40:54,034 - src.gameplay_systems.ai.tactical_executor - INFO - Final movement decision for MAREETA: Move to (6, 4) to approach target NANNA
+2025-04-21 13:40:54,034 - src.gameplay_systems.ai.tactical_executor - INFO - Final action determined for unit MAREETA: MOVE, path: [(6, 5), (6, 4)]
+2025-04-21 13:40:54,034 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: determine_action_for_goal for Unit MAREETA - returning action MOVE
+2025-04-21 13:40:54,034 - root - WARNING - CoreTurnManager not available for fatigue recording.
+2025-04-21 13:40:54,034 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: determine_action_for_goal for Unit DAGDAR with goal SecurePositionGoal
+2025-04-21 13:40:54,034 - src.gameplay_systems.ai.tactical_executor - INFO - Tactical Execution: Unit DAGDAR executing goal SecurePositionGoal
+2025-04-21 13:40:54,034 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: _handle_secure_position_goal for unit DAGDAR
+2025-04-21 13:40:54,034 - src.gameplay_systems.ai.tactical_executor - INFO - Unit DAGDAR executing SecurePositionGoal. No specific action determined (holding position).
+2025-04-21 13:40:54,034 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: _handle_secure_position_goal for unit DAGDAR - returning None
+2025-04-21 13:40:54,034 - src.gameplay_systems.ai.tactical_executor - WARNING - No valid action determined for unit DAGDAR with goal SecurePositionGoal
+2025-04-21 13:40:54,035 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: determine_action_for_goal for Unit DAGDAR - returning None
+2025-04-21 13:40:54,035 - AI_SYSTEM - WARNING - No valid action found for Dagdar
+2025-04-21 13:40:54,035 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: determine_action_for_goal for Unit SAIAS with goal HealUnitGoal, target_unit_id: TANYA
+2025-04-21 13:40:54,036 - src.gameplay_systems.ai.tactical_executor - INFO - Tactical Execution: Unit SAIAS executing goal HealUnitGoal, target_unit_id: TANYA
+2025-04-21 13:40:54,040 - src.gameplay_systems.ai.tactical_executor - INFO - Final movement decision for SAIAS: Move to (5, 6) to approach heal target TANYA
+2025-04-21 13:40:54,040 - src.gameplay_systems.ai.tactical_executor - INFO - Final action determined for unit SAIAS: MOVE, path: [(6, 6), (5, 6)]
+2025-04-21 13:40:54,041 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: determine_action_for_goal for Unit SAIAS - returning action MOVE
+2025-04-21 13:40:54,047 - root - WARNING - CoreTurnManager not available for fatigue recording.
+2025-04-21 13:40:54,048 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: determine_action_for_goal for Unit TANYA with goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,048 - src.gameplay_systems.ai.tactical_executor - INFO - Tactical Execution: Unit TANYA executing goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,049 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: _handle_advance_to_objective_goal for unit TANYA
+2025-04-21 13:40:54,049 - src.gameplay_systems.ai.tactical_executor - INFO - Unit TANYA executing AdvanceToObjectiveGoal. No specific action determined (needs objective definition).
+2025-04-21 13:40:54,049 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: _handle_advance_to_objective_goal for unit TANYA - returning None
+2025-04-21 13:40:54,049 - src.gameplay_systems.ai.tactical_executor - WARNING - No valid action determined for unit TANYA with goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,050 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: determine_action_for_goal for Unit TANYA - returning None
+2025-04-21 13:40:54,050 - AI_SYSTEM - WARNING - No valid action found for Tanya
+2025-04-21 13:40:54,050 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: determine_action_for_goal for Unit LEIF with goal AttackUnitGoal, target_unit_id: LEIF
+2025-04-21 13:40:54,051 - src.gameplay_systems.ai.tactical_executor - INFO - Tactical Execution: Unit LEIF executing goal AttackUnitGoal, target_unit_id: LEIF
+2025-04-21 13:40:54,051 - src.gameplay_systems.ai.tactical_executor - WARNING - _handle_attack_unit_goal: Unit LEIF is attempting to target itself. Skipping.
+2025-04-21 13:40:54,051 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: _handle_attack_unit_goal for unit LEIF - returning None (self-targeting)
+2025-04-21 13:40:54,051 - src.gameplay_systems.ai.tactical_executor - WARNING - No valid action determined for unit LEIF with goal AttackUnitGoal, target_unit_id: LEIF
+2025-04-21 13:40:54,051 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: determine_action_for_goal for Unit LEIF - returning None
+2025-04-21 13:40:54,051 - AI_SYSTEM - WARNING - No valid action found for Leif
+2025-04-21 13:40:54,052 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: determine_action_for_goal for Unit FINN with goal SecurePositionGoal
+2025-04-21 13:40:54,052 - src.gameplay_systems.ai.tactical_executor - INFO - Tactical Execution: Unit FINN executing goal SecurePositionGoal
+2025-04-21 13:40:54,052 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: _handle_secure_position_goal for unit FINN
+2025-04-21 13:40:54,052 - src.gameplay_systems.ai.tactical_executor - INFO - Unit FINN executing SecurePositionGoal. No specific action determined (holding position).
+2025-04-21 13:40:54,052 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: _handle_secure_position_goal for unit FINN - returning None
+2025-04-21 13:40:54,052 - src.gameplay_systems.ai.tactical_executor - WARNING - No valid action determined for unit FINN with goal SecurePositionGoal
+2025-04-21 13:40:54,052 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: determine_action_for_goal for Unit FINN - returning None
+2025-04-21 13:40:54,052 - AI_SYSTEM - WARNING - No valid action found for Finn
+2025-04-21 13:40:54,053 - src.gameplay_systems.ai.tactical_executor - DEBUG - Unit NANNA has already acted. Returning None.
+2025-04-21 13:40:54,053 - AI_SYSTEM - WARNING - No valid action found for Nanna
+2025-04-21 13:40:54,053 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: determine_action_for_goal for Unit HALVAN with goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,054 - src.gameplay_systems.ai.tactical_executor - INFO - Tactical Execution: Unit HALVAN executing goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,054 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: _handle_advance_to_objective_goal for unit HALVAN
+2025-04-21 13:40:54,054 - src.gameplay_systems.ai.tactical_executor - INFO - Unit HALVAN executing AdvanceToObjectiveGoal. No specific action determined (needs objective definition).
+2025-04-21 13:40:54,054 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: _handle_advance_to_objective_goal for unit HALVAN - returning None
+2025-04-21 13:40:54,054 - src.gameplay_systems.ai.tactical_executor - WARNING - No valid action determined for unit HALVAN with goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,054 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: determine_action_for_goal for Unit HALVAN - returning None
+2025-04-21 13:40:54,054 - AI_SYSTEM - WARNING - No valid action found for Halvan
+2025-04-21 13:40:54,055 - src.gameplay_systems.ai.tactical_executor - DEBUG - Unit MAREETA has already acted. Returning None.
+2025-04-21 13:40:54,055 - AI_SYSTEM - WARNING - No valid action found for Mareeta
+2025-04-21 13:40:54,056 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: determine_action_for_goal for Unit DAGDAR with goal SecurePositionGoal
+2025-04-21 13:40:54,056 - src.gameplay_systems.ai.tactical_executor - INFO - Tactical Execution: Unit DAGDAR executing goal SecurePositionGoal
+2025-04-21 13:40:54,056 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: _handle_secure_position_goal for unit DAGDAR
+2025-04-21 13:40:54,056 - src.gameplay_systems.ai.tactical_executor - INFO - Unit DAGDAR executing SecurePositionGoal. No specific action determined (holding position).
+2025-04-21 13:40:54,056 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: _handle_secure_position_goal for unit DAGDAR - returning None
+2025-04-21 13:40:54,056 - src.gameplay_systems.ai.tactical_executor - WARNING - No valid action determined for unit DAGDAR with goal SecurePositionGoal
+2025-04-21 13:40:54,056 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: determine_action_for_goal for Unit DAGDAR - returning None
+2025-04-21 13:40:54,056 - AI_SYSTEM - WARNING - No valid action found for Dagdar
+2025-04-21 13:40:54,057 - src.gameplay_systems.ai.tactical_executor - DEBUG - Unit SAIAS has already acted. Returning None.
+2025-04-21 13:40:54,057 - AI_SYSTEM - WARNING - No valid action found for Saias
+2025-04-21 13:40:54,058 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: determine_action_for_goal for Unit TANYA with goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,058 - src.gameplay_systems.ai.tactical_executor - INFO - Tactical Execution: Unit TANYA executing goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,058 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: _handle_advance_to_objective_goal for unit TANYA
+2025-04-21 13:40:54,058 - src.gameplay_systems.ai.tactical_executor - INFO - Unit TANYA executing AdvanceToObjectiveGoal. No specific action determined (needs objective definition).
+2025-04-21 13:40:54,058 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: _handle_advance_to_objective_goal for unit TANYA - returning None
+2025-04-21 13:40:54,058 - src.gameplay_systems.ai.tactical_executor - WARNING - No valid action determined for unit TANYA with goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,058 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: determine_action_for_goal for Unit TANYA - returning None
+2025-04-21 13:40:54,058 - AI_SYSTEM - WARNING - No valid action found for Tanya
+2025-04-21 13:40:54,059 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: determine_action_for_goal for Unit LEIF with goal AttackUnitGoal, target_unit_id: LEIF
+2025-04-21 13:40:54,059 - src.gameplay_systems.ai.tactical_executor - INFO - Tactical Execution: Unit LEIF executing goal AttackUnitGoal, target_unit_id: LEIF
+2025-04-21 13:40:54,060 - src.gameplay_systems.ai.tactical_executor - WARNING - _handle_attack_unit_goal: Unit LEIF is attempting to target itself. Skipping.
+2025-04-21 13:40:54,060 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: _handle_attack_unit_goal for unit LEIF - returning None (self-targeting)
+2025-04-21 13:40:54,060 - src.gameplay_systems.ai.tactical_executor - WARNING - No valid action determined for unit LEIF with goal AttackUnitGoal, target_unit_id: LEIF
+2025-04-21 13:40:54,060 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: determine_action_for_goal for Unit LEIF - returning None
+2025-04-21 13:40:54,060 - AI_SYSTEM - WARNING - No valid action found for Leif
+2025-04-21 13:40:54,060 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: determine_action_for_goal for Unit FINN with goal SecurePositionGoal
+2025-04-21 13:40:54,061 - src.gameplay_systems.ai.tactical_executor - INFO - Tactical Execution: Unit FINN executing goal SecurePositionGoal
+2025-04-21 13:40:54,061 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: _handle_secure_position_goal for unit FINN
+2025-04-21 13:40:54,061 - src.gameplay_systems.ai.tactical_executor - INFO - Unit FINN executing SecurePositionGoal. No specific action determined (holding position).
+2025-04-21 13:40:54,061 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: _handle_secure_position_goal for unit FINN - returning None
+2025-04-21 13:40:54,061 - src.gameplay_systems.ai.tactical_executor - WARNING - No valid action determined for unit FINN with goal SecurePositionGoal
+2025-04-21 13:40:54,061 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: determine_action_for_goal for Unit FINN - returning None
+2025-04-21 13:40:54,061 - AI_SYSTEM - WARNING - No valid action found for Finn
+2025-04-21 13:40:54,062 - src.gameplay_systems.ai.tactical_executor - DEBUG - Unit NANNA has already acted. Returning None.
+2025-04-21 13:40:54,062 - AI_SYSTEM - WARNING - No valid action found for Nanna
+2025-04-21 13:40:54,062 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: determine_action_for_goal for Unit HALVAN with goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,063 - src.gameplay_systems.ai.tactical_executor - INFO - Tactical Execution: Unit HALVAN executing goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,063 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: _handle_advance_to_objective_goal for unit HALVAN
+2025-04-21 13:40:54,063 - src.gameplay_systems.ai.tactical_executor - INFO - Unit HALVAN executing AdvanceToObjectiveGoal. No specific action determined (needs objective definition).
+2025-04-21 13:40:54,063 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: _handle_advance_to_objective_goal for unit HALVAN - returning None
+2025-04-21 13:40:54,063 - src.gameplay_systems.ai.tactical_executor - WARNING - No valid action determined for unit HALVAN with goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,063 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: determine_action_for_goal for Unit HALVAN - returning None
+2025-04-21 13:40:54,063 - AI_SYSTEM - WARNING - No valid action found for Halvan
+2025-04-21 13:40:54,064 - src.gameplay_systems.ai.tactical_executor - DEBUG - Unit MAREETA has already acted. Returning None.
+2025-04-21 13:40:54,064 - AI_SYSTEM - WARNING - No valid action found for Mareeta
+2025-04-21 13:40:54,064 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: determine_action_for_goal for Unit DAGDAR with goal SecurePositionGoal
+2025-04-21 13:40:54,064 - src.gameplay_systems.ai.tactical_executor - INFO - Tactical Execution: Unit DAGDAR executing goal SecurePositionGoal
+2025-04-21 13:40:54,065 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: _handle_secure_position_goal for unit DAGDAR
+2025-04-21 13:40:54,065 - src.gameplay_systems.ai.tactical_executor - INFO - Unit DAGDAR executing SecurePositionGoal. No specific action determined (holding position).
+2025-04-21 13:40:54,065 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: _handle_secure_position_goal for unit DAGDAR - returning None
+2025-04-21 13:40:54,065 - src.gameplay_systems.ai.tactical_executor - WARNING - No valid action determined for unit DAGDAR with goal SecurePositionGoal
+2025-04-21 13:40:54,065 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: determine_action_for_goal for Unit DAGDAR - returning None
+2025-04-21 13:40:54,065 - AI_SYSTEM - WARNING - No valid action found for Dagdar
+2025-04-21 13:40:54,065 - src.gameplay_systems.ai.tactical_executor - DEBUG - Unit SAIAS has already acted. Returning None.
+2025-04-21 13:40:54,065 - AI_SYSTEM - WARNING - No valid action found for Saias
+2025-04-21 13:40:54,066 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: determine_action_for_goal for Unit TANYA with goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,066 - src.gameplay_systems.ai.tactical_executor - INFO - Tactical Execution: Unit TANYA executing goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,066 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: _handle_advance_to_objective_goal for unit TANYA
+2025-04-21 13:40:54,066 - src.gameplay_systems.ai.tactical_executor - INFO - Unit TANYA executing AdvanceToObjectiveGoal. No specific action determined (needs objective definition).
+2025-04-21 13:40:54,066 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: _handle_advance_to_objective_goal for unit TANYA - returning None
+2025-04-21 13:40:54,066 - src.gameplay_systems.ai.tactical_executor - WARNING - No valid action determined for unit TANYA with goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,066 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: determine_action_for_goal for Unit TANYA - returning None
+2025-04-21 13:40:54,066 - AI_SYSTEM - WARNING - No valid action found for Tanya
+2025-04-21 13:40:54,067 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: determine_action_for_goal for Unit LEIF with goal AttackUnitGoal, target_unit_id: LEIF
+2025-04-21 13:40:54,067 - src.gameplay_systems.ai.tactical_executor - INFO - Tactical Execution: Unit LEIF executing goal AttackUnitGoal, target_unit_id: LEIF
+2025-04-21 13:40:54,067 - src.gameplay_systems.ai.tactical_executor - WARNING - _handle_attack_unit_goal: Unit LEIF is attempting to target itself. Skipping.
+2025-04-21 13:40:54,067 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: _handle_attack_unit_goal for unit LEIF - returning None (self-targeting)
+2025-04-21 13:40:54,067 - src.gameplay_systems.ai.tactical_executor - WARNING - No valid action determined for unit LEIF with goal AttackUnitGoal, target_unit_id: LEIF
+2025-04-21 13:40:54,067 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: determine_action_for_goal for Unit LEIF - returning None
+2025-04-21 13:40:54,067 - AI_SYSTEM - WARNING - No valid action found for Leif
+2025-04-21 13:40:54,067 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: determine_action_for_goal for Unit FINN with goal SecurePositionGoal
+2025-04-21 13:40:54,067 - src.gameplay_systems.ai.tactical_executor - INFO - Tactical Execution: Unit FINN executing goal SecurePositionGoal
+2025-04-21 13:40:54,067 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: _handle_secure_position_goal for unit FINN
+2025-04-21 13:40:54,068 - src.gameplay_systems.ai.tactical_executor - INFO - Unit FINN executing SecurePositionGoal. No specific action determined (holding position).
+2025-04-21 13:40:54,068 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: _handle_secure_position_goal for unit FINN - returning None
+2025-04-21 13:40:54,068 - src.gameplay_systems.ai.tactical_executor - WARNING - No valid action determined for unit FINN with goal SecurePositionGoal
+2025-04-21 13:40:54,068 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: determine_action_for_goal for Unit FINN - returning None
+2025-04-21 13:40:54,068 - AI_SYSTEM - WARNING - No valid action found for Finn
+2025-04-21 13:40:54,068 - src.gameplay_systems.ai.tactical_executor - DEBUG - Unit NANNA has already acted. Returning None.
+2025-04-21 13:40:54,068 - AI_SYSTEM - WARNING - No valid action found for Nanna
+2025-04-21 13:40:54,068 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: determine_action_for_goal for Unit HALVAN with goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,068 - src.gameplay_systems.ai.tactical_executor - INFO - Tactical Execution: Unit HALVAN executing goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,068 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: _handle_advance_to_objective_goal for unit HALVAN
+2025-04-21 13:40:54,069 - src.gameplay_systems.ai.tactical_executor - INFO - Unit HALVAN executing AdvanceToObjectiveGoal. No specific action determined (needs objective definition).
+2025-04-21 13:40:54,069 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: _handle_advance_to_objective_goal for unit HALVAN - returning None
+2025-04-21 13:40:54,069 - src.gameplay_systems.ai.tactical_executor - WARNING - No valid action determined for unit HALVAN with goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,069 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: determine_action_for_goal for Unit HALVAN - returning None
+2025-04-21 13:40:54,069 - AI_SYSTEM - WARNING - No valid action found for Halvan
+2025-04-21 13:40:54,069 - src.gameplay_systems.ai.tactical_executor - DEBUG - Unit MAREETA has already acted. Returning None.
+2025-04-21 13:40:54,069 - AI_SYSTEM - WARNING - No valid action found for Mareeta
+2025-04-21 13:40:54,070 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: determine_action_for_goal for Unit DAGDAR with goal SecurePositionGoal
+2025-04-21 13:40:54,070 - src.gameplay_systems.ai.tactical_executor - INFO - Tactical Execution: Unit DAGDAR executing goal SecurePositionGoal
+2025-04-21 13:40:54,070 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: _handle_secure_position_goal for unit DAGDAR
+2025-04-21 13:40:54,070 - src.gameplay_systems.ai.tactical_executor - INFO - Unit DAGDAR executing SecurePositionGoal. No specific action determined (holding position).
+2025-04-21 13:40:54,070 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: _handle_secure_position_goal for unit DAGDAR - returning None
+2025-04-21 13:40:54,070 - src.gameplay_systems.ai.tactical_executor - WARNING - No valid action determined for unit DAGDAR with goal SecurePositionGoal
+2025-04-21 13:40:54,070 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: determine_action_for_goal for Unit DAGDAR - returning None
+2025-04-21 13:40:54,070 - AI_SYSTEM - WARNING - No valid action found for Dagdar
+2025-04-21 13:40:54,070 - src.gameplay_systems.ai.tactical_executor - DEBUG - Unit SAIAS has already acted. Returning None.
+2025-04-21 13:40:54,071 - AI_SYSTEM - WARNING - No valid action found for Saias
+2025-04-21 13:40:54,071 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: determine_action_for_goal for Unit TANYA with goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,071 - src.gameplay_systems.ai.tactical_executor - INFO - Tactical Execution: Unit TANYA executing goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,071 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: _handle_advance_to_objective_goal for unit TANYA
+2025-04-21 13:40:54,071 - src.gameplay_systems.ai.tactical_executor - INFO - Unit TANYA executing AdvanceToObjectiveGoal. No specific action determined (needs objective definition).
+2025-04-21 13:40:54,071 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: _handle_advance_to_objective_goal for unit TANYA - returning None
+2025-04-21 13:40:54,071 - src.gameplay_systems.ai.tactical_executor - WARNING - No valid action determined for unit TANYA with goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,071 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: determine_action_for_goal for Unit TANYA - returning None
+2025-04-21 13:40:54,071 - AI_SYSTEM - WARNING - No valid action found for Tanya
+2025-04-21 13:40:54,072 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: determine_action_for_goal for Unit LEIF with goal AttackUnitGoal, target_unit_id: LEIF
+2025-04-21 13:40:54,072 - src.gameplay_systems.ai.tactical_executor - INFO - Tactical Execution: Unit LEIF executing goal AttackUnitGoal, target_unit_id: LEIF
+2025-04-21 13:40:54,072 - src.gameplay_systems.ai.tactical_executor - WARNING - _handle_attack_unit_goal: Unit LEIF is attempting to target itself. Skipping.
+2025-04-21 13:40:54,072 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: _handle_attack_unit_goal for unit LEIF - returning None (self-targeting)
+2025-04-21 13:40:54,072 - src.gameplay_systems.ai.tactical_executor - WARNING - No valid action determined for unit LEIF with goal AttackUnitGoal, target_unit_id: LEIF
+2025-04-21 13:40:54,072 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: determine_action_for_goal for Unit LEIF - returning None
+2025-04-21 13:40:54,072 - AI_SYSTEM - WARNING - No valid action found for Leif
+2025-04-21 13:40:54,073 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: determine_action_for_goal for Unit FINN with goal SecurePositionGoal
+2025-04-21 13:40:54,073 - src.gameplay_systems.ai.tactical_executor - INFO - Tactical Execution: Unit FINN executing goal SecurePositionGoal
+2025-04-21 13:40:54,073 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: _handle_secure_position_goal for unit FINN
+2025-04-21 13:40:54,073 - src.gameplay_systems.ai.tactical_executor - INFO - Unit FINN executing SecurePositionGoal. No specific action determined (holding position).
+2025-04-21 13:40:54,073 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: _handle_secure_position_goal for unit FINN - returning None
+2025-04-21 13:40:54,073 - src.gameplay_systems.ai.tactical_executor - WARNING - No valid action determined for unit FINN with goal SecurePositionGoal
+2025-04-21 13:40:54,073 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: determine_action_for_goal for Unit FINN - returning None
+2025-04-21 13:40:54,073 - AI_SYSTEM - WARNING - No valid action found for Finn
+2025-04-21 13:40:54,074 - src.gameplay_systems.ai.tactical_executor - DEBUG - Unit NANNA has already acted. Returning None.
+2025-04-21 13:40:54,074 - AI_SYSTEM - WARNING - No valid action found for Nanna
+2025-04-21 13:40:54,074 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: determine_action_for_goal for Unit HALVAN with goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,074 - src.gameplay_systems.ai.tactical_executor - INFO - Tactical Execution: Unit HALVAN executing goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,074 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: _handle_advance_to_objective_goal for unit HALVAN
+2025-04-21 13:40:54,074 - src.gameplay_systems.ai.tactical_executor - INFO - Unit HALVAN executing AdvanceToObjectiveGoal. No specific action determined (needs objective definition).
+2025-04-21 13:40:54,074 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: _handle_advance_to_objective_goal for unit HALVAN - returning None
+2025-04-21 13:40:54,074 - src.gameplay_systems.ai.tactical_executor - WARNING - No valid action determined for unit HALVAN with goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,074 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: determine_action_for_goal for Unit HALVAN - returning None
+2025-04-21 13:40:54,074 - AI_SYSTEM - WARNING - No valid action found for Halvan
+2025-04-21 13:40:54,075 - src.gameplay_systems.ai.tactical_executor - DEBUG - Unit MAREETA has already acted. Returning None.
+2025-04-21 13:40:54,075 - AI_SYSTEM - WARNING - No valid action found for Mareeta
+2025-04-21 13:40:54,075 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: determine_action_for_goal for Unit DAGDAR with goal SecurePositionGoal
+2025-04-21 13:40:54,076 - src.gameplay_systems.ai.tactical_executor - INFO - Tactical Execution: Unit DAGDAR executing goal SecurePositionGoal
+2025-04-21 13:40:54,076 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: _handle_secure_position_goal for unit DAGDAR
+2025-04-21 13:40:54,076 - src.gameplay_systems.ai.tactical_executor - INFO - Unit DAGDAR executing SecurePositionGoal. No specific action determined (holding position).
+2025-04-21 13:40:54,076 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: _handle_secure_position_goal for unit DAGDAR - returning None
+2025-04-21 13:40:54,076 - src.gameplay_systems.ai.tactical_executor - WARNING - No valid action determined for unit DAGDAR with goal SecurePositionGoal
+2025-04-21 13:40:54,076 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: determine_action_for_goal for Unit DAGDAR - returning None
+2025-04-21 13:40:54,076 - AI_SYSTEM - WARNING - No valid action found for Dagdar
+2025-04-21 13:40:54,076 - src.gameplay_systems.ai.tactical_executor - DEBUG - Unit SAIAS has already acted. Returning None.
+2025-04-21 13:40:54,077 - AI_SYSTEM - WARNING - No valid action found for Saias
+2025-04-21 13:40:54,077 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: determine_action_for_goal for Unit TANYA with goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,077 - src.gameplay_systems.ai.tactical_executor - INFO - Tactical Execution: Unit TANYA executing goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,077 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: _handle_advance_to_objective_goal for unit TANYA
+2025-04-21 13:40:54,078 - src.gameplay_systems.ai.tactical_executor - INFO - Unit TANYA executing AdvanceToObjectiveGoal. No specific action determined (needs objective definition).
+2025-04-21 13:40:54,078 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: _handle_advance_to_objective_goal for unit TANYA - returning None
+2025-04-21 13:40:54,078 - src.gameplay_systems.ai.tactical_executor - WARNING - No valid action determined for unit TANYA with goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,078 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: determine_action_for_goal for Unit TANYA - returning None
+2025-04-21 13:40:54,078 - AI_SYSTEM - WARNING - No valid action found for Tanya
+2025-04-21 13:40:54,078 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: determine_action_for_goal for Unit LEIF with goal AttackUnitGoal, target_unit_id: LEIF
+2025-04-21 13:40:54,079 - src.gameplay_systems.ai.tactical_executor - INFO - Tactical Execution: Unit LEIF executing goal AttackUnitGoal, target_unit_id: LEIF
+2025-04-21 13:40:54,079 - src.gameplay_systems.ai.tactical_executor - WARNING - _handle_attack_unit_goal: Unit LEIF is attempting to target itself. Skipping.
+2025-04-21 13:40:54,079 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: _handle_attack_unit_goal for unit LEIF - returning None (self-targeting)
+2025-04-21 13:40:54,079 - src.gameplay_systems.ai.tactical_executor - WARNING - No valid action determined for unit LEIF with goal AttackUnitGoal, target_unit_id: LEIF
+2025-04-21 13:40:54,079 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: determine_action_for_goal for Unit LEIF - returning None
+2025-04-21 13:40:54,079 - AI_SYSTEM - WARNING - No valid action found for Leif
+2025-04-21 13:40:54,079 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: determine_action_for_goal for Unit FINN with goal SecurePositionGoal
+2025-04-21 13:40:54,080 - src.gameplay_systems.ai.tactical_executor - INFO - Tactical Execution: Unit FINN executing goal SecurePositionGoal
+2025-04-21 13:40:54,080 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: _handle_secure_position_goal for unit FINN
+2025-04-21 13:40:54,080 - src.gameplay_systems.ai.tactical_executor - INFO - Unit FINN executing SecurePositionGoal. No specific action determined (holding position).
+2025-04-21 13:40:54,080 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: _handle_secure_position_goal for unit FINN - returning None
+2025-04-21 13:40:54,080 - src.gameplay_systems.ai.tactical_executor - WARNING - No valid action determined for unit FINN with goal SecurePositionGoal
+2025-04-21 13:40:54,080 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: determine_action_for_goal for Unit FINN - returning None
+2025-04-21 13:40:54,080 - AI_SYSTEM - WARNING - No valid action found for Finn
+2025-04-21 13:40:54,081 - src.gameplay_systems.ai.tactical_executor - DEBUG - Unit NANNA has already acted. Returning None.
+2025-04-21 13:40:54,081 - AI_SYSTEM - WARNING - No valid action found for Nanna
+2025-04-21 13:40:54,081 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: determine_action_for_goal for Unit HALVAN with goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,081 - src.gameplay_systems.ai.tactical_executor - INFO - Tactical Execution: Unit HALVAN executing goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,081 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: _handle_advance_to_objective_goal for unit HALVAN
+2025-04-21 13:40:54,081 - src.gameplay_systems.ai.tactical_executor - INFO - Unit HALVAN executing AdvanceToObjectiveGoal. No specific action determined (needs objective definition).
+2025-04-21 13:40:54,082 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: _handle_advance_to_objective_goal for unit HALVAN - returning None
+2025-04-21 13:40:54,082 - src.gameplay_systems.ai.tactical_executor - WARNING - No valid action determined for unit HALVAN with goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,082 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: determine_action_for_goal for Unit HALVAN - returning None
+2025-04-21 13:40:54,082 - AI_SYSTEM - WARNING - No valid action found for Halvan
+2025-04-21 13:40:54,083 - src.gameplay_systems.ai.tactical_executor - DEBUG - Unit MAREETA has already acted. Returning None.
+2025-04-21 13:40:54,083 - AI_SYSTEM - WARNING - No valid action found for Mareeta
+2025-04-21 13:40:54,083 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: determine_action_for_goal for Unit DAGDAR with goal SecurePositionGoal
+2025-04-21 13:40:54,083 - src.gameplay_systems.ai.tactical_executor - INFO - Tactical Execution: Unit DAGDAR executing goal SecurePositionGoal
+2025-04-21 13:40:54,083 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: _handle_secure_position_goal for unit DAGDAR
+2025-04-21 13:40:54,083 - src.gameplay_systems.ai.tactical_executor - INFO - Unit DAGDAR executing SecurePositionGoal. No specific action determined (holding position).
+2025-04-21 13:40:54,083 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: _handle_secure_position_goal for unit DAGDAR - returning None
+2025-04-21 13:40:54,083 - src.gameplay_systems.ai.tactical_executor - WARNING - No valid action determined for unit DAGDAR with goal SecurePositionGoal
+2025-04-21 13:40:54,084 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: determine_action_for_goal for Unit DAGDAR - returning None
+2025-04-21 13:40:54,084 - AI_SYSTEM - WARNING - No valid action found for Dagdar
+2025-04-21 13:40:54,084 - src.gameplay_systems.ai.tactical_executor - DEBUG - Unit SAIAS has already acted. Returning None.
+2025-04-21 13:40:54,084 - AI_SYSTEM - WARNING - No valid action found for Saias
+2025-04-21 13:40:54,084 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: determine_action_for_goal for Unit TANYA with goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,084 - src.gameplay_systems.ai.tactical_executor - INFO - Tactical Execution: Unit TANYA executing goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,085 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: _handle_advance_to_objective_goal for unit TANYA
+2025-04-21 13:40:54,085 - src.gameplay_systems.ai.tactical_executor - INFO - Unit TANYA executing AdvanceToObjectiveGoal. No specific action determined (needs objective definition).
+2025-04-21 13:40:54,085 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: _handle_advance_to_objective_goal for unit TANYA - returning None
+2025-04-21 13:40:54,085 - src.gameplay_systems.ai.tactical_executor - WARNING - No valid action determined for unit TANYA with goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,085 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: determine_action_for_goal for Unit TANYA - returning None
+2025-04-21 13:40:54,085 - AI_SYSTEM - WARNING - No valid action found for Tanya
+2025-04-21 13:40:54,085 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: determine_action_for_goal for Unit LEIF with goal AttackUnitGoal, target_unit_id: LEIF
+2025-04-21 13:40:54,085 - src.gameplay_systems.ai.tactical_executor - INFO - Tactical Execution: Unit LEIF executing goal AttackUnitGoal, target_unit_id: LEIF
+2025-04-21 13:40:54,085 - src.gameplay_systems.ai.tactical_executor - WARNING - _handle_attack_unit_goal: Unit LEIF is attempting to target itself. Skipping.
+2025-04-21 13:40:54,085 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: _handle_attack_unit_goal for unit LEIF - returning None (self-targeting)
+2025-04-21 13:40:54,085 - src.gameplay_systems.ai.tactical_executor - WARNING - No valid action determined for unit LEIF with goal AttackUnitGoal, target_unit_id: LEIF
+2025-04-21 13:40:54,085 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: determine_action_for_goal for Unit LEIF - returning None
+2025-04-21 13:40:54,086 - AI_SYSTEM - WARNING - No valid action found for Leif
+2025-04-21 13:40:54,086 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: determine_action_for_goal for Unit FINN with goal SecurePositionGoal
+2025-04-21 13:40:54,086 - src.gameplay_systems.ai.tactical_executor - INFO - Tactical Execution: Unit FINN executing goal SecurePositionGoal
+2025-04-21 13:40:54,086 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: _handle_secure_position_goal for unit FINN
+2025-04-21 13:40:54,086 - src.gameplay_systems.ai.tactical_executor - INFO - Unit FINN executing SecurePositionGoal. No specific action determined (holding position).
+2025-04-21 13:40:54,086 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: _handle_secure_position_goal for unit FINN - returning None
+2025-04-21 13:40:54,086 - src.gameplay_systems.ai.tactical_executor - WARNING - No valid action determined for unit FINN with goal SecurePositionGoal
+2025-04-21 13:40:54,086 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: determine_action_for_goal for Unit FINN - returning None
+2025-04-21 13:40:54,086 - AI_SYSTEM - WARNING - No valid action found for Finn
+2025-04-21 13:40:54,087 - src.gameplay_systems.ai.tactical_executor - DEBUG - Unit NANNA has already acted. Returning None.
+2025-04-21 13:40:54,087 - AI_SYSTEM - WARNING - No valid action found for Nanna
+2025-04-21 13:40:54,087 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: determine_action_for_goal for Unit HALVAN with goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,087 - src.gameplay_systems.ai.tactical_executor - INFO - Tactical Execution: Unit HALVAN executing goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,087 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: _handle_advance_to_objective_goal for unit HALVAN
+2025-04-21 13:40:54,087 - src.gameplay_systems.ai.tactical_executor - INFO - Unit HALVAN executing AdvanceToObjectiveGoal. No specific action determined (needs objective definition).
+2025-04-21 13:40:54,087 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: _handle_advance_to_objective_goal for unit HALVAN - returning None
+2025-04-21 13:40:54,087 - src.gameplay_systems.ai.tactical_executor - WARNING - No valid action determined for unit HALVAN with goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,087 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: determine_action_for_goal for Unit HALVAN - returning None
+2025-04-21 13:40:54,087 - AI_SYSTEM - WARNING - No valid action found for Halvan
+2025-04-21 13:40:54,088 - src.gameplay_systems.ai.tactical_executor - DEBUG - Unit MAREETA has already acted. Returning None.
+2025-04-21 13:40:54,088 - AI_SYSTEM - WARNING - No valid action found for Mareeta
+2025-04-21 13:40:54,088 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: determine_action_for_goal for Unit DAGDAR with goal SecurePositionGoal
+2025-04-21 13:40:54,088 - src.gameplay_systems.ai.tactical_executor - INFO - Tactical Execution: Unit DAGDAR executing goal SecurePositionGoal
+2025-04-21 13:40:54,088 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: _handle_secure_position_goal for unit DAGDAR
+2025-04-21 13:40:54,088 - src.gameplay_systems.ai.tactical_executor - INFO - Unit DAGDAR executing SecurePositionGoal. No specific action determined (holding position).
+2025-04-21 13:40:54,088 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: _handle_secure_position_goal for unit DAGDAR - returning None
+2025-04-21 13:40:54,088 - src.gameplay_systems.ai.tactical_executor - WARNING - No valid action determined for unit DAGDAR with goal SecurePositionGoal
+2025-04-21 13:40:54,088 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: determine_action_for_goal for Unit DAGDAR - returning None
+2025-04-21 13:40:54,088 - AI_SYSTEM - WARNING - No valid action found for Dagdar
+2025-04-21 13:40:54,089 - src.gameplay_systems.ai.tactical_executor - DEBUG - Unit SAIAS has already acted. Returning None.
+2025-04-21 13:40:54,089 - AI_SYSTEM - WARNING - No valid action found for Saias
+2025-04-21 13:40:54,089 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: determine_action_for_goal for Unit TANYA with goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,089 - src.gameplay_systems.ai.tactical_executor - INFO - Tactical Execution: Unit TANYA executing goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,089 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: _handle_advance_to_objective_goal for unit TANYA
+2025-04-21 13:40:54,089 - src.gameplay_systems.ai.tactical_executor - INFO - Unit TANYA executing AdvanceToObjectiveGoal. No specific action determined (needs objective definition).
+2025-04-21 13:40:54,089 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: _handle_advance_to_objective_goal for unit TANYA - returning None
+2025-04-21 13:40:54,089 - src.gameplay_systems.ai.tactical_executor - WARNING - No valid action determined for unit TANYA with goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,089 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: determine_action_for_goal for Unit TANYA - returning None
+2025-04-21 13:40:54,089 - AI_SYSTEM - WARNING - No valid action found for Tanya
+2025-04-21 13:40:54,089 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: determine_action_for_goal for Unit LEIF with goal AttackUnitGoal, target_unit_id: LEIF
+2025-04-21 13:40:54,090 - src.gameplay_systems.ai.tactical_executor - INFO - Tactical Execution: Unit LEIF executing goal AttackUnitGoal, target_unit_id: LEIF
+2025-04-21 13:40:54,090 - src.gameplay_systems.ai.tactical_executor - WARNING - _handle_attack_unit_goal: Unit LEIF is attempting to target itself. Skipping.
+2025-04-21 13:40:54,090 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: _handle_attack_unit_goal for unit LEIF - returning None (self-targeting)
+2025-04-21 13:40:54,090 - src.gameplay_systems.ai.tactical_executor - WARNING - No valid action determined for unit LEIF with goal AttackUnitGoal, target_unit_id: LEIF
+2025-04-21 13:40:54,090 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: determine_action_for_goal for Unit LEIF - returning None
+2025-04-21 13:40:54,090 - AI_SYSTEM - WARNING - No valid action found for Leif
+2025-04-21 13:40:54,090 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: determine_action_for_goal for Unit FINN with goal SecurePositionGoal
+2025-04-21 13:40:54,090 - src.gameplay_systems.ai.tactical_executor - INFO - Tactical Execution: Unit FINN executing goal SecurePositionGoal
+2025-04-21 13:40:54,090 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: _handle_secure_position_goal for unit FINN
+2025-04-21 13:40:54,090 - src.gameplay_systems.ai.tactical_executor - INFO - Unit FINN executing SecurePositionGoal. No specific action determined (holding position).
+2025-04-21 13:40:54,090 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: _handle_secure_position_goal for unit FINN - returning None
+2025-04-21 13:40:54,090 - src.gameplay_systems.ai.tactical_executor - WARNING - No valid action determined for unit FINN with goal SecurePositionGoal
+2025-04-21 13:40:54,091 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: determine_action_for_goal for Unit FINN - returning None
+2025-04-21 13:40:54,091 - AI_SYSTEM - WARNING - No valid action found for Finn
+2025-04-21 13:40:54,091 - src.gameplay_systems.ai.tactical_executor - DEBUG - Unit NANNA has already acted. Returning None.
+2025-04-21 13:40:54,091 - AI_SYSTEM - WARNING - No valid action found for Nanna
+2025-04-21 13:40:54,091 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: determine_action_for_goal for Unit HALVAN with goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,091 - src.gameplay_systems.ai.tactical_executor - INFO - Tactical Execution: Unit HALVAN executing goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,091 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: _handle_advance_to_objective_goal for unit HALVAN
+2025-04-21 13:40:54,091 - src.gameplay_systems.ai.tactical_executor - INFO - Unit HALVAN executing AdvanceToObjectiveGoal. No specific action determined (needs objective definition).
+2025-04-21 13:40:54,092 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: _handle_advance_to_objective_goal for unit HALVAN - returning None
+2025-04-21 13:40:54,092 - src.gameplay_systems.ai.tactical_executor - WARNING - No valid action determined for unit HALVAN with goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,092 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: determine_action_for_goal for Unit HALVAN - returning None
+2025-04-21 13:40:54,092 - AI_SYSTEM - WARNING - No valid action found for Halvan
+2025-04-21 13:40:54,092 - src.gameplay_systems.ai.tactical_executor - DEBUG - Unit MAREETA has already acted. Returning None.
+2025-04-21 13:40:54,092 - AI_SYSTEM - WARNING - No valid action found for Mareeta
+2025-04-21 13:40:54,092 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: determine_action_for_goal for Unit DAGDAR with goal SecurePositionGoal
+2025-04-21 13:40:54,092 - src.gameplay_systems.ai.tactical_executor - INFO - Tactical Execution: Unit DAGDAR executing goal SecurePositionGoal
+2025-04-21 13:40:54,092 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: _handle_secure_position_goal for unit DAGDAR
+2025-04-21 13:40:54,093 - src.gameplay_systems.ai.tactical_executor - INFO - Unit DAGDAR executing SecurePositionGoal. No specific action determined (holding position).
+2025-04-21 13:40:54,093 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: _handle_secure_position_goal for unit DAGDAR - returning None
+2025-04-21 13:40:54,093 - src.gameplay_systems.ai.tactical_executor - WARNING - No valid action determined for unit DAGDAR with goal SecurePositionGoal
+2025-04-21 13:40:54,093 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: determine_action_for_goal for Unit DAGDAR - returning None
+2025-04-21 13:40:54,093 - AI_SYSTEM - WARNING - No valid action found for Dagdar
+2025-04-21 13:40:54,093 - src.gameplay_systems.ai.tactical_executor - DEBUG - Unit SAIAS has already acted. Returning None.
+2025-04-21 13:40:54,093 - AI_SYSTEM - WARNING - No valid action found for Saias
+2025-04-21 13:40:54,093 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: determine_action_for_goal for Unit TANYA with goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,094 - src.gameplay_systems.ai.tactical_executor - INFO - Tactical Execution: Unit TANYA executing goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,094 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: _handle_advance_to_objective_goal for unit TANYA
+2025-04-21 13:40:54,094 - src.gameplay_systems.ai.tactical_executor - INFO - Unit TANYA executing AdvanceToObjectiveGoal. No specific action determined (needs objective definition).
+2025-04-21 13:40:54,094 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: _handle_advance_to_objective_goal for unit TANYA - returning None
+2025-04-21 13:40:54,094 - src.gameplay_systems.ai.tactical_executor - WARNING - No valid action determined for unit TANYA with goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,094 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: determine_action_for_goal for Unit TANYA - returning None
+2025-04-21 13:40:54,094 - AI_SYSTEM - WARNING - No valid action found for Tanya
+2025-04-21 13:40:54,094 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: determine_action_for_goal for Unit LEIF with goal AttackUnitGoal, target_unit_id: LEIF
+2025-04-21 13:40:54,094 - src.gameplay_systems.ai.tactical_executor - INFO - Tactical Execution: Unit LEIF executing goal AttackUnitGoal, target_unit_id: LEIF
+2025-04-21 13:40:54,095 - src.gameplay_systems.ai.tactical_executor - WARNING - _handle_attack_unit_goal: Unit LEIF is attempting to target itself. Skipping.
+2025-04-21 13:40:54,095 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: _handle_attack_unit_goal for unit LEIF - returning None (self-targeting)
+2025-04-21 13:40:54,095 - src.gameplay_systems.ai.tactical_executor - WARNING - No valid action determined for unit LEIF with goal AttackUnitGoal, target_unit_id: LEIF
+2025-04-21 13:40:54,095 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: determine_action_for_goal for Unit LEIF - returning None
+2025-04-21 13:40:54,095 - AI_SYSTEM - WARNING - No valid action found for Leif
+2025-04-21 13:40:54,095 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: determine_action_for_goal for Unit FINN with goal SecurePositionGoal
+2025-04-21 13:40:54,095 - src.gameplay_systems.ai.tactical_executor - INFO - Tactical Execution: Unit FINN executing goal SecurePositionGoal
+2025-04-21 13:40:54,095 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: _handle_secure_position_goal for unit FINN
+2025-04-21 13:40:54,095 - src.gameplay_systems.ai.tactical_executor - INFO - Unit FINN executing SecurePositionGoal. No specific action determined (holding position).
+2025-04-21 13:40:54,095 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: _handle_secure_position_goal for unit FINN - returning None
+2025-04-21 13:40:54,096 - src.gameplay_systems.ai.tactical_executor - WARNING - No valid action determined for unit FINN with goal SecurePositionGoal
+2025-04-21 13:40:54,096 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: determine_action_for_goal for Unit FINN - returning None
+2025-04-21 13:40:54,096 - AI_SYSTEM - WARNING - No valid action found for Finn
+2025-04-21 13:40:54,096 - src.gameplay_systems.ai.tactical_executor - DEBUG - Unit NANNA has already acted. Returning None.
+2025-04-21 13:40:54,096 - AI_SYSTEM - WARNING - No valid action found for Nanna
+2025-04-21 13:40:54,096 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: determine_action_for_goal for Unit HALVAN with goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,096 - src.gameplay_systems.ai.tactical_executor - INFO - Tactical Execution: Unit HALVAN executing goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,096 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: _handle_advance_to_objective_goal for unit HALVAN
+2025-04-21 13:40:54,096 - src.gameplay_systems.ai.tactical_executor - INFO - Unit HALVAN executing AdvanceToObjectiveGoal. No specific action determined (needs objective definition).
+2025-04-21 13:40:54,096 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: _handle_advance_to_objective_goal for unit HALVAN - returning None
+2025-04-21 13:40:54,096 - src.gameplay_systems.ai.tactical_executor - WARNING - No valid action determined for unit HALVAN with goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,097 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: determine_action_for_goal for Unit HALVAN - returning None
+2025-04-21 13:40:54,097 - AI_SYSTEM - WARNING - No valid action found for Halvan
+2025-04-21 13:40:54,097 - src.gameplay_systems.ai.tactical_executor - DEBUG - Unit MAREETA has already acted. Returning None.
+2025-04-21 13:40:54,097 - AI_SYSTEM - WARNING - No valid action found for Mareeta
+2025-04-21 13:40:54,097 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: determine_action_for_goal for Unit DAGDAR with goal SecurePositionGoal
+2025-04-21 13:40:54,097 - src.gameplay_systems.ai.tactical_executor - INFO - Tactical Execution: Unit DAGDAR executing goal SecurePositionGoal
+2025-04-21 13:40:54,098 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: _handle_secure_position_goal for unit DAGDAR
+2025-04-21 13:40:54,098 - src.gameplay_systems.ai.tactical_executor - INFO - Unit DAGDAR executing SecurePositionGoal. No specific action determined (holding position).
+2025-04-21 13:40:54,098 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: _handle_secure_position_goal for unit DAGDAR - returning None
+2025-04-21 13:40:54,098 - src.gameplay_systems.ai.tactical_executor - WARNING - No valid action determined for unit DAGDAR with goal SecurePositionGoal
+2025-04-21 13:40:54,098 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: determine_action_for_goal for Unit DAGDAR - returning None
+2025-04-21 13:40:54,098 - AI_SYSTEM - WARNING - No valid action found for Dagdar
+2025-04-21 13:40:54,098 - src.gameplay_systems.ai.tactical_executor - DEBUG - Unit SAIAS has already acted. Returning None.
+2025-04-21 13:40:54,098 - AI_SYSTEM - WARNING - No valid action found for Saias
+2025-04-21 13:40:54,098 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: determine_action_for_goal for Unit TANYA with goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,098 - src.gameplay_systems.ai.tactical_executor - INFO - Tactical Execution: Unit TANYA executing goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,099 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: _handle_advance_to_objective_goal for unit TANYA
+2025-04-21 13:40:54,099 - src.gameplay_systems.ai.tactical_executor - INFO - Unit TANYA executing AdvanceToObjectiveGoal. No specific action determined (needs objective definition).
+2025-04-21 13:40:54,099 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: _handle_advance_to_objective_goal for unit TANYA - returning None
+2025-04-21 13:40:54,099 - src.gameplay_systems.ai.tactical_executor - WARNING - No valid action determined for unit TANYA with goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,099 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: determine_action_for_goal for Unit TANYA - returning None
+2025-04-21 13:40:54,099 - AI_SYSTEM - WARNING - No valid action found for Tanya
+2025-04-21 13:40:54,099 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: determine_action_for_goal for Unit LEIF with goal AttackUnitGoal, target_unit_id: LEIF
+2025-04-21 13:40:54,099 - src.gameplay_systems.ai.tactical_executor - INFO - Tactical Execution: Unit LEIF executing goal AttackUnitGoal, target_unit_id: LEIF
+2025-04-21 13:40:54,099 - src.gameplay_systems.ai.tactical_executor - WARNING - _handle_attack_unit_goal: Unit LEIF is attempting to target itself. Skipping.
+2025-04-21 13:40:54,100 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: _handle_attack_unit_goal for unit LEIF - returning None (self-targeting)
+2025-04-21 13:40:54,100 - src.gameplay_systems.ai.tactical_executor - WARNING - No valid action determined for unit LEIF with goal AttackUnitGoal, target_unit_id: LEIF
+2025-04-21 13:40:54,100 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: determine_action_for_goal for Unit LEIF - returning None
+2025-04-21 13:40:54,100 - AI_SYSTEM - WARNING - No valid action found for Leif
+2025-04-21 13:40:54,100 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: determine_action_for_goal for Unit FINN with goal SecurePositionGoal
+2025-04-21 13:40:54,100 - src.gameplay_systems.ai.tactical_executor - INFO - Tactical Execution: Unit FINN executing goal SecurePositionGoal
+2025-04-21 13:40:54,100 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: _handle_secure_position_goal for unit FINN
+2025-04-21 13:40:54,100 - src.gameplay_systems.ai.tactical_executor - INFO - Unit FINN executing SecurePositionGoal. No specific action determined (holding position).
+2025-04-21 13:40:54,100 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: _handle_secure_position_goal for unit FINN - returning None
+2025-04-21 13:40:54,100 - src.gameplay_systems.ai.tactical_executor - WARNING - No valid action determined for unit FINN with goal SecurePositionGoal
+2025-04-21 13:40:54,100 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: determine_action_for_goal for Unit FINN - returning None
+2025-04-21 13:40:54,100 - AI_SYSTEM - WARNING - No valid action found for Finn
+2025-04-21 13:40:54,100 - src.gameplay_systems.ai.tactical_executor - DEBUG - Unit NANNA has already acted. Returning None.
+2025-04-21 13:40:54,101 - AI_SYSTEM - WARNING - No valid action found for Nanna
+2025-04-21 13:40:54,101 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: determine_action_for_goal for Unit HALVAN with goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,101 - src.gameplay_systems.ai.tactical_executor - INFO - Tactical Execution: Unit HALVAN executing goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,101 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: _handle_advance_to_objective_goal for unit HALVAN
+2025-04-21 13:40:54,101 - src.gameplay_systems.ai.tactical_executor - INFO - Unit HALVAN executing AdvanceToObjectiveGoal. No specific action determined (needs objective definition).
+2025-04-21 13:40:54,101 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: _handle_advance_to_objective_goal for unit HALVAN - returning None
+2025-04-21 13:40:54,101 - src.gameplay_systems.ai.tactical_executor - WARNING - No valid action determined for unit HALVAN with goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,101 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: determine_action_for_goal for Unit HALVAN - returning None
+2025-04-21 13:40:54,101 - AI_SYSTEM - WARNING - No valid action found for Halvan
+2025-04-21 13:40:54,102 - src.gameplay_systems.ai.tactical_executor - DEBUG - Unit MAREETA has already acted. Returning None.
+2025-04-21 13:40:54,102 - AI_SYSTEM - WARNING - No valid action found for Mareeta
+2025-04-21 13:40:54,102 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: determine_action_for_goal for Unit DAGDAR with goal SecurePositionGoal
+2025-04-21 13:40:54,102 - src.gameplay_systems.ai.tactical_executor - INFO - Tactical Execution: Unit DAGDAR executing goal SecurePositionGoal
+2025-04-21 13:40:54,102 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: _handle_secure_position_goal for unit DAGDAR
+2025-04-21 13:40:54,102 - src.gameplay_systems.ai.tactical_executor - INFO - Unit DAGDAR executing SecurePositionGoal. No specific action determined (holding position).
+2025-04-21 13:40:54,102 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: _handle_secure_position_goal for unit DAGDAR - returning None
+2025-04-21 13:40:54,102 - src.gameplay_systems.ai.tactical_executor - WARNING - No valid action determined for unit DAGDAR with goal SecurePositionGoal
+2025-04-21 13:40:54,102 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: determine_action_for_goal for Unit DAGDAR - returning None
+2025-04-21 13:40:54,102 - AI_SYSTEM - WARNING - No valid action found for Dagdar
+2025-04-21 13:40:54,103 - src.gameplay_systems.ai.tactical_executor - DEBUG - Unit SAIAS has already acted. Returning None.
+2025-04-21 13:40:54,103 - AI_SYSTEM - WARNING - No valid action found for Saias
+2025-04-21 13:40:54,103 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: determine_action_for_goal for Unit TANYA with goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,103 - src.gameplay_systems.ai.tactical_executor - INFO - Tactical Execution: Unit TANYA executing goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,103 - src.gameplay_systems.ai.tactical_executor - DEBUG - ENTERING: _handle_advance_to_objective_goal for unit TANYA
+2025-04-21 13:40:54,103 - src.gameplay_systems.ai.tactical_executor - INFO - Unit TANYA executing AdvanceToObjectiveGoal. No specific action determined (needs objective definition).
+2025-04-21 13:40:54,103 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: _handle_advance_to_objective_goal for unit TANYA - returning None
+2025-04-21 13:40:54,103 - src.gameplay_systems.ai.tactical_executor - WARNING - No valid action determined for unit TANYA with goal AdvanceToObjectiveGoal
+2025-04-21 13:40:54,103 - src.gameplay_systems.ai.tactical_executor - DEBUG - EXITING: determine_action_for_goal for Unit TANYA - returning None
+2025-04-21 13:40:54,103 - AI_SYSTEM - WARNING - No valid action found for Tanya
+2025-04-21 13:40:54,217 - src.gameplay_systems.ai.tactical_executor - DEBUG - TacticalExecutor initialized.
+2025-04-21 13:40:54,217 - src.gameplay_systems.ai.tactical_executor - DEBUG - Using provided CombatSystem.
+2025-04-21 13:40:54,217 - src.gameplay_systems.ai.tactical_executor - DEBUG - Using provided HealingSystem.
+2025-04-21 13:40:54,217 - src.gameplay_systems.ai.tactical_executor - DEBUG - TacticalExecutor initialized.
+2025-04-21 13:40:54,217 - src.gameplay_systems.ai.tactical_executor - DEBUG - Using MockCombatSystem.
+2025-04-21 13:40:54,217 - src.gameplay_systems.ai.tactical_executor - DEBUG - Using MockHealingSystem.

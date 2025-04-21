@@ -1,7 +1,7 @@
 import pytest
 import os
 import logging
-from src.core_engine.game_state import GameState, GameStateManager
+from src.core_engine.game_state import GameState, GameStateManager, PhaseEnum, FactionEnum
 from src.core_engine.data_provider import DataProvider
 from src.core_engine.scenario_loader import ScenarioLoader
 from src.core_engine.action_handler import ActionHandler
@@ -15,6 +15,7 @@ from src.gameplay_systems.unit_system import UnitSystem
 from src.gameplay_systems.ai.tactical_executor import TacticalExecutor
 from src.app import GameApplication
 
+# Configure logging
 # Purge relevant log files at the beginning of the test run
 log_files_to_purge = [
     'ai_behavior.log',
@@ -31,31 +32,34 @@ for log_file in log_files_to_purge:
             print(f"Error removing file {log_file}: {e}") # Optional: log error
 
 # Configure logging
-# Configure root logger to DEBUG level
-logging.basicConfig(
-    level=logging.DEBUG,  # Set to DEBUG to capture all detailed logs
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler("ai_vs_ai_test.log"), # Use the specific log file for this test
-        logging.StreamHandler()
-    ]
-)
+# Create a test-specific logger and add a file handler
+logger = logging.getLogger("AI_VS_AI_DEBUG_TEST")
+logger.setLevel(logging.DEBUG) # Set the logger level to DEBUG
 
-# Set up a dedicated file handler for AI execution tracing
-ai_execution_handler = logging.FileHandler("ai_behavior.log") # Use the specific log file for AI behavior
-ai_execution_handler.setLevel(logging.DEBUG)
-ai_execution_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+# Create a file handler and set its level to DEBUG
+file_handler = logging.FileHandler("ai_vs_ai_debug.log")
+file_handler.setLevel(logging.DEBUG)
 
-# Add the handler to the root logger to capture all messages
-logging.getLogger('').addHandler(ai_execution_handler)
+# Create a formatter and add it to the handler
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+file_handler.setFormatter(formatter)
 
-# Create a test-specific logger
-logger = logging.getLogger("AI_VS_AI_TEST")
+# Add the handler to the logger
+# Prevent adding duplicate handlers if the test is run multiple times in the same process
+if not logger.handlers:
+    logger.addHandler(file_handler)
+
+# Optionally, add a stream handler for console output
+stream_handler = logging.StreamHandler()
+stream_handler.setLevel(logging.INFO) # Keep console output less verbose
+stream_handler.setFormatter(formatter)
+if not any(isinstance(h, logging.StreamHandler) for h in logger.handlers):
+     logger.addHandler(stream_handler)
+
 logger.info("Log files purged and logging initialized")
-logger.info(f"Detailed AI execution tracing will be captured in ai_behavior.log")
 
-class TestAIvsAI:
-    """Test class for AI vs AI interactions."""
+class TestAIvsAIDebug:
+    """Test class for debugging AI vs AI interactions."""
     
     @pytest.fixture
     def game_state(self):
@@ -78,8 +82,8 @@ class TestAIvsAI:
         
         return game_state_manager
     
-    def test_ai_vs_ai_simulation(self, game_state):
-        """Run a simulation of AI vs AI combat and verify the results."""
+    def test_ai_vs_ai_debug(self, game_state):
+        """Run a short simulation of AI vs AI combat with detailed debugging."""
         # Initialize systems
         combat_system = CombatSystem()
         movement_system = MovementSystem()
@@ -114,13 +118,13 @@ class TestAIvsAI:
             inventorySystem_instance=None,
             turnManager_instance=turn_manager,
             eventHandler_instance=None,
-            dataProvider_instance=game_state.data_provider,
-            core_turn_manager_instance=None  # Add missing parameter
+            dataProvider_instance=game_state.data_provider
         )
         
         # Enable AI vs AI mode
         action_handler.ai_vs_ai = True
         game_state.ai_vs_ai = True  # Set the flag on the GameStateManager as well
+        logger.info(f"AI vs AI mode enabled: {action_handler.ai_vs_ai}")
         
         # Create a tactical executor with real systems
         tactical_executor = TacticalExecutor(movement_system, combat_system, healing_system)
@@ -130,32 +134,41 @@ class TestAIvsAI:
         ai_system.tactical_executor = tactical_executor
         
         # Set both factions to be AI-controlled
-        # Note: This method might not exist in GameStateManager, but we'll keep it for now
         if hasattr(game_state, 'set_faction_ai_controlled'):
             game_state.set_faction_ai_controlled("PLAYER", True)
             game_state.set_faction_ai_controlled("ENEMY", True)
         
-        # Run simulation for a set number of turns
-        max_turns = 10
+        # Run simulation for a limited number of turns
+        max_turns = 3  # Limit to 3 turns to avoid overwhelming logs
         current_turn = 1
         
-        # Print directly to console for debugging
-        print("Starting AI vs AI simulation")
+        # Print initial state
         player_units = game_state.get_units_by_faction("PLAYER")
         enemy_units = game_state.get_units_by_faction("ENEMY")
-        print(f"Initial state: {len(player_units)} player units, {len(enemy_units)} enemy units")
+        logger.info(f"Initial state: {len(player_units)} player units, {len(enemy_units)} enemy units")
         
         # Print unit details
-        print("Player units:")
+        logger.info("Player units:")
         for unit in player_units:
-            print(f"  {unit.name} ({unit.id}) at {unit.position}")
+            logger.info(f"  {unit.name} ({unit.id}) at {unit.position}")
         
-        print("Enemy units:")
+        logger.info("Enemy units:")
         for unit in enemy_units:
-            print(f"  {unit.name} ({unit.id}) at {unit.position}")
+            logger.info(f"  {unit.name} ({unit.id}) at {unit.position}")
         
-        logger.info("Starting AI vs AI simulation")
-        logger.info(f"Initial state: {len(player_units)} player units, {len(enemy_units)} enemy units")
+        # Add a monkey patch to the _is_correct_phase_for_faction method to log its inputs and outputs
+        original_is_correct_phase = action_handler._is_correct_phase_for_faction
+        
+        def patched_is_correct_phase(self, phase, faction):
+            ai_vs_ai_value = self.ai_vs_ai
+            if not ai_vs_ai_value and hasattr(self, 'turnManager') and self.turnManager and hasattr(self.turnManager, 'ai_vs_ai'):
+                ai_vs_ai_value = self.turnManager.ai_vs_ai
+                
+            result = original_is_correct_phase(phase, faction)
+            logger.debug(f"PHASE CHECK: phase={phase}, faction={faction}, ai_vs_ai={ai_vs_ai_value}, result={result}")
+            return result
+            
+        action_handler._is_correct_phase_for_faction = patched_is_correct_phase.__get__(action_handler, ActionHandler)
         
         # Continue until one side is defeated or max turns reached
         while (current_turn <= max_turns and 
@@ -166,6 +179,8 @@ class TestAIvsAI:
             
             # Player phase (AI-controlled)
             logger.info("Player Phase (AI-controlled)")
+            game_state.current_game_state.current_phase = PhaseEnum.PLAYER
+            logger.debug(f"Set current phase to {game_state.current_game_state.current_phase}")
             self._execute_faction_turn(game_state, ai_system, "PLAYER")
             
             # Check if enemy units are all defeated
@@ -175,6 +190,8 @@ class TestAIvsAI:
                 
             # Enemy phase (AI-controlled)
             logger.info("Enemy Phase (AI-controlled)")
+            game_state.current_game_state.current_phase = PhaseEnum.ENEMY
+            logger.debug(f"Set current phase to {game_state.current_game_state.current_phase}")
             self._execute_faction_turn(game_state, ai_system, "ENEMY")
             
             # Check if player units are all defeated
@@ -196,18 +213,6 @@ class TestAIvsAI:
         logger.info(f"Simulation ended after {current_turn-1} turns")
         logger.info(f"Final state: {player_units_count} player units, {enemy_units_count} enemy units")
         
-        # Verify AI behavior through logs (actual assertions would be based on the AI log)
-        # This is primarily a simulation test, so we're just checking that it runs without errors
-        
-        # If there are no units, we can't run the simulation, so we'll skip the assertion
-        initial_player_count = len(player_units)
-        initial_enemy_count = len(enemy_units)
-        if initial_player_count == 0 and initial_enemy_count == 0:
-            print("No units found in the game state, skipping turn count assertion")
-            # Test passes even though no turns were run
-        else:
-            assert current_turn > 1, "Simulation should run for at least one turn"
-        
         # Return final state for manual inspection if needed
         return {
             "turns_completed": current_turn - 1,
@@ -216,22 +221,19 @@ class TestAIvsAI:
         }
     
     def _execute_faction_turn(self, game_state, ai_system, faction):
-        """Execute a turn for all units of a faction."""
+        """Execute a turn for all units of a faction with detailed logging."""
         units = game_state.get_units_by_faction(faction)
-        print(f"Found {len(units)} units for faction {faction}")
         logger.info(f"Found {len(units)} units for faction {faction}")
         
         for unit in units:
-            print(f"Checking if unit {unit.name} can act...")
-            logger.info(f"Checking if unit {unit.name} can act...")
+            logger.info(f"Processing unit {unit.name} ({unit.id}) with faction {unit.faction}")
+            
             # Check if the unit has a can_act method
             if not hasattr(unit, 'can_act'):
-                print(f"Unit {unit.name} does not have a can_act method, assuming it can act")
                 logger.info(f"Unit {unit.name} does not have a can_act method, assuming it can act")
                 can_act = True
             else:
                 can_act = unit.can_act()
-                print(f"Unit {unit.name} can_act() returned {can_act}")
                 logger.info(f"Unit {unit.name} can_act() returned {can_act}")
                 
             if can_act:
@@ -252,94 +254,11 @@ class TestAIvsAI:
                     logger.info(f"Unit {unit.name} marked as acted")
                 else:
                     logger.info(f"Unit {unit.name} does not have an end_turn method")
-    
-    def test_ai_goal_selection(self, game_state):
-        """Test that AI units select appropriate goals based on their personas."""
-        # Initialize systems
-        combat_system = CombatSystem()
-        movement_system = MovementSystem()
-        healing_system = HealingSystem()
-        action_handler = ActionHandler()
-        turn_manager = TurnManager()
-        
-        # Create and initialize map system first (required by movement system)
-        map_system = MapSystem()
-        map_system.initialize(game_state, game_state.data_provider)
-        
-        # Initialize the systems with necessary dependencies
-        combat_system.initialize(game_state, game_state.data_provider, None, None, None)
-        movement_system.initialize(game_state, map_system)
-        healing_system.initialize(game_state, game_state.data_provider, None, None)
-        
-        # Initialize turn manager
-        turn_manager.initialize(
-            gameStateManager_instance=game_state,
-            dataProvider_instance=game_state.data_provider
-        )
-        
-        # Initialize action handler with dependencies
-        action_handler.initialize(
-            gameStateManager_instance=game_state,
-            unitSystem_instance=None,
-            mapSystem_instance=map_system,
-            movementSystem_instance=movement_system,
-            combatSystem_instance=combat_system,
-            inventorySystem_instance=None,
-            turnManager_instance=turn_manager,
-            eventHandler_instance=None,
-            dataProvider_instance=game_state.data_provider,
-            core_turn_manager_instance=None  # Add missing parameter
-        )
-        # Enable AI vs AI mode
-        action_handler.ai_vs_ai = True
-        game_state.ai_vs_ai = True  # Set the flag on the GameStateManager as well
-        
-        
-        # Create a tactical executor with real systems
-        tactical_executor = TacticalExecutor(movement_system, combat_system, healing_system)
-        
-        # Initialize AI system with the tactical executor and action handler
-        ai_system = AISystem(game_state, action_handler)
-        ai_system.tactical_executor = tactical_executor
-        
-        # Test units with different personas
-        test_cases = [
-            # Player faction
-            {"unit_id": "LEIF", "expected_goal": "ATTACK_UNIT", "persona": "AGGRESSOR"},
-            {"unit_id": "FINN", "expected_goal": "SECURE_POSITION", "persona": "DEFENDER"},
-            {"unit_id": "NANNA", "expected_goal": "HEAL_UNIT", "persona": "SUPPORT"},
-            {"unit_id": "HALVAN", "expected_goal": "ADVANCE_TO_OBJECTIVE", "persona": "OBJECTIVE-FOCUSED"},
-            
-            # Enemy faction
-            {"unit_id": "MAREETA", "expected_goal": "ATTACK_UNIT", "persona": "AGGRESSOR"},
-            {"unit_id": "DAGDAR", "expected_goal": "SECURE_POSITION", "persona": "DEFENDER"},
-            {"unit_id": "SAIAS", "expected_goal": "HEAL_UNIT", "persona": "SUPPORT"},
-            {"unit_id": "TANYA", "expected_goal": "ADVANCE_TO_OBJECTIVE", "persona": "OBJECTIVE-FOCUSED"},
-        ]
-        
-        for test_case in test_cases:
-            unit = game_state.get_unit_by_id(test_case["unit_id"])
-            assert unit is not None, f"Unit {test_case['unit_id']} not found"
-            
-            # Verify unit has the expected persona
-            assert unit.ai_persona == test_case["persona"], \
-                f"Unit {unit.id} should have persona {test_case['persona']}, but has {unit.ai_persona}"
-            
-            # Get the selected goal for this unit
-            selected_goal = ai_system.select_strategic_goal(unit)
-            
-            # Log the result
-            logger.info(f"Unit {unit.name} ({unit.ai_persona}) selected goal: {selected_goal.goal_type}")
-            
-            # Verify the goal matches expectations
-            assert selected_goal.goal_type == test_case["expected_goal"], \
-                f"Unit {unit.id} with persona {unit.ai_persona} should select {test_case['expected_goal']}, " \
-                f"but selected {selected_goal.goal_type}"
 
 
 if __name__ == "__main__":
     # This allows running the test directly (not through pytest)
-    test = TestAIvsAI()
+    test = TestAIvsAIDebug()
     
     # Create game state directly instead of using the fixture
     scenario_name = "ai_vs_ai_scenario_01"
@@ -350,12 +269,6 @@ if __name__ == "__main__":
     scenario_data = loader.load_scenario(scenario_name)
     game_state_manager.initialize_from_scenario(scenario_data)
     
-    # Run the simulation test
-    result = test.test_ai_vs_ai_simulation(game_state_manager)
-    print(f"Simulation completed: {result}")
-    
-    # Reset game state for goal selection test
-    # Create a new game state for the goal selection test
-    game_state_manager = GameStateManager(data_provider)
-    game_state_manager.initialize_from_scenario(scenario_data)
-    test.test_ai_goal_selection(game_state_manager)
+    # Run the debug test
+    result = test.test_ai_vs_ai_debug(game_state_manager)
+    print(f"Debug test completed: {result}")

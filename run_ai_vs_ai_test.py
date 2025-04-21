@@ -15,13 +15,17 @@ if os.path.exists('test_ai_vs_ai.py'):
     shutil.copy('test_ai_vs_ai.py', 'test_ai_vs_ai.py.bak')
 
 # Replace with modified files
-shutil.copy('src/gameplay_systems/ai_system_fixed.py', 'src/gameplay_systems/ai_system.py')
-shutil.copy('test_ai_vs_ai_fixed.py', 'test_ai_vs_ai.py')
+# shutil.copy('src/gameplay_systems/ai_system_fixed.py', 'src/gameplay_systems/ai_system.py') # Commented out to prevent overwrite
+# shutil.copy('test_ai_vs_ai_fixed.py', 'test_ai_vs_ai.py') # Commented out to use the manually modified test file
 
 try:
     # Run the test
     print("Running AI vs AI test with modified files...")
-    result = subprocess.run(['pytest', 'test_ai_vs_ai.py', '-v', '-s', '--log-cli-level=DEBUG'], 
+    # Ensure the environment is set up
+    os.environ['PYTHONPATH'] = os.getcwd()
+    # os.environ['LOG_LEVEL'] = 'DEBUG' # Removed DEBUG override
+    
+    result = subprocess.run(['pytest', 'test_ai_vs_ai.py', '-v', '-s'], # Removed --log-cli-level=DEBUG override
                            capture_output=True, text=True)
     
     print("\nTest Output:")
