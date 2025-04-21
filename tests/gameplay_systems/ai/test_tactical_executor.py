@@ -6,7 +6,8 @@ from unittest.mock import Mock, patch
 try:
     from src.gameplay_systems.ai.tactical_executor import TacticalExecutor
     from src.gameplay_systems.ai.goals import (
-        AttackUnitGoal, HealUnitGoal, MoveToSafetyGoal, SeizeTileGoal
+        AttackUnitGoal, HealUnitGoal, MoveToSafetyGoal, SeizeTileGoal,
+        SecurePositionGoal, AdvanceToObjectiveGoal
     )
     from src.gameplay_systems.ai.ai_types import AIAction
 except ImportError:
@@ -45,6 +46,19 @@ except ImportError:
         def __init__(self, target_position=None):
             self.goal_type = "SEIZE_TILE"
             self.parameters = {"target_position": target_position}
+    
+    class SecurePositionGoal:
+        """Placeholder for the SecurePositionGoal class until implementation exists."""
+        def __init__(self):
+            self.goal_type = "SECURE_POSITION"
+            self.parameters = {}
+    
+    class AdvanceToObjectiveGoal:
+        """Placeholder for the AdvanceToObjectiveGoal class matching goals.py structure."""
+        def __init__(self, ai_unit=None): 
+            self.goal_type = "ADVANCE_TO_OBJECTIVE"
+            self.parameters = {} # Parameters are set externally, not via __init__ arguments
+            self.ai_unit = ai_unit
     
     class AIAction:
         """Placeholder for the AIAction class until implementation exists."""
@@ -940,3 +954,489 @@ class TestTacticalExecutor:
         # Healing system methods should not be called since we exit early
         mock_healing_system.is_in_healing_range.assert_not_called()
         mock_healing_system.can_heal.assert_not_called()
+
+    # --- Tests for SecurePositionGoal ---
+
+    def test_determine_action_for_secure_position_goal_move(self):
+        """Test moving to a better defensive position."""
+        # Arrange
+        mock_movement_system = Mock()
+        mock_ai_unit = Mock()
+        mock_ai_unit.id = "ai_unit_secure"
+        mock_ai_unit.position = (5, 5)
+
+        mock_game_state_manager = Mock()
+        mock_game_state_manager = self._setup_mock_game_state_manager(mock_game_state_manager)
+
+        # Mock Map
+        mock_map = Mock()
+        # Current tile (5,5): def=1, avo=0 -> score=1
+        # Reachable tile (6,6): def=3, avo=0 -> score=3 (Better)
+        # Reachable tile (4,4): def=0, avo=0 -> score=0 (Worse)
+        tile_info = {
+            (5, 5): {'def': 1, 'avo': 0},
+            (6, 6): {'def': 3, 'avo': 0},
+            (4, 4): {'def': 0, 'avo': 0},
+            (5, 6): {'def': 1, 'avo': 0}, # Another option
+        }
+        mock_map.get_tile_info = Mock(side_effect=lambda x, y: tile_info.get((x, y)))
+        mock_game_state_manager.get_map.return_value = mock_map
+
+        # Mock Movement System
+        # Reachable tiles include the better one (6,6) and others
+        reachable_tiles_data = {
+             (4, 4): 1, 
+             (5, 6): 1, 
+             (6, 6): 2 # Higher cost, but reachable
+        } 
+        mock_movement_system.calculate_movement_range.return_value = reachable_tiles_data
+        
+        # Mock Pathfinding
+        mock_pathfinding = Mock()
+        # Path to the best tile (6,6)
+        expected_path = [(5, 5), (5, 6), (6, 6)]
+        mock_pathfinding.find_path.return_value = expected_path
+        mock_game_state_manager.get_pathfinding.return_value = mock_pathfinding
+
+        tactical_executor = TacticalExecutor(movement_system=mock_movement_system)
+        secure_goal = SecurePositionGoal()
+
+        # Act
+        action = tactical_executor.determine_action_for_goal(secure_goal, mock_ai_unit, mock_game_state_manager)
+
+        # Assert
+        assert action is not None
+        assert action.action_type == "MOVE"
+        assert action.unit_id == "ai_unit_secure"
+        assert "path" in action.target_data
+        assert action.target_data["path"] == expected_path
+        mock_movement_system.calculate_movement_range.assert_called_once_with("ai_unit_secure")
+        mock_game_state_manager.get_map.assert_called_once()
+        mock_map.get_tile_info.assert_any_call(5, 5) # Check current
+        mock_map.get_tile_info.assert_any_call(6, 6) # Check best reachable
+        mock_map.get_tile_info.assert_any_call(4, 4) # Check other reachable
+        mock_game_state_manager.get_pathfinding.assert_called_once()
+        mock_pathfinding.find_path.assert_called_once_with("ai_unit_secure", (5, 5), (6, 6), mock_map)
+
+    def test_determine_action_for_secure_position_goal_wait(self):
+        """Test waiting when already at the best defensive position."""
+        # Arrange
+        mock_movement_system = Mock()
+        mock_ai_unit = Mock()
+        mock_ai_unit.id = "ai_unit_secure"
+        mock_ai_unit.position = (5, 5) # Current position is the best
+
+        mock_game_state_manager = Mock()
+        mock_game_state_manager = self._setup_mock_game_state_manager(mock_game_state_manager)
+
+        # Mock Map
+        mock_map = Mock()
+        # Current tile (5,5): def=3, avo=0 -> score=3 (Best)
+        # Reachable tile (6,6): def=1, avo=0 -> score=1 (Worse)
+        # Reachable tile (4,4): def=0, avo=0 -> score=0 (Worse)
+        tile_info = {
+            (5, 5): {'def': 3, 'avo': 0},
+            (6, 6): {'def': 1, 'avo': 0},
+            (4, 4): {'def': 0, 'avo': 0},
+        }
+        mock_map.get_tile_info = Mock(side_effect=lambda x, y: tile_info.get((x, y)))
+        mock_game_state_manager.get_map.return_value = mock_map
+
+        # Mock Movement System
+        reachable_tiles_data = { (4, 4): 1, (6, 6): 2 }
+        mock_movement_system.calculate_movement_range.return_value = reachable_tiles_data
+        
+        # Mock Pathfinding (should not be called if waiting)
+        mock_pathfinding = Mock()
+        mock_game_state_manager.get_pathfinding.return_value = mock_pathfinding
+
+        tactical_executor = TacticalExecutor(movement_system=mock_movement_system)
+        secure_goal = SecurePositionGoal()
+
+        # Act
+        action = tactical_executor.determine_action_for_goal(secure_goal, mock_ai_unit, mock_game_state_manager)
+
+        # Assert
+        assert action is not None
+        assert action.action_type == "WAIT"
+        assert action.unit_id == "ai_unit_secure"
+        assert action.target_data == {}
+        mock_movement_system.calculate_movement_range.assert_called_once()
+        mock_game_state_manager.get_map.assert_called_once()
+        mock_game_state_manager.get_pathfinding.assert_not_called()
+        mock_pathfinding.find_path.assert_not_called()
+
+    def test_determine_action_for_secure_position_goal_no_reachable(self):
+        """Test waiting when no tiles are reachable."""
+        # Arrange
+        mock_movement_system = Mock()
+        mock_ai_unit = Mock()
+        mock_ai_unit.id = "ai_unit_secure"
+        mock_ai_unit.position = (5, 5)
+
+        mock_game_state_manager = Mock()
+        mock_game_state_manager = self._setup_mock_game_state_manager(mock_game_state_manager)
+
+        # Mock Map (needed but tile info won't be used extensively)
+        mock_map = Mock()
+        mock_map.get_tile_info.return_value = {'def': 0, 'avo': 0}
+        mock_game_state_manager.get_map.return_value = mock_map
+        
+        # Mock Movement System - returns empty dict
+        mock_movement_system.calculate_movement_range.return_value = {}
+        
+        tactical_executor = TacticalExecutor(movement_system=mock_movement_system)
+        secure_goal = SecurePositionGoal()
+
+        # Act
+        action = tactical_executor.determine_action_for_goal(secure_goal, mock_ai_unit, mock_game_state_manager)
+
+        # Assert
+        assert action is not None
+        assert action.action_type == "WAIT"
+        assert action.unit_id == "ai_unit_secure"
+        assert action.target_data == {}
+        mock_movement_system.calculate_movement_range.assert_called_once_with("ai_unit_secure")
+        mock_game_state_manager.get_map.assert_called_once() # Still needs map
+        mock_map.get_tile_info.assert_not_called() # No tiles to check info for
+        mock_game_state_manager.get_pathfinding.assert_not_called()
+
+    def test_determine_action_for_secure_position_goal_path_fail(self):
+        """Test waiting when pathfinding fails to find a path to the best tile."""
+        # Arrange
+        mock_movement_system = Mock()
+        mock_ai_unit = Mock()
+        mock_ai_unit.id = "ai_unit_secure"
+        mock_ai_unit.position = (5, 5)
+
+        mock_game_state_manager = Mock()
+        mock_game_state_manager = self._setup_mock_game_state_manager(mock_game_state_manager)
+
+        # Mock Map - Setup similar to move test
+        mock_map = Mock()
+        tile_info = {(5, 5): {'def': 1}, (6, 6): {'def': 3}}
+        mock_map.get_tile_info = Mock(side_effect=lambda x, y: tile_info.get((x, y)))
+        mock_game_state_manager.get_map.return_value = mock_map
+
+        # Mock Movement System - (6,6) is reachable
+        reachable_tiles_data = {(6, 6): 1}
+        mock_movement_system.calculate_movement_range.return_value = reachable_tiles_data
+        
+        # Mock Pathfinding - Returns None (path failed)
+        mock_pathfinding = Mock()
+        mock_pathfinding.find_path.return_value = None 
+        mock_game_state_manager.get_pathfinding.return_value = mock_pathfinding
+
+        tactical_executor = TacticalExecutor(movement_system=mock_movement_system)
+        secure_goal = SecurePositionGoal()
+
+        # Act
+        action = tactical_executor.determine_action_for_goal(secure_goal, mock_ai_unit, mock_game_state_manager)
+
+        # Assert
+        assert action is not None
+        assert action.action_type == "WAIT" # Should wait if path fails
+        assert action.unit_id == "ai_unit_secure"
+        assert action.target_data == {}
+        mock_pathfinding.find_path.assert_called_once_with("ai_unit_secure", (5, 5), (6, 6), mock_map) # Attempted pathfinding
+
+
+    def test_determine_action_for_secure_position_goal_map_fail(self):
+        """Test returning None when the map is unavailable."""
+        # Arrange
+        mock_movement_system = Mock()
+        mock_ai_unit = Mock()
+        mock_ai_unit.id = "ai_unit_secure"
+        mock_ai_unit.position = (5, 5)
+
+        mock_game_state_manager = Mock()
+        mock_game_state_manager = self._setup_mock_game_state_manager(mock_game_state_manager)
+        mock_game_state_manager.get_map.return_value = None # Map unavailable
+
+        tactical_executor = TacticalExecutor(movement_system=mock_movement_system)
+        secure_goal = SecurePositionGoal()
+
+        # Act
+        action = tactical_executor.determine_action_for_goal(secure_goal, mock_ai_unit, mock_game_state_manager)
+
+        # Assert
+        assert action is None # Should return None if map fails
+        mock_game_state_manager.get_map.assert_called_once()
+        mock_movement_system.calculate_movement_range.assert_not_called() # Should exit before movement calc
+
+    def test_determine_action_for_secure_position_goal_move_sys_fail(self):
+        """Test returning None when the movement system is unavailable."""
+        # Arrange
+        mock_ai_unit = Mock()
+        mock_ai_unit.id = "ai_unit_secure"
+        mock_ai_unit.position = (5, 5)
+
+        mock_game_state_manager = Mock()
+        mock_game_state_manager = self._setup_mock_game_state_manager(mock_game_state_manager)
+        # Mock Map is available
+        mock_map = Mock()
+        mock_game_state_manager.get_map.return_value = mock_map
+
+        # TacticalExecutor initialized WITHOUT a movement system
+        tactical_executor = TacticalExecutor(movement_system=None) 
+        secure_goal = SecurePositionGoal()
+
+        # Act
+        action = tactical_executor.determine_action_for_goal(secure_goal, mock_ai_unit, mock_game_state_manager)
+
+        # Assert
+        assert action is None # Should return None if movement system is missing
+        mock_game_state_manager.get_map.assert_called_once()
+        # Ensure calculate_movement_range was NOT called on a None object
+        # (Checking that the internal check works)
+
+    # --- Tests for AdvanceToObjectiveGoal ---
+
+    def test_determine_action_for_advance_to_objective_goal_move(self):
+        """Test moving towards a distant objective."""
+        # Arrange
+        mock_movement_system = Mock()
+        mock_ai_unit = Mock()
+        mock_ai_unit.id = "ai_unit_advance"
+        mock_ai_unit.position = (2, 2)
+        unit_move = 5 # Unit can move 5 steps
+
+        mock_game_state_manager = Mock()
+        mock_game_state_manager = self._setup_mock_game_state_manager(mock_game_state_manager)
+        mock_map = Mock() # Assume simple map for pathfinding
+        mock_game_state_manager.get_map.return_value = mock_map
+
+        # Mock Pathfinding - finds a long path
+        target_pos = (10, 10)
+        full_path = [(2, 2), (3, 3), (4, 4), (5, 5), (6, 6), (7, 7), (8, 8), (9, 9), (10, 10)] # 8 steps
+        mock_pathfinding = Mock()
+        mock_pathfinding.find_path.return_value = full_path
+        mock_game_state_manager.get_pathfinding.return_value = mock_pathfinding
+
+        # Mock Movement System - defines reachable tiles based on move range
+        # Unit at (2,2) with move 5 can reach up to (7,7) on this path
+        reachable_tiles_data = {
+            (3, 3): 1, (4, 4): 2, (5, 5): 3, (6, 6): 4, (7, 7): 5, # Reachable
+            (8, 8): 6 # Unreachable
+        }
+        mock_movement_system.calculate_movement_range.return_value = reachable_tiles_data
+        
+        # Simulate the helper function logic based on mocked range
+        expected_limited_path = full_path[:unit_move + 1] # Path up to step 5 -> index 5 -> (7,7)
+        
+        tactical_executor = TacticalExecutor(movement_system=mock_movement_system)
+        # Patch the helper method to simulate its behavior based on the mocked movement range
+        # We rely on the fact that _find_furthest_reachable_tile_on_path uses calculate_movement_range
+        # This test ensures the main handler uses the helper result correctly
+        with patch.object(tactical_executor, '_find_furthest_reachable_tile_on_path', return_value=expected_limited_path) as mock_helper:
+            # advance_goal = AdvanceToObjectiveGoal(target_position=target_pos)
+            advance_goal = AdvanceToObjectiveGoal() # Instantiate without target
+            advance_goal.parameters = {"target_position": target_pos} # Set parameters separately
+
+            # Act
+            action = tactical_executor.determine_action_for_goal(advance_goal, mock_ai_unit, mock_game_state_manager)
+
+            # Assert
+            assert action is not None
+            assert action.action_type == "MOVE"
+            assert action.unit_id == "ai_unit_advance"
+            assert "path" in action.target_data
+            assert action.target_data["path"] == expected_limited_path
+            assert action.target_data["objective_target"] == target_pos
+            mock_game_state_manager.get_pathfinding.assert_called_once()
+            mock_pathfinding.find_path.assert_called_once_with("ai_unit_advance", (2, 2), target_pos, mock_map)
+            mock_helper.assert_called_once_with("ai_unit_advance", full_path)
+            # calculate_movement_range would be called inside the (now patched) helper
+
+    def test_determine_action_for_advance_to_objective_goal_wait_at_objective(self):
+        """Test waiting when already at the objective position."""
+        # Arrange
+        mock_movement_system = Mock()
+        mock_ai_unit = Mock()
+        mock_ai_unit.id = "ai_unit_advance"
+        target_pos = (10, 10)
+        mock_ai_unit.position = target_pos # Already at the objective
+
+        mock_game_state_manager = Mock()
+        mock_game_state_manager = self._setup_mock_game_state_manager(mock_game_state_manager)
+        # No need for map, pathfinding, movement range mocks if already at objective
+
+        tactical_executor = TacticalExecutor(movement_system=mock_movement_system)
+        # advance_goal = AdvanceToObjectiveGoal(target_position=target_pos)
+        advance_goal = AdvanceToObjectiveGoal()
+        advance_goal.parameters = {"target_position": target_pos}
+
+        # Act
+        action = tactical_executor.determine_action_for_goal(advance_goal, mock_ai_unit, mock_game_state_manager)
+
+        # Assert
+        assert action is not None
+        assert action.action_type == "WAIT"
+        assert action.unit_id == "ai_unit_advance"
+        assert action.target_data == {}
+        mock_game_state_manager.get_pathfinding.assert_not_called()
+        mock_movement_system.calculate_movement_range.assert_not_called()
+
+    def test_determine_action_for_advance_to_objective_goal_no_path(self):
+        """Test returning None when no path to the objective exists."""
+        # Arrange
+        mock_movement_system = Mock()
+        mock_ai_unit = Mock()
+        mock_ai_unit.id = "ai_unit_advance"
+        mock_ai_unit.position = (2, 2)
+
+        mock_game_state_manager = Mock()
+        mock_game_state_manager = self._setup_mock_game_state_manager(mock_game_state_manager)
+        mock_map = Mock()
+        mock_game_state_manager.get_map.return_value = mock_map
+
+        # Mock Pathfinding - returns None
+        target_pos = (10, 10)
+        mock_pathfinding = Mock()
+        mock_pathfinding.find_path.return_value = None
+        mock_game_state_manager.get_pathfinding.return_value = mock_pathfinding
+
+        tactical_executor = TacticalExecutor(movement_system=mock_movement_system)
+        # advance_goal = AdvanceToObjectiveGoal(target_position=target_pos)
+        advance_goal = AdvanceToObjectiveGoal()
+        advance_goal.parameters = {"target_position": target_pos}
+
+        # Act
+        action = tactical_executor.determine_action_for_goal(advance_goal, mock_ai_unit, mock_game_state_manager)
+
+        # Assert
+        assert action is None
+        mock_pathfinding.find_path.assert_called_once()
+        mock_movement_system.calculate_movement_range.assert_not_called()
+
+    def test_determine_action_for_advance_to_objective_goal_no_move_possible(self):
+        """Test waiting when a path exists but the unit cannot move along it."""
+        # Arrange
+        mock_movement_system = Mock()
+        mock_ai_unit = Mock()
+        mock_ai_unit.id = "ai_unit_advance"
+        mock_ai_unit.position = (2, 2)
+
+        mock_game_state_manager = Mock()
+        mock_game_state_manager = self._setup_mock_game_state_manager(mock_game_state_manager)
+        mock_map = Mock()
+        mock_game_state_manager.get_map.return_value = mock_map
+
+        # Mock Pathfinding - finds a path
+        target_pos = (10, 10)
+        full_path = [(2, 2), (3, 3), (4, 4)]
+        mock_pathfinding = Mock()
+        mock_pathfinding.find_path.return_value = full_path
+        mock_game_state_manager.get_pathfinding.return_value = mock_pathfinding
+
+        # Mock Movement System - Only current tile is reachable
+        reachable_tiles_data = {(2, 2): 0}
+        mock_movement_system.calculate_movement_range.return_value = reachable_tiles_data
+        
+        # Simulate helper returning only start tile
+        expected_limited_path = [(2, 2)]
+
+        tactical_executor = TacticalExecutor(movement_system=mock_movement_system)
+        with patch.object(tactical_executor, '_find_furthest_reachable_tile_on_path', return_value=expected_limited_path) as mock_helper:
+            # advance_goal = AdvanceToObjectiveGoal(target_position=target_pos)
+            advance_goal = AdvanceToObjectiveGoal()
+            advance_goal.parameters = {"target_position": target_pos}
+
+            # Act
+            action = tactical_executor.determine_action_for_goal(advance_goal, mock_ai_unit, mock_game_state_manager)
+
+            # Assert
+            assert action is not None
+            assert action.action_type == "WAIT" # Should wait if no move possible
+            assert action.unit_id == "ai_unit_advance"
+            assert action.target_data == {}
+            mock_helper.assert_called_once_with("ai_unit_advance", full_path)
+
+    def test_determine_action_for_advance_to_objective_goal_missing_target(self):
+        """Test returning None when target_position is missing from goal parameters."""
+        # Arrange
+        mock_movement_system = Mock()
+        mock_ai_unit = Mock()
+        mock_ai_unit.id = "ai_unit_advance"
+        mock_ai_unit.position = (2, 2)
+
+        mock_game_state_manager = Mock()
+        mock_game_state_manager = self._setup_mock_game_state_manager(mock_game_state_manager)
+
+        tactical_executor = TacticalExecutor(movement_system=mock_movement_system)
+        # Goal created WITHOUT target_position
+        # advance_goal = AdvanceToObjectiveGoal(target_position=None)
+        advance_goal = AdvanceToObjectiveGoal()
+        # Ensure parameters are empty for this test
+        advance_goal.parameters = {} 
+        # Manually remove from parameters if constructor doesn't handle None properly
+        # if 'target_position' in advance_goal.parameters and advance_goal.parameters['target_position'] is None:
+        #     del advance_goal.parameters['target_position'] 
+        # elif hasattr(advance_goal, 'parameters'): # Ensure parameters exist
+        #      advance_goal.parameters = {}
+        # else: # Create parameters if missing
+        #      advance_goal.parameters = {}
+             
+
+        # Act
+        action = tactical_executor.determine_action_for_goal(advance_goal, mock_ai_unit, mock_game_state_manager)
+
+        # Assert
+        assert action is None
+        mock_game_state_manager.get_pathfinding.assert_not_called()
+
+    def test_determine_action_for_advance_to_objective_goal_no_pathfinder(self):
+        """Test returning None when pathfinder is unavailable."""
+        # Arrange
+        mock_movement_system = Mock()
+        mock_ai_unit = Mock()
+        mock_ai_unit.id = "ai_unit_advance"
+        mock_ai_unit.position = (2, 2)
+
+        mock_game_state_manager = Mock()
+        mock_game_state_manager = self._setup_mock_game_state_manager(mock_game_state_manager)
+        mock_game_state_manager.get_pathfinding.return_value = None # Pathfinder missing
+        mock_map = Mock()
+        mock_game_state_manager.get_map.return_value = mock_map
+
+        tactical_executor = TacticalExecutor(movement_system=mock_movement_system)
+        # advance_goal = AdvanceToObjectiveGoal(target_position=(10, 10))
+        advance_goal = AdvanceToObjectiveGoal()
+        advance_goal.parameters = {"target_position": (10, 10)}
+
+        # Act
+        action = tactical_executor.determine_action_for_goal(advance_goal, mock_ai_unit, mock_game_state_manager)
+
+        # Assert
+        assert action is None
+        mock_game_state_manager.get_pathfinding.assert_called_once()
+        mock_movement_system.calculate_movement_range.assert_not_called()
+
+    def test_determine_action_for_advance_to_objective_goal_no_move_system(self):
+        """Test returning None when movement system is unavailable."""
+        # Arrange
+        mock_ai_unit = Mock()
+        mock_ai_unit.id = "ai_unit_advance"
+        mock_ai_unit.position = (2, 2)
+
+        mock_game_state_manager = Mock()
+        mock_game_state_manager = self._setup_mock_game_state_manager(mock_game_state_manager)
+        # Assume pathfinder and map are available
+        mock_pathfinding = Mock()
+        mock_game_state_manager.get_pathfinding.return_value = mock_pathfinding
+        mock_map = Mock()
+        mock_game_state_manager.get_map.return_value = mock_map
+
+        # Initialize TE without movement system
+        tactical_executor = TacticalExecutor(movement_system=None)
+        # advance_goal = AdvanceToObjectiveGoal(target_position=(10, 10))
+        advance_goal = AdvanceToObjectiveGoal()
+        advance_goal.parameters = {"target_position": (10, 10)}
+
+        # Act
+        action = tactical_executor.determine_action_for_goal(advance_goal, mock_ai_unit, mock_game_state_manager)
+
+        # Assert
+        assert action is None
+        # Should exit after checking for movement system
+        mock_game_state_manager.get_pathfinding.assert_not_called()

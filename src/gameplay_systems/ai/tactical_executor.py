@@ -568,24 +568,218 @@ class TacticalExecutor:
 
     # --- Added Placeholder Handlers ---
     def _handle_secure_position_goal(self, goal, ai_unit_state, game_state_manager) -> Optional[AIAction]:
-        """Placeholder handler for SecurePositionGoal."""
-        unit_id = getattr(ai_unit_state, 'id', 'unknown')
+        """
+        Handle SecurePositionGoal: Find the most defensible reachable tile and move there.
+        If the current position is already optimal or no better position exists, wait.
+        """
+        unit_id = getattr(ai_unit_state, 'id', getattr(ai_unit_state, 'unit_id', 'unknown'))
         self.logger.debug(f"ENTERING: _handle_secure_position_goal for unit {unit_id}")
-        # Basic implementation: Just wait or perform a minimal action
-        # For now, let's just log and return None, indicating no specific action needed
-        self.logger.info(f"Unit {unit_id} executing SecurePositionGoal. No specific action determined (holding position).")
-        # Optionally, return a WAIT action if implemented
-        # return AIAction(action_type="WAIT", unit_id=unit_id, target_data={}) 
-        self.logger.debug(f"EXITING: _handle_secure_position_goal for unit {unit_id} - returning None")
-        return None # Or WAIT action
+
+        current_pos = ai_unit_state.position
+        # game_map = game_state_manager.get_map()
+        # Access map via the current_game_state held by the manager
+        if not hasattr(game_state_manager, 'current_game_state'):
+            self.logger.error(f"SecurePositionGoal: GameStateManager missing 'current_game_state' attribute for unit {unit_id}.")
+            self.logger.debug(f"EXITING: _handle_secure_position_goal for unit {unit_id} - returning None (game state unavailable)")
+            return None
+        game_map_state = game_state_manager.current_game_state.map_state 
+        if not game_map_state:
+            self.logger.error(f"SecurePositionGoal: Could not retrieve map_state from game_state_manager.current_game_state for unit {unit_id}.")
+            self.logger.debug(f"EXITING: _handle_secure_position_goal for unit {unit_id} - returning None (map unavailable)")
+            return None
+        
+        if not self.movement_system:
+            self.logger.error(f"SecurePositionGoal: Movement system not available for unit {unit_id}.")
+            self.logger.debug(f"EXITING: _handle_secure_position_goal for unit {unit_id} - returning None (movement system unavailable)")
+            return None
+
+        # --- 1. Get Reachable Tiles ---
+        reachable_tiles_data = self.movement_system.calculate_movement_range(unit_id)
+        if not reachable_tiles_data:
+            self.logger.warning(f"SecurePositionGoal: No reachable tiles found for unit {unit_id}. Waiting.")
+            # If no reachable tiles, default to WAIT
+            self.logger.debug(f"EXITING: _handle_secure_position_goal for unit {unit_id} - returning WAIT (no reachable tiles)")
+            return AIAction(action_type="WAIT", unit_id=unit_id, target_data={})
+            
+        reachable_tiles = reachable_tiles_data
+
+        # --- 2. Score Reachable Tiles (including current position) ---
+        best_tile = current_pos
+        # Use a very low initial score to ensure any valid tile is better
+        best_score = -float('inf') 
+
+        # Calculate score for the current position first
+        # Need a way to get tile info from MapState - assume a method exists or adapt
+        # current_tile_info = game_map_state.get_tile_info(current_pos[0], current_pos[1]) 
+        # Placeholder: Assume direct access or adapt based on MapState definition
+        try:
+            current_terrain_type = game_map_state.terrain_grid[current_pos[1]][current_pos[0]]
+            # Need data_provider to get terrain bonuses
+            data_provider = getattr(game_state_manager, 'data_provider', None)
+            if data_provider:
+                current_tile_info = data_provider.get_terrain_data(current_terrain_type.name)
+            else: current_tile_info = None
+        except (IndexError, AttributeError):
+             current_tile_info = None
+
+        if current_tile_info:
+             # Prioritize higher defense bonus. Lower avoid bonus is better (less likely to be hit).
+             # Simple scoring: def_bonus - avo_bonus. Add other factors later.
+            best_score = current_tile_info.get('def', 0) - current_tile_info.get('avo', 0)
+            self.logger.debug(f"SecurePositionGoal: Current tile {current_pos} score: {best_score} (Def: {current_tile_info.get('def', 0)}, Avo: {current_tile_info.get('avo', 0)})")
+        else:
+            self.logger.warning(f"SecurePositionGoal: Could not get tile info for current position {current_pos} for unit {unit_id}.")
+            # If current tile info isn't available, assume a neutral score
+            best_score = 0 
+            
+        # Now score all reachable tiles
+        for tile in reachable_tiles:
+            # tile_info = game_map_state.get_tile_info(tile[0], tile[1])
+            try:
+                terrain_type = game_map_state.terrain_grid[tile[1]][tile[0]]
+                if data_provider:
+                    tile_info = data_provider.get_terrain_data(terrain_type.name)
+                else: tile_info = None
+            except (IndexError, AttributeError):
+                tile_info = None
+
+            if tile_info:
+                # score = tile_info.get('def', 0) - tile_info.get('avo', 0)
+                # Access terrain bonuses via attributes or combat_modifiers/bonuses dict
+                def_bonus = 0
+                avo_bonus = 0
+                if hasattr(tile_info, 'combat_modifiers'):
+                    def_bonus = tile_info.combat_modifiers.get('defense', 0)
+                    avo_bonus = tile_info.combat_modifiers.get('avoid', 0)
+                elif hasattr(tile_info, 'bonuses'): # Fallback for older format
+                    def_bonus = tile_info.bonuses.get('def', 0)
+                    avo_bonus = tile_info.bonuses.get('avo', 0)
+                    
+                score = def_bonus - avo_bonus
+                self.logger.debug(f"SecurePositionGoal: Evaluating tile {tile} score: {score} (Def: {def_bonus}, Avo: {avo_bonus})")
+                # Add small preference for staying put if scores are equal
+                # Or prioritize moving if necessary (e.g., penalty for staying?) - Keep simple for now.
+                if score > best_score:
+                    best_score = score
+                    best_tile = tile
+            else:
+                 self.logger.warning(f"SecurePositionGoal: Could not get tile info for reachable tile {tile} for unit {unit_id}.")
+
+
+        self.logger.debug(f"SecurePositionGoal: Best defensive tile found: {best_tile} with score {best_score}")
+
+        # --- 3. Determine Action ---
+        # If the best tile is the current tile, or no significantly better tile found
+        if best_tile == current_pos:
+            self.logger.info(f"SecurePositionGoal: Unit {unit_id} already at best position {current_pos}. Waiting.")
+            self.logger.debug(f"EXITING: _handle_secure_position_goal for unit {unit_id} - returning WAIT")
+            return AIAction(action_type="WAIT", unit_id=unit_id, target_data={})
+        else:
+            # Find a path to the best tile
+            pathfinder = game_state_manager.get_pathfinding()
+            if not pathfinder:
+                self.logger.error(f"SecurePositionGoal: Pathfinder not available for unit {unit_id}.")
+                self.logger.debug(f"EXITING: _handle_secure_position_goal for unit {unit_id} - returning WAIT (pathfinder unavailable)")
+                # Fallback to WAIT if pathfinding is unavailable
+                return AIAction(action_type="WAIT", unit_id=unit_id, target_data={}) 
+
+            # Pathfinding needs the map object, adapt based on Pathfinding interface
+            # move_path = pathfinder.find_path(unit_id, current_pos, best_tile, game_map_state)
+            # Assuming pathfinder uses game_state_manager which has access to map
+            move_path = pathfinder.find_path(unit_id, current_pos, best_tile)
+
+            if move_path and len(move_path) > 1: # Path must have at least start and end
+                self.logger.info(f"SecurePositionGoal: Unit {unit_id} moving to secure position {best_tile} via path of length {len(move_path)}.")
+                self.logger.debug(f"EXITING: _handle_secure_position_goal for unit {unit_id} - returning MOVE to {best_tile}")
+                return AIAction(action_type="MOVE", unit_id=unit_id, target_data={"path": move_path})
+            else:
+                self.logger.warning(f"SecurePositionGoal: Could not find path for unit {unit_id} from {current_pos} to best tile {best_tile}, despite it being reachable. Waiting.")
+                # Fallback to WAIT if path is not found (unexpected, but safe)
+                self.logger.debug(f"EXITING: _handle_secure_position_goal for unit {unit_id} - returning WAIT (path not found)")
+                return AIAction(action_type="WAIT", unit_id=unit_id, target_data={})
 
     def _handle_advance_to_objective_goal(self, goal, ai_unit_state, game_state_manager) -> Optional[AIAction]:
-        """Placeholder handler for AdvanceToObjectiveGoal."""
-        unit_id = getattr(ai_unit_state, 'id', 'unknown')
+        """
+        Handle AdvanceToObjectiveGoal: Find a path towards the objective and move as far as possible along it.
+        Assumes the goal parameters contain a 'target_position'.
+        """
+        unit_id = getattr(ai_unit_state, 'id', getattr(ai_unit_state, 'unit_id', 'unknown'))
         self.logger.debug(f"ENTERING: _handle_advance_to_objective_goal for unit {unit_id}")
-        # Basic implementation: Find path towards a generic objective point (if defined)
-        # For now, let's just log and return None
-        # TODO: Define how objectives are represented and find path towards them
-        self.logger.info(f"Unit {unit_id} executing AdvanceToObjectiveGoal. No specific action determined (needs objective definition).")
-        self.logger.debug(f"EXITING: _handle_advance_to_objective_goal for unit {unit_id} - returning None")
-        return None
+
+        # --- 1. Get Objective Details ---
+        if not hasattr(goal, 'parameters') or 'target_position' not in goal.parameters:
+            self.logger.error(f"AdvanceToObjectiveGoal: Missing 'target_position' in goal parameters for unit {unit_id}.")
+            self.logger.debug(f"EXITING: _handle_advance_to_objective_goal for unit {unit_id} - returning None (missing target)")
+            return None
+            
+        target_position = goal.parameters['target_position']
+        current_pos = ai_unit_state.position
+
+        self.logger.info(f"Unit {unit_id} advancing towards objective at {target_position} from {current_pos}")
+
+        # Check if already at the target position
+        if current_pos == target_position:
+            self.logger.info(f"Unit {unit_id} is already at the objective position {target_position}. Waiting.")
+            # If the goal is just to reach the position, waiting might be appropriate.
+            # Future goals might involve actions AT the objective (e.g., Interact)
+            self.logger.debug(f"EXITING: _handle_advance_to_objective_goal for unit {unit_id} - returning WAIT (at objective)")
+            return AIAction(action_type="WAIT", unit_id=unit_id, target_data={})
+
+        # --- 2. Check System Availability ---
+        if not self.movement_system:
+            self.logger.error(f"AdvanceToObjectiveGoal: Movement system not available for unit {unit_id}.")
+            self.logger.debug(f"EXITING: _handle_advance_to_objective_goal for unit {unit_id} - returning None (movement system unavailable)")
+            return None
+            
+        pathfinder = game_state_manager.get_pathfinding()
+        if not pathfinder:
+            self.logger.error(f"AdvanceToObjectiveGoal: Pathfinder not available for unit {unit_id}.")
+            # Cannot proceed without pathfinding
+            self.logger.debug(f"EXITING: _handle_advance_to_objective_goal for unit {unit_id} - returning None (pathfinder unavailable)")
+            return None
+            
+        # game_map = game_state_manager.get_map()
+        if not hasattr(game_state_manager, 'current_game_state'):
+             self.logger.error(f"AdvanceToObjectiveGoal: GameStateManager missing 'current_game_state' attribute for unit {unit_id}.")
+             self.logger.debug(f"EXITING: _handle_advance_to_objective_goal for unit {unit_id} - returning None (game state unavailable)")
+             return None
+        game_map_state = game_state_manager.current_game_state.map_state
+        if not game_map_state:
+            self.logger.error(f"AdvanceToObjectiveGoal: MapState not available for unit {unit_id}.")
+            self.logger.debug(f"EXITING: _handle_advance_to_objective_goal for unit {unit_id} - returning None (map unavailable)")
+            return None
+
+        # --- 3. Find Path to Objective ---
+        # Use a method designed for approaching a target coordinate
+        # Assuming find_path can handle coordinate targets and uses game_state_manager internally for map
+        # approach_path = pathfinder.find_path(unit_id, current_pos, target_position, game_map_state)
+        approach_path = pathfinder.find_path(unit_id, current_pos, target_position)
+        # Alternative: pathfinder.find_path_to_approach_target(ai_unit_state, target_position)
+        # Choose the one that fits the Pathfinding interface better
+
+        if not approach_path or len(approach_path) <= 1:
+            self.logger.warning(f"AdvanceToObjectiveGoal: No path found for unit {unit_id} from {current_pos} to {target_position}.")
+            # Maybe the unit is blocked or the target is invalid/unreachable
+            # Consider returning WAIT or None. None seems safer if we can't move.
+            self.logger.debug(f"EXITING: _handle_advance_to_objective_goal for unit {unit_id} - returning None (no path)")
+            return None
+            
+        self.logger.debug(f"AdvanceToObjectiveGoal: Found approach path: {approach_path}")
+
+        # --- 4. Find Furthest Reachable Point on Path ---
+        # This helper uses self.movement_system.calculate_movement_range internally
+        limited_path = self._find_furthest_reachable_tile_on_path(unit_id, approach_path)
+
+        # --- 5. Generate Action ---
+        if limited_path and len(limited_path) > 1:
+            destination = limited_path[-1]
+            self.logger.info(f"AdvanceToObjectiveGoal: Unit {unit_id} moving towards {target_position}. Path segment ends at {destination} (length {len(limited_path)})." )
+            self.logger.debug(f"EXITING: _handle_advance_to_objective_goal for unit {unit_id} - returning MOVE to {destination}")
+            return AIAction(action_type="MOVE", unit_id=unit_id, target_data={"path": limited_path, "objective_target": target_position})
+        else:
+            # This case means only the starting tile is 'reachable' on the path.
+            # This could happen if the unit has 0 move or is completely blocked immediately.
+            self.logger.warning(f"AdvanceToObjectiveGoal: No valid move possible for unit {unit_id} towards {target_position} from {current_pos}, despite path existing. Unit might be blocked or have 0 move.")
+            # Default to WAIT if no movement is possible.
+            self.logger.debug(f"EXITING: _handle_advance_to_objective_goal for unit {unit_id} - returning WAIT (no move possible)")
+            return AIAction(action_type="WAIT", unit_id=unit_id, target_data={})

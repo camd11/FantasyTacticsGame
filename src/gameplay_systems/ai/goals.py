@@ -121,6 +121,10 @@ class AttackUnitGoal(Goal):
         target_unit_id = self.parameters["target_unit_id"]
         target_unit = game_state_manager.get_unit_by_id(target_unit_id)
         
+        # --- Prevent Self-Targeting --- 
+        if unit.id == target_unit_id:
+            return False
+
         # Check if target exists and is not defeated
         if target_unit is None:
             return False

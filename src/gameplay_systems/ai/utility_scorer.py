@@ -88,6 +88,10 @@ class UtilityScorer:
                 return self._score_move_to_safety_goal(goal, unit_state, game_state_manager, persona)
             elif goal.goal_type == "SEIZE_TILE":
                 return self._score_seize_tile_goal(goal, unit_state, game_state_manager, persona)
+            elif goal.goal_type == "SECURE_POSITION":
+                return self._score_secure_position_goal(goal, unit_state, game_state_manager, persona)
+            elif goal.goal_type == "ADVANCE_TO_OBJECTIVE":
+                return self._score_advance_to_objective_goal(goal, unit_state, game_state_manager, persona)
         
         # Default score for unknown goal types
         return 0.0
@@ -95,122 +99,108 @@ class UtilityScorer:
     def _score_attack_unit_goal(self, goal, unit_state, game_state_manager, persona=None) -> float:
         """
         Score an AttackUnitGoal.
-        
-        This method evaluates the utility of attacking a specific target unit.
-        It considers factors such as:
-        - Target unit's current HP and value
-        - Distance to the target
-        - Potential damage that could be dealt
-        - Risk to the attacking unit
-        
-        Args:
-            goal: The AttackUnitGoal to score
-            unit_state: The state of the AI unit
-            game_state_manager: The current game state manager
-            persona: The AI persona/profile that influences scoring
-            
-        Returns:
-            float: A numeric score representing the goal's utility
+        Considers target HP, distance, value, threat/opportunity, and persona weights.
         """
-        # Extract target unit ID from goal parameters
         target_unit_id = goal.parameters.get("target_unit_id")
         if not target_unit_id:
             return 0.0
         
-        # Get target unit from game state
         target_unit = game_state_manager.get_unit_by_id(target_unit_id)
         if not target_unit:
             return 0.0
-        
-        # Check if target is reachable
-        if not game_state_manager.pathfinding.can_potentially_reach(
-            unit_state, target_unit.position
-        ):
+            
+        # Basic validation (already done in Goal.is_valid, but good for safety)
+        if hasattr(target_unit, 'is_defeated') and target_unit.is_defeated():
+            return 0.0
+        if hasattr(target_unit, 'disposition') and target_unit.disposition == DispositionEnum.DEAD:
             return 0.0
         
-        # Calculate base score based on various factors
-        base_score = 50.0
+        # --- Calculate Base Score Factors --- 
+        base_score = 50.0 # Starting point
         
-        # Factor 1: Target unit's current HP percentage
-        # Prioritize low HP targets that can be finished off
-        if hasattr(target_unit, 'current_hp') and hasattr(target_unit, 'max_hp'):
-            # Handle Mock objects gracefully
-            try:
-                current_hp = int(target_unit.current_hp) if not isinstance(target_unit.current_hp, Mock) else 20
-                max_hp = int(target_unit.max_hp) if not isinstance(target_unit.max_hp, Mock) else 40
-                
-                if current_hp > 0 and max_hp > 0:
-                    hp_percentage = current_hp / max_hp
-                    if hp_percentage < 0.3:
-                        base_score += 30  # Significant bonus for targeting nearly defeated units
-                    elif hp_percentage < 0.5:
-                        base_score += 15  # Moderate bonus for targeting damaged units
-            except (TypeError, ValueError):
-                # If we can't convert to numbers or do the comparison, just skip this factor
-                pass
-        
-        # Factor 2: Distance to the target
-        # Closer targets are more desirable
-        if hasattr(unit_state, 'position') and hasattr(target_unit, 'position'):
-            try:
-                # Simple Manhattan distance calculation
-                unit_pos = unit_state.position
-                target_pos = target_unit.position
-                
-                # Handle Mock objects
-                if hasattr(unit_pos, '__class__') and unit_pos.__class__.__name__ == 'Mock':
-                    unit_pos = (3, 3)  # Default position for mocks
-                if hasattr(target_pos, '__class__') and target_pos.__class__.__name__ == 'Mock':
-                    target_pos = (5, 5)  # Default position for mocks
-                
-                distance_x = abs(unit_pos[0] - target_pos[0])
-                distance_y = abs(unit_pos[1] - target_pos[1])
-                distance = distance_x + distance_y
-                
-                # Apply distance penalty (closer targets get less penalty)
-            except (TypeError, ValueError, IndexError):
-                # If we can't calculate the distance, use a default value
-                distance = 5
-                
-            # Apply distance penalty
-            distance_penalty = min(30, distance * 2)  # Cap at 30
+        # Factor 1: Target HP (Kill Opportunity)
+        try:
+            current_hp = int(getattr(target_unit, 'current_hp', 1))
+            max_hp = int(getattr(target_unit, 'max_hp', 1))
+            if max_hp > 0:
+                hp_percentage = current_hp / max_hp
+                # Higher bonus for lower HP - non-linear scaling might be better
+                hp_bonus = (1.0 - hp_percentage) * 50 
+                base_score += hp_bonus
+        except (TypeError, ValueError):
+            pass # Ignore if HP attributes are missing/invalid
+
+        # Factor 2: Distance
+        try:
+            unit_pos = unit_state.position
+            target_pos = target_unit.position
+            distance = abs(unit_pos[0] - target_pos[0]) + abs(unit_pos[1] - target_pos[1])
+            # Less penalty for closer targets
+            distance_penalty = min(40, distance * 2.5)
             base_score -= distance_penalty
-        
-        # Factor 3: Target unit's value
-        # This would be more sophisticated in a real implementation
-        # For now, we'll just check if the target is a healer or has a special role
+        except (TypeError, ValueError, IndexError, AttributeError):
+            pass # Ignore if positions are missing/invalid
+
+        # Factor 3: Target Value (Threat Level)
+        target_value_bonus = 0
+        # Example: Prioritize healers or lords
         try:
-            if hasattr(target_unit, 'unit_class'):
-                unit_class = getattr(target_unit, 'unit_class', '')
-                # Handle Mock objects
-                if hasattr(unit_class, '__class__') and unit_class.__class__.__name__ == 'Mock':
-                    unit_class = ''
-                    
-                if unit_class in ['HEALER', 'CLERIC', 'PRIEST', 'BISHOP']:
-                    base_score += 20  # Bonus for targeting healers
-        except (TypeError, ValueError):
-            # If we can't check the unit class, skip this factor
+            unit_class = getattr(target_unit, 'unit_class', '').upper()
+            if unit_class in ['HEALER', 'CLERIC', 'PRIEST', 'BISHOP']:
+                target_value_bonus += 30
+        except:
             pass
-            
         try:
-            is_lord = getattr(target_unit, 'is_lord', False)
-            # Handle Mock objects
-            if hasattr(is_lord, '__class__') and is_lord.__class__.__name__ == 'Mock':
-                is_lord = False
-                
-            if is_lord:
-                base_score += 40  # Significant bonus for targeting lords
-        except (TypeError, ValueError):
-            # If we can't check if the unit is a lord, skip this factor
-            pass
-        
-        # Factor 4: AI persona weights for offensive actions
+            if getattr(target_unit, 'is_lord', False):
+                target_value_bonus += 50
+        except:
+             pass
+        # Consider target's potential damage output as part of threat?
+        # target_threat = self._estimate_unit_threat(target_unit) # Needs helper method
+        # target_value_bonus += target_threat * 0.5
+        base_score += target_value_bonus
+
+        # Factor 4: Combat Forecast (if systems available)
+        # Requires CombatSystem integration - Placeholder for now
+        predicted_damage = 0
+        predicted_counter_damage = 0
+        kill_potential_bonus = 0
+        risk_penalty = 0
+        # combat_system = game_state_manager.get_combat_system() 
+        # if combat_system:
+        #     forecast = combat_system.predict_combat(unit_state, target_unit)
+        #     predicted_damage = forecast.get('damage', 0)
+        #     predicted_counter_damage = forecast.get('counter_damage', 0)
+        #     if forecast.get('kills_target', False):
+        #         kill_potential_bonus = 40
+        #     # Penalize based on risk (e.g., % of own HP lost)
+        #     own_hp = getattr(unit_state, 'current_hp', 1)
+        #     if own_hp > 0:
+        #         risk_penalty = (predicted_counter_damage / own_hp) * 50 
+
+        base_score += kill_potential_bonus
+        base_score -= risk_penalty
+
+        # --- Apply Persona Weights --- 
         if persona:
-            # Apply persona-specific weights using the persona object
-            attack_weight = persona.get_strategic_weight('ThreatLevel')
-            base_score *= (0.5 + attack_weight)  # Scale from 0.5 to 1.5 based on weight
+            # Use weights from persona definitions
+            threat_weight = persona.get_strategic_weight('ThreatLevel', default=0.5)
+            kill_opp_weight = persona.get_strategic_weight('KillOpportunity', default=0.5)
+            # aggression_weight = persona.get_strategic_weight('Aggression', default=0.5) # Assuming 'ThreatLevel' covers this?
+            
+            # Apply weights to relevant factors (example scaling)
+            # More sophisticated weighting needed based on how factors contribute
+            weighted_score = 50.0 # Reset base or adjust?
+            weighted_score += (hp_bonus + kill_potential_bonus) * kill_opp_weight * 1.5 # Scale Kill Opp
+            weighted_score += target_value_bonus * threat_weight * 1.5 # Scale Threat
+            weighted_score -= distance_penalty # Keep distance penalty less affected by persona?
+            weighted_score -= risk_penalty * (2.0 - persona.get_strategic_weight('SelfPreservation', default=0.5)) # Higher self-preservation reduces risk tolerance
+
+            # Example: Simple multiplicative scaling based on overall aggression/threat focus
+            # base_score *= (0.5 + threat_weight) 
+            base_score = weighted_score # Use the weighted score
         
-        # Ensure the score is at least 1.0 for valid targets
+        # Ensure score is positive
         return max(1.0, base_score)
         
     def _score_heal_unit_goal(self, goal, unit_state, game_state_manager, persona=None) -> float:
@@ -319,152 +309,252 @@ class UtilityScorer:
         
         # Factor 4: AI persona weights for support actions
         if persona:
-            # Apply persona-specific weights using the persona object
-            heal_weight = persona.get_strategic_weight('AlliedSupport')
-            base_score *= (0.5 + heal_weight)  # Scale from 0.5 to 1.5 based on weight
-            
+            # Use weights from persona definitions
+            # Supportiveness isn't directly in strategic weights, use AlliedSupport?
+            support_weight = persona.get_strategic_weight('AlliedSupport', default=0.5)
+            self_preservation_weight = persona.get_strategic_weight('SelfPreservation', default=0.5)
+
+            # Increase score for supportive personas
+            base_score *= (0.5 + support_weight)
+            # Decrease score slightly if self-preservation is very high and target isn't critical?
+            # Example: if self_preservation_weight > 0.8 and target_value_bonus < 30:
+            #    base_score *= 0.8
+
         # Ensure the score is at least 1.0 for valid targets
         return max(1.0, base_score)
         
     def _score_move_to_safety_goal(self, goal, unit_state, game_state_manager, persona=None) -> float:
         """
         Score a MoveToSafetyGoal.
-        
-        This method evaluates the utility of moving to a safe position.
-        It considers factors such as:
-        - Current threat level to the unit
-        - Unit's current HP
-        - Available safe positions
-        - AI persona weights for defensive actions
-        
-        Args:
-            goal: The MoveToSafetyGoal to score
-            unit_state: The state of the AI unit
-            game_state_manager: The current game state manager
-            persona: The AI persona/profile that influences scoring
-            
-        Returns:
-            float: A numeric score representing the goal's utility
+        Considers current threat level and persona weights.
         """
-        # Calculate base score based on various factors
-        base_score = 30.0  # Base score for safety goals
-        
-        # Factor 1: Current threat level
-        threat_level = game_state_manager.get_threat_level(unit_state)
-        if threat_level > 0:
-            # Higher threat level increases the score
-            base_score += min(50, threat_level * 10)
-        
-        # Factor 2: Unit's current HP percentage
+        # Factor 1: Current Threat Level
+        # Higher threat means higher score for moving to safety
+        current_threat = self._estimate_unit_threat(unit_state, game_state_manager)
+        base_score = current_threat * 1.5 # Scale threat level into score
+
+        # Add a minimum score if any threat exists
+        if current_threat > 5: # Arbitrary threshold for 'some threat'
+            base_score = max(base_score, 20.0)
+
+        # Factor 2: Current HP
+        # Lower HP increases desire to move to safety
         try:
-            current_hp = int(unit_state.current_hp) if not isinstance(unit_state.current_hp, Mock) else 15
-            max_hp = int(unit_state.max_hp) if not isinstance(unit_state.max_hp, Mock) else 40
-            
-            if current_hp > 0 and max_hp > 0:
+            current_hp = int(getattr(unit_state, 'current_hp', 1))
+            max_hp = int(getattr(unit_state, 'max_hp', 1))
+            if max_hp > 0:
                 hp_percentage = current_hp / max_hp
-                
-                # Lower HP increases the score
-                if hp_percentage < 0.3:  # Critical (below 30% HP)
-                    base_score += 50
-                elif hp_percentage < 0.5:  # Serious (below 50% HP)
-                    base_score += 30
-                elif hp_percentage < 0.7:  # Moderate (below 70% HP)
-                    base_score += 10
+                hp_urgency_bonus = (1.0 - hp_percentage) * 40
+                base_score += hp_urgency_bonus
         except (TypeError, ValueError):
             pass
-        
-        # Factor 3: Available safe positions
-        safe_tiles = game_state_manager.find_safe_tiles_for_unit(unit_state)
-        if not safe_tiles:
-            # If no safe tiles are available, reduce the score
-            base_score *= 0.5
-        elif len(safe_tiles) < 3:
-            # Few safe tiles available, slightly reduce score
-            base_score *= 0.8
-        
-        # Factor 4: AI persona weights for defensive actions
+
+        # --- Apply Persona Weights ---
         if persona:
-            # Apply persona-specific weights using the persona object
-            safety_weight = persona.get_strategic_weight('SelfPreservation')
-            base_score *= (0.5 + safety_weight)  # Scale from 0.5 to 1.5 based on weight
-            
-        # Ensure the score is at least 1.0 for valid goals
+            self_preservation_weight = persona.get_strategic_weight('SelfPreservation', default=0.5)
+            # Directly scale score based on self-preservation
+            base_score *= (0.5 + self_preservation_weight) 
+
+        # Ensure score is positive
         return max(1.0, base_score)
+
+    def _estimate_unit_threat(self, unit_state, game_state_manager) -> float:
+        """
+        Placeholder: Estimate the threat level to the unit at its current position.
+        A real implementation would query game state for nearby enemies, their
+        capabilities, and potential damage.
         
+        Returns:
+            float: An estimated threat score (e.g., 0-100)
+        """
+        # TODO: Implement actual threat assessment
+        # Example factors: number of enemies in range, potential damage from enemies,
+        # enemy unit types, unit's own defensive stats.
+        
+        # Placeholder: return a moderate threat if unit HP is low, low otherwise
+        try:
+            current_hp = int(getattr(unit_state, 'current_hp', 1))
+            max_hp = int(getattr(unit_state, 'max_hp', 1))
+            if max_hp > 0 and (current_hp / max_hp) < 0.5:
+                return 60.0 # High threat if below 50% HP
+            else:
+                return 10.0 # Low threat otherwise
+        except:
+            return 10.0 # Default to low threat if HP check fails
+
     def _score_seize_tile_goal(self, goal, unit_state, game_state_manager, persona=None) -> float:
         """
         Score a SeizeTileGoal.
-        
-        This method evaluates the utility of seizing a specific tile.
-        It considers factors such as:
-        - Distance to the objective
-        - Strategic importance of the tile
-        - Threat level at the objective
-        - AI persona weights for objective-focused actions
-        
-        Args:
-            goal: The SeizeTileGoal to score
-            unit_state: The state of the AI unit
-            game_state_manager: The current game state manager
-            persona: The AI persona/profile that influences scoring
-            
-        Returns:
-            float: A numeric score representing the goal's utility
+        Considers distance, objective importance (placeholder), threat, and persona weights.
         """
-        # Extract target position from goal parameters
         target_position = goal.parameters.get("target_position")
         if not target_position:
             return 0.0
-        
-        # Check if position is valid and is an objective
-        if not game_state_manager.is_valid_position(target_position) or not game_state_manager.is_objective_tile(target_position):
-            return 0.0
-        
-        # Check if position is reachable
-        if not game_state_manager.pathfinding.can_potentially_reach(
-            unit_state, target_position
-        ):
-            return 0.0
-        
-        # Calculate base score based on various factors
-        base_score = 60.0  # Base score for objective goals (higher than attack/heal)
-        
-        # Factor 1: Distance to the objective
-        if hasattr(unit_state, 'position'):
-            try:
-                unit_pos = unit_state.position
-                
-                # Handle Mock objects
-                if hasattr(unit_pos, '__class__') and unit_pos.__class__.__name__ == 'Mock':
-                    unit_pos = (3, 3)
-                
-                distance_x = abs(unit_pos[0] - target_position[0])
-                distance_y = abs(unit_pos[1] - target_position[1])
-                distance = distance_x + distance_y
-                
-            except (TypeError, ValueError, IndexError):
-                distance = 10
-                
-            # Apply distance penalty
-            distance_penalty = min(40, distance * 3)  # Cap at 40, higher penalty for objectives
-            base_score -= distance_penalty
-        
-        # Factor 2: Strategic importance of the tile
-        tile_importance = game_state_manager.get_objective_importance(target_position)
-        base_score += tile_importance * 10  # Scale importance to score
-        
-        # Factor 3: Threat level at the objective
-        threat_level = game_state_manager.get_position_threat_level(target_position)
-        if threat_level > 0:
-            # Higher threat level decreases the score
-            threat_penalty = min(30, threat_level * 5)
-            base_score -= threat_penalty
-        
-        # Factor 4: AI persona weights for objective-focused actions
-        if persona:
-            # Apply persona-specific weights using the persona object
-            objective_weight = persona.get_strategic_weight('ObjectiveProgress')
-            base_score *= (0.5 + objective_weight)  # Scale from 0.5 to 1.5 based on weight
             
-        # Ensure the score is at least 1.0 for valid objectives
+        # Basic validation (is it a valid objective tile?)
+        # if not game_state_manager.is_valid_objective_tile(target_position):
+        #    return 0.0
+        
+        # --- Calculate Base Score Factors ---
+        base_score = 60.0 # Seizing objectives is generally important
+
+        # Factor 1: Distance
+        try:
+            unit_pos = unit_state.position
+            distance = abs(unit_pos[0] - target_position[0]) + abs(unit_pos[1] - target_position[1])
+            distance_penalty = min(50, distance * 2.0) # Significant penalty for distance
+            base_score -= distance_penalty
+        except (TypeError, ValueError, IndexError, AttributeError):
+            pass 
+
+        # Factor 2: Objective Importance (Placeholder)
+        # A real implementation might check chapter goals or tile properties
+        objective_importance_bonus = 0 
+        # if game_state_manager.is_primary_objective(target_position):
+        #    objective_importance_bonus = 30
+        base_score += objective_importance_bonus
+
+        # Factor 3: Threat/Difficulty at Target
+        # Estimate threat at the *target* location
+        threat_at_target = self._estimate_tile_threat(target_position, game_state_manager)
+        threat_penalty = min(40, threat_at_target * 0.5) # Penalize if target is dangerous
+        base_score -= threat_penalty
+
+        # --- Apply Persona Weights ---
+        if persona:
+            objective_focus_weight = persona.get_strategic_weight('ObjectiveProgress', default=0.5)
+            # Scale score based on objective focus
+            base_score *= (0.5 + objective_focus_weight)
+            # Consider self-preservation? Reduce score if objective is dangerous and unit is cautious?
+            # self_preservation_weight = persona.get_strategic_weight('SelfPreservation', default=0.5)
+            # if threat_at_target > 50 and self_preservation_weight > 0.7:
+            #     base_score *= 0.7
+
+        # Ensure score is positive
         return max(1.0, base_score)
+
+    def _estimate_tile_threat(self, position, game_state_manager) -> float:
+        """
+        Placeholder: Estimate the threat level at a specific tile.
+        Similar to _estimate_unit_threat, but for a location.
+        """
+        # TODO: Implement actual threat assessment for a tile
+        # Check enemies that can attack units AT this position.
+        return 5.0 # Placeholder: Assume low threat for now
+
+    def _score_secure_position_goal(self, goal, unit_state, game_state_manager, persona=None) -> float:
+        """
+        Score a SecurePositionGoal.
+        Considers current threat, unit HP, potential defensive positions, and persona.
+        """
+        # Factor 1: Current Threat Level
+        # Higher motivation to secure position if currently threatened
+        current_threat = self._estimate_unit_threat(unit_state, game_state_manager)
+        base_score = 10.0 + current_threat * 1.0 # Base score increases with threat
+
+        # Factor 2: Current HP
+        # Lower HP increases desire for a safe position
+        try:
+            current_hp = int(getattr(unit_state, 'current_hp', 1))
+            max_hp = int(getattr(unit_state, 'max_hp', 1))
+            if max_hp > 0:
+                hp_percentage = current_hp / max_hp
+                hp_urgency_bonus = (1.0 - hp_percentage) * 30
+                base_score += hp_urgency_bonus
+        except (TypeError, ValueError):
+            pass
+
+        # Factor 3: Quality of Potential Defensive Positions
+        # Does the unit have access to good terrain/support?
+        # This requires simulating the TacticalExecutor logic somewhat, or accessing cached info.
+        # Placeholder: Add a bonus if good terrain is nearby/reachable
+        # Requires MovementSystem and Map access
+        terrain_bonus = 0
+        try:
+            movement_system = game_state_manager.get_movement_system()
+            game_map = game_state_manager.get_map()
+            if movement_system and game_map:
+                 unit_id = getattr(unit_state, 'id', getattr(unit_state, 'unit_id', 'unknown'))
+                 reachable_tiles_data = movement_system.calculate_movement_range(unit_id)
+                 if reachable_tiles_data:
+                     best_terrain_score = -1
+                     for tile in reachable_tiles_data.keys():
+                         tile_info = game_map.get_tile_info(tile[0], tile[1])
+                         if tile_info:
+                             # Simple score: prioritize def
+                             terrain_score = tile_info.get('def', 0)
+                             if terrain_score > best_terrain_score:
+                                 best_terrain_score = terrain_score
+                     if best_terrain_score > 1: # e.g., Fort or Forest
+                        terrain_bonus = best_terrain_score * 10 # Bonus based on best available terrain def
+        except AttributeError:
+             pass # Ignore if systems or methods are missing
+        base_score += terrain_bonus
+
+        # --- Apply Persona Weights ---
+        if persona:
+            # Use TerrainAdvantage, AlliedSupport, SelfPreservation?
+            # Defensiveness isn't a strategic weight, map to others.
+            terrain_weight = persona.get_strategic_weight('TerrainAdvantage', default=0.5)
+            self_preservation_weight = persona.get_strategic_weight('SelfPreservation', default=0.5)
+            allied_support_weight = persona.get_strategic_weight('AlliedSupport', default=0.5)
+            
+            # Weighted average or specific factor scaling?
+            # Example: Scale based on average defensive weights
+            avg_def_weight = (terrain_weight + self_preservation_weight + allied_support_weight) / 3.0
+            base_score *= (0.5 + avg_def_weight)
+            # Or scale specific factors: e.g., terrain_bonus *= terrain_weight
+
+        return max(1.0, base_score)
+
+    def _score_advance_to_objective_goal(self, goal, unit_state, game_state_manager, persona=None) -> float:
+        """
+        Score an AdvanceToObjectiveGoal.
+        Considers distance, objective importance, unit suitability, and persona weights.
+        """
+        target_pos = goal.parameters.get('target_position')
+        if not target_pos:
+            return 0.0 # Cannot score without a target
+
+        # --- Calculate Base Score Factors ---
+        base_score = 50.0 # Base importance for advancing
+
+        # Factor 1: Distance
+        # Significant penalty for very distant objectives
+        distance_penalty = 0
+        try:
+            unit_pos = unit_state.position
+            distance = abs(unit_pos[0] - target_pos[0]) + abs(unit_pos[1] - target_pos[1])
+            # Less penalty for closer targets, harsher for far ones
+            if distance > 0:
+                distance_penalty = min(60, (distance ** 1.2) * 1.5) # Non-linear scaling
+            base_score -= distance_penalty
+        except (TypeError, ValueError, IndexError, AttributeError):
+            pass 
+
+        # Factor 2: Objective Importance / Priority (Placeholder)
+        # Get importance from game state if available
+        objective_importance_bonus = 0
+        # objective_priority = game_state_manager.get_objective_priority(target_pos)
+        # objective_importance_bonus = objective_priority * 10
+        base_score += objective_importance_bonus
+
+        # Factor 3: Unit Suitability (Placeholder)
+        # Is this unit appropriate for the objective? (e.g., don't send healer to front)
+        suitability_modifier = 1.0
+        # unit_role = getattr(unit_state, 'role', 'generic')
+        # objective_type = game_state_manager.get_objective_type(target_pos)
+        # if objective_type == 'combat' and unit_role == 'support':
+        #    suitability_modifier = 0.5 # Penalize sending support to combat
+        # elif objective_type == 'capture' and not getattr(unit_state, 'can_capture', False):
+        #    suitability_modifier = 0.1 # Heavily penalize if unit cannot perform action
+        base_score *= suitability_modifier
+
+        # --- Apply Persona Weights ---
+        if persona:
+             objective_weight = persona.get_strategic_weight('ObjectiveProgress', default=0.5)
+             # Directly scale the score based on objective focus
+             base_score *= (0.7 + objective_weight) # Scale from 0.7 to 1.7
+
+        # Ensure score is positive, potentially higher minimum for objectives?
+        return max(5.0, base_score) # Slightly higher minimum score for objective goals

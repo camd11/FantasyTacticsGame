@@ -17,9 +17,15 @@ the Tactical Phase of AI decision-making.
 import logging
 from typing import List, Optional, Any, Dict, Type, Union
 from src.gameplay_systems.ai.utility_scorer import UtilityScorer
-from src.gameplay_systems.ai.goals import Goal, AttackUnitGoal
+# from src.gameplay_systems.ai.goals import Goal, AttackUnitGoal # Old
+# Import all relevant goal types
+from src.gameplay_systems.ai.goals import (
+    Goal, AttackUnitGoal, HealUnitGoal, MoveToSafetyGoal, SeizeTileGoal,
+    SecurePositionGoal, AdvanceToObjectiveGoal
+)
 from src.gameplay_systems.ai.ai_persona import AIPersona
 from src.core_engine.game_state import FactionEnum
+from src.core_engine.game_state import DispositionEnum
 
 
 class StrategicEvaluator:
@@ -42,7 +48,12 @@ class StrategicEvaluator:
             goal_library: A list of available goal types (classes, not instances)
         """
         self.utility_scorer = utility_scorer
-        self.goal_library = goal_library or [AttackUnitGoal]  # Default to AttackUnitGoal if none provided
+        # Define the default library including all standard goal types
+        default_goal_library = [
+            AttackUnitGoal, HealUnitGoal, MoveToSafetyGoal, SeizeTileGoal,
+            SecurePositionGoal, AdvanceToObjectiveGoal
+        ]
+        self.goal_library = goal_library or default_goal_library
         self.logger = logging.getLogger(__name__)
     
     def select_best_goal(self, unit_state, game_state_manager, persona=None) -> Optional[Goal]:
@@ -124,33 +135,125 @@ class StrategicEvaluator:
     
     def generate_valid_goal_instances(self, unit, game_state) -> List[Goal]:
         """
-        Generate valid goal instances based on the current game state.
-        
-        This method creates specific goal instances for each potential target
-        or objective in the game state, and filters out invalid ones.
-        
-        Args:
-            unit: The unit for which to generate goals
-            game_state: The current game state
-            
-        Returns:
-            List[Goal]: A list of valid goal instances
+        Generate valid goal instances for all goal types in the library based on the current game state.
         """
         valid_instances = []
+        unit_id = getattr(unit, 'id', getattr(unit, 'unit_id', 'unknown'))
+        self.logger.debug(f"Generating valid goals for unit {unit_id} from library: {[g.__name__ for g in self.goal_library]}")
+
+        # --- Get Potential Targets/Context from Game State --- 
+        # These would ideally be optimized lookups
+        all_units = game_state.get_all_units()
+        enemy_units = [u for u in all_units if u.faction != unit.faction and getattr(u, 'disposition', None) != DispositionEnum.DEAD]
+        allied_units = [u for u in all_units if u.faction == unit.faction and getattr(u, 'disposition', None) != DispositionEnum.DEAD and u.id != unit_id]
+        # Objective tiles/units would be retrieved from game_state, e.g.:
+        # objective_tiles = getattr(game_state, 'get_objective_tiles', lambda: [])() 
+        # primary_objectives = getattr(game_state, 'get_primary_objectives', lambda: [])() # Could return positions or unit IDs
         
+        # Get objectives from the current game state
+        all_objectives = []
+        if hasattr(game_state, 'current_game_state') and hasattr(game_state.current_game_state, 'objectives'):
+            all_objectives = game_state.current_game_state.objectives
+        else:
+            self.logger.warning("Could not retrieve objectives from game_state.current_game_state.objectives")
+
+        # Extract relevant objective positions based on type and faction
+        seize_objective_tiles = [tuple(obj['position']) for obj in all_objectives if obj.get('type') == 'SEIZE' and 'position' in obj]
+        # AdvanceToObjective might target SEIZE points or other designated locations/units
+        advance_targets = [] 
+        for obj in all_objectives:
+             # Consider objectives relevant to the unit's faction or global objectives
+             obj_faction = obj.get('faction')
+             if obj_faction is None or obj_faction == unit.faction.name: # Match faction name string
+                if obj.get('type') == 'SEIZE' and 'position' in obj:
+                    advance_targets.append(tuple(obj['position']))
+                # Add other potential objective types here (e.g., DEFEAT_BOSS, REACH_AREA)
+
+        self.logger.debug(f"Found {len(enemy_units)} enemies, {len(allied_units)} allies.")
+        self.logger.debug(f"Seize objective tiles: {seize_objective_tiles}")
+        self.logger.debug(f"Advance targets: {advance_targets}")
+
+        # --- Generate Instances for Each Goal Type --- 
         for GoalType in self.goal_library:
-            # Generate instances based on context (e.g., AttackUnit for each enemy)
+            generated_count = 0
+            validated_count = 0
+            
+            # 1. AttackUnitGoal: Target each valid enemy
             if GoalType == AttackUnitGoal:
-                # Get all factions
-                all_factions = list(FactionEnum)
-                # Filter out the unit's own faction to get enemy factions
-                enemy_factions = [faction for faction in all_factions if faction != unit.faction]
-                
-                # Get units from enemy factions
-                for enemy_faction in enemy_factions:
-                    for enemy in game_state.get_units_by_faction(enemy_faction):
-                        goal_instance = AttackUnitGoal(target_unit_id=enemy.id)
-                        if goal_instance.is_valid(unit, game_state):
-                            valid_instances.append(goal_instance)
+                for enemy in enemy_units:
+                    goal_instance = AttackUnitGoal(target_unit_id=enemy.id, ai_unit=unit)
+                    generated_count += 1
+                    if goal_instance.is_valid(unit, game_state):
+                        valid_instances.append(goal_instance)
+                        validated_count += 1
+            
+            # 2. HealUnitGoal: Target each injured ally (if unit can heal)
+            elif GoalType == HealUnitGoal:
+                # Check if unit can heal (basic check, refine in Goal.is_valid)
+                if hasattr(unit, 'can_heal') and unit.can_heal(): # Or check inventory/class
+                    for ally in allied_units:
+                        # Check if ally is injured (basic check, refine in Goal.is_valid)
+                        if hasattr(ally, 'current_hp') and hasattr(ally, 'max_hp') and ally.current_hp < ally.max_hp:
+                             goal_instance = HealUnitGoal(target_unit_id=ally.id, ai_unit=unit)
+                             generated_count += 1
+                             if goal_instance.is_valid(unit, game_state):
+                                 valid_instances.append(goal_instance)
+                                 validated_count += 1
+            
+            # 3. MoveToSafetyGoal: Always consider if threatened (validation checks threat)
+            elif GoalType == MoveToSafetyGoal:
+                 goal_instance = MoveToSafetyGoal(ai_unit=unit)
+                 generated_count += 1
+                 if goal_instance.is_valid(unit, game_state):
+                     valid_instances.append(goal_instance)
+                     validated_count += 1
+            
+            # 4. SeizeTileGoal: Target each objective tile
+            elif GoalType == SeizeTileGoal:
+                 # Check if unit can seize (basic check, refine in Goal.is_valid)
+                 if hasattr(unit, 'can_seize') and unit.can_seize(): # Or check class
+                     for tile_pos in seize_objective_tiles: # Use extracted seize tiles
+                         goal_instance = SeizeTileGoal(target_position=tile_pos, ai_unit=unit)
+                         generated_count += 1
+                         if goal_instance.is_valid(unit, game_state):
+                             valid_instances.append(goal_instance)
+                             validated_count += 1
+            
+            # 5. SecurePositionGoal: Always consider (validation checks necessity)
+            elif GoalType == SecurePositionGoal:
+                 goal_instance = SecurePositionGoal(ai_unit=unit)
+                 generated_count += 1
+                 if goal_instance.is_valid(unit, game_state):
+                     valid_instances.append(goal_instance)
+                     validated_count += 1
+            
+            # 6. AdvanceToObjectiveGoal: Target primary objectives (position or unit)
+            elif GoalType == AdvanceToObjectiveGoal:
+                 for target_pos in advance_targets: # Use extracted advance targets
+                     # target_pos = None # No longer needed
+                     # self.logger.debug(f"Processing objective: {objective}")
+                     # if isinstance(objective, tuple) and len(objective) == 2: # Assume it's a position
+                     #     target_pos = objective
+                     # elif hasattr(objective, 'position'): # Assume it's a unit/object with position
+                     #     target_pos = objective.position
+                     # Add other objective types? (e.g., defeat specific unit ID)
+                      
+                     if target_pos: # Target position is already derived
+                         self.logger.debug(f"  Found target_pos: {target_pos}")
+                         # Create goal with parameters set (unlike placeholder)
+                         goal_instance = AdvanceToObjectiveGoal(ai_unit=unit)
+                         goal_instance.parameters = {"target_position": target_pos} # Set target
+                         generated_count += 1
+                         if goal_instance.is_valid(unit, game_state):
+                             self.logger.debug(f"    Goal instance VALID and added with parameters: {goal_instance.parameters}")
+                             valid_instances.append(goal_instance)
+                             validated_count += 1
+                         else:
+                             self.logger.debug(f"    Goal instance INVALID.")
+                     else:
+                         self.logger.debug(f"  No target_pos found for objective: {target_pos}")
+            
+            self.logger.debug(f"Goal Type {GoalType.__name__}: Generated {generated_count}, Validated {validated_count}")
         
+        self.logger.debug(f"Total valid goal instances generated for unit {unit_id}: {len(valid_instances)}")
         return valid_instances
