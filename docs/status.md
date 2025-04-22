@@ -11,4 +11,6 @@
 
 - **Fixed AI vs AI simulation**: Resolved issues with pathfinding access in AI components. Added `get_movement_system()` method to `GameStateManager` class, modified AI components to use this method instead of directly accessing `pathfinding`. Updated the initialization sequence in `EngineCore` to properly link the movement system to the game state manager. The AI vs AI simulation now runs successfully with units able to move across the map. (2025-04-22)
 
+- Added missing `get_width()`, `get_height()`, and `get_map_dimensions()` methods to the MapSystem class in `src/gameplay_systems/map_system.py`. This resolved an AttributeError where the code was trying to access `map_width` and `map_height` attributes directly during AI simulation. The fix ensures proper access to map dimensions through accessor methods with appropriate error handling.
+
 ## In Progress

@@ -1117,3 +1117,36 @@ class MapSystem:
             Manhattan distance
         """
         return self.calculate_manhattan_distance(pos1, pos2)
+
+    def get_width(self) -> int:
+        """
+        Get the width of the current map.
+        
+        Returns:
+            Width of the map
+        """
+        if not self.gameStateManager or not self.gameStateManager.current_game_state or not self.gameStateManager.current_game_state.map_state:
+            return 0
+        
+        return self.gameStateManager.current_game_state.map_state.dimensions[0]
+    
+    def get_height(self) -> int:
+        """
+        Get the height of the current map.
+        
+        Returns:
+            Height of the map
+        """
+        if not self.gameStateManager or not self.gameStateManager.current_game_state or not self.gameStateManager.current_game_state.map_state:
+            return 0
+        
+        return self.gameStateManager.current_game_state.map_state.dimensions[1]
+    
+    def get_map_dimensions(self) -> Tuple[int, int]:
+        """
+        Get the dimensions of the current map (width, height).
+        
+        Returns:
+            Tuple of (width, height)
+        """
+        return (self.get_width(), self.get_height())
