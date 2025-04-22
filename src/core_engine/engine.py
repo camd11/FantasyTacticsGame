@@ -206,6 +206,10 @@ class EngineCore:
         # Assuming deploy_units needs DataProvider to fetch unit base stats etc.
         self.game_state_manager.deploy_units(unit_placements, self.data_provider)
         
+        # Link systems to the game state manager
+        self.game_state_manager.map_system = self.map_system
+        self.game_state_manager.movement_system = self.movement_system
+        
         # Initialize event handler here, after chapter_id and scenario_name are defined
         if self.event_handler:
             # Correct method name is load_chapter_events

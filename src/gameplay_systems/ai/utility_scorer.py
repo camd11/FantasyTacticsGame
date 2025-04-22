@@ -115,12 +115,17 @@ class UtilityScorer:
         if not target_unit:
             return 0.0
 
-        # Add reachability check
-        if not game_state_manager.pathfinding.can_potentially_reach(
-            unit_state, target_unit.position
-        ):
-            logging.debug(f"Goal {goal.goal_type} scoring: Target {target_unit_id} unreachable.")
-            return 0.0 # Cannot score attack if target is unreachable
+        # Add reachability check using movement_system instead of direct pathfinding
+        movement_system = game_state_manager.get_movement_system()
+        if not movement_system or not hasattr(movement_system, 'can_potentially_reach'):
+            logging.warning(f"Movement system or can_potentially_reach method not available")
+            # Continue without reachability check
+        else:
+            if not movement_system.can_potentially_reach(
+                unit_state, target_unit.position
+            ):
+                logging.debug(f"Goal {goal.goal_type} scoring: Target {target_unit_id} unreachable.")
+                return 0.0 # Cannot score attack if target is unreachable
 
         # Basic validation (already done in Goal.is_valid, but good for safety)
         if hasattr(target_unit, 'is_defeated') and target_unit.is_defeated():
@@ -247,11 +252,13 @@ class UtilityScorer:
         if not target_unit:
             return 0.0
         
-        # Check if target is reachable
-        if not game_state_manager.pathfinding.can_potentially_reach(
-            unit_state, target_unit.position
-        ):
-            return 0.0
+        # Check if target is reachable using movement_system instead of direct pathfinding
+        movement_system = game_state_manager.get_movement_system()
+        if movement_system and hasattr(movement_system, 'can_potentially_reach'):
+            if not movement_system.can_potentially_reach(
+                unit_state, target_unit.position
+            ):
+                return 0.0
         
         # Calculate base score based on various factors
         base_score = 40.0  # Base score for healing goals

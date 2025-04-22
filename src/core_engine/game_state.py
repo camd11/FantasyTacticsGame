@@ -269,6 +269,7 @@ class GameStateManager:
         self.data_provider = data_provider
         self.map_system = None  # Initialize MapSystem reference
         self.unit_system = None # Initialize UnitSystem reference
+        self.movement_system = None  # Initialize MovementSystem reference
         self.current_game_state = GameState()
         self.event_handler = None
         self.ai_vs_ai = False  # Flag for AI vs AI mode
@@ -1098,3 +1099,12 @@ class GameStateManager:
                         defensive_tiles.append(pos)
         
         return defensive_tiles
+
+    def get_movement_system(self):
+        """
+        Get the movement system.
+        
+        Returns:
+            The movement system or None if not set.
+        """
+        return self.movement_system

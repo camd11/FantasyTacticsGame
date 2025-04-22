@@ -578,25 +578,17 @@ class TacticalExecutor:
     
     def _handle_seize_tile_goal(self, goal, ai_unit_state, game_state_manager) -> Optional[AIAction]:
         """
-        Handle a SeizeTileGoal by determining the appropriate action to seize a tile.
-        Validates move reachability before returning MOVE or MOVE_AND_SEIZE actions.
+        Handle SeizeTileGoal: Find path to the target tile and seize it.
+        If not currently at the target, move there first.
         """
-        # Simplified logging for seize tile goal
-        target_position = goal.parameters["target_position"]
-        
-        if not hasattr(game_state_manager, 'is_valid_position') or not game_state_manager.is_valid_position(target_position):
-            self.logger.warning(f"_handle_seize_tile_goal: Invalid target position {target_position}")
-            self.logger.debug(f"EXITING: _handle_seize_tile_goal for unit {ai_unit_state.id} - returning None (invalid position)")
+        # Get the target position from goal parameters
+        target_position = goal.parameters.get("target_position")
+        if not target_position:
+            self.logger.error("SeizeTileGoal missing target_position parameter.")
             return None
-        
-        if not hasattr(game_state_manager, 'is_objective_tile') or not game_state_manager.is_objective_tile(target_position):
-            self.logger.warning(f"_handle_seize_tile_goal: Position {target_position} is not an objective tile")
-            self.logger.debug(f"EXITING: _handle_seize_tile_goal for unit {ai_unit_state.id} - returning None (not objective tile)")
-            return None
-        
+            
+        # Check if unit is already at target position
         ai_pos = ai_unit_state.position
-        self.logger.info(f"Unit position: {ai_pos}, Target position: {target_position}")
-        
         if ai_pos == target_position:
             self.logger.info(f"Unit {ai_unit_state.id} is already at target position {target_position}. Seizing.")
             self.logger.debug("Returning SEIZE action.")
@@ -605,17 +597,24 @@ class TacticalExecutor:
         self.logger.debug(f"_handle_seize_tile_goal: Unit {ai_unit_state.id} not at target position {target_position}. Attempting pathfinding.")
         
         move_path = None
-        if hasattr(game_state_manager.pathfinding, 'find_path_to_position'):
-             if hasattr(game_state_manager.pathfinding, 'find_path_to_approach_target'):
-                 self.logger.info(f"Finding path to approach target position {target_position}")
-                 move_path = game_state_manager.pathfinding.find_path_to_approach_target(ai_unit_state, target_position)
-             else:
-                 self.logger.info(f"Finding direct path to target position {target_position}")
-                 move_path = game_state_manager.pathfinding.find_path_to_position(ai_unit_state, target_position)
+        # Get movement system instead of using direct pathfinding
+        movement_system = game_state_manager.get_movement_system()
+        if not movement_system:
+            self.logger.error("Movement system not available.")
+            self.logger.debug(f"EXITING: _handle_seize_tile_goal for unit {ai_unit_state.id} - returning None (movement system missing)")
+            return None
+            
+        # Try to get pathfinding methods from movement system
+        if hasattr(movement_system, 'find_path_to_approach_target'):
+            self.logger.info(f"Finding path to approach target position {target_position}")
+            move_path = movement_system.find_path_to_approach_target(ai_unit_state, target_position)
+        elif hasattr(movement_system, 'find_path_to_position'):
+            self.logger.info(f"Finding direct path to target position {target_position}")
+            move_path = movement_system.find_path_to_position(ai_unit_state, target_position)
         else:
-             self.logger.error("Pathfinding system or required methods not found on game_state_manager.")
-             self.logger.debug(f"EXITING: _handle_seize_tile_goal for unit {ai_unit_state.id} - returning None (pathfinding missing)")
-             return None
+            self.logger.error("Required pathfinding methods not found on movement system.")
+            self.logger.debug(f"EXITING: _handle_seize_tile_goal for unit {ai_unit_state.id} - returning None (pathfinding missing)")
+            return None
 
         movement_range = getattr(ai_unit_state, 'movement_range', 5)
         self.logger.info(f"Unit movement range: {movement_range}")
@@ -626,8 +625,8 @@ class TacticalExecutor:
             path_cost = len(move_path) - 1 # Cost is number of steps
 
             # --- Validate Reachability for the *entire* path first ---
-            reachable_data = game_state_manager.pathfinding.find_reachable(ai_pos, movement_range, ai_unit_state.id)
-            reachable_tiles = set(reachable_data.keys())
+            reachable_data = movement_system.calculate_movement_range(ai_unit_state.id)
+            reachable_tiles = set(reachable_data.keys()) if isinstance(reachable_data, dict) else set()
 
             if destination == target_position and destination in reachable_tiles and path_cost <= movement_range:
                 # Can reach the target tile exactly within movement range
@@ -640,7 +639,11 @@ class TacticalExecutor:
                 # Find the furthest reachable tile on the path
                 # limited_path = self._find_furthest_reachable_tile_on_path(ai_unit_state.id, move_path)
                 # Use the path towards target logic directly
-                limited_path = game_state_manager.pathfinding.find_path_towards_target(ai_unit_state, target_position, movement_range)
+                if hasattr(movement_system, 'find_path_towards_target'):
+                    limited_path = movement_system.find_path_towards_target(ai_unit_state, target_position, movement_range)
+                else:
+                    # Fallback to our own implementation if the method doesn't exist
+                    limited_path = self._find_furthest_reachable_tile_on_path(ai_unit_state.id, move_path)
                 
                 if limited_path and len(limited_path) > 1:  # Only starting position is reachable
                     limited_destination = limited_path[-1]
@@ -766,18 +769,16 @@ class TacticalExecutor:
             self.logger.debug(f"EXITING: _handle_secure_position_goal for unit {unit_id} - returning WAIT")
             return AIAction(action_type="WAIT", unit_id=unit_id, target_data={})
         else:
-            # Find a path to the best tile
-            pathfinder = game_state_manager.get_pathfinding()
-            if not pathfinder:
-                self.logger.error(f"SecurePositionGoal: Pathfinder not available for unit {unit_id}.")
-                self.logger.debug(f"EXITING: _handle_secure_position_goal for unit {unit_id} - returning WAIT (pathfinder unavailable)")
+            # Find a path to the best tile using the movement system
+            # No need to get a separate pathfinder, use the movement system
+            if not hasattr(self.movement_system, 'find_path'):
+                self.logger.error(f"SecurePositionGoal: Movement system doesn't have find_path method for unit {unit_id}.")
+                self.logger.debug(f"EXITING: _handle_secure_position_goal for unit {unit_id} - returning WAIT (pathfinding unavailable)")
                 # Fallback to WAIT if pathfinding is unavailable
                 return AIAction(action_type="WAIT", unit_id=unit_id, target_data={}) 
 
-            # Pathfinding needs the map object, adapt based on Pathfinding interface
-            # move_path = pathfinder.find_path(unit_id, current_pos, best_tile, game_map_state)
-            # Assuming pathfinder uses game_state_manager which has access to map
-            move_path = pathfinder.find_path(unit_id, current_pos, best_tile)
+            # Use the movement system's pathfinding directly
+            move_path = self.movement_system.find_path(unit_id, current_pos, best_tile)
 
             if move_path and len(move_path) > 1: # Path must have at least start and end
                 self.logger.info(f"SecurePositionGoal: Unit {unit_id} moving to secure position {best_tile} via path of length {len(move_path)}.")

@@ -13,6 +13,7 @@ it generates potential actions that are evaluated during the Tactical Phase.
 import abc
 from typing import Dict, List, Any, Optional
 from src.core_engine.game_state import DispositionEnum
+import logging
 
 
 class Goal(abc.ABC):
@@ -357,8 +358,13 @@ class MoveToSafetyGoal(Goal):
         # Find safe tiles that the unit can move to
         safe_tiles = game_state_manager.find_safe_tiles_for_unit(unit)
         
+        # Get movement system instead of direct pathfinding
+        movement_system = game_state_manager.get_movement_system()
+        if not movement_system or not hasattr(movement_system, 'is_reachable'):
+            return actions  # Return empty list if movement system is not available
+        
         for tile in safe_tiles:
-            if game_state_manager.pathfinding.is_reachable(unit, tile):
+            if movement_system.is_reachable(unit, tile):
                 # Create Move+Wait action instances
                 # The actual action class would depend on the game's implementation
                 action = {"type": "MoveWait", "target_position": tile}
@@ -426,10 +432,13 @@ class SeizeTileGoal(Goal):
         if not game_state_manager.is_objective_tile(target_position):
             return False
             
+        # Get movement system instead of direct pathfinding
+        movement_system = game_state_manager.get_movement_system()
+        if not movement_system or not hasattr(movement_system, 'can_potentially_reach'):
+            return False  # Cannot determine if reachable, so consider goal invalid
+            
         # Check if position is potentially reachable
-        return game_state_manager.pathfinding.can_potentially_reach(
-            unit, target_position
-        )
+        return movement_system.can_potentially_reach(unit, target_position)
     
     def generate_potential_actions(self, unit, game_state_manager) -> List[Any]:
         """
@@ -513,9 +522,14 @@ class SecurePositionGoal(Goal):
         if not defensive_tiles:
             return False
             
+        # Get movement system instead of direct pathfinding
+        movement_system = game_state_manager.get_movement_system()
+        if not movement_system or not hasattr(movement_system, 'can_potentially_reach'):
+            return False  # Cannot determine if reachable, so consider goal invalid
+            
         # Check if at least one defensive tile is potentially reachable
         for tile in defensive_tiles:
-            if game_state_manager.pathfinding.can_potentially_reach(unit, tile):
+            if movement_system.can_potentially_reach(unit, tile):
                 return True
                 
         return False
@@ -536,8 +550,13 @@ class SecurePositionGoal(Goal):
         # Find defensive tiles that the unit can move to
         defensive_tiles = game_state_manager.find_defensive_tiles()
         
+        # Get movement system instead of direct pathfinding
+        movement_system = game_state_manager.get_movement_system()
+        if not movement_system or not hasattr(movement_system, 'is_reachable'):
+            return actions  # Return empty list if movement system is not available
+        
         for tile in defensive_tiles:
-            if game_state_manager.pathfinding.is_reachable(unit, tile):
+            if movement_system.is_reachable(unit, tile):
                 # Create Move+Wait action instances
                 # The actual action class would depend on the game's implementation
                 action = {"type": "MoveWait", "target_position": tile}
@@ -600,9 +619,14 @@ class AdvanceToObjectiveGoal(Goal):
         if not objectives:
             return False
             
+        # Get movement system instead of direct pathfinding
+        movement_system = game_state_manager.get_movement_system()
+        if not movement_system or not hasattr(movement_system, 'can_potentially_reach'):
+            return False  # Cannot determine if reachable, so consider goal invalid
+            
         # Check if at least one objective is potentially reachable
         for objective in objectives:
-            if game_state_manager.pathfinding.can_potentially_reach(unit, objective.position):
+            if movement_system.can_potentially_reach(unit, objective.position):
                 return True
                 
         return False
@@ -648,3 +672,68 @@ class AdvanceToObjectiveGoal(Goal):
             List[Any]: A list of scoring considerations for advancing
         """
         return persona.get_scorers_for_goal(self.goal_type)
+
+    def is_reachable(self, unit, game_state_manager):
+        """Check if the unit can reach this objective."""
+        if not hasattr(unit, 'position') or not hasattr(self, 'position'):
+            return False
+        
+        # Get the movement system instead of direct pathfinding
+        movement_system = game_state_manager.get_movement_system()
+        if not movement_system or not hasattr(movement_system, 'can_potentially_reach'):
+            logging.warning("Movement system or can_potentially_reach method not available")
+            return True  # Assume reachable if we can't check
+        
+        return movement_system.can_potentially_reach(unit, self.position)
+
+    def _find_nearest_objective(self, unit, game_state_manager):
+        """
+        Find the nearest objective (tile) that should be seized.
+        
+        Args:
+            unit: The unit for which to find the nearest objective.
+            game_state_manager: The game state manager.
+            
+        Returns:
+            Objective: The nearest objective, or None if no objective is found.
+        """
+        # Placeholder for the actual implementation
+        # This might involve querying the game state for objective tiles
+        
+        # Example implementation (needs to be adapted to the actual game state)
+        if not hasattr(game_state_manager, 'current_game_state') or not game_state_manager.current_game_state:
+            return None
+        
+        if not hasattr(game_state_manager.current_game_state, 'objectives') or not game_state_manager.current_game_state.objectives:
+            return None
+        
+        # Get objectives from the game state
+        objectives = game_state_manager.current_game_state.objectives
+        if not objectives:
+            return None
+        
+        # Get movement system
+        movement_system = game_state_manager.get_movement_system()
+        if not movement_system:
+            return None
+        
+        # Find the nearest objective
+        nearest_objective = None
+        min_distance = float('inf')
+        
+        for objective in objectives:
+            # Skip if the objective position is not defined
+            if not hasattr(objective, 'position'):
+                continue
+            
+            # Consider only objectives that are potentially reachable
+            if movement_system.can_potentially_reach(unit, objective.position):
+                # Calculate the distance to the objective
+                distance = self._calculate_distance(unit.position, objective.position)
+                
+                # Update nearest objective if this one is closer
+                if distance < min_distance:
+                    min_distance = distance
+                    nearest_objective = objective
+        
+        return nearest_objective
