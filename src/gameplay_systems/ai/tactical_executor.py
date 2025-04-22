@@ -844,6 +844,7 @@ class TacticalExecutor:
         # Use a method designed for approaching a target coordinate
         # Assuming find_path can handle coordinate targets and uses game_state_manager internally for map
         # approach_path = pathfinder.find_path(unit_id, current_pos, target_position, game_map_state)
+        movement_points = ai_unit_state.current_stats.move
         approach_path = pathfinder.find_path_towards_target(ai_unit_state, target_position, movement_points)
         # Alternative: pathfinder.find_path_to_approach_target(ai_unit_state, target_position)
         # Choose the one that fits the Pathfinding interface better

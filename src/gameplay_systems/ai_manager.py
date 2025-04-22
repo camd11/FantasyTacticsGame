@@ -363,10 +363,14 @@ class AIManager:
         
         # Default selection logic if no archetype handler is available
         # Filter out invalid actions (e.g., path not found for move-actions)
-        valid_actions = [a for a in possible_actions if a['type'] == 'WAIT' or
-                          a['is_current_pos'] or a['path'] is not None]
+        # Use .get() for robustness against missing keys
+        # Check for either 'path' or 'move_path' as key might vary
+        valid_actions = [a for a in possible_actions if a.get('type') == 'WAIT' or
+                          a.get('is_current_pos', False) or 
+                          (a.get('path') is not None or a.get('move_path') is not None)]
         
         if not valid_actions:
+            print("DEBUG: select_best_action - No valid actions after filtering")
             return None
             
         # Sort actions by score (descending)
@@ -377,11 +381,14 @@ class AIManager:
         target_data = best_action.get('target_info', {}).copy()
         
         # Add move path to target data if needed
-        if best_action.get('path'):
-            target_data['path'] = best_action['path']
-            print(f"DEBUG: select_best_action - Selected action with path: {best_action['path']}")
+        if best_action.get('path') or best_action.get('move_path'):
+            # Use whichever path key exists
+            path_key = 'path' if best_action.get('path') else 'move_path'
+            target_data['path'] = best_action[path_key] # Use the identified key
+            print(f"DEBUG: select_best_action - Selected action with path: {best_action[path_key]}")
             
         action = AIAction(best_action['type'], unit_id, target_data)
+        # Update debug print to check the final target_data
         print(f"DEBUG: select_best_action - Final action: type={action.action_type}, has_path={action.target_data.get('path') is not None}")
         return action
     

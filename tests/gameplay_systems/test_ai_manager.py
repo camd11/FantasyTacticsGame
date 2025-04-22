@@ -343,7 +343,7 @@ class TestAIManager(unittest.TestCase):
         # Verify the highest scoring action was selected
         self.assertEqual(best_action.action_type, 'ATTACK')
         self.assertEqual(best_action.unit_id, 'unit1')
-        self.assertEqual(best_action.target_data, {'target_unit_id': 'player1', 'move_path': [(5, 5), (6, 5)]})
+        self.assertEqual(best_action.target_data, {'target_unit_id': 'player1', 'path': [(5, 5), (6, 5)]})
         
         # Test with different highest score
         possible_actions[1]['score'] = 60  # Now MOVE has highest score
@@ -354,7 +354,7 @@ class TestAIManager(unittest.TestCase):
         # Verify the new highest scoring action was selected
         self.assertEqual(best_action.action_type, 'MOVE')
         self.assertEqual(best_action.unit_id, 'unit1')
-        self.assertEqual(best_action.target_data, {'move_path': [(5, 5), (4, 5)]})
+        self.assertEqual(best_action.target_data, {'path': [(5, 5), (4, 5)]})
     
     # TDD Anchor: Test attack action generation finds valid targets in range
     def test_attack_action_generation_finds_valid_targets_in_range(self):

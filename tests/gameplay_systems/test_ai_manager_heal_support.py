@@ -483,7 +483,10 @@ class TestAIManagerHealSupport(unittest.TestCase):
             # Assert
             self.assertEqual(best_action.action_type, 'ITEM', "AI did not select healing action")
             self.assertEqual(best_action.target_data.get('target_unit_id'), 'ally1', "AI did not target the injured ally")
-            self.assertEqual(best_action.target_data.get('move_path')[-1], (7, 5), "AI did not move to the correct position to heal")
+            # Check for 'path' key now due to normalization in select_best_action
+            path = best_action.target_data.get('path') 
+            self.assertIsNotNone(path, "Path should exist in target data")
+            self.assertEqual(path[-1], (7, 5), "AI did not move to the correct position to heal")
     
     def test_default_behavior_no_healing_targets(self):
         """Test that the AI performs a sensible default action when no valid healing targets are in range."""

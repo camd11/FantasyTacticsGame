@@ -14,6 +14,7 @@ from src.gameplay_systems.healing_system import HealingSystem
 from src.gameplay_systems.unit_system import UnitSystem
 from src.gameplay_systems.ai.tactical_executor import TacticalExecutor
 from src.app import GameApplication
+from unittest.mock import Mock
 
 # Configure logging
 # Purge relevant log files at the beginning of the test run
@@ -109,15 +110,17 @@ class TestAIvsAIDebug:
         )
         
         # Initialize action handler with dependencies
+        mock_turn_manager = Mock(spec=TurnManager)
         action_handler.initialize(
             gameStateManager_instance=game_state,
-            unitSystem_instance=unit_system,
             mapSystem_instance=map_system,
-            movementSystem_instance=movement_system,
+            unitSystem_instance=unit_system,
             combatSystem_instance=combat_system,
-            inventorySystem_instance=None,
-            turnManager_instance=turn_manager,
             eventHandler_instance=None,
+            core_turn_manager_instance=mock_turn_manager,
+            movementSystem_instance=None,
+            inventorySystem_instance=None,
+            turnManager_instance=None,
             dataProvider_instance=game_state.data_provider
         )
         

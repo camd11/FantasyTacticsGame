@@ -380,7 +380,7 @@ class ActionHandler:
                         # Unit state is reset by TurnManager, allow another action
                         unit.has_acted = False
                         unit.has_moved = False
-                        self._set_unit_state(unit_id, UnitState.IDLE)
+                        # self._set_unit_state(unit_id, UnitState.IDLE) # REMOVED - Method does not exist
         
         # Log failure outcome if visual logger is enabled (if not logged in handle_ method)
         # Note: Most failures should be logged within the specific handle_ method

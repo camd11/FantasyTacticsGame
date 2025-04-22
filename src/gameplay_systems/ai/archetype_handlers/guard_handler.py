@@ -164,8 +164,11 @@ class GuardArchetypeHandler(AIArchetypeHandler):
             return None
             
         # Filter out invalid actions (e.g., path not found for move-actions)
-        valid_actions = [a for a in possible_actions if a['type'] == 'WAIT' or
-                          a['is_current_pos'] or a['path'] is not None]
+        # Use .get() for robustness against missing keys
+        # Check for either 'path' or 'move_path' as key might vary
+        valid_actions = [a for a in possible_actions if a.get('type') == 'WAIT' or
+                          a.get('is_current_pos', False) or 
+                          (a.get('path') is not None or a.get('move_path') is not None)]
         
         if not valid_actions:
             return None
@@ -180,7 +183,7 @@ class GuardArchetypeHandler(AIArchetypeHandler):
             
             if not enemies_in_range and not self._is_threatened(unit_id):
                 # No enemies in guard radius and not threatened, prefer to stay put
-                stationary_actions = [a for a in valid_actions if a['is_current_pos']]
+                stationary_actions = [a for a in valid_actions if a.get('is_current_pos', False)]
                 if stationary_actions:
                     # Sort stationary actions by score
                     stationary_actions.sort(key=lambda a: a['score'], reverse=True)
@@ -192,11 +195,12 @@ class GuardArchetypeHandler(AIArchetypeHandler):
                         return AIAction(best_stationary['type'], unit_id, target_data)
                 
                 # If no good stationary action, just wait
-                wait_action = next((a for a in valid_actions if a['type'] == 'WAIT'), None)
+                wait_action = next((a for a in valid_actions if a.get('type') == 'WAIT'), None)
                 if wait_action:
                     return AIAction('WAIT', unit_id, {})
         
         # Fall back to default selection if enemies are in range or unit is threatened
+        # The super().select_best_action call will handle path correctly now due to AIManager fix
         return super().select_best_action(unit_id, valid_actions, ai_profile)
     
     def _get_enemies_in_radius(self, position: Tuple[int, int], radius: int) -> List[str]:

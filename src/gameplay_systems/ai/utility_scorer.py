@@ -114,7 +114,14 @@ class UtilityScorer:
         target_unit = game_state_manager.get_unit_by_id(target_unit_id)
         if not target_unit:
             return 0.0
-            
+
+        # Add reachability check
+        if not game_state_manager.pathfinding.can_potentially_reach(
+            unit_state, target_unit.position
+        ):
+            logging.debug(f"Goal {goal.goal_type} scoring: Target {target_unit_id} unreachable.")
+            return 0.0 # Cannot score attack if target is unreachable
+
         # Basic validation (already done in Goal.is_valid, but good for safety)
         if hasattr(target_unit, 'is_defeated') and target_unit.is_defeated():
             return 0.0
@@ -192,7 +199,7 @@ class UtilityScorer:
             # Use weights from persona definitions
             threat_weight = persona.get_strategic_weight('ThreatLevel')
             kill_opp_weight = persona.get_strategic_weight('KillOpportunity')
-            # aggression_weight = persona.get_strategic_weight('Aggression', default=0.5) # Assuming 'ThreatLevel' covers this?
+            # aggression_weight = persona.get_strategic_weight('Aggression') # Assuming 'ThreatLevel' covers this?
             logging.debug(f"Persona weights: Threat={threat_weight}, KillOpp={kill_opp_weight}")
             
             # Apply weights to relevant factors (example scaling)
@@ -204,7 +211,7 @@ class UtilityScorer:
             weighted_score -= risk_penalty * (2.0 * persona.get_strategic_weight('SelfPreservation')) # Higher self-preservation reduces risk tolerance
 
             # Example: Simple multiplicative scaling based on overall aggression/threat focus
-            # base_score *= (0.5 + threat_weight) 
+            # base_score *= (0.5 + threat_weight)
             base_score = weighted_score # Use the weighted score
         
         # Ensure score is positive
@@ -318,7 +325,7 @@ class UtilityScorer:
         if persona:
             # Use weights from persona definitions
             # Supportiveness isn't directly in strategic weights, use AlliedSupport?
-            support_weight = persona.get_strategic_weight('AlliedSupport', default=0.5)
+            support_weight = persona.get_strategic_weight('AlliedSupport')
             self_preservation_weight = persona.get_strategic_weight('SelfPreservation')
 
             # Increase score for supportive personas
@@ -429,13 +436,12 @@ class UtilityScorer:
 
         # --- Apply Persona Weights ---
         if persona:
-            objective_focus_weight = persona.get_strategic_weight('ObjectiveProgress', default=0.5)
-            # Scale score based on objective focus
+            objective_focus_weight = persona.get_strategic_weight('ObjectiveProgress')
+            threat_tolerance_weight = 1.0 - persona.get_strategic_weight('SelfPreservation') # Inverse of self-preservation
+
+            # Apply weights
             base_score *= (0.5 + objective_focus_weight)
-            # Consider self-preservation? Reduce score if objective is dangerous and unit is cautious?
-            # self_preservation_weight = persona.get_strategic_weight('SelfPreservation', default=0.5)
-            # if threat_at_target > 50 and self_preservation_weight > 0.7:
-            #     base_score *= 0.7
+            base_score -= threat_penalty * threat_tolerance_weight
 
         # Ensure score is positive
         return max(1.0, base_score)
@@ -502,9 +508,9 @@ class UtilityScorer:
         if persona:
             # Use TerrainAdvantage, AlliedSupport, SelfPreservation?
             # Defensiveness isn't a strategic weight, map to others.
-            terrain_weight = persona.get_strategic_weight('TerrainAdvantage', default=0.5)
+            terrain_weight = persona.get_strategic_weight('TerrainAdvantage')
             self_preservation_weight = persona.get_strategic_weight('SelfPreservation')
-            allied_support_weight = persona.get_strategic_weight('AlliedSupport', default=0.5)
+            allied_support_weight = persona.get_strategic_weight('AlliedSupport')
             
             # Weighted average or specific factor scaling?
             # Example: Scale based on average defensive weights
@@ -559,7 +565,7 @@ class UtilityScorer:
 
         # --- Apply Persona Weights ---
         if persona:
-             objective_weight = persona.get_strategic_weight('ObjectiveProgress', default=0.5)
+             objective_weight = persona.get_strategic_weight('ObjectiveProgress')
              # Directly scale the score based on objective focus
              base_score *= (0.7 + objective_weight) # Scale from 0.7 to 1.7
 

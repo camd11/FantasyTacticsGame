@@ -1,5 +1,6 @@
 import unittest
 from unittest.mock import MagicMock, patch
+from unittest.mock import Mock
 
 from src.core_engine.game_state import GameStateManager
 from src.core_engine.data_provider import DataProvider, TerrainTypeEnum, MovementTypeEnum
@@ -14,7 +15,12 @@ class TestMovementRange(unittest.TestCase):
         """Set up test fixtures before each test method."""
         # Create mock objects for dependencies
         self.mock_data_provider = MagicMock(name="DataProvider")
-        self.mock_game_state_manager = MagicMock(name="GameStateManager")
+        self.mock_game_state_manager = MagicMock(spec=GameStateManager)
+        self.mock_game_state_manager.current_game_state = Mock()
+        self.mock_game_state_manager.current_game_state.map_state = Mock()
+        self.mock_game_state_manager.current_game_state.map_state.dimensions = (10, 10) # Explicitly mock dimensions
+        # Ensure unit_positions is mocked as a dictionary
+        self.mock_game_state_manager.current_game_state.map_state.unit_positions = {}
         
         # Create the MapSystem instance
         self.map_system = MapSystem()
@@ -40,7 +46,8 @@ class TestMovementRange(unittest.TestCase):
         
         # Configure mock game state manager
         self.mock_game_state_manager.get_unit.return_value = mock_unit
-        self.mock_game_state_manager.get_map_dimensions.return_value = (10, 10)
+        # No need to mock get_map_dimensions, use the one set in setUp
+        # self.mock_game_state_manager.get_map_dimensions.return_value = (10, 10)
         
         # Configure mock terrain types
         self.mock_game_state_manager.get_terrain_type.return_value = TerrainTypeEnum.PLAIN

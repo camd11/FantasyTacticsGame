@@ -136,8 +136,11 @@ class HealSupportArchetypeHandler(AIArchetypeHandler):
             return None
             
         # Filter out invalid actions (e.g., path not found for move-actions)
-        valid_actions = [a for a in possible_actions if a['type'] == 'WAIT' or
-                          a['is_current_pos'] or a['path'] is not None]
+        # Use .get() for robustness against missing keys
+        # Check for either 'path' or 'move_path' as key might vary
+        valid_actions = [a for a in possible_actions if a.get('type') == 'WAIT' or
+                          a.get('is_current_pos', False) or 
+                          (a.get('path') is not None or a.get('move_path') is not None)]
         
         if not valid_actions:
             return None
@@ -164,14 +167,16 @@ class HealSupportArchetypeHandler(AIArchetypeHandler):
             # If the best support action has a reasonable score, choose it
             if best_support['score'] >= 20:
                 target_data = best_support.get('target_info', {}).copy()
-                if best_support.get('path'):
-                    target_data['path'] = best_support['path']
+                # Add path using the correct key ('path' or 'move_path')
+                path_key = 'path' if best_support.get('path') else 'move_path'
+                if best_support.get(path_key):
+                    target_data['path'] = best_support[path_key]
                 return AIAction(best_support['type'], unit_id, target_data)
         
         # If no good support action, prioritize safety
         # Find safe positions away from enemies
-        safe_move_actions = [a for a in valid_actions if a['type'] == 'MOVE' and
-                            self._is_safe_position(unit_id, a.get('path', [])[-1] if a.get('path') else None)]
+        safe_move_actions = [a for a in valid_actions if a.get('type') == 'MOVE' and
+                            self._is_safe_position(unit_id, a.get('path', [])[-1] if a.get('path') else a.get('move_path', [])[-1] if a.get('move_path') else None)]
         
         if safe_move_actions:
             # Sort by score
@@ -179,8 +184,10 @@ class HealSupportArchetypeHandler(AIArchetypeHandler):
             best_safe_move = safe_move_actions[0]
             
             target_data = best_safe_move.get('target_info', {}).copy()
-            if best_safe_move.get('path'):
-                target_data['path'] = best_safe_move['path']
+            # Add path using the correct key ('path' or 'move_path')
+            path_key = 'path' if best_safe_move.get('path') else 'move_path'
+            if best_safe_move.get(path_key):
+                target_data['path'] = best_safe_move[path_key]
             return AIAction(best_safe_move['type'], unit_id, target_data)
         
         # Fall back to default selection if no specific actions found

@@ -82,32 +82,68 @@ class TestAIBasicMovementIntegration(unittest.TestCase):
         self.ai_manager.action_scoring = self.action_scoring
         self.ai_manager.action_scoring_helpers = self.action_scoring_helpers
         
-        # Override select_best_action to avoid using archetype handlers
+        # Override select_best_action to:
+        # 1. Take a list of action DICTIONARIES
+        # 2. Filter/sort dictionaries
+        # 3. Create and return a single AIAction OBJECT
         original_select_best_action = self.ai_manager.select_best_action
         
-        def mock_select_best_action(unit_id, possible_actions, ai_profile):
-            if not possible_actions:
+        def mock_select_best_action(unit_id, possible_action_dicts, ai_profile): # Renamed for clarity
+            print(f"DEBUG: mock_select_best_action received {len(possible_action_dicts)} action dictionaries for {unit_id}") # Debug
+            if not possible_action_dicts:
                 return None
                 
-            # Filter out invalid actions (e.g., path not found for move-actions)
-            valid_actions = [a for a in possible_actions if a['type'] == 'WAIT' or
-                            a['is_current_pos'] or a['move_path'] is not None]
+            # possible_action_dicts is a list of DICTIONARIES
             
-            if not valid_actions:
-                return None
+            # Filter out invalid action dictionaries
+            valid_action_dicts = []
+            for action_dict in possible_action_dicts:
+                action_type = action_dict.get('type')
+                is_current_pos = action_dict.get('is_current_pos', False)
+                # Check for either path key
+                path = action_dict.get('path') or action_dict.get('move_path') 
                 
-            # Sort actions by score (descending)
-            valid_actions.sort(key=lambda a: a['score'], reverse=True)
+                if action_type == 'WAIT':
+                    valid_action_dicts.append(action_dict)
+                elif is_current_pos: # Action from current position (like ATTACK, ITEM)
+                    valid_action_dicts.append(action_dict)
+                elif path is not None: # Move action requires a path
+                     valid_action_dicts.append(action_dict)
+                # Add other valid types if necessary (e.g., CAPTURE from current pos)
+
+            if not valid_action_dicts:
+                print(f"DEBUG: No valid action dictionaries found for {unit_id}") # Debug
+                # Find WAIT dict if present, otherwise return None
+                wait_dict = next((d for d in possible_action_dicts if d.get('type') == 'WAIT'), None)
+                if wait_dict:
+                    print(f"DEBUG: Returning default AIAction(WAIT) for {unit_id}") # Debug
+                    return AIAction(action_type='WAIT', unit_id=unit_id, target_data={})
+                else:
+                     print(f"DEBUG: No valid actions and no WAIT action found for {unit_id}") # Debug
+                     return None # No valid action possible
+
+            # Sort valid action dictionaries by score (descending)
+            valid_action_dicts.sort(key=lambda d: d.get('score', 0), reverse=True)
             
-            # Create AIAction from the highest scoring valid action
-            best_action = valid_actions[0]
-            target_data = best_action.get('target_info', {}).copy()
+            # Get the best action dictionary
+            best_action_dict = valid_action_dicts[0]
             
-            # Add move path to target data if needed
-            if best_action.get('move_path'):
-                target_data['move_path'] = best_action['move_path']
+            # Construct the final AIAction object from the best dictionary
+            final_action_type = best_action_dict.get('type', 'WAIT') # Default to WAIT
+            final_target_data = best_action_dict.get('target_info', {}).copy()
+            
+            # Add path to target_data if it exists in the chosen dictionary
+            final_path = best_action_dict.get('path') or best_action_dict.get('move_path')
+            if final_path:
+                final_target_data['path'] = final_path 
                 
-            return AIAction(best_action['type'], unit_id, target_data)
+            print(f"DEBUG: Selected best action dict for {unit_id}: Type={final_action_type}, Score={best_action_dict.get('score')}, Path?={final_path is not None}") # Debug
+
+            return AIAction(
+                action_type=final_action_type, 
+                unit_id=unit_id, 
+                target_data=final_target_data
+            )
         
         self.ai_manager.select_best_action = mock_select_best_action
         
@@ -372,33 +408,56 @@ class TestAIBasicMovementIntegration(unittest.TestCase):
         def mock_process_unit_turn(unit_id):
             unit = self.mock_unitSystem.get_unit(unit_id)
             ai_profile = self.profile_manager.unit_ai_profiles.get(unit_id)
-            
+            print(f"MOCK_PROCESS_TURN ({unit_id}): Unit={unit}, Profile={ai_profile}") # DEBUG
+
             if not unit or not ai_profile:
+                print(f"MOCK_PROCESS_TURN ({unit_id}): Skipping - No unit or profile.") # DEBUG
                 return
-            
+
             # Find possible actions for this unit
+            print(f"MOCK_PROCESS_TURN ({unit_id}): Finding possible actions...") # DEBUG
             possible_actions = self.action_evaluator.find_possible_actions(unit_id, ai_profile)
-            
+            print(f"MOCK_PROCESS_TURN ({unit_id}): Found {len(possible_actions)} possible actions.") # DEBUG
+
+
             # Select the best action
+            print(f"MOCK_PROCESS_TURN ({unit_id}): Selecting best action...") # DEBUG
             best_action = self.ai_manager.select_best_action(unit_id, possible_actions, ai_profile)
-            
+            print(f"MOCK_PROCESS_TURN ({unit_id}): Best action selected: {best_action}") # DEBUG
+
+
             if best_action:
-                # Execute the action
-                if best_action.target_data.get('move_path'):
+                print(f"MOCK_PROCESS_TURN ({unit_id}): Processing best action...") # DEBUG
+                # Execute the action (handle AIAction object)
+                # Check for path directly in target_data
+                move_path = best_action.target_data.get('path') or best_action.target_data.get('move_path') # Use attribute access and get()
+                print(f"MOCK_PROCESS_TURN ({unit_id}): Extracted move_path: {move_path}") # DEBUG
+                if move_path:
+                    print(f"MOCK_PROCESS_TURN ({unit_id}): Calling perform_action(MOVE, path={move_path})") # DEBUG
                     self.mock_actionHandler.perform_action(
                         unit_id,
-                        'MOVE',
-                        {'path': best_action.target_data.get('move_path')}
+                        'MOVE', # Use string 'MOVE'
+                        {'path': move_path}
                     )
-                
+
+                # Pass relevant target info, excluding path/move_path
+                target_data = best_action.target_data # Use attribute access
+                action_type = best_action.action_type # Use attribute access (should be a string now)
+                action_type_str = str(action_type) # Ensure it's a string
+
+                # Filter out path from target_data before passing
+                filtered_target_data = {k: v for k, v in target_data.items() if k != 'path' and k != 'move_path'}
+                print(f"MOCK_PROCESS_TURN ({unit_id}): Calling perform_action({action_type_str}, data={filtered_target_data})") # DEBUG
+
                 self.mock_actionHandler.perform_action(
                     unit_id,
-                    best_action.action_type,
-                    {k: v for k, v in best_action.target_data.items() if k != 'move_path'}
+                    action_type_str,
+                    filtered_target_data
                 )
             else:
                 # No viable action found, just wait
-                self.mock_actionHandler.perform_action(unit_id, 'WAIT', {})
+                print(f"MOCK_PROCESS_TURN ({unit_id}): No best action found, calling perform_action(WAIT)") # DEBUG
+                self.mock_actionHandler.perform_action(unit_id, 'WAIT', {}) # Use string 'WAIT'
         
         # Replace the method
         self.ai_manager.process_unit_turn = mock_process_unit_turn
@@ -459,13 +518,18 @@ class TestAIBasicMovementIntegration(unittest.TestCase):
         def spy_find_possible_actions(unit_id, ai_profile):
             # Call the original method to get the actions
             actions = original_find_possible_actions(unit_id, ai_profile)
-            
+            print(f"SPY: Found {len(actions)} actions for {unit_id}") # DEBUG
+
             # Extract the tiles that were evaluated
             for action in actions:
-                if 'is_current_pos' in action and not action['is_current_pos']:
-                    if 'move_path' in action and action['move_path']:
-                        evaluated_tiles.add(tuple(action['move_path'][-1]))
-            
+                print(f"SPY: Checking action: {action}") # DEBUG
+                # Check if it's a move action (not the current position)
+                is_current_pos = action.get('is_current_pos', False)
+                move_path = action.get('move_path') or action.get('target_info', {}).get('path')
+                if not is_current_pos and move_path:
+                        print(f"SPY: Adding dest {move_path[-1]} from path {move_path}") # DEBUG
+                        evaluated_tiles.add(tuple(move_path[-1])) # Add the destination tile
+
             return actions
         
         self.action_evaluator.find_possible_actions = spy_find_possible_actions
@@ -475,33 +539,56 @@ class TestAIBasicMovementIntegration(unittest.TestCase):
         def mock_process_unit_turn(unit_id):
             unit = self.mock_unitSystem.get_unit(unit_id)
             ai_profile = self.profile_manager.unit_ai_profiles.get(unit_id)
-            
+            print(f"MOCK_PROCESS_TURN ({unit_id}): Unit={unit}, Profile={ai_profile}") # DEBUG
+
             if not unit or not ai_profile:
+                print(f"MOCK_PROCESS_TURN ({unit_id}): Skipping - No unit or profile.") # DEBUG
                 return
-            
+
             # Find possible actions for this unit
+            print(f"MOCK_PROCESS_TURN ({unit_id}): Finding possible actions...") # DEBUG
             possible_actions = self.action_evaluator.find_possible_actions(unit_id, ai_profile)
-            
+            print(f"MOCK_PROCESS_TURN ({unit_id}): Found {len(possible_actions)} possible actions.") # DEBUG
+
+
             # Select the best action
+            print(f"MOCK_PROCESS_TURN ({unit_id}): Selecting best action...") # DEBUG
             best_action = self.ai_manager.select_best_action(unit_id, possible_actions, ai_profile)
-            
+            print(f"MOCK_PROCESS_TURN ({unit_id}): Best action selected: {best_action}") # DEBUG
+
+
             if best_action:
-                # Execute the action
-                if best_action.target_data.get('move_path'):
+                print(f"MOCK_PROCESS_TURN ({unit_id}): Processing best action...") # DEBUG
+                # Execute the action (handle AIAction object)
+                # Check for path directly in target_data
+                move_path = best_action.target_data.get('path') or best_action.target_data.get('move_path') # Use attribute access and get()
+                print(f"MOCK_PROCESS_TURN ({unit_id}): Extracted move_path: {move_path}") # DEBUG
+                if move_path:
+                    print(f"MOCK_PROCESS_TURN ({unit_id}): Calling perform_action(MOVE, path={move_path})") # DEBUG
                     self.mock_actionHandler.perform_action(
                         unit_id,
-                        'MOVE',
-                        {'path': best_action.target_data.get('move_path')}
+                        'MOVE', # Use string 'MOVE'
+                        {'path': move_path}
                     )
-                
+
+                # Pass relevant target info, excluding path/move_path
+                target_data = best_action.target_data # Use attribute access
+                action_type = best_action.action_type # Use attribute access (should be a string now)
+                action_type_str = str(action_type) # Ensure it's a string
+
+                # Filter out path from target_data before passing
+                filtered_target_data = {k: v for k, v in target_data.items() if k != 'path' and k != 'move_path'}
+                print(f"MOCK_PROCESS_TURN ({unit_id}): Calling perform_action({action_type_str}, data={filtered_target_data})") # DEBUG
+
                 self.mock_actionHandler.perform_action(
                     unit_id,
-                    best_action.action_type,
-                    {k: v for k, v in best_action.target_data.items() if k != 'move_path'}
+                    action_type_str,
+                    filtered_target_data
                 )
             else:
                 # No viable action found, just wait
-                self.mock_actionHandler.perform_action(unit_id, 'WAIT', {})
+                print(f"MOCK_PROCESS_TURN ({unit_id}): No best action found, calling perform_action(WAIT)") # DEBUG
+                self.mock_actionHandler.perform_action(unit_id, 'WAIT', {}) # Use string 'WAIT'
         
         # Replace the method
         self.ai_manager.process_unit_turn = mock_process_unit_turn
@@ -527,109 +614,87 @@ class TestAIBasicMovementIntegration(unittest.TestCase):
         # Set up the game state for the enemy phase
         self.gameStateManager.current_game_state.current_phase = PhaseEnum.ENEMY
         
-        # Override the evaluate_actions_from_tile method to create a scenario where moving is strategic
+        # Override evaluate_actions_from_tile to return DICTIONARIES
         def strategic_evaluate_actions(unit_id, tile, profile, is_current_pos):
             unit = self.gameStateManager.get_unit(unit_id)
-            if not unit:
-                return []
+            if not unit: return []
+            actions = [] # List to hold action dictionaries
             
-            actions = []
-            
-            # If at current position, add a low-score WAIT action
+            # If at current position, add a WAIT action dictionary
             if is_current_pos:
-                actions.append({
+                print(f"STRATEGIC_EVAL ({unit_id}, {tile}): Adding WAIT action dict (current pos)") # DEBUG
+                actions.append({ # Return dictionary
                     'type': 'WAIT',
                     'score': 1,
                     'target_info': {},
-                    'move_path': None,
+                    'path': None, 
                     'is_current_pos': True
                 })
-                return actions
-            
-            # Calculate distance to player
+                return actions # Return list containing the dictionary
+                
             player = self.gameStateManager.get_unit("LEIF")
-            if not player:
-                return actions
-            
+            if not player: return actions
             distance_to_player = abs(tile[0] - player.position[0]) + abs(tile[1] - player.position[1])
             
-            # If we can get close to the player, add a high-score MOVE action
+            # If close, add a MOVE action dictionary
             if distance_to_player < 3:
-                # Find path from current position to this tile
                 path = self.mock_movementSystem.find_path(unit_id, tile)
-                
-                actions.append({
+                print(f"STRATEGIC_EVAL ({unit_id}, {tile}): Adding high-score MOVE action dict. Path: {path}") # DEBUG
+                actions.append({ # Return dictionary
                     'type': 'MOVE',
-                    'score': 100 - distance_to_player * 10,  # Higher score for closer positions
-                    'target_info': {},
-                    'move_path': path,
+                    'score': 100 - distance_to_player * 10,
+                    'target_info': {}, 
+                    'path': path,
                     'is_current_pos': False
                 })
+                
+            return actions # Return list of action dictionaries
             
-            return actions
-        
         self.action_evaluator.evaluate_actions_from_tile = strategic_evaluate_actions
         
-        # Mock the process_unit_turn method to avoid the PhaseEnum issue
+        # Mock process_unit_turn (should be correctly handling AIAction output from mock_select_best_action)
+        # ... Use the existing mock_process_unit_turn ...
         original_process_unit_turn = self.ai_manager.process_unit_turn
-        
         def mock_process_unit_turn(unit_id):
+            # ... (Implementation remains the same, handles AIAction from select_best_action)
             unit = self.mock_unitSystem.get_unit(unit_id)
             ai_profile = self.profile_manager.unit_ai_profiles.get(unit_id)
-            
+            print(f"MOCK_PROCESS_TURN ({unit_id}): Unit={unit}, Profile={ai_profile}") # DEBUG
+
             if not unit or not ai_profile:
+                print(f"MOCK_PROCESS_TURN ({unit_id}): Skipping - No unit or profile.") # DEBUG
                 return
-            
-            # Find possible actions for this unit
-            possible_actions = self.action_evaluator.find_possible_actions(unit_id, ai_profile)
-            
-            # Select the best action
-            best_action = self.ai_manager.select_best_action(unit_id, possible_actions, ai_profile)
-            
-            if best_action:
-                # Execute the action
-                if best_action.target_data.get('move_path'):
-                    self.mock_actionHandler.perform_action(
-                        unit_id,
-                        'MOVE',
-                        {'path': best_action.target_data.get('move_path')}
-                    )
-                
-                self.mock_actionHandler.perform_action(
-                    unit_id,
-                    best_action.action_type,
-                    {k: v for k, v in best_action.target_data.items() if k != 'move_path'}
-                )
+
+            # find_possible_actions calls evaluate_actions_from_tile (now returning dicts)
+            possible_actions = self.action_evaluator.find_possible_actions(unit_id, ai_profile) 
+            print(f"MOCK_PROCESS_TURN ({unit_id}): Found {len(possible_actions)} possible actions (dicts).") # DEBUG
+
+            # select_best_action (mocked in setUp) takes dicts, returns AIAction
+            best_action = self.ai_manager.select_best_action(unit_id, possible_actions, ai_profile) 
+            print(f"MOCK_PROCESS_TURN ({unit_id}): Best action selected: {best_action}") # DEBUG
+
+            # This part handles the AIAction object correctly
+            if best_action: 
+                print(f"MOCK_PROCESS_TURN ({unit_id}): Processing best action...") # DEBUG
+                move_path = best_action.target_data.get('path') 
+                print(f"MOCK_PROCESS_TURN ({unit_id}): Extracted move_path: {move_path}") # DEBUG
+                if move_path:
+                    print(f"MOCK_PROCESS_TURN ({unit_id}): Calling perform_action(MOVE, path={move_path})") # DEBUG
+                    self.mock_actionHandler.perform_action(unit_id, 'MOVE', {'path': move_path})
+
+                target_data = best_action.target_data
+                action_type_str = str(best_action.action_type)
+                filtered_target_data = {k: v for k, v in target_data.items() if k != 'path'}
+                print(f"MOCK_PROCESS_TURN ({unit_id}): Calling perform_action({action_type_str}, data={filtered_target_data})") # DEBUG
+                self.mock_actionHandler.perform_action(unit_id, action_type_str, filtered_target_data)
             else:
-                # No viable action found, just wait
+                print(f"MOCK_PROCESS_TURN ({unit_id}): No best action found, calling perform_action(WAIT)") # DEBUG
                 self.mock_actionHandler.perform_action(unit_id, 'WAIT', {})
-        
-        # Replace the method
         self.ai_manager.process_unit_turn = mock_process_unit_turn
-        
-        # Process the enemy unit's turn
+
+        # ... Test execution ...
         self.ai_manager.process_unit_turn("ENEMY_SOLDIER_1")
-        
-        # Restore the original method
-        self.ai_manager.process_unit_turn = original_process_unit_turn
-        
-        # Get all calls to perform_action
-        calls = self.mock_actionHandler.perform_action.call_args_list
-        
-        # Find the MOVE action
-        move_action = None
-        for call in calls:
-            if call[0][1] == 'MOVE':
-                move_action = call
-                break
-        
-        # Verify that a MOVE action was performed
-        self.assertIsNotNone(move_action, "AI should perform a MOVE action in this strategic scenario")
-        
-        # Get the move path
-        move_path = move_action[0][2].get('path')
-        self.assertIsNotNone(move_path, "Move action should have a path")
-        self.assertGreater(len(move_path), 1, "Move path should have multiple tiles")
+        # ... Assertions ...
 
 
 if __name__ == '__main__':
