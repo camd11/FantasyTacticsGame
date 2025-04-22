@@ -135,14 +135,25 @@ class VisualScenarioLogger:
             return
             
         self._write_log("===== INITIAL STATE =====")
-        try:
-            map_string = self.cli_display.render_ascii_map() # Use existing ASCII renderer
-            if map_string is not None:
-                self._write_log(map_string)
-            else:
-                self._write_log("[Error: render_ascii_map returned None]")
-        except Exception as e:
-            self._write_log(f"[Error rendering initial map: {e}]")
+        # Check if display and its dependencies are ready
+        if not self.cli_display:
+            self._write_log("[Error: CLIDisplay object not available in logger]")
+        elif not hasattr(self.cli_display, 'game_state_manager') or not self.cli_display.game_state_manager:
+            self._write_log("[Error: CLIDisplay's GameStateManager not ready]")
+        elif not hasattr(self.cli_display, 'map_system') or not self.cli_display.map_system:
+             self._write_log("[Error: CLIDisplay's MapSystem not ready]")
+        # Add checks for other essential systems if needed (e.g., unit_system)
+        # elif not hasattr(self.cli_display, 'unit_system') or not self.cli_display.unit_system:
+        #     self._write_log("[Error: CLIDisplay's UnitSystem not ready]")
+        else:
+            try:
+                map_string = self.cli_display.render_ascii_map() # Use existing ASCII renderer
+                if map_string is not None:
+                    self._write_log(map_string)
+                else:
+                    self._write_log("[Error: render_ascii_map returned None]")
+            except Exception as e:
+                self._write_log(f"[Error rendering initial map: {e}]")
         self._write_log("=========================\n")
         self._write_buffer_to_file() # Ensure initial state is written
 

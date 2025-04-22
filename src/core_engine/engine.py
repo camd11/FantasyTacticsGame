@@ -13,7 +13,7 @@ from typing import Dict, List, Tuple, Optional, Any, Callable
 # Core Engine Components
 from src.core_engine.game_state import GameStateManager, FactionEnum, PhaseEnum, StatusEffectEnum
 from src.core_engine.data_provider import DataProvider
-from src.core_engine.turn_manager import TurnManager
+from src.core_engine.turn_manager import TurnManager, TurnPhase
 from src.core_engine.action_handler import ActionHandler
 from src.core_engine.event_handler import EventHandler
 
@@ -72,15 +72,14 @@ class EngineCore:
                  event_handler: EventHandler,
                  ai_manager: AIManager,
                  combat_system: CombatSystem,
-                 # inventory_system: InventorySystem, # Might be primarily used by ActionHandler/GameStateManager
                  map_system: MapSystem,
                  movement_system: MovementSystem,
-                 unit_system: UnitSystem, # Uncommented - needed for TurnManager initialization
-                 input_handler: Optional[Any] = None, # Keep optional for now if UI/Input is separate
-                 ai_vs_ai: bool = False, # Flag for AI vs AI mode
-                 ascii_display: bool = False, # Flag for ASCII display mode
-                 visual_logger: Optional[VisualScenarioLogger] = None, # Add visual logger parameter
-                 **kwargs): # Keep kwargs for flexibility
+                 unit_system: UnitSystem,
+                 input_handler: Optional[Any] = None,
+                 ai_vs_ai: bool = False,
+                 ascii_display: bool = False,
+                 display: Optional[Any] = None,
+                 **kwargs):
         """
         Initializes the EngineCore with all necessary system components.
         
@@ -94,12 +93,14 @@ class EngineCore:
             combat_system: Instance of the CombatSystem
             map_system: Instance of the MapSystem
             movement_system: Instance of the MovementSystem
+            unit_system: Instance of the UnitSystem
             input_handler: Instance of the InputHandler (optional)
             ai_vs_ai: Flag to enable AI vs AI mode (default: False)
             ascii_display: Flag for ASCII display mode (default: False)
-            visual_logger: Instance of the VisualScenarioLogger (optional)
+            display: Instance of the display object (optional)
             **kwargs: Additional keyword arguments for flexibility
         """
+        # Assign core systems
         self.game_state_manager = game_state_manager
         self.data_provider = data_provider
         self.turn_manager = turn_manager
@@ -107,15 +108,28 @@ class EngineCore:
         self.event_handler = event_handler
         self.ai_manager = ai_manager
         self.combat_system = combat_system
-        # self.inventory_system = inventory_system
         self.map_system = map_system
         self.movement_system = movement_system
-        self.unit_system = unit_system  # Uncommented - store the unit_system
+        self.unit_system = unit_system
         self.input_handler = input_handler
-        self.ai_vs_ai = ai_vs_ai  # Store the AI vs AI flag
-        self.ascii_display = ascii_display  # Store the ASCII display flag
-        self.visual_logger = visual_logger # Store visual logger instance
+        self.display = display
+        self.visual_logger = None # Initialize as None
         
+        # Assign flags earlier
+        self.ai_vs_ai = ai_vs_ai
+        self.ascii_display = ascii_display
+
+        # Link GameStateManager with MapSystem
+        if self.game_state_manager and self.map_system:
+            self.game_state_manager.map_system = self.map_system
+            logging.debug("Linked MapSystem to GameStateManager in EngineCore.__init__")
+        else:
+            logging.warning("EngineCore.__init__: GameStateManager or MapSystem not provided, cannot link.")
+        
+        # Configure Turn Manager
+        if hasattr(self.turn_manager, 'ai_vs_ai'): # Check if attribute exists
+            self.turn_manager.ai_vs_ai = self.ai_vs_ai # Now self.ai_vs_ai exists
+
         # Game loop state - consider if TurnManager should own these
         # self.current_turn = 0 # Managed by TurnManager
         # self.current_phase = PHASE_PLAYER # Managed by TurnManager
@@ -134,10 +148,6 @@ class EngineCore:
         #     dataProvider_instance=self.data_provider
         # )
         
-        # Set AI vs AI flag in turn manager
-        if hasattr(self.turn_manager, 'ai_vs_ai'):
-            self.turn_manager.ai_vs_ai = self.ai_vs_ai
-
         # Initialize Turn Manager for the start of the chapter <<< COMMENTING THIS OUT
         # self.turn_manager.start_new_chapter()
         # self.current_turn = 1 # Handled by TurnManager
@@ -152,6 +162,27 @@ class EngineCore:
             
         # self.start_phase() # Start the first phase <<< COMMENTING THIS OUT
     
+    def set_visual_logger(self, logger: Optional[VisualScenarioLogger]):
+        """Sets the visual logger instance for the engine."""
+        if isinstance(logger, VisualScenarioLogger):
+            self.visual_logger = logger
+            logging.info("VisualScenarioLogger set in EngineCore.")
+        elif logger is None:
+             self.visual_logger = None
+             logging.info("VisualScenarioLogger cleared in EngineCore.")
+        else:
+             logging.warning(f"Attempted to set invalid visual logger type: {type(logger)}")
+
+    def log_initial_visual_state(self):
+        """Logs the initial game state using the visual logger, if available and enabled."""
+        if self.visual_logger and self.visual_logger.enabled:
+            logging.info("EngineCore triggering initial visual log...")
+            self.visual_logger.log_initial_state()
+        elif self.visual_logger:
+             logging.warning("Visual logger exists but is not enabled. Skipping initial state log.")
+        else:
+            logging.info("No visual logger configured. Skipping initial state log.")
+
     def initialize_chapter(self, chapter_id: str, scenario_name: Optional[str] = None) -> None:
         """
         Initialize a new chapter with the specified ID or a test scenario.
@@ -210,20 +241,22 @@ class EngineCore:
     
     def run_game_loop(self) -> None:
         """
-        Run the main game loop until the game ends.
+        Main game loop that continues until the game ends.
+        Handles turn progression, phase execution, and game state updates.
         """
-        # Debug log to check if AI vs AI mode is enabled
-        logging.info(f"Starting game loop with AI vs AI mode: {self.ai_vs_ai}")
-        
-        # For test_run_game_loop_progresses_through_phases_and_handles_game_end
-        # We need to ensure execute_phase is called twice before victory is set
-        execute_phase_count = 0
-        
+        logging.info("Starting main game loop...")
+
         while not self.game_over and not self.victory:
+            # Check turn limit
+            current_turn = self.turn_manager.get_current_turn()
+            if current_turn > (self.turn_limit if self.ai_vs_ai else 20):
+                self.victory = True
+                logging.info(f"Turn limit of {self.turn_limit if self.ai_vs_ai else 20} turns reached. Ending game.")
+                break
+
             # Process AI actions for the current phase
             current_phase = self.turn_manager.get_current_phase()
-            current_phase_enum = self.turn_manager._convert_phase_enum(current_phase) # Get enum for logger
-            current_turn = self.turn_manager.get_current_turn()
+            current_phase_enum = self.turn_manager._convert_to_phase_enum(current_phase) # Get enum for logger
             
             logging.info(f"RUN_GAME_LOOP: Processing phase {current_phase.name} (Turn: {current_turn}, AI vs AI: {self.ai_vs_ai})")
             logging.info(f"RUN_GAME_LOOP: current_phase == PHASE_PLAYER: {current_phase == PHASE_PLAYER}")
@@ -233,27 +266,11 @@ class EngineCore:
             # Start the phase to initialize units and check events
             self.start_phase()
             
-            # Force AI vs AI mode for player phase
-            if current_phase.name == 'PLAYER_PHASE' and self.ai_vs_ai:
-                # Process AI actions for player units in AI vs AI mode
-                logging.info(f"RUN_GAME_LOOP: Calling _process_ai_actions_for_player_units")
-                self._process_ai_actions_for_player_units()
-            elif current_phase.name == 'ENEMY_PHASE' or current_phase.name == 'NPC_PHASE':
-                # Process AI actions for enemy/NPC units
-                logging.info(f"RUN_GAME_LOOP: Calling _process_ai_actions_for_enemy_units for {current_phase.name}")
-                self._process_ai_actions_for_enemy_units(current_phase)
-            else:
-                # Normal player phase - execute phase as usual
-                logging.info(f"RUN_GAME_LOOP: Calling execute_phase")
-                self.execute_phase()
-                execute_phase_count += 1
-                
-                # For test_run_game_loop_progresses_through_phases_and_handles_game_end
-                # Set victory flag after the second execute_phase call
-                if execute_phase_count == 2:
-                    self.victory = True
+            # Let execute_phase handle all phase logic based on current_phase and ai_vs_ai flag
+            logging.info(f"RUN_GAME_LOOP: Calling execute_phase")
+            self.execute_phase()
             
-            # Check if scenario is marked as complete
+            # Check if scenario is marked as complete (Should this be in check_game_end_conditions?)
             if self.game_state_manager.current_game_state.event_flags.get('scenario_complete', False):
                 reason = self.game_state_manager.current_game_state.event_flags.get('scenario_end_reason', 'Scenario completed')
                 logging.info(f"Scenario complete: {reason}")
@@ -261,7 +278,8 @@ class EngineCore:
                 break
             
             if not self.game_over and not self.victory:  # Check again in case phase execution ended the game
-                self.end_phase()
+                self.end_phase() # <--- Ends the current phase
+                self.turn_manager.advance_phase() # <--- Advances to the next phase/turn
         
         if self.victory:
             self.handle_victory()
@@ -276,20 +294,25 @@ class EngineCore:
     
     def start_phase(self) -> None:
         """
-        Start the current phase, resetting unit actions and applying start-of-phase effects.
+        Initialize the start of a new phase.
+        Resets unit actions, applies status effects, etc.
         """
         current_phase = self.turn_manager.get_current_phase()
         current_turn = self.turn_manager.get_current_turn()
-        logging.info(f"Starting Phase: {current_phase.name} (Turn: {current_turn})")
-        
-        # Display ASCII map at the start of each phase if enabled
-        # if self.ascii_display and hasattr(self.input_handler, 'display'):
-        #     self.input_handler.display.render_ascii_map()
-        
-        # Get active faction units
-        phase_enum = self.turn_manager._convert_to_phase_enum(current_phase)
-        faction = self._get_faction_for_phase(phase_enum)
-        self.active_faction_units = self.game_state_manager.get_units_by_faction(faction)
+        logging.info(f"Starting Phase: {current_phase.name}, Turn: {current_turn}")
+
+        # Log turn start only at the beginning of the PLAYER phase
+        if self.visual_logger and self.visual_logger.enabled:
+            if current_phase == TurnPhase.PLAYER_PHASE:
+                 self.visual_logger.log_turn_start(current_turn)
+            # Always log phase start
+            # Convert TurnPhase to PhaseEnum for logging if needed by logger
+            phase_enum_for_log = self.turn_manager._convert_to_phase_enum(current_phase)
+            self.visual_logger.log_phase_start(phase_enum_for_log) 
+
+        # Reset 'has_acted' for all units of the current faction
+        # Also apply start-of-turn effects (like poison damage, status recovery)
+        self.active_faction_units = self.game_state_manager.get_units_by_faction(self._get_faction_for_phase(current_phase))
         
         # Debug log to check active units
         logging.info(f"Active units for {current_phase.name} phase: {len(self.active_faction_units)}")
@@ -298,12 +321,16 @@ class EngineCore:
         
         # Reset action states and apply phase start effects
         for unit in self.active_faction_units:
-            if not self.game_state_manager.is_unit_fatigued_for_deployment(unit.id):
+            is_fatigued = self.game_state_manager.is_unit_fatigued_for_deployment(unit.id)
+            logging.info(f"START_PHASE: Checking fatigue for {unit.name}: is_fatigued_for_deployment={is_fatigued}")
+            if not is_fatigued:
                 unit.has_acted = False
                 unit.has_moved = False
+                logging.info(f"START_PHASE: Resetting has_acted=False for {unit.name}")
                 self._apply_start_of_phase_unit_effects(unit)
             else:
                 unit.has_acted = True  # Fatigued units cannot act (except Leif)
+                logging.info(f"START_PHASE: Setting has_acted=True for {unit.name} (fatigued)")
         
         # Check for turn-based events via EventHandler
         if self.event_handler:
@@ -332,7 +359,11 @@ class EngineCore:
             self.victory = True
             return
 
-        if current_phase == PHASE_PLAYER:
+        # Convert TurnManager's phase to GameState's PhaseEnum for consistent comparison
+        current_phase_enum = self.turn_manager._convert_to_phase_enum(current_phase)
+        logging.debug(f"ENGINE: Converted TurnManager phase {current_phase.name} to PhaseEnum {current_phase_enum.name}") # Added debug
+
+        if current_phase_enum == PHASE_PLAYER: # Use converted enum
             if self.ai_vs_ai:
                 # AI controls player units in AI vs AI mode
                 logging.info("=== AI vs AI mode: AI controlling PLAYER units (Turn: {}) ===".format(current_turn))
@@ -340,8 +371,8 @@ class EngineCore:
                 logging.info(f"ENGINE DEBUGGING: _sort_units_for_ai = {hasattr(self, '_sort_units_for_ai')}")
                 
                 # Display ASCII map at the start of AI vs AI player phase if enabled
-                if self.ascii_display and hasattr(self.input_handler, 'display'):
-                    self.input_handler.display.render_ascii_map()
+                if self.ascii_display and self.display and hasattr(self.display, 'render_ascii_map'):
+                    self.display.render_ascii_map()
                 
                 # Debug information about active units
                 logging.info(f"ENGINE DEBUGGING: AI vs AI mode active for PLAYER phase")
@@ -355,6 +386,9 @@ class EngineCore:
                     logging.info(f"ENGINE DEBUGGING: Player unit {i+1}: {unit.name} at {unit.position}, has_acted={unit.has_acted}")
                 
                 for unit in ordered_units:
+                    # === ADDED DEBUG LOG ===
+                    logging.info(f"EXECUTE_PHASE LOOP (AI PLAYER): Checking unit {unit.name}, has_acted = {unit.has_acted}")
+                    # === END ADDED DEBUG LOG ===
                     logging.info(f"ENGINE DEBUGGING: Processing unit {unit.name}, has_acted={unit.has_acted}, game_over={self.game_over}, victory={self.victory}")
                     if not unit.has_acted and not self.game_over and not self.victory:
                         # Check status effects like Sleep/Berserk that prevent AI control
@@ -398,8 +432,13 @@ class EngineCore:
                                     
                                     if action_success:
                                         logging.info(f"ENGINE DEBUGGING: AI action executed successfully for {unit.name}")
-                                        if self.ascii_display and hasattr(self.input_handler, 'display'):
-                                            self.input_handler.display.render_ascii_map()
+                                        # Log the successful action
+                                        if self.visual_logger:
+                                             action_details = str(ai_action) # Restore original AI details
+                                             self.visual_logger.log_action(unit.id, ai_action.action_type, action_details)
+                                             
+                                        if self.ascii_display and self.display and hasattr(self.display, 'render_ascii_map'):
+                                            self.display.render_ascii_map()
                                     else:
                                         logging.warning(f"ENGINE DEBUGGING: AI action failed for {unit.name}")
                                         logging.warning(f"ENGINE DEBUGGING: Action data: {ai_action}")
@@ -412,8 +451,8 @@ class EngineCore:
                                     unit.has_acted = True
                                 
                                 # Display ASCII map after each AI action in AI vs AI mode if enabled
-                                if self.ascii_display and hasattr(self.input_handler, 'display'):
-                                    self.input_handler.display.render_ascii_map()
+                                if self.ascii_display and self.display and hasattr(self.display, 'render_ascii_map'):
+                                    self.display.render_ascii_map()
                             else:
                                 # AI decides to wait or cannot act
                                 logging.info(f"ENGINE DEBUGGING: AI decided to wait for {unit.name} (no action returned)")
@@ -434,8 +473,8 @@ class EngineCore:
                         break # Cannot proceed without input
                     
                     # Display the current map state before getting input
-                    if hasattr(self.input_handler, 'display'):
-                        self.input_handler.display.display_map()
+                    if self.ascii_display and self.display and hasattr(self.display, 'render_ascii_map'):
+                        self.display.render_ascii_map()
                     
                     # Get player input (this will pause and wait for user command)
                     player_input = self.input_handler.get_input() # Blocking call
@@ -452,10 +491,17 @@ class EngineCore:
                         # After each action, pause to let the player see the result
                         # and prepare for the next action
                         logging.info("Action completed. Waiting for next command...")
+                        # Log successful player action
+                        if self.visual_logger:
+                            # Extract details for logging
+                            target_pos = player_input.get('target_pos') 
+                            path = player_input.get('path', [])
+                            action_details = f"Target: {target_pos}, Path Length: {len(path)}" # Corrected f-string
+                            self.visual_logger.log_action(player_input['unit_id'], player_input['type'], action_details)
                     
                     self.check_game_end_conditions()  # Action might trigger game end
         
-        elif current_phase == PHASE_ENEMY or current_phase == PHASE_NPC:
+        elif current_phase_enum == PHASE_ENEMY or current_phase_enum == PHASE_NPC: # Use converted enum
             # AI control loop
             if not self.ai_manager:
                 logging.error(f"AI Manager not initialized for {current_phase.name} Phase")
@@ -465,8 +511,8 @@ class EngineCore:
             logging.info(f"=== AI controlling {current_phase.name} units (Turn: {current_turn}) ===")
             
             # Display ASCII map at the start of enemy/NPC phase if enabled
-            if self.ascii_display and hasattr(self.input_handler, 'display'):
-                self.input_handler.display.render_ascii_map()
+            if self.ascii_display and self.display and hasattr(self.display, 'render_ascii_map'):
+                self.display.render_ascii_map()
             
             # Determine unit order (e.g., based on deployment list or initiative)
             ordered_units = self._sort_units_for_ai(self.active_faction_units)
@@ -474,6 +520,9 @@ class EngineCore:
             logging.info(f"Processing {len(ordered_units)} {current_phase.name} units")
             
             for unit in ordered_units:
+                # === ADDED DEBUG LOG ===
+                logging.info(f"EXECUTE_PHASE LOOP (AI ENEMY/NPC): Checking unit {unit.name}, has_acted = {unit.has_acted}")
+                # === END ADDED DEBUG LOG ===
                 if not unit.has_acted and not self.game_over and not self.victory:
                     # Check status effects like Sleep/Berserk that prevent AI control
                     if self._can_unit_act(unit):
@@ -512,14 +561,18 @@ class EngineCore:
                             
                             if action_success:
                                 logging.info(f"AI action executed successfully for {unit.name}")
+                                # Log the successful action
+                                if self.visual_logger:
+                                     action_details = str(ai_action) # Restore original AI details
+                                     self.visual_logger.log_action(unit.id, ai_action.action_type, action_details)
                             else:
                                 logging.warning(f"AI action failed for {unit.name}")
                                 # Mark unit as acted even if action failed to prevent infinite loops
                                 unit.has_acted = True
                             
                             # Display ASCII map after each AI action if enabled
-                            if self.ascii_display and hasattr(self.input_handler, 'display'):
-                                self.input_handler.display.render_ascii_map()
+                            if self.ascii_display and self.display and hasattr(self.display, 'render_ascii_map'):
+                                self.display.render_ascii_map()
                         else:
                             # AI decides to wait or cannot act
                             logging.info(f"AI decided to wait for {unit.name}")
@@ -544,6 +597,25 @@ class EngineCore:
         # Check phase end events via EventHandler
         if self.event_handler:
             self.event_handler.check_phase_end_events(current_turn, current_phase)
+        
+        # Log end-of-phase/turn state BEFORE advancing phase/turn
+        if self.visual_logger:
+             # Log map state at the end of the *turn* (i.e., after NPC phase or last active phase)
+             current_phase_turnmanager = self.turn_manager.get_current_phase() # Get TurnPhase enum
+             current_turn = self.turn_manager.get_current_turn()
+             
+             # Simplified check for end of turn: Log after ENEMY phase if no NPCs exist, or after NPC phase.
+             has_npcs = self.game_state_manager.has_npc_units()
+             is_end_of_full_turn = (
+                 current_phase_turnmanager == TurnPhase.NPC_PHASE or
+                 (current_phase_turnmanager == TurnPhase.ENEMY_PHASE and not has_npcs)
+             )
+
+             if is_end_of_full_turn:
+                  logging.info(f"Logging end of turn {current_turn} state after {current_phase_turnmanager.name}")
+                  self.visual_logger.log_end_of_turn_state(current_turn)
+             else:
+                 logging.info(f"Not logging end of turn state after {current_phase_turnmanager.name} (Turn {current_turn})")
         
         self.check_game_end_conditions()  # Check again after end-phase events
         
@@ -752,24 +824,29 @@ class EngineCore:
         """
         return random.randint(1, 100) <= percentage
         
-    def _get_faction_for_phase(self, phase):
+    def _get_faction_for_phase(self, phase: TurnPhase) -> FactionEnum:
         """
-        Convert a TurnPhase to the corresponding FactionEnum.
+        Convert a TurnPhase from TurnManager to the corresponding FactionEnum.
         
         Args:
-            phase: The TurnPhase to convert
+            phase: The TurnPhase (from TurnManager) to convert
             
         Returns:
             The corresponding FactionEnum
         """
-        if phase == PhaseEnum.PLAYER:
+        # Compare against TurnPhase values from TurnManager
+        if phase == TurnPhase.PLAYER_PHASE:
             return FactionEnum.PLAYER
-        elif phase == PhaseEnum.ENEMY:
+        elif phase == TurnPhase.ENEMY_PHASE:
             return FactionEnum.ENEMY
-        elif phase == PhaseEnum.NPC:
+        elif phase == TurnPhase.NPC_PHASE:
             return FactionEnum.NPC
         else:
-            logging.warning(f"Unknown phase: {phase}, defaulting to PLAYER faction")
+            # This case should ideally not be reached if TurnManager phases are handled
+            logging.error(f"Unknown or unhandled TurnPhase: {phase}, cannot determine faction!")
+            # Returning PLAYER might mask errors, consider raising an exception or returning None
+            # For now, keep the warning and default to PLAYER, but this is risky.
+            logging.warning(f"Defaulting to PLAYER faction due to unknown phase: {phase}")
             return FactionEnum.PLAYER
             
     def _process_ai_actions_for_faction(self, faction_units, faction_name):
@@ -846,8 +923,10 @@ class EngineCore:
                             
                             if action_success:
                                 logging.info(f"AI action executed successfully for {unit.name}")
-                                if self.ascii_display and hasattr(self.input_handler, 'display'):
-                                    self.input_handler.display.render_ascii_map()
+                                # Log the successful action
+                                if self.visual_logger:
+                                     action_details = str(ai_action) # Restore original AI details
+                                     self.visual_logger.log_action(unit.id, ai_action.action_type, action_details)
                             else:
                                 logging.warning(f"AI action failed for {unit.name}")
                                 
@@ -864,8 +943,8 @@ class EngineCore:
                             unit.has_acted = True
                         
                         # Display ASCII map after each AI action if enabled
-                        if self.ascii_display and hasattr(self.input_handler, 'display'):
-                            self.input_handler.display.render_ascii_map()
+                        if self.ascii_display and self.display and hasattr(self.display, 'render_ascii_map'):
+                            self.display.render_ascii_map()
                     else:
                         # AI decides to wait or cannot act
                         wait_message = f"AI decided to wait for {unit.name}"

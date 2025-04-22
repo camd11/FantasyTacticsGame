@@ -15,9 +15,15 @@ These scores are used to select the most appropriate goal for an AI unit during
 the Strategic Phase of AI decision-making.
 """
 
-from typing import Dict, List, Any, Optional, Union
+import logging # Add logging import
+from typing import Dict, List, Any, Optional, Union, TYPE_CHECKING
 from unittest.mock import Mock  # Import for type checking
 from src.gameplay_systems.ai.ai_persona import AIPersona
+from src.core_engine.game_state import FactionEnum, PhaseEnum, GameState, UnitState # Add GameState, UnitState
+from src.core_engine.game_state import DispositionEnum # Import DispositionEnum
+
+if TYPE_CHECKING:
+    from src.core_engine.game_state import GameStateManager
 
 
 class UtilityScorer:
@@ -184,9 +190,10 @@ class UtilityScorer:
         # --- Apply Persona Weights --- 
         if persona:
             # Use weights from persona definitions
-            threat_weight = persona.get_strategic_weight('ThreatLevel', default=0.5)
-            kill_opp_weight = persona.get_strategic_weight('KillOpportunity', default=0.5)
+            threat_weight = persona.get_strategic_weight('ThreatLevel')
+            kill_opp_weight = persona.get_strategic_weight('KillOpportunity')
             # aggression_weight = persona.get_strategic_weight('Aggression', default=0.5) # Assuming 'ThreatLevel' covers this?
+            logging.debug(f"Persona weights: Threat={threat_weight}, KillOpp={kill_opp_weight}")
             
             # Apply weights to relevant factors (example scaling)
             # More sophisticated weighting needed based on how factors contribute
@@ -194,7 +201,7 @@ class UtilityScorer:
             weighted_score += (hp_bonus + kill_potential_bonus) * kill_opp_weight * 1.5 # Scale Kill Opp
             weighted_score += target_value_bonus * threat_weight * 1.5 # Scale Threat
             weighted_score -= distance_penalty # Keep distance penalty less affected by persona?
-            weighted_score -= risk_penalty * (2.0 - persona.get_strategic_weight('SelfPreservation', default=0.5)) # Higher self-preservation reduces risk tolerance
+            weighted_score -= risk_penalty * (2.0 * persona.get_strategic_weight('SelfPreservation')) # Higher self-preservation reduces risk tolerance
 
             # Example: Simple multiplicative scaling based on overall aggression/threat focus
             # base_score *= (0.5 + threat_weight) 
@@ -312,7 +319,7 @@ class UtilityScorer:
             # Use weights from persona definitions
             # Supportiveness isn't directly in strategic weights, use AlliedSupport?
             support_weight = persona.get_strategic_weight('AlliedSupport', default=0.5)
-            self_preservation_weight = persona.get_strategic_weight('SelfPreservation', default=0.5)
+            self_preservation_weight = persona.get_strategic_weight('SelfPreservation')
 
             # Increase score for supportive personas
             base_score *= (0.5 + support_weight)
@@ -351,7 +358,7 @@ class UtilityScorer:
 
         # --- Apply Persona Weights ---
         if persona:
-            self_preservation_weight = persona.get_strategic_weight('SelfPreservation', default=0.5)
+            self_preservation_weight = persona.get_strategic_weight('SelfPreservation')
             # Directly scale score based on self-preservation
             base_score *= (0.5 + self_preservation_weight) 
 
@@ -496,7 +503,7 @@ class UtilityScorer:
             # Use TerrainAdvantage, AlliedSupport, SelfPreservation?
             # Defensiveness isn't a strategic weight, map to others.
             terrain_weight = persona.get_strategic_weight('TerrainAdvantage', default=0.5)
-            self_preservation_weight = persona.get_strategic_weight('SelfPreservation', default=0.5)
+            self_preservation_weight = persona.get_strategic_weight('SelfPreservation')
             allied_support_weight = persona.get_strategic_weight('AlliedSupport', default=0.5)
             
             # Weighted average or specific factor scaling?

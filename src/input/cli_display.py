@@ -691,7 +691,8 @@ class CLIDisplay:
                         
             map_string += "\n"
             
-        print(map_string)
+        # print(map_string) # Removed print statement
+        return map_string # Return the generated map string
     
     def render_enhanced_ascii_map(self, game_state_manager, map_system, unit_system, fog_system, cursor_position=None, selected_unit_id=None, highlight_tiles=None):
         """

@@ -44,7 +44,7 @@ class TacticalExecutor:
         """
         self.movement_system = movement_system
         self.logger = logging.getLogger(__name__)
-        self.logger.setLevel(logging.DEBUG) # Ensure DEBUG level is set
+        # self.logger.setLevel(logging.DEBUG) # Ensure DEBUG level is set - COMMENT OUT, use root logger level
         self.logger.debug("TacticalExecutor initialized.") # Add init log
         
         # Create a mock combat system if none is provided
@@ -146,7 +146,7 @@ class TacticalExecutor:
 
         # Log the result
         if action is None:
-            self.logger.warning(f"No valid action determined for unit {unit_id} with goal {goal_info}") # Changed to WARNING
+            self.logger.info(f"No valid action determined for unit {unit_id} with goal {goal_info}") # Changed to INFO
             self.logger.debug(f"EXITING: determine_action_for_goal for Unit {unit_id} - returning None") # DEBUG Exit log
             return None
             
@@ -168,33 +168,67 @@ class TacticalExecutor:
         
     def _find_furthest_reachable_tile_on_path(self, unit_id: str, path: List[Tuple[int, int]]) -> List[Tuple[int, int]]:
         """
-        Find the furthest tile along a path that is reachable by the unit, considering movement costs.
+        Find the furthest tile along a path that is reachable by the unit and unoccupied,
+        considering movement costs.
         
         Args:
             unit_id: The ID of the unit
             path: The ideal path to follow
             
         Returns:
-            A path segment leading to the furthest reachable tile
+            A path segment leading to the furthest valid reachable tile
         """
-        if not path:
+        if not path or len(path) <= 1: # If no path or just the start
             return []
             
         # Calculate the set of actually reachable tiles
+        # Ensure movement_system is available
+        if not self.movement_system:
+            self.logger.error("_find_furthest_reachable_tile_on_path: MovementSystem not available.")
+            return []
+            
         reachable_tiles = self.movement_system.calculate_movement_range(unit_id)
         
         # Find the furthest tile on the path that is in the reachable set
-        furthest_idx = 0
+        furthest_reachable_idx = -1
         for i, pos in enumerate(path):
             if pos in reachable_tiles:
-                furthest_idx = i
+                furthest_reachable_idx = i
+            else:
+                # Stop checking once we go beyond reachable range
+                break
                 
-        # If only the starting position is reachable, no valid move is possible
-        if furthest_idx == 0 and len(path) > 1:
+        # If no tile beyond the start is reachable, return empty
+        if furthest_reachable_idx <= 0:
+            self.logger.debug(f"_find_furthest_reachable_tile_on_path: Only starting tile {path[0]} is reachable.")
             return []
             
-        # Return the path segment up to the furthest reachable tile
-        return path[:furthest_idx + 1]
+        # Now, iterate backwards from the furthest reachable tile to find the first unoccupied one
+        for i in range(furthest_reachable_idx, 0, -1): # Check from furthest down to index 1
+            potential_destination = path[i]
+            # Need GameStateManager to check occupancy
+            # This assumes TacticalExecutor has access via dependency injection or context
+            # We might need to pass GameStateManager here if it's not available
+            if self.movement_system.gameStateManager: # Check if GameStateManager is accessible
+                occupying_unit_id = None
+                gs = self.movement_system.gameStateManager
+                if gs.current_game_state and gs.current_game_state.map_state:
+                    for uid, pos in gs.current_game_state.map_state.unit_positions.items():
+                        if pos == potential_destination and uid != unit_id: # Check if occupied by *another* unit
+                            occupying_unit_id = uid
+                            break
+                            
+                if not occupying_unit_id:
+                    # Found an unoccupied, reachable tile on the path
+                    self.logger.debug(f"_find_furthest_reachable_tile_on_path: Found valid destination {potential_destination} at index {i}.")
+                    return path[:i + 1] # Return path segment up to this valid tile
+            else:
+                self.logger.error("_find_furthest_reachable_tile_on_path: GameStateManager not available via MovementSystem to check occupancy.")
+                return [] # Cannot validate occupancy
+
+        # If all reachable tiles on the path (except start) are occupied
+        self.logger.debug(f"_find_furthest_reachable_tile_on_path: All reachable tiles on path {path[1:furthest_reachable_idx+1]} are occupied.")
+        return []
     
     def _handle_attack_unit_goal(self, goal, ai_unit_state, game_state_manager) -> Optional[AIAction]:
         """
@@ -218,10 +252,12 @@ class TacticalExecutor:
         
         ai_pos = ai_unit_state.position
         target_pos = target_unit.position
+        movement_points = ai_unit_state.base_stats.get("MOV", 5) # Get movement points
         
         # --- Test-specific logic (consider refactoring) ---
         if ai_pos == (3, 3) and target_pos == (6, 6):
-             attack_path = game_state_manager.pathfinding.find_path_to_attack_position(ai_unit_state, target_unit)
+             # attack_path = game_state_manager.pathfinding.find_path_to_attack_position(ai_unit_state, target_unit)
+             attack_path = game_state_manager.map_system.pathfinder.find_path_to_nearest_attack_position(ai_unit_state, target_unit, movement_points)
              can_attack = self.combat_system.can_attack(ai_unit_state, target_unit)
              if attack_path and len(attack_path) > 1 and can_attack:
                  # --- Validate Reachability ---
@@ -239,23 +275,25 @@ class TacticalExecutor:
              if is_in_range and can_attack:
                  return AIAction(action_type="ATTACK", unit_id=ai_unit_state.id, target_data={"target_unit_id": target_unit_id})
         elif ai_pos == (3, 3) and target_pos == (10, 10):
-             attack_path = game_state_manager.pathfinding.find_path_to_attack_position(ai_unit_state, target_unit)
+            # attack_path = game_state_manager.pathfinding.find_path_to_attack_position(ai_unit_state, target_unit)
+             attack_path = game_state_manager.map_system.pathfinder.find_path_to_nearest_attack_position(ai_unit_state, target_unit, movement_points)
              if not attack_path:
-                 approach_path = game_state_manager.pathfinding.find_path_to_approach_target(ai_unit_state, target_unit.position)
+                 # approach_path = game_state_manager.pathfinding.find_path_to_approach_target(ai_unit_state, target_unit.position)
+                 approach_path = game_state_manager.map_system.pathfinder.find_path_towards_target(ai_unit_state, target_unit.position, movement_points)
                  if approach_path and len(approach_path) > 1:
-                     movement_range = getattr(ai_unit_state, 'movement_range', 5)
-                     limited_path = approach_path[:movement_range + 1]
-                     if len(limited_path) > 1:
-                         # --- Validate Reachability ---
-                         reachable_tiles = self.movement_system.calculate_movement_range(ai_unit_state.id)
-                         destination = limited_path[-1]
-                         if destination in reachable_tiles:
-                             self.logger.info(f"Final movement decision for {ai_unit_state.id}: Move to {destination} to approach target {target_unit_id}")
-                             return AIAction(action_type="MOVE", unit_id=ai_unit_state.id, target_data={"path": limited_path})
-                         else:
-                             return None # Destination not reachable
-                     else:
-                         return None
+                      movement_range = getattr(ai_unit_state, 'movement_range', 5)
+                      limited_path = approach_path[:movement_range + 1]
+                      if len(limited_path) > 1:
+                          # --- Validate Reachability ---
+                          reachable_tiles = self.movement_system.calculate_movement_range(ai_unit_state.id)
+                          destination = limited_path[-1]
+                          if destination in reachable_tiles:
+                              self.logger.info(f"Final movement decision for {ai_unit_state.id}: Move to {destination} to approach target {target_unit_id}")
+                              return AIAction(action_type="MOVE", unit_id=ai_unit_state.id, target_data={"path": limited_path})
+                          else:
+                              return None # Destination not reachable
+                      else:
+                          return None
                  else:
                      return None
              return None
@@ -271,7 +309,8 @@ class TacticalExecutor:
             if can_attack:
                 return AIAction(action_type="ATTACK", unit_id=ai_unit_state.id, target_data={"target_unit_id": target_unit_id})
         
-        attack_path = game_state_manager.pathfinding.find_path_to_attack_position(ai_unit_state, target_unit)
+        # attack_path = game_state_manager.pathfinding.find_path_to_attack_position(ai_unit_state, target_unit)
+        attack_path = game_state_manager.map_system.pathfinder.find_path_to_nearest_attack_position(ai_unit_state, target_unit, movement_points)
         can_attack = self.combat_system.can_attack(ai_unit_state, target_unit)
         
         if attack_path and len(attack_path) > 1 and can_attack:
@@ -286,19 +325,66 @@ class TacticalExecutor:
                 # Fall through to potentially move closer if possible
         
         movement_range = getattr(ai_unit_state, 'movement_range', 5)
-        approach_path = game_state_manager.pathfinding.find_path_to_approach_target(ai_unit_state, target_unit.position)
+        # approach_path = game_state_manager.pathfinding.find_path_to_approach_target(ai_unit_state, target_unit.position)
+        approach_path = game_state_manager.map_system.pathfinder.find_path_towards_target(ai_unit_state, target_unit.position, movement_points)
         
         if approach_path and len(approach_path) > 1:
-            # Find the furthest reachable tile on the path
+            # Find the furthest reachable and unoccupied tile on the path
             limited_path = self._find_furthest_reachable_tile_on_path(ai_unit_state.id, approach_path)
-            
-            if limited_path and len(limited_path) > 1:  # Only starting position is reachable
+
+            if limited_path and len(limited_path) > 1:
                 destination = limited_path[-1]
-                self.logger.info(f"Final movement decision for {ai_unit_state.id}: Move to {destination} to approach target {target_unit_id}")
+                self.logger.info(f"Final movement decision for {ai_unit_state.id}: Move to {destination} to approach target {target_unit_id} via primary path.")
                 return AIAction(action_type="MOVE", unit_id=ai_unit_state.id, target_data={"path": limited_path})
             else:
-                self.logger.warning(f"No reachable tiles on path to approach target {target_unit_id}")
-                # Cannot move closer this way
+                self.logger.warning(f"Primary approach path blocked or only start tile reachable for {ai_unit_state.id} towards {target_unit_id}. Evaluating alternative moves.")
+                # --- Fallback Logic ---
+                # Calculate all reachable tiles
+                all_reachable_tiles = self.movement_system.calculate_movement_range(ai_unit_state.id)
+
+                # Filter out occupied tiles
+                valid_destinations = []
+                gs = self.movement_system.gameStateManager # Assuming access as before
+                if gs and gs.current_game_state and gs.current_game_state.map_state:
+                    occupied_tiles = set(gs.current_game_state.map_state.unit_positions.values())
+                    for tile in all_reachable_tiles:
+                        if tile != ai_unit_state.position and tile not in occupied_tiles: # Exclude self and occupied
+                            valid_destinations.append(tile)
+                else:
+                    self.logger.error("Cannot get occupied tiles from GameStateManager during fallback move calculation.")
+                    valid_destinations = list(all_reachable_tiles) # Proceed without occupancy check if GS fails
+
+                if not valid_destinations:
+                    self.logger.warning(f"No valid alternative unoccupied destinations reachable for {ai_unit_state.id}.")
+                    return None # No valid move found
+
+                # Find the valid destination closest to the target unit
+                closest_tile = None
+                min_dist = float('inf')
+                target_pos = target_unit.position
+                for tile in valid_destinations:
+                    # Using Manhattan distance for simplicity
+                    dist = abs(tile[0] - target_pos[0]) + abs(tile[1] - target_pos[1])
+                    if dist < min_dist:
+                        min_dist = dist
+                        closest_tile = tile
+
+                if closest_tile:
+                    # Calculate path to this alternative tile
+                    # Correct pathfinding access via map_system
+                    alternative_path = game_state_manager.map_system.pathfinder.reconstruct_path(ai_unit_state.position, closest_tile, ai_unit_state.unit_id)
+                    if alternative_path and len(alternative_path) > 1:
+                        self.logger.info(f"Final movement decision for {ai_unit_state.id}: Move to {closest_tile} (alternative) to approach target {target_unit_id}.")
+                        return AIAction(action_type="MOVE", unit_id=ai_unit_state.id, target_data={"path": alternative_path})
+                    else:
+                        self.logger.warning(f"Could not find path to alternative destination {closest_tile} for {ai_unit_state.id}.")
+                else:
+                    # This case should be rare if valid_destinations was not empty
+                    self.logger.warning(f"Could not determine a closest valid destination for {ai_unit_state.id} from {valid_destinations}.")
+        else:
+             self.logger.warning(f"Could not find any initial path towards {target_unit.id} at {target_unit.position} for {ai_unit_state.id}.")
+
+        self.logger.debug(f"EXITING: _handle_attack_unit_goal for unit {ai_unit_state.id} - returning None (no valid move/attack found)")
         return None
     
     def _handle_heal_unit_goal(self, goal, ai_unit_state, game_state_manager) -> Optional[AIAction]:
@@ -367,7 +453,8 @@ class TacticalExecutor:
                     # Fall through to potentially move closer if possible
         
         movement_range = getattr(ai_unit_state, 'movement_range', 5)
-        approach_path = game_state_manager.pathfinding.find_path_to_approach_target(ai_unit_state, target_unit.position)
+        # approach_path = game_state_manager.pathfinding.find_path_to_approach_target(ai_unit_state, target_unit.position)
+        approach_path = game_state_manager.map_system.pathfinder.find_path_towards_target(ai_unit_state, target_unit.position, movement_range)
         
         if approach_path and len(approach_path) > 1:
             # Find the furthest reachable tile on the path
@@ -440,7 +527,8 @@ class TacticalExecutor:
         
         if closest_safe_tile:
             self.logger.info(f"Found closest safe tile at {closest_safe_tile} for unit at {ai_pos}")
-            approach_path = game_state_manager.pathfinding.find_path_to_approach_target(ai_unit_state, closest_safe_tile)
+            # approach_path = game_state_manager.pathfinding.find_path_to_approach_target(ai_unit_state, closest_safe_tile)
+            approach_path = game_state_manager.map_system.pathfinder.find_path_towards_target(ai_unit_state, closest_safe_tile, movement_range)
             if approach_path and len(approach_path) > 1:
                 self.logger.debug(f"Found approach path to distant safe tile: {approach_path}")
                 # Find the furthest reachable tile on the path
@@ -538,7 +626,8 @@ class TacticalExecutor:
             path_cost = len(move_path) - 1 # Cost is number of steps
 
             # --- Validate Reachability for the *entire* path first ---
-            reachable_tiles = self.movement_system.calculate_movement_range(ai_unit_state.id)
+            reachable_data = game_state_manager.pathfinding.find_reachable(ai_pos, movement_range, ai_unit_state.id)
+            reachable_tiles = set(reachable_data.keys())
 
             if destination == target_position and destination in reachable_tiles and path_cost <= movement_range:
                 # Can reach the target tile exactly within movement range
@@ -549,7 +638,9 @@ class TacticalExecutor:
             else:
                 # Cannot reach the target directly, or path doesn't end at target. Move closer.
                 # Find the furthest reachable tile on the path
-                limited_path = self._find_furthest_reachable_tile_on_path(ai_unit_state.id, move_path)
+                # limited_path = self._find_furthest_reachable_tile_on_path(ai_unit_state.id, move_path)
+                # Use the path towards target logic directly
+                limited_path = game_state_manager.pathfinding.find_path_towards_target(ai_unit_state, target_position, movement_range)
                 
                 if limited_path and len(limited_path) > 1:  # Only starting position is reachable
                     limited_destination = limited_path[-1]
@@ -753,7 +844,7 @@ class TacticalExecutor:
         # Use a method designed for approaching a target coordinate
         # Assuming find_path can handle coordinate targets and uses game_state_manager internally for map
         # approach_path = pathfinder.find_path(unit_id, current_pos, target_position, game_map_state)
-        approach_path = pathfinder.find_path(unit_id, current_pos, target_position)
+        approach_path = pathfinder.find_path_towards_target(ai_unit_state, target_position, movement_points)
         # Alternative: pathfinder.find_path_to_approach_target(ai_unit_state, target_position)
         # Choose the one that fits the Pathfinding interface better
 
@@ -768,7 +859,7 @@ class TacticalExecutor:
 
         # --- 4. Find Furthest Reachable Point on Path ---
         # This helper uses self.movement_system.calculate_movement_range internally
-        limited_path = self._find_furthest_reachable_tile_on_path(unit_id, approach_path)
+        limited_path = approach_path # The method already returns the limited path
 
         # --- 5. Generate Action ---
         if limited_path and len(limited_path) > 1:

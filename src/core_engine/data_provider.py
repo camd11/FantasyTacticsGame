@@ -906,8 +906,8 @@ class DataProvider:
         """
         map_dict = None
         if scenario_name:
-            # Load the scenario file itself
-            scenario_data = self._load_yaml_or_json(scenario_name)
+            # Load the scenario file itself using the dedicated method
+            scenario_data = self.load_scenario(scenario_name)
             if scenario_data:
                 # Map data is at the top level of the scenario YAML, use the whole dict
                 map_dict = scenario_data 
@@ -945,8 +945,8 @@ class DataProvider:
         """
         placements_list = []
         if scenario_name:
-            # Load the scenario file itself
-            scenario_data = self._load_yaml_or_json(scenario_name)
+            # Load the scenario file itself using the dedicated method
+            scenario_data = self.load_scenario(scenario_name)
             if scenario_data:
                 # Placements should be under the 'placements' key
                 placements_list_raw = scenario_data.get('placements')
@@ -1038,71 +1038,75 @@ class DataProvider:
 
     def load_scenario(self, scenario_name: str) -> Optional[Dict]:
         """
-        Load data for a specific test scenario.
+        Load scenario data from a specific file.
 
         Args:
-            scenario_name: The name of the scenario (without extension)
+            scenario_name: The name of the scenario file (without extension)
 
         Returns:
-            Dictionary containing scenario data or None if not found
+            Dictionary containing scenario data or None if not found.
         """
-        # Try different possible file paths
-        possible_paths = [
-            os.path.join("data", "scenarios", f"{scenario_name}.yaml"),
-            os.path.join("data", "scenarios", f"{scenario_name}.json"),
-            os.path.join("data", "scenarios", scenario_name, "scenario.yaml"),
-            os.path.join("data", "scenarios", scenario_name, "scenario.json")
-        ]
+        base_path = os.path.join("data", "scenarios", scenario_name)
         
-        logging.info(f"Attempting to load scenario '{scenario_name}'")
-        for filepath in possible_paths:
-            logging.info(f"Trying path: {filepath}")
-            if os.path.exists(filepath):
-                logging.info(f"Found scenario file at {filepath}")
-                scenario_data = self._load_yaml_or_json(filepath)
-                if scenario_data:
-                    logging.info(f"Loaded scenario data for '{scenario_name}' from {filepath}")
-                    return scenario_data
-        
-        # If we get here, we couldn't find the scenario file
-        logging.error(f"Could not find scenario data for '{scenario_name}' in any of the expected locations")
-        
-        # As a fallback, try loading directly from the file we know exists
-        direct_filepath = os.path.join("data", "scenarios", f"{scenario_name}.yaml")
-        logging.info(f"Attempting direct load from {direct_filepath}")
-        if os.path.exists(direct_filepath):
-            scenario_data = self._load_yaml_or_json(direct_filepath)
-            if scenario_data:
-                logging.info(f"Successfully loaded scenario data from {direct_filepath}")
-                return scenario_data
-        
+        # Try loading as YAML first
+        scenario_data = self._load_yaml_or_json(base_path + ".yaml")
+        if scenario_data:
+            logging.info(f"Loaded scenario data from {scenario_name}.yaml")
+            return scenario_data
+
+        # Try loading as JSON if YAML failed
+        scenario_data = self._load_yaml_or_json(base_path + ".json")
+        if scenario_data:
+            logging.info(f"Loaded scenario data from {scenario_name}.json")
+            return scenario_data
+
+        # If both failed
+        logging.warning(f"Could not load scenario file (tried .yaml and .json): {scenario_name}")
         return None
-    
+
     def _load_yaml_or_json(self, filepath: str) -> Dict:
         """
-        Load data from a YAML or JSON file.
-        
+        Load data from a YAML or JSON file, detecting the format.
+        Handles file not found errors.
+
         Args:
-            filepath: Path to the file
-            
+            filepath: The full path to the file (including extension).
+
         Returns:
-            Dictionary containing the loaded data
+            A dictionary containing the loaded data, or an empty dictionary if loading fails.
         """
+        # Check if file exists before trying to open
         if not os.path.exists(filepath):
-            logging.warning(f"File not found: {filepath}")
+            # Log warning instead of error, as trying multiple extensions is expected
+            # logging.warning(f"File not found: {filepath}")
             return {}
-        
+
         try:
-            with open(filepath, 'r') as file:
-                if filepath.endswith('.yaml') or filepath.endswith('.yml'):
-                    return yaml.safe_load(file)
+            with open(filepath, 'r', encoding='utf-8') as f:
+                if filepath.endswith('.yaml'):
+                    return yaml.safe_load(f) or {}
                 elif filepath.endswith('.json'):
-                    return json.load(file)
+                    return json.load(f) or {}
                 else:
-                    logging.warning(f"Unsupported file format: {filepath}")
-                    return {}
+                    # Try guessing based on content (less reliable)
+                    try:
+                        content = f.read()
+                        f.seek(0) # Reset file pointer
+                        # Basic check: YAML often starts with --- or key:, JSON with {
+                        if content.strip().startswith('{') or content.strip().startswith('['):
+                            return json.load(f) or {}
+                        else:
+                            return yaml.safe_load(f) or {}
+                    except (json.JSONDecodeError, yaml.YAMLError) as e:
+                        logging.error(f"Error decoding file (tried JSON/YAML): {filepath} - {e}")
+                        return {}
+        except FileNotFoundError:
+            # This case should ideally be caught by os.path.exists, but handle defensively
+            # logging.warning(f"File not found during open: {filepath}") 
+            return {}
         except Exception as e:
-            logging.error(f"Error loading file {filepath}: {str(e)}")
+            logging.error(f"Error loading file: {filepath} - {e}")
+            # traceback.print_exc() # Add detailed traceback for debugging if needed
             return {}
     
     def _load_data_to_objects(self, filepath: str, class_type, is_list: bool = False) -> Dict:

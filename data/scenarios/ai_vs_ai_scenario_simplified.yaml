@@ -60,6 +60,37 @@ objectives:
     faction: ENEMY
     description: "Defeat all player units"
 
+events:
+  - event_id: check_player_victory_defeat_all
+    trigger: UNIT_DEATH
+    conditions:
+      - type: FACTION_UNITS_REMAINING
+        faction: ENEMY
+        operator: EQ # Equal to
+        value: 0
+    actions:
+      - type: SET_FLAG
+        flag_name: "objective_completed"
+        flag_value: true
+      - type: SET_FLAG
+        flag_name: "scenario_end_reason"
+        flag_value: "All enemy units defeated."
+
+  - event_id: check_enemy_victory_defeat_all
+    trigger: UNIT_DEATH
+    conditions:
+      - type: FACTION_UNITS_REMAINING
+        faction: PLAYER
+        operator: EQ
+        value: 0
+    actions:
+      - type: SET_FLAG
+        flag_name: "loss_condition" # Trigger game over for the player
+        flag_value: true
+      - type: SET_FLAG
+        flag_name: "scenario_end_reason"
+        flag_value: "All player units defeated."
+
 # AI logging settings (Keep detailed for debugging specific AI issues if needed)
 ai_logging:
   enabled: true

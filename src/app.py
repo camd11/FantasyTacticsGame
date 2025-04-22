@@ -30,9 +30,11 @@ from src.gameplay_systems.unit_system import UnitSystem
 from src.gameplay_systems.inventory_system import InventorySystem
 # Import input handler
 from src.input.cli_input_handler import CommandLineInputHandler
+from src.input.cli_display import CLIDisplay
 from src.ui.input_handler import InputHandler
 from src.ui.views.map_view import MapView
 from src.ui.gui_manager import GUIManager
+from src.utils.visual_logger import VisualScenarioLogger
 
 
 
@@ -45,6 +47,7 @@ class GameApplication:
     """
     
     def __init__(self, ai_vs_ai: bool = False, ascii_display: bool = False, scenario: Optional[str] = None,
+                 chapter_id: str = '1', # Add chapter_id parameter with default
                  use_gui: bool = True, window_width: int = 800, window_height: int = 600):
         """
         Initialize the GameApplication with configuration options.
@@ -53,6 +56,7 @@ class GameApplication:
             ai_vs_ai: Flag to enable AI vs AI mode (AI controls player units)
             ascii_display: Flag to enable ASCII map display in the console
             scenario: Optional scenario name for testing (loads from data/scenarios/[name])
+            chapter_id: The ID of the chapter to load (default: '1')
             use_gui: Flag to enable GUI mode with Pygame
             window_width: Width of the game window in pixels
             window_height: Height of the game window in pixels
@@ -60,6 +64,7 @@ class GameApplication:
         self.ai_vs_ai = ai_vs_ai
         self.ascii_display = ascii_display
         self.scenario = scenario
+        self.chapter_id = chapter_id # Store chapter_id
         self.use_gui = use_gui
         self.window_width = window_width
         self.window_height = window_height
@@ -94,6 +99,7 @@ class GameApplication:
         
         # Pygame clock for controlling frame rate
         self.clock = None
+        # self.visual_logger = None # Remove initialization here
     
     def setup_logging(self):
         """Configure basic logging for the application."""
@@ -159,15 +165,31 @@ class GameApplication:
         self.unit_system = UnitSystem()
         self.inventory_system = InventorySystem()
         
+        # Create CLIDisplay if needed for ASCII mode (even in AI vs AI)
+        if self.ascii_display:
+            self.display = CLIDisplay()
+            logging.info("CLIDisplay created for ASCII mode.")
+
         # Skip input handler creation in AI vs AI mode
         if not self.ai_vs_ai:
             # Input handler (set interactive=True to enable user input prompts)
             if not self.use_gui:
-                self.input_handler = CommandLineInputHandler(interactive=True)
+                # Create CLIDisplay instance first if not already created for ASCII
+                if not hasattr(self, 'display'):
+                    self.display = CLIDisplay()
+                self.input_handler = CommandLineInputHandler(display=self.display, interactive=True)
             else:
                 # Skip GUI components if ascii_display is enabled
                 if self.ascii_display:
-                    self.input_handler = CommandLineInputHandler(interactive=True)
+                    # CLIDisplay should already be created above
+                    if hasattr(self, 'display'):
+                        self.input_handler = CommandLineInputHandler(display=self.display, interactive=True)
+                    else:
+                        # Fallback/Error case - should not happen if ascii_display is true
+                        logging.error("CLIDisplay expected but not found for ASCII mode.")
+                        self.display = CLIDisplay() # Create anyway?
+                        self.input_handler = CommandLineInputHandler(display=self.display, interactive=True)
+
                 else:
                     # GUI components disabled
                     if False:  # Disabled GUI component creation
@@ -194,8 +216,26 @@ class GameApplication:
                         pass
                     
                     # Fallback to CLI input handler when GUI is disabled
-                    self.input_handler = CommandLineInputHandler(interactive=True)
+                    if not hasattr(self, 'display'): # Create display if not already created
+                        self.display = CLIDisplay()
+                    self.input_handler = CommandLineInputHandler(display=self.display, interactive=True)
         
+        # Move logger instantiation just before return - OLD LOCATION
+        # Instantiate Visual Logger AFTER game_state_manager and display are created
+        # self.visual_logger = None # Initialize as None
+        # Check if conditions for visual logger are met (requires CLIDisplay)
+        # if self.game_state_manager and hasattr(self, 'display') and isinstance(self.display, CLIDisplay):
+        #    self.visual_logger = VisualScenarioLogger(self.game_state_manager, self.display, enabled=True)
+        #    logging.info("VisualScenarioLogger initialized successfully.")
+        # else:
+            # Refine warning/info message based on why it failed
+        #    if not self.game_state_manager:
+        #         logging.warning("Cannot initialize VisualScenarioLogger: GameStateManager not ready.")
+        #    elif not (hasattr(self, 'display') and isinstance(self.display, CLIDisplay)):
+        #         logging.info("VisualScenarioLogger not initialized (requires CLIDisplay, which was not created).")
+        #    else: # Should not be reached if logic is correct
+        #         logging.warning("Cannot initialize VisualScenarioLogger for unknown reason.")
+
         return True
     
     def initialize_dependencies(self):
@@ -212,7 +252,9 @@ class GameApplication:
             inventorySystem_instance=self.inventory_system,
             turnManager_instance=self.turn_manager,
             eventHandler_instance=self.event_handler,
-            dataProvider_instance=self.data_provider
+            dataProvider_instance=self.data_provider,
+            core_turn_manager_instance=self.turn_manager,
+            visual_logger=getattr(self, 'visual_logger', None) # Use getattr safely
         )
         
         # Initialize event handler with dependencies
@@ -265,10 +307,16 @@ class GameApplication:
                 data_provider=self.data_provider
             )
         
-        # Update the display module with combat_system after it's initialized (if input handler exists)
-        if self.input_handler and hasattr(self.input_handler, 'display') and hasattr(self.input_handler.display, 'combat_system'):
-            self.input_handler.display.combat_system = self.combat_system
-            
+        # Update the display module with required systems after they are initialized
+        if hasattr(self, 'display') and isinstance(self.display, CLIDisplay):
+            logging.info("Assigning required systems to CLIDisplay.")
+            self.display.game_state_manager = self.game_state_manager
+            self.display.unit_system = self.unit_system
+            self.display.map_system = self.map_system
+            self.display.movement_system = self.movement_system
+            self.display.combat_system = self.combat_system
+            self.display.data_provider = self.data_provider
+
         logging.info("System dependencies initialized.")
         return True
     
@@ -287,7 +335,9 @@ class GameApplication:
             unit_system=self.unit_system,
             input_handler=None if self.ai_vs_ai else self.input_handler,
             ai_vs_ai=self.ai_vs_ai,
-            ascii_display=self.ascii_display
+            ascii_display=self.ascii_display,
+            display=getattr(self, 'display', None),
+            # visual_logger=self.visual_logger # Removed from here
         )
         
         # Initialize game engine API with the engine if using GUI and not using ASCII display
@@ -301,22 +351,55 @@ class GameApplication:
         return True
     
     def initialize_game(self):
-        """Initialize the game with a chapter or scenario."""
-        # Default chapter ID
-        chapter_id = "test_chapter"
-        
-        # Initialize the engine with the default chapter or scenario
-        if self.scenario:
-            logging.info(f"Initializing scenario: {self.scenario}")
-            self.engine.initialize_chapter(chapter_id, self.scenario)
+        """Initializes the game engine systems and loads the scenario."""
+        logging.info("Initializing engine systems and loading scenario...")
+        if not self.engine:
+            logging.error("EngineCore not created before initializing game.")
+            return False
+
+        # Corrected: Call initialize_chapter instead of initialize_systems
+        # Determine scenario name for logging/loading purposes
+        # scenario_name = self.scenario if self.scenario else None # Already have self.scenario
+        chapter_id_to_use = self.chapter_id # Use the chapter ID provided at app init
+
+        # Load the chapter/scenario data and initialize engine internal state
+        try:
+            self.engine.initialize_chapter(chapter_id=chapter_id_to_use, scenario_name=self.scenario)
+            logging.info(f"EngineCore chapter/scenario initialized: Chapter '{chapter_id_to_use}', Scenario '{self.scenario}'")
+        except Exception as e:
+            logging.error(f"Failed during EngineCore.initialize_chapter: {e}", exc_info=True)
+            return False
+
+        # ---- NEW LOCATION for VisualScenarioLogger Initialization ----
+        visual_logger = None # Default to None
+        # Check if conditions for visual logger are met (requires CLIDisplay which should be ready now)
+        if self.game_state_manager and hasattr(self, 'display') and isinstance(self.display, CLIDisplay):
+            try:
+                 # Try to initialize the logger
+                 visual_logger = VisualScenarioLogger(self.game_state_manager, self.display, enabled=True)
+                 logging.info("VisualScenarioLogger initialized successfully.")
+            except Exception as e:
+                 logging.error(f"Failed to initialize VisualScenarioLogger: {e}")
         else:
-            logging.info(f"Initializing chapter: {chapter_id}")
-            self.engine.initialize_chapter(chapter_id)
-        
-        # Initialize AI components now that game state is initialized
-        logging.info("Initializing AI components...")
-        logging.info("AI profiles loaded.")
-        
+            # Refine warning/info message based on why it failed
+            if not self.game_state_manager:
+                 logging.warning("Cannot initialize VisualScenarioLogger: GameStateManager not ready.")
+            elif not (hasattr(self, 'display') and isinstance(self.display, CLIDisplay)):
+                 logging.info("VisualScenarioLogger not initialized (requires CLIDisplay, which was not created/ready).")
+            else: # Should not be reached if logic is correct
+                 logging.warning("Cannot initialize VisualScenarioLogger for unknown reason.")
+
+        # Pass the logger (or None) to the engine and log initial state
+        if self.engine:
+            if visual_logger:
+                self.engine.set_visual_logger(visual_logger)
+                # Trigger initial state log *after* setting the logger in the engine
+                self.engine.log_initial_visual_state()
+            else:
+                logging.info("Visual logger was not created, engine will run without it.")
+
+
+        logging.info("Engine systems initialized and scenario loaded.")
         return True
     
     def setup_game(self):
@@ -383,3 +466,36 @@ class GameApplication:
         
         logging.info("Game ended")
         return True
+
+# --- Main Execution Block ---
+
+if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Run the Fantasy Tactics Game.")
+    parser.add_argument('--ai-vs-ai', action='store_true', help="Enable AI vs AI mode.")
+    parser.add_argument('--ascii', action='store_true', help="Enable ASCII display mode.")
+    parser.add_argument('--scenario', type=str, help="Load a specific scenario for testing.", default=None)
+    parser.add_argument('--chapter', type=str, default='1', help="Specify the chapter ID to load.")
+    parser.add_argument('--log-level', type=str, default='INFO', choices=['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'], help="Set the logging level.")
+    
+    args = parser.parse_args()
+    
+    # Set log level based on arguments
+    log_level = getattr(logging, args.log_level.upper(), logging.INFO)
+    logging.getLogger().setLevel(log_level)
+    logging.getLogger('src').setLevel(log_level)
+
+    app = GameApplication(
+        ai_vs_ai=args.ai_vs_ai,
+        ascii_display=args.ascii,
+        scenario=args.scenario,
+        chapter_id=args.chapter, # Pass chapter_id to constructor
+        use_gui=False # GUI mode is currently disabled
+    )
+    
+    if app.run():
+        logging.info("Game finished successfully.")
+    else:
+        logging.error("Game exited with errors.")
+        sys.exit(1)

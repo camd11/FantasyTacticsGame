@@ -140,9 +140,12 @@ class AttackUnitGoal(Goal):
         #     return False
         
         # Check if target is potentially reachable
-        return game_state_manager.pathfinding.can_potentially_reach(
-            unit, target_unit.position
+        path = game_state_manager.map_system.pathfinder.reconstruct_path(
+            unit.position, target_unit.position, unit.unit_id
         )
+        path_exists = bool(path) # True if path list is not empty
+        
+        return path_exists
     
     def generate_potential_actions(self, unit, game_state_manager) -> List[Any]:
         """
@@ -247,9 +250,10 @@ class HealUnitGoal(Goal):
             return False
             
         # Check if target is potentially reachable
-        return game_state_manager.pathfinding.can_potentially_reach(
-            unit, target_unit.position
+        path = game_state_manager.map_system.pathfinder.reconstruct_path(
+             unit.position, target_unit.position, unit.unit_id
         )
+        return bool(path)
     
     def generate_potential_actions(self, unit, game_state_manager) -> List[Any]:
         """

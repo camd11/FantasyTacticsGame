@@ -12,7 +12,7 @@ from enum import Enum
 from typing import Dict, List, Set, Tuple, Optional, Any
 
 # Import necessary modules/classes
-from src.core_engine.game_state import GameStateManager
+# Removed: from src.core_engine.game_state import GameStateManager
 from src.core_engine.data_provider import DataProvider
 
 
@@ -75,7 +75,8 @@ class FogOfWarSystem:
         self.unitSystem = None
         self.turnManager = None
     
-    def initialize(self, gameStateManager_instance, dataProvider_instance, mapSystem_instance, unitSystem_instance, turnManager_instance) -> None:
+    def initialize(self, gameStateManager_instance: 'GameStateManager', dataProvider_instance: DataProvider, 
+                   mapSystem_instance, unitSystem_instance, turnManager_instance) -> None:
         """
         Initialize the FogOfWarSystem with the necessary dependencies.
         
