@@ -46,7 +46,7 @@ class GameApplication:
     the game environment, and running the main game loop.
     """
     
-    def __init__(self, ai_vs_ai: bool = False, ascii_display: bool = False, scenario: Optional[str] = None,
+    def __init__(self, ai_vs_ai: bool = False, ascii_display: bool = False, # scenario: Optional[str] = None,
                  chapter_id: str = '1', # Add chapter_id parameter with default
                  use_gui: bool = True, window_width: int = 800, window_height: int = 600):
         """
@@ -55,7 +55,7 @@ class GameApplication:
         Args:
             ai_vs_ai: Flag to enable AI vs AI mode (AI controls player units)
             ascii_display: Flag to enable ASCII map display in the console
-            scenario: Optional scenario name for testing (loads from data/scenarios/[name])
+            # scenario: Optional scenario name for testing (loads from data/scenarios/[name]) # Removed
             chapter_id: The ID of the chapter to load (default: '1')
             use_gui: Flag to enable GUI mode with Pygame
             window_width: Width of the game window in pixels
@@ -63,7 +63,7 @@ class GameApplication:
         """
         self.ai_vs_ai = ai_vs_ai
         self.ascii_display = ascii_display
-        self.scenario = scenario
+        # self.scenario = scenario # Removed
         self.chapter_id = chapter_id # Store chapter_id
         self.use_gui = use_gui
         self.window_width = window_width

@@ -22,15 +22,12 @@ def main():
                         help='Enable AI vs AI mode (AI controls player units)')
     parser.add_argument('--ascii-display', action='store_true', 
                         help='Enable ASCII map display in the console')
-    parser.add_argument('--scenario', type=str, 
-                        help='Scenario name for testing (loads from data/scenarios/[name])')
     args = parser.parse_args()
     
     # Create and run the game application
     app = GameApplication(
         ai_vs_ai=args.ai_vs_ai,
-        ascii_display=args.ascii_display,
-        scenario=args.scenario
+        ascii_display=args.ascii_display
     )
     
     # Run the application

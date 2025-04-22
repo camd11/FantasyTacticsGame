@@ -1,4 +1,0 @@
-# Objective for AI Test Small Defeat Scenario
-objective:
-  type: defeat_all_enemies
-  description: "Defeat all enemy units"

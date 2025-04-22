@@ -1,9 +1,0 @@
-id: capture_test
-name: Capture Mechanic Test
-dimensions: [5, 5]
-terrain_grid:
-  - [P, P, P, P, P]
-  - [P, P, P, P, P]
-  - [P, P, P, P, P]
-  - [P, P, P, P, P]
-  - [P, P, P, P, P]

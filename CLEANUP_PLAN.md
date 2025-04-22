@@ -34,12 +34,12 @@ This document outlines the steps taken to refactor and clean up the `FantasyTact
     *   Ensure `README.md` links to relevant documentation within `docs/`.
     *   Commit as "docs: consolidate documentation in docs/ folder, merge duplicate files".
 
-6.  **Simplify Data Directories:** ⬜️
+6.  **Simplify Data Directories:** ✅
     *   Assume `data/chapters/` is the canonical source for level data.
     *   Remove the deprecated `data/scenarios/` directory.
     *   Remove the potentially duplicate `data/maps/test_chapter` directory.
     *   Update any code references pointing to the removed data paths.
-    *   Commit as "refactor(data): remove deprecated scenario files and unify chapter data".
+    *   Commit as "refactor(data): remove deprecated scenario and map directories".
 
 7.  **Remove Deprecated Code Paths:** ⬜️
     *   Remove the `ScenarioLoader` module (`src/core_engine/scenario_loader.py`) and its associated tests (`tests/core_engine/test_scenario_loader.py`).
@@ -66,14 +66,10 @@ This document outlines the steps taken to refactor and clean up the `FantasyTact
 
 ## Completion Status
 
-- Steps 1-5, 10: Completed
-- Steps 6-9, 11: Pending
+- Steps 1-6, 10: Completed
+- Steps 7-9, 11: Pending
 
-The documentation reorganization has been completed with the following updates:
-- Created a comprehensive README.md file for the repository
-- Consolidated status documents into docs/status.md
-- Merged AI research documents into docs/research/ai_research_summary.md
-- Created technical documentation in docs/technical.md containing usage guide and movement system analysis
-- Removed all original standalone markdown files after consolidation
+The documentation reorganization has been completed.
+Data directory simplification is complete.
 
-Next step is to simplify data directories and remove deprecated code paths. 
+Next step is to remove deprecated code paths (ScenarioLoader). 
