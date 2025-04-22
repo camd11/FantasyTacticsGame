@@ -138,9 +138,9 @@ cython_debug/
 logs/
 *.log
 test_output.txt
-ai_vs_ai_simplified.log # Add specific log file
-interactive_input_test.log # Add specific log file
+# ai_vs_ai_simplified.log # Already covered by *.log
+# interactive_input_test.log # Already covered by *.log
 *.sqlite3 # Ignore SQLite databases
 *.sqlite3-journal # Ignore SQLite journals
-*.coverage # Ignore coverage files (already included?)
-.coverage.* # Ignore coverage files (already included?)
+# *.coverage # Already covered by .coverage*
+# .coverage.* # Already included above
