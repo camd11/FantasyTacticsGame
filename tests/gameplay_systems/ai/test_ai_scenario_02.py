@@ -2,8 +2,8 @@ import pytest
 from unittest.mock import Mock, patch
 
 # Import the required modules
-from src.core_engine.scenario_loader import ScenarioLoader
-from src.core_engine.game_state import GameStateManager, FactionEnum
+# from src.core_engine.scenario_loader import ScenarioLoader
+from src.core_engine.game_state import GameStateManager, FactionEnum, GameState, MapState
 from src.core_engine.data_provider import DataProvider
 
 # Import AI modules
@@ -27,14 +27,16 @@ class TestAIScenario02:
         # Load all data from the data directory
         data_provider.load_all_data("data")
         
-        # Load the scenario
-        scenario_loader = ScenarioLoader(data_provider)
-        scenario = scenario_loader.load_scenario("ai_test_scenario_02")
-        
-        # Create a game state from the scenario
+        # Create a game state manager
         game_state_manager = GameStateManager(data_provider)
-        game_state_manager.initialize_from_scenario(scenario)
         
+        # Create a simple GameState instead of loading from scenario
+        map_state = MapState()
+        map_state.dimensions = (10, 10)
+        map_state.terrain_grid = [['P'] * 10 for _ in range(10)]
+        game_state = GameState("test_chapter_ai_02", map_state)
+        game_state_manager.set_current_game_state(game_state)
+
         # Add mock units for testing
         self._add_mock_units(game_state_manager)
         
@@ -53,7 +55,7 @@ class TestAIScenario02:
         )
         
         return {
-            "scenario": scenario,
+            # "scenario": scenario,
             "game_state_manager": game_state_manager,
             "tactical_executor": tactical_executor,
             "combat_system": mock_combat_system,
@@ -143,7 +145,8 @@ class TestAIScenario02:
             game_state_manager.current_game_state.unit_states["LEIF"] = leif
             game_state_manager.current_game_state.unit_states["FINN"] = finn
             
-            # Update unit positions
+            # Update unit positions in map_state
+            game_state_manager.current_game_state.map_state.unit_positions = {}
             game_state_manager.current_game_state.map_state.unit_positions["ENEMY_FIGHTER"] = enemy_fighter.position
             game_state_manager.current_game_state.map_state.unit_positions["ENEMY_KNIGHT"] = enemy_knight.position
             game_state_manager.current_game_state.map_state.unit_positions["ENEMY_CLERIC"] = enemy_cleric.position

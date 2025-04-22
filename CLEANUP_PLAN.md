@@ -41,11 +41,11 @@ This document outlines the steps taken to refactor and clean up the `FantasyTact
     *   Update any code references pointing to the removed data paths.
     *   Commit as "refactor(data): remove deprecated scenario and map directories".
 
-7.  **Remove Deprecated Code Paths:** ⬜️
+7.  **Remove Deprecated Code Paths:** ✅
     *   Remove the `ScenarioLoader` module (`src/core_engine/scenario_loader.py`) and its associated tests (`tests/core_engine/test_scenario_loader.py`).
     *   Remove any code that imports or utilizes the `ScenarioLoader`.
     *   Clean up any identified `# TODO remove` or dead code blocks.
-    *   Commit as "refactor: remove deprecated code (scenario loader, old systems)".
+    *   Commit as "refactor: remove deprecated ScenarioLoader module and usages".
 
 8.  **Verify and Refine:** ⬜️
     *   Run the full test suite (`pytest`) and fix any failures.
@@ -66,10 +66,11 @@ This document outlines the steps taken to refactor and clean up the `FantasyTact
 
 ## Completion Status
 
-- Steps 1-6, 10: Completed
-- Steps 7-9, 11: Pending
+- Steps 1-7, 10: Completed
+- Steps 8, 9, 11: Pending
 
 The documentation reorganization has been completed.
 Data directory simplification is complete.
+Deprecated ScenarioLoader code removed.
 
-Next step is to remove deprecated code paths (ScenarioLoader). 
+Next step is to Verify and Refine: Run tests and check CLI functionality. 

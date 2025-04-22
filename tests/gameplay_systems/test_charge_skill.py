@@ -16,7 +16,6 @@ from src.gameplay_systems.combat_system import CombatSystem
 from src.gameplay_systems.unit_system import UnitSystem
 from src.gameplay_systems.map_system import MapSystem
 from src.gameplay_systems.inventory_system import InventorySystem
-from src.gameplay_systems.scenario_loader import ScenarioLoader
 
 
 class TestChargeSkill(unittest.TestCase):
@@ -122,15 +121,6 @@ class TestChargeSkill(unittest.TestCase):
         
         # Deploy the units
         self.game_state_manager.deploy_units(unit_placements, self.data_provider)
-        
-        # Create the scenario loader for other operations
-        scenario_loader = ScenarioLoader(
-            self.game_state_manager,
-            self.data_provider,
-            self.unit_system,
-            self.map_system
-        )
-        # We've already loaded the scenario data manually, so we don't need to call load_scenario
         
         # Set up random seed for predictable test results
         import random

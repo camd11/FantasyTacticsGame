@@ -1,12 +1,11 @@
 import unittest
 import logging
 from src.core_engine.data_provider import DataProvider
-from src.core_engine.game_state import GameStateManager
+from src.core_engine.game_state import GameStateManager, GameState, MapState
 from src.gameplay_systems.unit_system import UnitSystem
 from src.gameplay_systems.map_system import MapSystem
 from src.gameplay_systems.inventory_system import InventorySystem
 from src.gameplay_systems.combat_system import CombatSystem
-from src.gameplay_systems.scenario_loader import ScenarioLoader
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -20,34 +19,43 @@ class TestWeaponTriangle(unittest.TestCase):
         self.data_provider = DataProvider()
         self.data_provider.load_all_data("data")
         
-        self.game_state = GameStateManager(self.data_provider)
+        self.game_state_manager = GameStateManager(self.data_provider)
         self.unit_system = UnitSystem()
         self.map_system = MapSystem()
         self.inventory_system = InventorySystem()
         self.combat_system = CombatSystem()
         
         # Initialize dependencies
-        self.map_system.initialize(self.game_state, self.data_provider)
-        self.unit_system.initialize(self.game_state, self.data_provider)
-        self.inventory_system.initialize(self.game_state, self.data_provider)
+        self.map_system.initialize(self.game_state_manager, self.data_provider)
+        self.unit_system.initialize(self.game_state_manager, self.data_provider)
+        self.inventory_system.initialize(self.game_state_manager, self.data_provider)
         self.combat_system.initialize(
-            self.game_state, 
+            self.game_state_manager, 
             self.data_provider, 
             self.unit_system, 
             self.map_system, 
             self.inventory_system
         )
         
-        # Load the weapon triangle test scenario
-        self.scenario_loader = ScenarioLoader(
-            self.game_state,
-            self.data_provider,
-            self.unit_system,
-            self.map_system
-        )
-        self.scenario_loader.load_scenario("weapon_triangle_test")
+        # Manually set up the game state instead of using ScenarioLoader
+        map_state = MapState()
+        map_state.dimensions = (10, 10) # Simple 10x10 map
+        map_state.terrain_grid = [['P'] * 10 for _ in range(10)] # All plains
         
-        # Get unit IDs from the scenario
+        game_state = GameState("test_chapter", map_state)
+        self.game_state_manager.set_current_game_state(game_state)
+        
+        # Define unit placements
+        placements = [
+            {'unit_id': 'LEIF', 'faction': 'PLAYER', 'position': [1, 1], 'level': 1, 'start_inventory': ['IRON_SWORD']},
+            {'unit_id': 'HALVAN', 'faction': 'PLAYER', 'position': [1, 2], 'level': 1, 'start_inventory': ['IRON_AXE']},
+            {'unit_id': 'FINN', 'faction': 'PLAYER', 'position': [2, 1], 'level': 1, 'start_inventory': ['IRON_LANCE']}
+        ]
+        
+        # Deploy units using GameStateManager
+        self.game_state_manager.deploy_units_from_list(placements, self.data_provider)
+        
+        # Get unit IDs
         self.sword_user_id = "LEIF"
         self.axe_user_id = "HALVAN"
         self.lance_user_id = "FINN"
@@ -55,13 +63,21 @@ class TestWeaponTriangle(unittest.TestCase):
     def test_weapon_triangle_hit_bonuses(self):
         """Test that the weapon triangle applies the correct hit bonuses."""
         # Get the units
-        sword_user = self.game_state.get_unit(self.sword_user_id)
-        axe_user = self.game_state.get_unit(self.axe_user_id)
-        lance_user = self.game_state.get_unit(self.lance_user_id)
+        sword_user = self.game_state_manager.get_unit(self.sword_user_id)
+        axe_user = self.game_state_manager.get_unit(self.axe_user_id)
+        lance_user = self.game_state_manager.get_unit(self.lance_user_id)
+        
+        # Ensure units were deployed correctly
+        self.assertIsNotNone(sword_user)
+        self.assertIsNotNone(axe_user)
+        self.assertIsNotNone(lance_user)
         
         # Ensure units have the correct weapons equipped
+        self.assertTrue(sword_user.inventory)
         self.assertEqual(sword_user.inventory[0].item_id, "IRON_SWORD")
+        self.assertTrue(axe_user.inventory)
         self.assertEqual(axe_user.inventory[0].item_id, "IRON_AXE")
+        self.assertTrue(lance_user.inventory)
         self.assertEqual(lance_user.inventory[0].item_id, "IRON_LANCE")
         
         # Simulate combat and check hit rates
@@ -111,7 +127,7 @@ class TestWeaponTriangle(unittest.TestCase):
     def test_base_hit_calculation(self):
         """Test that the base hit calculation is correct."""
         # Get the units
-        sword_user = self.game_state.get_unit(self.sword_user_id)
+        sword_user = self.game_state_manager.get_unit(self.sword_user_id)
         
         # Calculate expected base hit rate
         # Hit = Weapon_Hit + (2 * Unit_Skill) + Unit_Luck

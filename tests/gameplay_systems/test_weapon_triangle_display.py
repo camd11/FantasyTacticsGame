@@ -9,19 +9,18 @@ This script loads the weapon_triangle_test scenario and displays:
 
 import logging
 from src.core_engine.data_provider import DataProvider
-from src.core_engine.game_state import GameStateManager
+from src.core_engine.game_state import GameStateManager, GameState, MapState
 from src.gameplay_systems.unit_system import UnitSystem
 from src.gameplay_systems.map_system import MapSystem
 from src.gameplay_systems.inventory_system import InventorySystem
 from src.gameplay_systems.combat_system import CombatSystem
-from src.gameplay_systems.scenario_loader import ScenarioLoader
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
 
-def display_map(game_state, map_system):
+def display_map(game_state_manager, map_system):
     """Display the map with units positioned on it."""
-    dimensions = game_state.get_map_dimensions()
+    dimensions = game_state_manager.get_map_dimensions()
     
     # Create empty map grid
     grid = []
@@ -36,9 +35,9 @@ def display_map(game_state, map_system):
     axe_user_id = "HALVAN"
     lance_user_id = "FINN"
     
-    sword_user = game_state.get_unit(sword_user_id)
-    axe_user = game_state.get_unit(axe_user_id)
-    lance_user = game_state.get_unit(lance_user_id)
+    sword_user = game_state_manager.get_unit(sword_user_id)
+    axe_user = game_state_manager.get_unit(axe_user_id)
+    lance_user = game_state_manager.get_unit(lance_user_id)
     
     if sword_user:
         x, y = sword_user.position
@@ -71,7 +70,7 @@ def display_weapon_triangle():
     print("Sword > Axe > Lance > Sword")
     print("The weapon triangle affects hit rates in combat.")
 
-def display_combat_forecasts(combat_system, game_state):
+def display_combat_forecasts(combat_system, game_state_manager):
     """Display combat forecasts between all unit pairs."""
     sword_user_id = "LEIF"
     axe_user_id = "HALVAN"
@@ -109,33 +108,42 @@ def main():
     data_provider = DataProvider()
     data_provider.load_all_data("data")
     
-    game_state = GameStateManager(data_provider)
+    game_state_manager = GameStateManager(data_provider)
     unit_system = UnitSystem()
     map_system = MapSystem()
     inventory_system = InventorySystem()
     combat_system = CombatSystem()
     
     # Initialize dependencies
-    map_system.initialize(game_state, data_provider)
-    unit_system.initialize(game_state, data_provider)
-    inventory_system.initialize(game_state, data_provider)
+    map_system.initialize(game_state_manager, data_provider)
+    unit_system.initialize(game_state_manager, data_provider)
+    inventory_system.initialize(game_state_manager, data_provider)
     combat_system.initialize(
-        game_state, 
+        game_state_manager, 
         data_provider, 
         unit_system, 
         map_system, 
         inventory_system
     )
     
-    # Load the weapon triangle test scenario
-    scenario_loader = ScenarioLoader(
-        game_state,
-        data_provider,
-        unit_system,
-        map_system
-    )
-    scenario_loader.load_scenario("weapon_triangle_test")
+    # Manually set up the game state instead of using ScenarioLoader
+    map_state = MapState()
+    map_state.dimensions = (10, 10) # Simple 10x10 map
+    map_state.terrain_grid = [['P'] * 10 for _ in range(10)] # All plains
     
+    game_state = GameState("test_chapter", map_state)
+    game_state_manager.set_current_game_state(game_state)
+    
+    # Define unit placements
+    placements = [
+        {'unit_id': 'LEIF', 'faction': 'PLAYER', 'position': [1, 1], 'level': 1, 'start_inventory': ['IRON_SWORD']},
+        {'unit_id': 'HALVAN', 'faction': 'PLAYER', 'position': [1, 2], 'level': 1, 'start_inventory': ['IRON_AXE']},
+        {'unit_id': 'FINN', 'faction': 'PLAYER', 'position': [2, 1], 'level': 1, 'start_inventory': ['IRON_LANCE']}
+    ]
+    
+    # Deploy units using GameStateManager
+    game_state_manager.deploy_units_from_list(placements, data_provider)
+
     # Display the test information
     print("\n=== WEAPON TRIANGLE TEST ===")
     print("This test verifies that the weapon triangle mechanic works correctly.")
@@ -143,13 +151,13 @@ def main():
     print("The weapon triangle affects hit rates in combat.")
     
     # Display the map
-    display_map(game_state, map_system)
+    display_map(game_state_manager, map_system)
     
     # Display the weapon triangle
     display_weapon_triangle()
     
     # Display combat forecasts
-    display_combat_forecasts(combat_system, game_state)
+    display_combat_forecasts(combat_system, game_state_manager)
     
     print("\n=== TEST COMPLETE ===")
     print("If all hit rates match the expected values, the weapon triangle mechanic is working correctly.")

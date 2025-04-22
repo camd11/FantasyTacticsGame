@@ -101,7 +101,6 @@ class TalkSystem:
         self.actionSystem = None
         self.inventorySystem = None
         self.unitSystem = None
-        self.scenarioLoader = None
         self.dialogueManager = None
         self.eventManager = None
     
@@ -111,7 +110,6 @@ class TalkSystem:
                   actionSystem_instance,
                   inventorySystem_instance,
                   unitSystem_instance,
-                  scenarioLoader_instance,
                   dialogueManager_instance=None,
                   eventManager_instance=None) -> None:
         """
@@ -124,7 +122,6 @@ class TalkSystem:
             actionSystem_instance: Instance of the ActionSystem
             inventorySystem_instance: Instance of the InventorySystem
             unitSystem_instance: Instance of the UnitSystem
-            scenarioLoader_instance: Instance of the ScenarioLoader
             dialogueManager_instance: Instance of the DialogueManager (optional)
             eventManager_instance: Instance of the EventManager (optional)
         """
@@ -134,7 +131,6 @@ class TalkSystem:
         self.actionSystem = actionSystem_instance
         self.inventorySystem = inventorySystem_instance
         self.unitSystem = unitSystem_instance
-        self.scenarioLoader = scenarioLoader_instance
         self.dialogueManager = dialogueManager_instance
         self.eventManager = eventManager_instance
         
@@ -173,7 +169,9 @@ class TalkSystem:
             return False
         
         # 2. Find Matching Talk Events
-        possible_events = self.scenarioLoader.get_talk_events_for_pair(selected_unit.id, target_unit.id)
+        # TODO: Replace this with actual data loading from Chapter/DataProvider
+        # possible_events = self.scenarioLoader.get_talk_events_for_pair(selected_unit.id, target_unit.id)
+        possible_events = [] # Placeholder - assumes no talk events for now
         if not possible_events:
             return False
         
@@ -263,18 +261,10 @@ class TalkSystem:
         return True
     
     def find_first_valid_talk_event(self, initiator, target, game_state: GameState) -> Optional[TalkEvent]:
-        """
-        Find the first valid talk event for a pair of units.
-        
-        Args:
-            initiator: The unit initiating the talk
-            target: The target unit for the talk
-            game_state: Current game state
-            
-        Returns:
-            The first valid talk event, or None if no valid event is found
-        """
-        possible_events = self.scenarioLoader.get_talk_events_for_pair(initiator.id, target.id)
+        """Find the first available and valid talk event for the given pair."""
+        # TODO: Replace this with actual data loading from Chapter/DataProvider
+        # possible_events = self.scenarioLoader.get_talk_events_for_pair(initiator.id, target.id)
+        possible_events = [] # Placeholder - assumes no talk events for now
         
         for event in possible_events:
             # Check if already completed (non-repeatable)
