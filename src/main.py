@@ -22,12 +22,18 @@ def main():
                         help='Enable AI vs AI mode (AI controls player units)')
     parser.add_argument('--ascii-display', action='store_true', 
                         help='Enable ASCII map display in the console')
+    parser.add_argument('--chapter', type=str, default='1',
+                        help='Chapter ID to load (default: 1)')
+    parser.add_argument('--gui', action='store_true',
+                        help='Enable GUI mode with Pygame')
     args = parser.parse_args()
     
     # Create and run the game application
     app = GameApplication(
         ai_vs_ai=args.ai_vs_ai,
-        ascii_display=args.ascii_display
+        ascii_display=args.ascii_display,
+        chapter_id=args.chapter,
+        use_gui=args.gui
     )
     
     # Run the application

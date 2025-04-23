@@ -133,13 +133,13 @@ class GameApplication:
         """Create and initialize all game components."""
         logging.info("Initializing game components...")
         
-        # Initialize Pygame if using GUI and not using ASCII display
-        if False:  # Disabled Pygame GUI initialization
-            # pygame.init()
-            # pygame.display.set_caption("Fantasy Tactics Game")
-            # self.display_surface = pygame.display.set_mode((self.window_width, self.window_height))
-            # self.clock = pygame.time.Clock()
-            pass
+        # Initialize Pygame if using GUI
+        if self.use_gui:
+            pygame.init()
+            pygame.display.set_caption("Fantasy Tactics Game")
+            self.display_surface = pygame.display.set_mode((self.window_width, self.window_height))
+            self.clock = pygame.time.Clock()
+            logging.info("Pygame initialized with display size %dx%d", self.window_width, self.window_height)
         
         # Core engine components
         self.data_provider = DataProvider()
@@ -179,7 +179,7 @@ class GameApplication:
                     self.display = CLIDisplay()
                 self.input_handler = CommandLineInputHandler(display=self.display, interactive=True)
             else:
-                # Skip GUI components if ascii_display is enabled
+                # If using GUI but ASCII display is also enabled, create both
                 if self.ascii_display:
                     # CLIDisplay should already be created above
                     if hasattr(self, 'display'):
@@ -189,52 +189,24 @@ class GameApplication:
                         logging.error("CLIDisplay expected but not found for ASCII mode.")
                         self.display = CLIDisplay() # Create anyway?
                         self.input_handler = CommandLineInputHandler(display=self.display, interactive=True)
-
                 else:
-                    # GUI components disabled
-                    if False:  # Disabled GUI component creation
-                        # self.game_engine_api = GameEngineAPI()
-                        #
-                        # # Configure map view
-                        # map_view_config = {
-                        #     'tile_size': 32,
-                        #     'grid_color': (100, 100, 100),
-                        #     'highlight_color': (255, 255, 0)
-                        # }
-                        # self.map_view = MapView(self.display_surface, map_view_config)
-                        #
-                        # # Create GUI input handler
-                        # self.gui_input_handler = InputHandler(self.game_engine_api)
-                        #
-                        # # Create GUI manager
-                        # self.gui_manager = GUIManager(self.game_engine_api)
-                        # self.gui_manager.map_view = self.map_view
-                        # self.gui_manager.input_handler = self.gui_input_handler
-                        #
-                        # # Use the GUI input handler as the main input handler
-                        # self.input_handler = self.gui_input_handler
-                        pass
+                    # Initialize GUI components only
+                    self.game_engine_api = GameEngineAPI()
                     
-                    # Fallback to CLI input handler when GUI is disabled
-                    if not hasattr(self, 'display'): # Create display if not already created
-                        self.display = CLIDisplay()
-                    self.input_handler = CommandLineInputHandler(display=self.display, interactive=True)
-        
-        # Move logger instantiation just before return - OLD LOCATION
-        # Instantiate Visual Logger AFTER game_state_manager and display are created
-        # self.visual_logger = None # Initialize as None
-        # Check if conditions for visual logger are met (requires CLIDisplay)
-        # if self.game_state_manager and hasattr(self, 'display') and isinstance(self.display, CLIDisplay):
-        #    self.visual_logger = VisualScenarioLogger(self.game_state_manager, self.display, enabled=True)
-        #    logging.info("VisualScenarioLogger initialized successfully.")
-        # else:
-            # Refine warning/info message based on why it failed
-        #    if not self.game_state_manager:
-        #         logging.warning("Cannot initialize VisualScenarioLogger: GameStateManager not ready.")
-        #    elif not (hasattr(self, 'display') and isinstance(self.display, CLIDisplay)):
-        #         logging.info("VisualScenarioLogger not initialized (requires CLIDisplay, which was not created).")
-        #    else: # Should not be reached if logic is correct
-        #         logging.warning("Cannot initialize VisualScenarioLogger for unknown reason.")
+                    # Configure map view
+                    map_view_config = {
+                        'tile_size': 32,
+                        'grid_color': (100, 100, 100),
+                        'highlight_color': (255, 255, 0),
+                        'move_range_color': (0, 255, 0, 128),
+                        'attack_range_color': (255, 0, 0, 128)
+                    }
+                    
+                    self.map_view = MapView(self.display_surface, map_view_config)
+                    self.gui_manager = GUIManager(self.game_engine_api)
+                    
+                    # Configure input handler for GUI
+                    self.gui_input_handler = InputHandler(self.gui_manager)
 
         return True
     
@@ -422,49 +394,136 @@ class GameApplication:
     
     def run(self):
         """Run the main game loop."""
+        # Set up the game
         if not self.setup_game():
-            logging.error("Failed to set up the game. Exiting.")
+            logging.error("Failed to set up game. Exiting.")
             return False
         
-        # Run the game loop
-        logging.info("Starting game loop")
+        logging.info("Starting game loop...")
         
-        # Always use the traditional engine game loop, GUI mode disabled
-        self.engine.run_game_loop()
-        
-        if False:  # Disabled Pygame game loop
-            # # Use Pygame game loop for GUI mode
-            # running = True
-            # while running:
-            #     # Handle Pygame events
-            #     for event in pygame.event.get():
-            #         if event.type == pygame.QUIT:
-            #             running = False
-            #         elif not self.ai_vs_ai and self.gui_input_handler:
-            #             # Pass the event to the input handler (if not in AI vs AI mode)
-            #             self.gui_input_handler.process_event(event)
-            #
-            #     # Update game state (placeholder)
-            #     # In a real implementation, this would update the game state based on elapsed time
-            #
-            #     # Render the current view (if GUI manager exists)
-            #     if self.gui_manager:
-            #         self.gui_manager.render_current_view()
-            #
-            #     # Update the display
-            #     pygame.display.flip()
-            #
-            #     # Control the frame rate
-            #     self.clock.tick(60)  # 60 FPS
-            pass
-        
-        # Clean up Pygame resources
-        if False:  # Disabled Pygame cleanup
-            # if self.use_gui and not self.ascii_display:
-            #     pygame.quit()
-            pass
-        
-        logging.info("Game ended")
+        # Run the appropriate game loop based on mode
+        if self.use_gui:
+            return self._run_gui_loop()
+        else:
+            return self._run_cli_loop()
+    
+    def _run_cli_loop(self):
+        """Run the command-line interface game loop."""
+        try:
+            # Main game loop - continue until player quits or game ends
+            while True:
+                # Process the current turn
+                current_turn = self.engine.get_current_turn()
+                current_phase = self.engine.get_current_phase()
+                logging.info(f"Processing turn {current_turn}, phase {current_phase}")
+                
+                # Get input based on the current phase
+                if current_phase == PhaseEnum.PLAYER:
+                    # In AI vs AI mode, delegate to AI
+                    if self.ai_vs_ai:
+                        logging.info("AI vs AI mode active: AI handling player phase")
+                        self.engine.process_ai_turn(FactionEnum.PLAYER)
+                    else:
+                        # Otherwise, get player input
+                        self.engine.process_player_input()
+                        
+                elif current_phase == PhaseEnum.ENEMY:
+                    # Enemy phase handled by AI
+                    logging.info("Processing enemy phase")
+                    self.engine.process_ai_turn(FactionEnum.ENEMY)
+                    
+                elif current_phase == PhaseEnum.ALLY:
+                    # Ally phase handled by AI or player depending on mode
+                    if self.ai_vs_ai:
+                        logging.info("AI handling ally phase")
+                        self.engine.process_ai_turn(FactionEnum.ALLY)
+                    else:
+                        logging.info("Processing ally phase")
+                        self.engine.process_ally_phase()
+                        
+                # Check if the game has ended
+                if self.engine.is_game_over():
+                    winner = self.engine.get_winner()
+                    logging.info(f"Game over! Winner: {winner}")
+                    break
+                
+                # Sleep briefly to prevent CPU overuse
+                # time.sleep(0.05)
+                
+        except KeyboardInterrupt:
+            logging.info("Game interrupted by user. Exiting.")
+            
+        except Exception as e:
+            logging.exception(f"Error in game loop: {e}")
+            
+        finally:
+            logging.info("Game loop ended.")
+            
+        return True
+    
+    def _run_gui_loop(self):
+        """Run the graphical user interface game loop."""
+        try:
+            # Main game loop for GUI mode
+            running = True
+            while running:
+                # Handle events
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        running = False
+                    elif event.type == pygame.KEYDOWN:
+                        # Handle keyboard input
+                        if event.key == pygame.K_ESCAPE:
+                            running = False
+                        # Add more key controls as needed
+                        logging.info(f"Key pressed: {pygame.key.name(event.key)}")
+                    # Add mouse event handling here
+                
+                # Update game state
+                if not self.engine.is_game_over():
+                    current_phase = self.engine.get_current_phase()
+                    
+                    # Process AI turns automatically
+                    if current_phase == PhaseEnum.ENEMY:
+                        self.engine.process_ai_turn(FactionEnum.ENEMY)
+                    elif current_phase == PhaseEnum.ALLY and self.ai_vs_ai:
+                        self.engine.process_ai_turn(FactionEnum.ALLY)
+                    elif current_phase == PhaseEnum.PLAYER and self.ai_vs_ai:
+                        self.engine.process_ai_turn(FactionEnum.PLAYER)
+                    
+                    # Player input is handled through the GUI events
+                
+                # Render the game
+                self.display_surface.fill((0, 0, 0))  # Clear screen
+                
+                # Render map and units
+                if self.map_view:
+                    map_data = self.game_state_manager.get_map_data()
+                    unit_data = self.game_state_manager.get_unit_data()
+                    
+                    self.map_view.render_map(map_data)
+                    self.map_view.render_units(unit_data)
+                
+                # Update the display
+                pygame.display.flip()
+                
+                # Control frame rate
+                self.clock.tick(60)
+                
+                # Check game over condition
+                if self.engine.is_game_over():
+                    winner = self.engine.get_winner()
+                    logging.info(f"Game over! Winner: {winner}")
+                    # Display game over message
+                    # Wait for user to close window
+            
+        except Exception as e:
+            logging.exception(f"Error in GUI game loop: {e}")
+            
+        finally:
+            pygame.quit()
+            logging.info("GUI game loop ended.")
+            
         return True
 
 # --- Main Execution Block ---

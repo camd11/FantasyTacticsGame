@@ -259,10 +259,12 @@ class CommandLineInputHandler:
                 self.display.display_combat_forecast(unit_id, target_unit_id)
                 
                 # Confirm attack
-                print("\nConfirm attack? (yes/no)")
-                confirm = input("> ").strip().lower()
+                print("\nConfirm attack?")
+                print("1. Yes")
+                print("2. No")
+                confirm = input("Select an option (1-2): ").strip()
                 
-                if confirm != 'yes' and confirm != 'y':
+                if confirm != '1':
                     return self._handle_command_input(unit_id)
             
             self.selected_unit_id = None  # Deselect unit after action
@@ -528,9 +530,9 @@ class CommandLineInputHandler:
                 if choice == '1':
                     return {'type': 'WAIT', 'unit_id': unit_id}
                 else:
-                    return self._handle_unit_actions(unit_id)
+                    return self._handle_command_input(unit_id)
             else:
-                return self._handle_unit_actions(unit_id)
+                return self._handle_command_input(unit_id)
         
         # Display inventory
         self.display.display_inventory(unit_id)
@@ -549,9 +551,9 @@ class CommandLineInputHandler:
                     if choice == '1':
                         return {'type': 'WAIT', 'unit_id': unit_id}
                     else:
-                        return self._handle_unit_actions(unit_id)
+                        return self._handle_command_input(unit_id)
                 else:
-                    return self._handle_unit_actions(unit_id)
+                    return self._handle_command_input(unit_id)
             
             if choice_index < 0 or choice_index >= len(unit.inventory):
                 print("Invalid selection. Please try again.")
@@ -591,6 +593,15 @@ class CommandLineInputHandler:
                 except ValueError:
                     print("Invalid input. Please enter a number.")
                     return self._handle_item_action(unit_id, after_move)
+            
+            # Use the item
+            success = self.inventory_system.use_item(unit_id, choice_index, target_unit_id)
+            if not success:
+                print("Failed to use item.")
+                return self._handle_command_input(unit_id)
+            
+            print(f"Used {item_data.name}.")
+            self.selected_unit_id = None  # Deselect unit after action
             
             return {
                 'type': 'ITEM',
@@ -703,9 +714,9 @@ class CommandLineInputHandler:
                 if choice == '1':
                     return {'type': 'WAIT', 'unit_id': unit_id}
                 else:
-                    return self._handle_unit_actions(unit_id)
+                    return self._handle_command_input(unit_id)
             else:
-                return self._handle_unit_actions(unit_id)
+                return self._handle_command_input(unit_id)
         
         # Display adjacent allies
         self.display.display_targets(adjacent_allies, "TRADE")
@@ -725,9 +736,9 @@ class CommandLineInputHandler:
                     if choice == '1':
                         return {'type': 'WAIT', 'unit_id': unit_id}
                     else:
-                        return self._handle_unit_actions(unit_id)
+                        return self._handle_command_input(unit_id)
                 else:
-                    return self._handle_unit_actions(unit_id)
+                    return self._handle_command_input(unit_id)
             
             if choice_index < 0 or choice_index >= len(adjacent_allies):
                 print("Invalid selection. Please try again.")
@@ -739,7 +750,7 @@ class CommandLineInputHandler:
             trade_data = self.inventory_system.initiate_trade(unit_id, partner_unit_id)
             if not trade_data:
                 print("Failed to initiate trade.")
-                return self._handle_unit_actions(unit_id)
+                return self._handle_command_input(unit_id)
             
             # Display inventories
             self.display.display_trade_inventories(unit_id, partner_unit_id, trade_data)
@@ -756,12 +767,12 @@ class CommandLineInputHandler:
                 if command == 'done':
                     break
                 elif command == 'cancel':
-                    return self._handle_unit_actions(unit_id)
+                    return self._handle_command_input(unit_id)
                 
                 try:
                     parts = command.split()
                     if len(parts) != 3:
-                        print("Invalid command format. Use 'give [your_item_index] [partner_slot]'")
+                        print("Invalid command format. Use 'give [your_item_index] [partner_slot]' or 'take [partner_item_index] [your_slot]'")
                         continue
                     
                     action, source_index, dest_index = parts
@@ -774,6 +785,10 @@ class CommandLineInputHandler:
                             print("Invalid source item index.")
                             continue
                         
+                        if dest_index < 0 or dest_index >= self.inventory_system.get_max_inventory_size():
+                            print("Invalid destination slot.")
+                            continue
+                        
                         item_transfers.append((unit_id, source_index, partner_unit_id, dest_index))
                         print(f"Will give item {source_index} to partner's slot {dest_index}")
                     
@@ -781,6 +796,10 @@ class CommandLineInputHandler:
                         # Take item from partner to unit
                         if source_index < 0 or source_index >= len(trade_data['unit2_inventory']):
                             print("Invalid source item index.")
+                            continue
+                        
+                        if dest_index < 0 or dest_index >= self.inventory_system.get_max_inventory_size():
+                            print("Invalid destination slot.")
                             continue
                         
                         item_transfers.append((partner_unit_id, source_index, unit_id, dest_index))
@@ -799,11 +818,13 @@ class CommandLineInputHandler:
                 success = self.inventory_system.execute_trade(unit_id, partner_unit_id, item_transfers)
                 if not success:
                     print("Trade failed.")
-                    return self._handle_unit_actions(unit_id)
+                    return self._handle_command_input(unit_id)
                 
                 print("Trade successful.")
+                self.selected_unit_id = None  # Deselect unit after action
             else:
                 print("No items were traded.")
+                return self._handle_command_input(unit_id)
             
             return {
                 'type': 'TRADE',
@@ -847,9 +868,9 @@ class CommandLineInputHandler:
                 if choice == '1':
                     return {'type': 'WAIT', 'unit_id': unit_id}
                 else:
-                    return self._handle_unit_actions(unit_id)
+                    return self._handle_command_input(unit_id)
             else:
-                return self._handle_unit_actions(unit_id)
+                return self._handle_command_input(unit_id)
         
         # Confirm visit
         print(f"Visit the location at {current_pos}?")
@@ -859,6 +880,17 @@ class CommandLineInputHandler:
         choice = input("Select an option (1-2): ").strip()
         
         if choice == '1':
+            # Actually visit the location
+            village_data = self.map_system.visit_village(unit_id, current_pos)
+            if village_data:
+                print(f"Visited the location: {village_data.get('name', 'Unknown location')}")
+                if 'reward' in village_data:
+                    print(f"Received: {village_data['reward']}")
+            else:
+                print("Visit completed.")
+                
+            self.selected_unit_id = None  # Deselect unit after action
+            
             return {
                 'type': 'VISIT',
                 'unit_id': unit_id,
@@ -872,9 +904,9 @@ class CommandLineInputHandler:
                 if choice == '1':
                     return {'type': 'WAIT', 'unit_id': unit_id}
                 else:
-                    return self._handle_unit_actions(unit_id)
+                    return self._handle_command_input(unit_id)
             else:
-                return self._handle_unit_actions(unit_id)
+                return self._handle_command_input(unit_id)
     
     def _handle_seize_action(self, unit_id: str, after_move: bool = False) -> Dict[str, Any]:
         """
@@ -904,9 +936,23 @@ class CommandLineInputHandler:
                 if choice == '1':
                     return {'type': 'WAIT', 'unit_id': unit_id}
                 else:
-                    return self._handle_unit_actions(unit_id)
+                    return self._handle_command_input(unit_id)
             else:
-                return self._handle_unit_actions(unit_id)
+                return self._handle_command_input(unit_id)
+        
+        # Check if the unit is allowed to seize (usually only lords/main characters)
+        if not self.unit_system.can_seize(unit_id):
+            print("This unit cannot seize the location.")
+            if after_move:
+                print("1. Wait instead")
+                print("2. Try another action")
+                choice = input("Select an option (1-2): ").strip()
+                if choice == '1':
+                    return {'type': 'WAIT', 'unit_id': unit_id}
+                else:
+                    return self._handle_command_input(unit_id)
+            else:
+                return self._handle_command_input(unit_id)
         
         # Confirm seize
         print(f"Seize the location at {current_pos}?")
@@ -916,6 +962,10 @@ class CommandLineInputHandler:
         choice = input("Select an option (1-2): ").strip()
         
         if choice == '1':
+            # Execute seize operation
+            print("Seizing the location...")
+            self.selected_unit_id = None  # Deselect unit after action
+            
             return {
                 'type': 'SEIZE',
                 'unit_id': unit_id,
@@ -929,9 +979,9 @@ class CommandLineInputHandler:
                 if choice == '1':
                     return {'type': 'WAIT', 'unit_id': unit_id}
                 else:
-                    return self._handle_unit_actions(unit_id)
+                    return self._handle_command_input(unit_id)
             else:
-                return self._handle_unit_actions(unit_id)
+                return self._handle_command_input(unit_id)
     
     def _parse_natural_language_command(self, command: str, active_units: List) -> Dict[str, Any]:
         """
