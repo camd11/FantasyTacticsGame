@@ -10,6 +10,17 @@ This directory contains tests for the AI system components, including the Tactic
   1. Class-based tests in `TestTacticalExecutor` class (currently may fail with placeholder implementation)
   2. Standalone fixture-based tests at the bottom of the file (these tests work correctly)
 
+- **test_ai_scenario_01.py**, **test_ai_scenario_02.py**, **test_ai_scenario_03.py**: Individual AI scenario tests that examine specific aspects of AI behavior.
+
+- **test_ai_scenario_04.py**: Advanced tactical scenario with visual logging and 5-turn limit implementation.
+
+## AI Scenario Guidelines
+
+- **Maximum 5 Turns**: All AI scenario simulations should be limited to a maximum of 5 turns for performance and practical evaluation reasons.
+- **Visual Logging**: Complex scenarios should include visual logging to help analyze AI behavior.
+- **Focused Testing**: Each scenario should focus on testing specific aspects of AI behavior like tactical positioning, goal prioritization, etc.
+- **Clear Win Conditions**: Include clearly defined win conditions for AI sides, such as capturing an objective or defeating all enemy units.
+
 ## Running Tests
 
 To run all AI system tests:
@@ -25,6 +36,11 @@ python -m pytest tests/gameplay_systems/ai/test_tactical_executor_standalone.py
 To run a specific test:
 ```bash
 python -m pytest tests/gameplay_systems/ai/test_tactical_executor_standalone.py::test_secure_position_goal_success
+```
+
+To run an AI scenario with visual logging:
+```bash
+python -m pytest tests/gameplay_systems/ai/test_ai_scenario_04.py -v
 ```
 
 Add `-v` flag for verbose output:
@@ -47,33 +63,28 @@ python -m pytest tests/gameplay_systems/ai/test_tactical_executor_standalone.py 
    - `tactical_executor`: Initialized executor with mocks
    - `target_unit`: Standard target unit for attacks/heals
 
-### Test Structure
+### AI Scenario Test Development
 
-Each test should:
-1. Create the appropriate goal object
-2. Set up any specific mock behaviors needed
-3. Execute the `determine_action_for_goal` method
-4. Assert the expected behavior
+When developing AI scenario tests:
 
-### Example
+1. Always implement the 5-turn limit as shown in `test_ai_scenario_04.py`
+2. Include visual logging to capture the moves made by AI units
+3. Create interesting tactical situations with terrain variety
+4. Test specific AI behaviors like terrain navigation, target prioritization, etc.
+5. Include units with different AI personas to test their interactions
 
-```python
-def test_my_new_goal(tactical_executor, mock_unit_state, mock_game_state_manager, mock_movement_system):
-    """Test description here."""
-    # Setup
-    goal = MyNewGoal()
-    
-    # Mock specific behaviors
-    mock_movement_system.calculate_movement_range.return_value = {...}
-    
-    # Execute
-    action = tactical_executor.determine_action_for_goal(goal, mock_unit_state, mock_game_state_manager)
-    
-    # Assert
-    assert action is not None
-    assert action.action_type == "EXPECTED_ACTION"
-    assert action.unit_id == mock_unit_state.id
-```
+### Visual Log Analysis
+
+Visual logs are created in the `logs/` directory and contain:
+- Initial map state
+- Turn-by-turn unit actions
+- End-of-turn map states
+- Final statistics
+
+Use these logs to:
+- Verify AI is making expected tactical decisions
+- Debug unexpected behavior
+- Track unit movements and combat outcomes
 
 ## Troubleshooting
 
