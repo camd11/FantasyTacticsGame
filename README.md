@@ -11,6 +11,7 @@ This project is a console-based tactical RPG built with Python. It features:
 - Advanced goal-oriented utility AI for compelling computer opponents
 - ASCII display mode for testing and gameplay visualization
 - Robust architecture with modular systems for extensibility
+- Optional GUI mode with Pygame (experimental)
 
 ## Getting Started
 
@@ -18,6 +19,7 @@ This project is a console-based tactical RPG built with Python. It features:
 
 - Python 3.7+
 - Git (for cloning the repository)
+- Pygame (for GUI mode)
 
 ### Installation
 
@@ -57,7 +59,28 @@ python src/main.py --ai-vs-ai
 
 # Enable ASCII display
 python src/main.py --ascii-display
+
+# Load a specific chapter
+python src/main.py --chapter 2
+
+# Run in GUI mode (experimental)
+python src/main.py --gui
 ```
+
+## Game Features
+
+### Command Line Interface
+The game features a rich command-line interface with the following actions:
+- Unit movement and positioning
+- Combat with various weapons
+- Item usage from inventory
+- Trading items between units
+- Capturing enemy units
+- Visiting locations for rewards and story elements
+- Seizing objectives to complete chapters
+
+### GUI Mode (Experimental)
+A new GUI mode is available that visualizes the game map and units using Pygame. Enable with the `--gui` flag.
 
 ## Documentation
 
@@ -67,6 +90,7 @@ For more detailed information about the game, please refer to these documentatio
 - [Technical Documentation](docs/technical.md) - Usage guide and technical details
 - [AI Research Summary](docs/research/ai_research_summary.md) - Comprehensive documentation on the AI system
 - [Game Mechanics Reference](research.md) - Detailed guide to the game mechanics implemented from Thracia 776
+- [Changelog](CHANGELOG.md) - Record of significant changes and features
 
 ## Project Structure
 
