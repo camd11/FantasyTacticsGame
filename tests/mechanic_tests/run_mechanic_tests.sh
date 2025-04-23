@@ -1,54 +1,32 @@
 #!/bin/bash
 
-# Create log directories
-mkdir -p logs/mechanic_tests/movement
-mkdir -p logs/mechanic_tests/combat
-mkdir -p logs/mechanic_tests/ai
-mkdir -p logs/mechanic_tests/objectives
-mkdir -p logs/mechanic_tests/events
-mkdir -p logs/mechanic_tests/units
-mkdir -p logs/mechanic_tests/misc
+# Script to run all mechanic tests
+# This script runs all of the individual mechanic tests in the tests/mechanic_tests/ directory
 
-echo "Created log directories"
+# Create logs directory if it doesn't exist
+mkdir -p logs/mechanic_tests
+
+echo "Running mechanic tests..."
+
+# Run unit mechanic tests
+echo "Running unit mechanic tests..."
+bash tests/mechanic_tests/unit_mechanics/run_unit_mechanics_tests.sh
 
 # Run movement mechanic tests
 echo "Running movement mechanic tests..."
-python -m pytest tests/mechanic_tests/test_movement_mechanics.py -v
+python tests/mechanic_tests/movement/test_movement_mechanics.py
 
-# Run combat mechanic tests
+# Run combat mechanic tests 
 echo "Running combat mechanic tests..."
-python -m pytest tests/mechanic_tests/test_combat_mechanics.py -v
+python tests/mechanic_tests/combat/test_combat_mechanics.py
 
-# Run AI mechanic tests
-echo "Running AI mechanic tests..."
-python -m pytest tests/mechanic_tests/test_ai_mechanics.py -v
+# Run inventory mechanic tests
+echo "Running inventory mechanic tests..."
+python tests/mechanic_tests/inventory/test_inventory_mechanics.py
 
-# Run objective mechanic tests
-echo "Running objective mechanic tests..."
-python -m pytest tests/mechanic_tests/test_objective_mechanics.py -v
-
-# Run event mechanic tests
-echo "Running event mechanic tests..."
-python -m pytest tests/mechanic_tests/test_event_mechanics.py -v
-
-# Run unit mechanic tests (split into separate modules)
-echo "Running core unit mechanic tests..."
-python -m pytest tests/mechanic_tests/test_unit_mechanics.py -v
-
-echo "Running level up mechanic tests..."
-python -m pytest tests/mechanic_tests/test_level_up_mechanics.py -v
-
-echo "Running promotion mechanic tests..."
-python -m pytest tests/mechanic_tests/test_promotion_mechanics.py -v
-
+# Run status effect mechanic tests
 echo "Running status effect mechanic tests..."
-python -m pytest tests/mechanic_tests/test_status_effect_mechanics.py -v
+python tests/mechanic_tests/status_effects/test_status_effect_mechanics.py
 
-echo "Running unit interaction mechanic tests..."
-python -m pytest tests/mechanic_tests/test_unit_interaction_mechanics.py -v
-
-# Run misc mechanic tests
-# echo "Running misc mechanic tests..."
-# python -m pytest tests/mechanic_tests/test_misc_mechanics.py -v
-
-echo "All mechanic tests completed" 
+echo "All mechanic tests completed!"
+echo "Logs available in logs/mechanic_tests/ directory" 
