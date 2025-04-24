@@ -95,6 +95,11 @@ LANCE_KNIGHT:
   class_skills: ["CANTO"]
   dismount_class_id: "LANCE_KNIGHT_DISMOUNTED"
   is_mounted: true
+  dismount_stat_modifiers:
+    STR: -1
+    SKL: -1
+    SPD: -1
+    DEF: -2
 
 LANCE_KNIGHT_DISMOUNTED:
   id: "LANCE_KNIGHT_DISMOUNTED"
@@ -312,6 +317,12 @@ TROUBADOUR:
   class_skills: ["CANTO"]
   dismount_class_id: "TROUBADOUR_DISMOUNTED"
   is_mounted: true
+  dismount_stat_modifiers:
+    STR: -1
+    MAG: 0
+    SKL: 0
+    SPD: -1
+    DEF: -1
 
 TROUBADOUR_DISMOUNTED:
   id: "TROUBADOUR_DISMOUNTED"
@@ -403,6 +414,140 @@ SOLDIER:
     LANCE: "A"
   movement_type: "INFANTRY"
   promotion_options: ["HALBERDIER"]
+  class_skills: []
+  dismount_class_id: null
+  is_mounted: false
+
+PEGASUS_KNIGHT:
+  id: "PEGASUS_KNIGHT"
+  name: "Pegasus Knight"
+  base_stats:
+    HP: 0
+    STR: 0
+    MAG: 0
+    SKL: 0
+    SPD: 0
+    LUK: 0
+    DEF: 0
+    CON: 0
+    MOV: 7
+  max_stats:
+    HP: 60
+    STR: 20
+    MAG: 20
+    SKL: 20
+    SPD: 20
+    LUK: 30
+    DEF: 20
+    CON: 20
+    MOV: 9
+  max_weapon_ranks:
+    LANCE: "A"
+  movement_type: "CAVALRY"
+  promotion_options: ["PALADIN"]
+  class_skills: ["CANTO"]
+  dismount_class_id: "PEGASUS_KNIGHT_DISMOUNTED"
+  is_mounted: true
+  dismount_stat_modifiers:
+    STR: -1
+    SKL: -1
+    SPD: -1
+    DEF: -1
+
+PEGASUS_KNIGHT_DISMOUNTED:
+  id: "PEGASUS_KNIGHT_DISMOUNTED"
+  name: "Pegasus Knight (Dismounted)"
+  base_stats:
+    HP: 0
+    STR: 0
+    MAG: 0
+    SKL: 0
+    SPD: 0
+    LUK: 0
+    DEF: 0
+    CON: 0
+    MOV: 5
+  max_stats:
+    HP: 60
+    STR: 20
+    MAG: 20
+    SKL: 20
+    SPD: 20
+    LUK: 30
+    DEF: 20
+    CON: 20
+    MOV: 7
+  max_weapon_ranks:
+    LANCE: "A"
+  movement_type: "INFANTRY"
+  promotion_options: ["PALADIN"]
+  class_skills: []
+  dismount_class_id: null
+  is_mounted: false
+
+DRAGON_KNIGHT:
+  id: "DRAGON_KNIGHT"
+  name: "Dragon Knight"
+  base_stats:
+    HP: 0
+    STR: 0
+    MAG: 0
+    SKL: 0
+    SPD: 0
+    LUK: 0
+    DEF: 0
+    CON: 0
+    MOV: 7
+  max_stats:
+    HP: 60
+    STR: 20
+    MAG: 20
+    SKL: 20
+    SPD: 20
+    LUK: 30
+    DEF: 20
+    CON: 20
+    MOV: 9
+  max_weapon_ranks:
+    LANCE: "A"
+  movement_type: "CAVALRY"
+  promotion_options: ["PALADIN"]
+  class_skills: ["CANTO"]
+  dismount_class_id: "DRAGON_KNIGHT_DISMOUNTED"
+  is_mounted: true
+  dismount_stat_modifiers:
+    STR: -3
+    SKL: -2
+    SPD: -2
+    DEF: -5
+
+DRAGON_KNIGHT_DISMOUNTED:
+  id: "DRAGON_KNIGHT_DISMOUNTED"
+  name: "Dragon Knight (Dismounted)"
+  base_stats:
+    HP: 0
+    STR: 0
+    MAG: 0
+    SKL: 0
+    SPD: 0
+    LUK: 0
+    DEF: 0
+    CON: 0
+    MOV: 5
+  max_stats:
+    HP: 60
+    STR: 20
+    MAG: 20
+    SKL: 20
+    SPD: 20
+    LUK: 30
+    DEF: 20
+    CON: 20
+    MOV: 7
+  max_weapon_ranks:
+    LANCE: "A"
+  movement_type: "INFANTRY"
+  promotion_options: ["PALADIN"]
   class_skills: []
   dismount_class_id: null
   is_mounted: false

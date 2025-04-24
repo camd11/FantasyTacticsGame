@@ -23,6 +23,8 @@ class Unit:
     
     def effective_con(self) -> int:
         """Calculate unit's effective constitution for rescue operations."""
+        # Mounted units that aren't dismounted and ballistas have effective Con of 20
+        # This is only used for determining ability to rescue, not for movement penalties
         if (self.is_mounted and not self.is_dismounted) or self.unit_type == "ballista":
             return 20
         return self.con
@@ -40,6 +42,7 @@ def can_rescue(rescuer: Unit, target: Unit) -> bool:
         True if the rescue is possible, False otherwise
     """
     # Rule: Rescuer's effective Con > Target's Con
+    # Mounted units use their effective Con of 20, not their actual Con
     return rescuer.effective_con() > target.con
 
 
@@ -71,7 +74,7 @@ def print_rescue_scenario(rescuer: Unit, target: Unit):
     
     if can_rescue_result:
         print(f"Movement penalty: {movement_penalty}")
-        print(f"Threshold for movement penalty: {rescuer.con / 2}")  # Show actual Con threshold
+        print(f"Threshold for movement penalty: {rescuer.con / 2:.1f} (half of actual Con)")
     
     print("-" * 50)
 

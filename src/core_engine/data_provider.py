@@ -24,7 +24,8 @@ class StatEnum(Enum):
     LUK = auto()
     DEF = auto()
     RES = auto()  # Resistance
-    CON = auto()
+    BLD = auto()  # Build (replaces CON)
+    CON = BLD    # Constitution - kept as alias for backward compatibility
     MOV = auto()
     MOV_STARS = auto()  # Movement stars
 
@@ -100,6 +101,7 @@ class UnitBaseData:
         self.skills = data_dict.get('skills', [])
         self.leadership_stars = data_dict.get('leadership_stars', 0)
         self.pcc = data_dict.get('pcc', 0)  # Pursuit Critical Coefficient
+        self.movement_stars = data_dict.get('movement_stars', 0)  # Movement stars for potential re-action
 
 class ItemData:
     """
@@ -156,6 +158,11 @@ class ClassData:
         self.promotion_options = data_dict.get('promotion_options', {})
         self.class_skills = data_dict.get('class_skills', [])
         self.dismount_class_id = data_dict.get('dismount_class_id', None)
+        self.is_mounted = data_dict.get('is_mounted', False) 
+        self.can_mount = data_dict.get('can_mount', self.is_mounted)  # Default to is_mounted
+        self.dismount_stat_modifiers = data_dict.get('dismount_stat_modifiers', None)
+        self.dismounted_equivalent_id = data_dict.get('dismount_class_id', None)  # Alias for backward compatibility
+        self.usable_weapon_types_dismounted = data_dict.get('usable_weapon_types_dismounted', [])
 
 class TerrainData:
     """Represents the static data for a terrain type."""

@@ -104,8 +104,9 @@ class DismountingSystem:
         unit.is_mounted = False
         
         # 2. Apply Stat Changes
-        if mounted_class.dismount_stat_modifiers:
+        if hasattr(mounted_class, 'dismount_stat_modifiers') and mounted_class.dismount_stat_modifiers:
             for stat, change in mounted_class.dismount_stat_modifiers.items():
+                # Apply penalties (these are negative values in the class definition)
                 unit.current_stats[stat] += change
         
         # Always set MOV directly regardless of modifiers
@@ -146,8 +147,9 @@ class DismountingSystem:
         unit.is_mounted = True
         
         # 2. Revert Stat Changes
-        if mounted_class.dismount_stat_modifiers:
+        if hasattr(mounted_class, 'dismount_stat_modifiers') and mounted_class.dismount_stat_modifiers:
             for stat, change in mounted_class.dismount_stat_modifiers.items():
+                # When mounting, reverse the penalties (add the negative value)
                 unit.current_stats[stat] -= change  # Reverse the change
         
         # Always set MOV directly regardless of modifiers
@@ -211,10 +213,19 @@ class DismountingSystem:
         dismounted_class = self.data_provider.get_class(mounted_class.dismounted_equivalent_id)
         
         unit.is_mounted = False
-        # Apply stat changes (Mov, etc.)
+        
+        # Apply stat changes from dismount modifiers
+        if hasattr(mounted_class, 'dismount_stat_modifiers') and mounted_class.dismount_stat_modifiers:
+            for stat, change in mounted_class.dismount_stat_modifiers.items():
+                unit.current_stats[stat] += change
+        
+        # Always set MOV directly regardless of modifiers
         unit.current_stats["MOV"] = dismounted_class.mov
-        # Apply other potential stat adjustments based on class diff or modifiers
+        
+        # Update movement type
         unit.current_movement_type = dismounted_class.movement_type
+        
+        # Handle weapon restrictions
         self.handle_weapon_restriction(unit, dismounted_class.usable_weapon_types_dismounted)
         
         if consumes_action:
@@ -233,10 +244,18 @@ class DismountingSystem:
         mounted_class = self.data_provider.get_class(unit.mounted_class_id)
         
         unit.is_mounted = True
-        # Revert stat changes (Mov, etc.)
+        
+        # Reverse stat changes from dismount modifiers
+        if hasattr(mounted_class, 'dismount_stat_modifiers') and mounted_class.dismount_stat_modifiers:
+            for stat, change in mounted_class.dismount_stat_modifiers.items():
+                unit.current_stats[stat] -= change
+        
+        # Always set MOV directly regardless of modifiers
         unit.current_stats["MOV"] = mounted_class.mov
-        # Revert other potential stat adjustments
+        
+        # Update movement type
         unit.current_movement_type = mounted_class.movement_type
+        
         # Weapon access restored implicitly by state change
         
         self.game_state_manager.notify_visual_update(unit_id, "mounted")
