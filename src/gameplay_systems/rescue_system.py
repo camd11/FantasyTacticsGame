@@ -46,14 +46,14 @@ class RescueSystem:
         
         Rescue Mechanics (based on Thracia 776 with custom adjustments):
         1. Rescuer must be adjacent to target
-        2. Rescuer cannot be carrying, target cannot be carried or carrying
-        3. Can only rescue own faction or NPCs
-        4. Rescuer's Build/Con must be >= Target's Build/Con / 2
-        5. Mounted rescuers get +5 effective Build for rescue checks
+        2. Target must not be already rescued
+        3. Rescuer must not be already carrying a unit
+        4. Rescuer's Con must be greater than the target's Con
+        5. Mounted rescuers and ballistas have 20 Con for rescue purposes
         
         Args:
-            rescuer_id: ID of the rescuer unit
-            target_id: ID of the target unit to be rescued
+            rescuer_id: ID of the unit doing the rescuing
+            target_id: ID of the unit to be rescued
             
         Returns:
             True if the rescue action is valid, False otherwise
@@ -74,40 +74,29 @@ class RescueSystem:
         if not self.map_system.is_adjacent(rescuer.position, target.position):
             return False
         
-        # Check statuses: Rescuer cannot be carrying, Target cannot be carried or carrying
+        # Check if target is already rescued
+        if target.status == StatusEnum.RESCUED:
+            return False
+        
+        # Check if rescuer is already carrying someone
         if rescuer.status == StatusEnum.RESCUING:
             return False
         
-        if target.status in [StatusEnum.RESCUED, StatusEnum.CAPTURED, StatusEnum.RESCUING]:
-            return False
+        # Check Constitution: Rescuer's Con > Target's Con
+        rescuer_con = rescuer.stats.get("con", 0)
+        target_con = target.stats.get("con", 0)
         
-        # Check faction: Can rescue own faction or NPCs
-        if rescuer.faction != target.faction and target.faction != "NPC":
-            return False
-        
-        # Check Constitution/Build: Rescuer's Build/Con >= Target's Build/Con / 2
-        # Use bld if available, otherwise fall back to con for backward compatibility
-        rescuer_build = rescuer.stats.get("bld", rescuer.stats.get("con", 0))
-        target_build = target.stats.get("bld", target.stats.get("con", 0))
-        
-        # Mounted units and ballistas are considered to have 20 Con for rescue purposes
+        # Calculate effective Constitution for the rescuer
+        effective_rescuer_con = rescuer_con
         if hasattr(rescuer, 'is_mounted') and rescuer.is_mounted and not rescuer.is_dismounted:
-            rescuer_con = 20
+            effective_rescuer_con = 20
         elif hasattr(rescuer, 'unit_type') and rescuer.unit_type == 'ballista':
-            rescuer_con = 20
+            effective_rescuer_con = 20
             
-        # The actual Build check: effective_rescuer_build >= target_build / 2
-        if effective_rescuer_build < (target_build / 2):
+        # Perform the Con check
+        if effective_rescuer_con <= target_con:
             return False
-        
-        # Additional checks for mounted/dismounted states
-        if hasattr(rescuer, 'is_mounted') and rescuer.is_mounted:
-            if hasattr(rescuer, 'is_dismounted') and rescuer.is_dismounted:
-                # Check if indoors - dismounted units can rescue indoors
-                if self.map_system.is_indoor(rescuer.position):
-                    return True
-            # Other mounted unit checks could go here
-        
+            
         return True
     
     def initiate_rescue(self, rescuer_id: str, target_id: str) -> bool:
@@ -115,8 +104,8 @@ class RescueSystem:
         Execute the Rescue action.
         
         Args:
-            rescuer_id: ID of the rescuer unit
-            target_id: ID of the target unit to be rescued
+            rescuer_id: ID of the unit doing the rescuing
+            target_id: ID of the unit to be rescued
             
         Returns:
             True if the rescue was successful, False otherwise
@@ -128,19 +117,23 @@ class RescueSystem:
         rescuer = self.game_state_manager.get_unit(rescuer_id)
         target = self.game_state_manager.get_unit(target_id)
         
-        # Update states
-        rescuer.status = StatusEnum.RESCUING
-        rescuer.carried_unit_id = target_id
+        # Set the target's status to RESCUED
         target.status = StatusEnum.RESCUED
         target.carrier_unit_id = rescuer_id
+        target.last_position = target.position.copy()
         
-        # Apply penalties to rescuer
+        # Hide the target (visually)
+        target.position.x = -999
+        target.position.y = -999
+        
+        # Set the rescuer's status to RESCUING
+        rescuer.status = StatusEnum.RESCUING
+        rescuer.carried_unit_id = target_id
+        
+        # Apply penalties to the rescuer
         self.apply_carry_penalties(rescuer, target)
         
-        # Update map state (target is no longer visually on map)
-        self.map_system.update_unit_visibility(target, False)
-        
-        # Consume action
+        # Consume the rescuer's action
         rescuer.action_taken = True
         
         return True
@@ -226,8 +219,8 @@ class RescueSystem:
         1. Taker must be adjacent to the current rescuer
         2. Current rescuer must be carrying a unit
         3. Taker cannot already be carrying a unit
-        4. Taker's Build/Con must be >= Carried Unit's Build/Con / 2
-        5. Mounted takers get +5 effective Build for take checks
+        4. Taker's Con must be >= Carried Unit's Con / 2
+        5. Mounted takers get +5 effective Con for take checks
         
         Args:
             taker_id: ID of the unit taking the carried unit
@@ -244,15 +237,7 @@ class RescueSystem:
         if not taker or not current_rescuer:
             return False
         
-        # Cannot take from self
-        if taker_id == current_rescuer_id:
-            return False
-        
-        # Check adjacency
-        if not self.map_system.is_adjacent(taker.position, current_rescuer.position):
-            return False
-        
-        # Check if current rescuer is carrying someone
+        # Check if current rescuer is actually carrying someone
         if current_rescuer.status != StatusEnum.RESCUING or not current_rescuer.carried_unit_id:
             return False
         
@@ -260,23 +245,26 @@ class RescueSystem:
         if taker.status == StatusEnum.RESCUING:
             return False
         
-        # Check Constitution: Taker's Con > Carried Unit's Con
-        # Get the carried unit
-        carried_unit = self.game_state_manager.get_unit(current_rescuer.carried_unit_id)
-        
-        taker_con = taker.stats.get("con", 0)
-        carried_con = carried_unit.stats.get("con", 0)
-        
-        # Mounted units and ballistas are considered to have 20 Con for take purposes
-        if hasattr(taker, 'is_mounted') and taker.is_mounted and not taker.is_dismounted:
-            taker_con = 20
-        elif hasattr(taker, 'unit_type') and taker.unit_type == 'ballista':
-            taker_con = 20
-            
-        # The actual Con check: taker_con > carried_con
-        if taker_con <= carried_con:
+        # Check adjacency
+        if not self.map_system.is_adjacent(taker.position, current_rescuer.position):
             return False
         
+        # Check if taker can carry the unit based on Constitution
+        carried_unit = self.game_state_manager.get_unit(current_rescuer.carried_unit_id)
+        taker_con = taker.stats.get("con", 0)
+        carried_unit_con = carried_unit.stats.get("con", 0)
+        
+        # Calculate effective Constitution for the taker
+        effective_taker_con = taker_con
+        if hasattr(taker, 'is_mounted') and taker.is_mounted and not taker.is_dismounted:
+            effective_taker_con = 20
+        elif hasattr(taker, 'unit_type') and taker.unit_type == 'ballista':
+            effective_taker_con = 20
+            
+        # Perform the Con check
+        if effective_taker_con < (carried_unit_con / 2):
+            return False
+            
         return True
     
     def initiate_take(self, taker_id: str, current_rescuer_id: str) -> bool:
@@ -293,99 +281,109 @@ class RescueSystem:
         if not self.can_take(taker_id, current_rescuer_id):
             return False
         
-        # Get the units
+        # Get all involved units
         taker = self.game_state_manager.get_unit(taker_id)
         current_rescuer = self.game_state_manager.get_unit(current_rescuer_id)
-        carried_unit = self.game_state_manager.get_unit(current_rescuer.carried_unit_id)
+        carried_unit_id = current_rescuer.carried_unit_id
+        carried_unit = self.game_state_manager.get_unit(carried_unit_id)
         
-        # Remove penalties from original rescuer
-        self.remove_carry_penalties(current_rescuer)
-        
-        # Update states
+        # Remove carried unit from current rescuer
         current_rescuer.status = StatusEnum.NORMAL
         current_rescuer.carried_unit_id = None
         
+        # Remove carry penalties from current rescuer
+        self.remove_carry_penalties(current_rescuer)
+        
+        # Apply carried unit to taker
         taker.status = StatusEnum.RESCUING
-        taker.carried_unit_id = carried_unit.id
+        taker.carried_unit_id = carried_unit_id
         carried_unit.carrier_unit_id = taker_id
         
-        # Apply penalties to new rescuer
+        # Apply penalties to taker
         self.apply_carry_penalties(taker, carried_unit)
         
-        # Consume taker's action
+        # Consume action
         taker.action_taken = True
         
         return True
     
-    def apply_carry_penalties(self, carrier, carried) -> None:
+    def apply_carry_penalties(self, carrier, carried_unit) -> None:
         """
-        Apply stat penalties to a unit carrying another unit.
+        Apply penalties to a unit for carrying another unit.
         
-        Carry Penalties (based on Thracia 776 with custom adjustments):
-        1. Combat stats (Str/Mag/Skl/Spd/Def) are halved
-        2. Movement penalty: Mov is halved if Carried Con > Carrier Con / 2
-           Note: For movement penalties, we use actual Con, not effective Con
-        3. Mounted units and ballistas are considered to have 20 Con for rescue purposes
-           (but NOT for movement penalty calculations)
+        Standard Fire Emblem Carrying penalties:
+        - Carrier's Str, Mag, Skl, Spd, and Def are all halved (rounded down)
+        - Movement is halved (rounded down) if carried unit's Con exceeds half of carrier's Con
         
         Args:
             carrier: The unit carrying another unit
-            carried: The unit being carried
+            carried_unit: The unit being carried
         """
-        # Store original stats if not already done
-        if not hasattr(carrier, 'temp_stats') or not carrier.temp_stats:
-            carrier.temp_stats = {}
-            carrier.temp_stats['original_str'] = carrier.stats.get('str', 0)
-            carrier.temp_stats['original_mag'] = carrier.stats.get('mag', 0)
-            carrier.temp_stats['original_skl'] = carrier.stats.get('skl', 0)
-            carrier.temp_stats['original_spd'] = carrier.stats.get('spd', 0)
-            carrier.temp_stats['original_def'] = carrier.stats.get('def', 0)
-            carrier.temp_stats['original_mov'] = carrier.stats.get('mov', 0)
-
-        # Halve combat stats (floor division)
-        carrier.stats['str'] = carrier.temp_stats['original_str'] // 2
-        carrier.stats['mag'] = carrier.temp_stats['original_mag'] // 2
-        carrier.stats['skl'] = carrier.temp_stats['original_skl'] // 2
-        carrier.stats['spd'] = carrier.temp_stats['original_spd'] // 2
-        carrier.stats['def'] = carrier.temp_stats['original_def'] // 2
-
-        # Check for Movement penalty
-        # Movement is halved if: carried unit's Con > half of carrier's ACTUAL Con
-        try:
-            # For movement penalties, we use the ACTUAL Con (not effective Con)
-            carrier_con = carrier.stats.get('con', 0)
-            carried_con = carried.stats.get('con', 0)
+        # Store original stats to allow restoration when dropping
+        if not hasattr(carrier, 'original_stats_before_carrying'):
+            carrier.original_stats_before_carrying = {}
             
-            # Calculate the threshold (half of carrier's ACTUAL Con)
-            half_carrier_con = carrier_con / 2
-
-            # Apply movement penalty if carried unit is too heavy
-            if carried_con > half_carrier_con:
-                carrier.stats['mov'] = carrier.temp_stats['original_mov'] // 2
-            else:
-                carrier.stats['mov'] = carrier.temp_stats['original_mov']
-        except (TypeError, AttributeError) as e:
-            # For test mocks or if there's an error, log it and apply the penalty by default
-            logging.debug(f"Error in apply_carry_penalties: {e}. Applying movement penalty by default.")
-            carrier.stats['mov'] = carrier.temp_stats['original_mov'] // 2
+        # Store original stats
+        stats_to_halve = ['str', 'mag', 'skl', 'spd', 'def']
+        for stat in stats_to_halve:
+            if stat in carrier.stats:
+                carrier.original_stats_before_carrying[stat] = carrier.stats.get(stat, 0)
+                # Halve the stat (integer division for rounding down)
+                carrier.stats[stat] = carrier.stats.get(stat, 0) // 2
+        
+        # Store original movement if it exists
+        if 'mov' in carrier.stats:
+            carrier.original_stats_before_carrying['mov'] = carrier.stats.get('mov', 0)
+            
+            # Apply movement penalty if carried unit's Con > half of carrier's Con
+            carrier_con = carrier.stats.get('con', 0)
+            carried_unit_con = carried_unit.stats.get('con', 0)
+            
+            if carried_unit_con > (carrier_con / 2):
+                # Halve movement (integer division for rounding down)
+                carrier.stats['mov'] = carrier.stats.get('mov', 0) // 2
     
     def remove_carry_penalties(self, carrier) -> None:
         """
-        Remove stat penalties from a unit that was carrying another unit.
+        Remove penalties from a unit that was carrying another unit.
         
         Args:
             carrier: The unit that was carrying another unit
         """
-        if not hasattr(carrier, 'temp_stats') or not carrier.temp_stats:
-            return  # No penalties were applied or already removed
+        if hasattr(carrier, 'original_stats_before_carrying'):
+            # Restore original stats
+            for stat, original_value in carrier.original_stats_before_carrying.items():
+                carrier.stats[stat] = original_value
+            
+            # Clear stored original stats
+            delattr(carrier, 'original_stats_before_carrying')
+    
+    def get_carried_unit(self, carrier_id: str) -> Optional[str]:
+        """
+        Get the ID of the unit being carried by the specified carrier.
         
-        # Restore original stats
-        carrier.stats['str'] = carrier.temp_stats['original_str']
-        carrier.stats['mag'] = carrier.temp_stats['original_mag']
-        carrier.stats['skl'] = carrier.temp_stats['original_skl']
-        carrier.stats['spd'] = carrier.temp_stats['original_spd']
-        carrier.stats['def'] = carrier.temp_stats['original_def']
-        carrier.stats['mov'] = carrier.temp_stats['original_mov']
+        Args:
+            carrier_id: ID of the carrier unit
+            
+        Returns:
+            ID of the carried unit if found, None otherwise
+        """
+        carrier = self.game_state_manager.get_unit(carrier_id)
+        if carrier and carrier.status == StatusEnum.RESCUING and carrier.carried_unit_id:
+            return carrier.carried_unit_id
+        return None
+    
+    def get_carrier_unit(self, carried_id: str) -> Optional[str]:
+        """
+        Get the ID of the unit carrying the specified unit.
         
-        # Clear temporary storage
-        carrier.temp_stats = {}
+        Args:
+            carried_id: ID of the carried unit
+            
+        Returns:
+            ID of the carrier unit if found, None otherwise
+        """
+        carried = self.game_state_manager.get_unit(carried_id)
+        if carried and carried.status == StatusEnum.RESCUED and carried.carrier_unit_id:
+            return carried.carrier_unit_id
+        return None

@@ -737,3 +737,255 @@ class AdvanceToObjectiveGoal(Goal):
                     nearest_objective = objective
         
         return nearest_objective
+
+
+class UseItemGoal(Goal):
+    """
+    Goal to use a specific item on a target unit or tile.
+    
+    This goal represents the strategic objective of using an item, such as a consumable,
+    staff, key, or other utility item. It is valid if the unit has the item, can use it,
+    and there's an appropriate target.
+    """
+    
+    def __init__(self, item_index: int, target_unit_id: str = None, target_position: tuple = None, ai_unit=None):
+        """
+        Initialize a UseItemGoal.
+        
+        Args:
+            item_index: Index of the item in the unit's inventory to use
+            target_unit_id: ID of the target unit (for unit-targeted items)
+            target_position: Position (x, y) tuple (for tile-targeted items)
+            ai_unit: The unit that will pursue this goal
+        """
+        super().__init__(ai_unit)
+        self.goal_type = "USE_ITEM"
+        self.parameters = {
+            "item_index": item_index,
+            "target_unit_id": target_unit_id,
+            "target_position": target_position
+        }
+    
+    def is_valid(self, unit, game_state_manager) -> bool:
+        """
+        Check if using the item is a valid goal.
+        
+        A goal is valid if:
+        - The item exists in the unit's inventory
+        - The unit can use the item
+        - There's a valid target (unit or position) for the item
+        
+        Args:
+            unit: The unit considering this goal
+            game_state_manager: The current game state
+            
+        Returns:
+            bool: True if the goal is valid, False otherwise
+        """
+        item_index = self.parameters["item_index"]
+        target_unit_id = self.parameters["target_unit_id"]
+        target_position = self.parameters["target_position"]
+        
+        # Check if the item exists in the inventory
+        if not hasattr(unit, 'inventory') or item_index < 0 or item_index >= len(unit.inventory):
+            return False
+        
+        inventory_system = game_state_manager.get_inventory_system()
+        if not inventory_system:
+            return False
+        
+        # Get the item data
+        item_instance = unit.inventory[item_index]
+        item_data = game_state_manager.data_provider.get_item_data(item_instance.item_id)
+        if not item_data:
+            return False
+        
+        # Check if the item has uses left (if it has durability)
+        if hasattr(item_instance, 'current_durability') and item_instance.current_durability <= 0:
+            return False
+        
+        # Check if unit can use the item based on its type
+        if hasattr(item_data, 'type'):
+            # For staves, check if unit can use staves
+            if item_data.type == 'STAFF' and not hasattr(unit, 'can_use_staff'):
+                return False
+            
+            # For unit-targeted items, check if target unit exists
+            if target_unit_id and item_data.target_type == 'UNIT':
+                target_unit = game_state_manager.get_unit(target_unit_id)
+                if not target_unit:
+                    return False
+                
+                # Check if target is in range
+                if hasattr(item_data, 'range'):
+                    max_range = max(item_data.range) if isinstance(item_data.range, list) else item_data.range
+                    distance = self._calculate_distance(unit.position, target_unit.position)
+                    if distance > max_range:
+                        return False
+            
+            # For tile-targeted items, check if target position is valid
+            elif target_position and item_data.target_type == 'TILE':
+                # Check if tile exists on the map
+                map_system = game_state_manager.get_map_system()
+                if not map_system or not map_system.is_valid_position(target_position):
+                    return False
+                
+                # Check if tile is in range
+                if hasattr(item_data, 'range'):
+                    max_range = max(item_data.range) if isinstance(item_data.range, list) else item_data.range
+                    distance = self._calculate_distance(unit.position, target_position)
+                    if distance > max_range:
+                        return False
+        
+        return True
+    
+    def generate_potential_actions(self, unit, game_state_manager) -> List[Any]:
+        """
+        Generate potential actions for using the item.
+        
+        Args:
+            unit: The unit pursuing this goal
+            game_state_manager: The current game state
+            
+        Returns:
+            List[Any]: A list of potential actions
+        """
+        # This will be implemented by the TacticalExecutor
+        return []
+    
+    def get_tactical_scorers(self, persona) -> List[Any]:
+        """
+        Provide scorers relevant to using items.
+        
+        Args:
+            persona: The AI persona/profile that influences scoring
+            
+        Returns:
+            List[Any]: A list of scoring considerations for item usage
+        """
+        # Return item-specific scoring considerations based on item type
+        # This would be expanded with actual scoring logic
+        return []
+    
+    def _calculate_distance(self, pos1: tuple, pos2: tuple) -> int:
+        """
+        Calculate the Manhattan distance between two positions.
+        
+        Args:
+            pos1: The first position (x, y)
+            pos2: The second position (x, y)
+            
+        Returns:
+            The Manhattan distance between the positions
+        """
+        return abs(pos1[0] - pos2[0]) + abs(pos1[1] - pos2[1])
+
+
+class SupportAllyGoal(Goal):
+    """
+    Goal to support/assist an allied unit on the battlefield.
+    
+    This goal represents the strategic objective of providing tactical support to an ally.
+    This could involve moving near an ally to provide support bonuses, using skill effects,
+    or positioning to enable allied tactical advantages.
+    """
+    
+    def __init__(self, target_unit_id: str, ai_unit=None):
+        """
+        Initialize a SupportAllyGoal.
+        
+        Args:
+            target_unit_id: ID of the target ally to support
+            ai_unit: The unit that will pursue this goal
+        """
+        super().__init__(ai_unit)
+        self.goal_type = "SUPPORT_ALLY"
+        self.parameters = {"target_unit_id": target_unit_id}
+    
+    def is_valid(self, unit, game_state_manager) -> bool:
+        """
+        Check if supporting the target ally is a valid goal.
+        
+        A goal is valid if:
+        - The target ally exists
+        - The target ally is not defeated
+        - The target and source units have a support relationship or
+          the source unit has leadership/support capabilities
+        - The target ally can be reached
+        
+        Args:
+            unit: The unit considering this goal
+            game_state_manager: The current game state
+            
+        Returns:
+            bool: True if the goal is valid, False otherwise
+        """
+        target_unit_id = self.parameters["target_unit_id"]
+        target_unit = game_state_manager.get_unit(target_unit_id)
+        
+        # Check if target exists and is not defeated
+        if target_unit is None:
+            return False
+            
+        if hasattr(target_unit, 'is_defeated') and target_unit.is_defeated():
+            return False
+        elif hasattr(target_unit, 'disposition') and target_unit.disposition == DispositionEnum.DEAD:
+            return False
+        
+        # Check if target is in same faction
+        if target_unit.faction != unit.faction:
+            return False
+            
+        # Get the support system
+        support_system = getattr(game_state_manager, 'get_support_leadership_system', lambda: None)()
+        if not support_system:
+            # Fall back to data provider for support data
+            if not hasattr(game_state_manager, 'data_provider'):
+                return False
+                
+            support_data = game_state_manager.data_provider.get_support_data()
+            if not support_data:
+                return False
+                
+            # Check if there's a support relationship
+            support_pair_key = (unit.unit_id, target_unit.unit_id)
+            reverse_pair_key = (target_unit.unit_id, unit.unit_id)
+            if support_pair_key not in support_data and reverse_pair_key not in support_data:
+                # If no direct support relationship, check if unit has leadership
+                if not hasattr(unit, 'leadership_stars') or unit.leadership_stars <= 0:
+                    return False
+        
+        # Check if target can be reached (path exists)
+        path = game_state_manager.map_system.pathfinder.reconstruct_path(
+            unit.position, target_unit.position, unit.unit_id
+        )
+        path_exists = bool(path)  # True if path list is not empty
+        
+        return path_exists
+    
+    def generate_potential_actions(self, unit, game_state_manager) -> List[Any]:
+        """
+        Generate potential actions for supporting the ally.
+        
+        Args:
+            unit: The unit pursuing this goal
+            game_state_manager: The current game state
+            
+        Returns:
+            List[Any]: A list of potential actions
+        """
+        # Will be implemented by TacticalExecutor
+        return []
+    
+    def get_tactical_scorers(self, persona) -> List[Any]:
+        """
+        Provide scorers relevant to supporting allies.
+        
+        Args:
+            persona: The AI persona/profile that influences scoring
+            
+        Returns:
+            List[Any]: A list of scoring considerations for ally support
+        """
+        # Will provide support-specific scoring considerations
+        return []

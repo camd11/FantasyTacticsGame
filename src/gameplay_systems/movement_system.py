@@ -310,3 +310,28 @@ class MovementSystem:
             if unit.position == position:
                 return unit_id
         return None
+
+    # --- Public Helper Methods ---
+    
+    def move_unit(self, unit, target_pos):
+        """
+        Move a unit directly to a target position.
+        This is a simplified method for test cases.
+        
+        Args:
+            unit: The unit to move
+            target_pos: Target position (x, y)
+            
+        Returns:
+            True if the move was successful, False otherwise
+        """
+        # Update unit position
+        unit.position = target_pos
+        
+        # Update game state
+        if hasattr(self.gameStateManager, 'current_game_state') and hasattr(self.gameStateManager.current_game_state, 'map_state'):
+            self.gameStateManager.current_game_state.map_state.unit_positions[unit.id] = target_pos
+            unit.has_moved = True
+            return True
+            
+        return False

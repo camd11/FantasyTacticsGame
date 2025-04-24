@@ -3,6 +3,7 @@ import os
 import logging
 import pytest
 from unittest.mock import MagicMock, call, Mock, patch
+from typing import List, Dict, Any, Optional, Set, Tuple
 
 # Add the current directory to the path to ensure src is importable
 sys.path.append(os.path.abspath('.'))
@@ -15,7 +16,6 @@ try:
         SecurePositionGoal, AdvanceToObjectiveGoal
     )
     from src.gameplay_systems.ai.ai_types import AIAction
-    from src.utilities.position import Position
     print("Using real implementation of TacticalExecutor and related classes")
     using_real_implementation = True
 except ImportError as e:
@@ -40,7 +40,7 @@ def mock_unit_state():
     mock_unit = MagicMock()
     mock_unit.id = "test_ai_unit_1"
     mock_unit.unit_id = "test_ai_unit_1"
-    mock_unit.position = Position(5, 5)
+    mock_unit.position = (5, 5)
     mock_unit.movement_range = 3
     mock_unit.faction = "enemy"
     mock_unit.get_terrain_movement_cost = MagicMock(return_value=1)
@@ -121,7 +121,7 @@ def mock_movement_system(mock_game_state_manager):
     
     # Default reachable tiles for tests
     mock_ms.calculate_movement_range.return_value = {
-        Position(5, 5), Position(5, 6), Position(6, 5), Position(4, 5), Position(5, 4)
+        (5, 5), (5, 6), (6, 5), (4, 5), (5, 4)
     }
     
     return mock_ms
@@ -163,7 +163,7 @@ def target_unit():
     target_unit = MagicMock()
     target_unit.id = "target_unit_1"
     target_unit.unit_id = "target_unit_1"
-    target_unit.position = Position(6, 6)
+    target_unit.position = (6, 6)
     target_unit.faction = "player"
     target_unit.current_stats = MagicMock()
     target_unit.current_stats.move = 3
@@ -183,9 +183,9 @@ def test_secure_position_goal_success(tactical_executor, mock_unit_state, mock_g
     # --- Mocking Setup ---
     start_pos = ai_unit_state.position
     reachable_tiles = {
-        Position(5, 5), Position(5, 6), Position(6, 5), Position(4, 5), Position(5, 4)
+        (5, 5), (5, 6), (6, 5), (4, 5), (5, 4)
     }
-    best_tile = Position(6, 5)
+    best_tile = (6, 5)
     path_to_best = [start_pos, best_tile]
 
     mock_movement_system.calculate_movement_range.return_value = reachable_tiles
@@ -222,7 +222,7 @@ def test_secure_position_goal_stay_put(tactical_executor, mock_unit_state, mock_
     # --- Mocking Setup ---
     start_pos = ai_unit_state.position
     reachable_tiles = {
-        Position(5, 5), Position(5, 6), Position(6, 5), Position(4, 5), Position(5, 4)
+        (5, 5), (5, 6), (6, 5), (4, 5), (5, 4)
     }
 
     mock_movement_system.calculate_movement_range.return_value = reachable_tiles
@@ -256,10 +256,10 @@ def test_secure_position_goal_move_to_best_occupied(tactical_executor, mock_unit
     # --- Mocking Setup ---
     start_pos = ai_unit_state.position
     reachable_tiles = {
-        Position(5, 5), Position(5, 6), Position(6, 5), Position(4, 5), Position(5, 4)
+        (5, 5), (5, 6), (6, 5), (4, 5), (5, 4)
     }
-    best_tile_occupied = Position(6, 5)
-    next_best_tile_unoccupied = Position(5, 6)
+    best_tile_occupied = (6, 5)
+    next_best_tile_unoccupied = (5, 6)
     path_to_next_best = [start_pos, next_best_tile_unoccupied]
 
     mock_movement_system.calculate_movement_range.return_value = reachable_tiles
@@ -310,7 +310,7 @@ def test_secure_position_goal_no_valid_move(tactical_executor, mock_unit_state, 
     # --- Mocking Setup ---
     start_pos = ai_unit_state.position
     reachable_tiles = {
-        Position(5, 5), Position(5, 6), Position(6, 5), Position(4, 5), Position(5, 4)
+        (5, 5), (5, 6), (6, 5), (4, 5), (5, 4)
     }
 
     mock_movement_system.calculate_movement_range.return_value = reachable_tiles
@@ -388,13 +388,13 @@ def test_attack_unit_goal_move_to_attack(tactical_executor, mock_unit_state, moc
     )
     
     # Setup pathfinding
-    attack_path = [mock_unit_state.position, Position(5, 6), target_unit.position]
+    attack_path = [mock_unit_state.position, (5, 6), target_unit.position]
     mock_game_state_manager.pathfinding.find_path.return_value = attack_path
     mock_game_state_manager.map_system.pathfinder.find_path_to_nearest_attack_position.return_value = attack_path
     
     # Setup movement range
     mock_movement_system.calculate_movement_range.return_value = {
-        mock_unit_state.position, Position(5, 6), target_unit.position
+        mock_unit_state.position, (5, 6), target_unit.position
     }
     
     # Create goal
@@ -485,10 +485,10 @@ def test_advance_to_objective_goal_move(tactical_executor, mock_unit_state, mock
     """Test moving toward a distant objective."""
     # Setup
     start_pos = mock_unit_state.position
-    target_pos = Position(10, 10)
+    target_pos = (10, 10)
     
     # Create path and limited path
-    full_path = [start_pos, Position(6, 6), Position(7, 7), Position(8, 8), Position(9, 9), target_pos]
+    full_path = [start_pos, (6, 6), (7, 7), (8, 8), (9, 9), target_pos]
     limited_path = full_path[:3]  # Only first part reachable
     
     # Mock pathfinding
@@ -513,7 +513,7 @@ def test_advance_to_objective_goal_move(tactical_executor, mock_unit_state, mock
 def test_advance_to_objective_goal_wait_at_destination(tactical_executor, mock_unit_state, mock_game_state_manager):
     """Test waiting when already at the objective."""
     # Setup - position unit at objective
-    target_pos = Position(10, 10)
+    target_pos = (10, 10)
     mock_unit_state.position = target_pos
     
     # Create goal
@@ -534,8 +534,8 @@ def test_move_to_safety_goal_immediate_safe_tile(tactical_executor, mock_unit_st
     """Test moving to a safe tile within movement range."""
     # Setup
     start_pos = mock_unit_state.position
-    safe_pos = Position(6, 6)
-    path_to_safe = [start_pos, Position(6, 5), safe_pos]
+    safe_pos = (6, 6)
+    path_to_safe = [start_pos, (6, 5), safe_pos]
     
     # Mock safe tiles
     mock_game_state_manager.find_safe_tiles_for_unit.return_value = [safe_pos]
@@ -545,7 +545,7 @@ def test_move_to_safety_goal_immediate_safe_tile(tactical_executor, mock_unit_st
     
     # Mock movement range
     mock_movement_system.calculate_movement_range.return_value = {
-        start_pos, Position(6, 5), safe_pos
+        start_pos, (6, 5), safe_pos
     }
     
     # Create goal
@@ -565,7 +565,7 @@ def test_move_to_safety_goal_immediate_safe_tile(tactical_executor, mock_unit_st
 def test_seize_tile_goal_at_position(tactical_executor, mock_unit_state, mock_game_state_manager):
     """Test seizing when already at the target position."""
     # Setup - position unit at target
-    target_pos = Position(10, 10)
+    target_pos = (10, 10)
     mock_unit_state.position = target_pos
     
     # Create goal
@@ -585,10 +585,10 @@ def test_seize_tile_goal_move_to_position(tactical_executor, mock_unit_state, mo
     """Test moving toward a tile to seize it."""
     # Setup
     start_pos = mock_unit_state.position
-    target_pos = Position(10, 10)
+    target_pos = (10, 10)
     
     # Create path
-    path_to_target = [start_pos, Position(6, 6), Position(7, 7), Position(8, 8), Position(9, 9), target_pos]
+    path_to_target = [start_pos, (6, 6), (7, 7), (8, 8), (9, 9), target_pos]
     limited_path = path_to_target[:3]  # Only part reachable
     
     # Mock pathfinding

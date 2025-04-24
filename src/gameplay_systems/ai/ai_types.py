@@ -16,6 +16,25 @@ from enum import Enum, auto
 from typing import Dict, List, Tuple, Optional, Any, Set, Union
 
 
+# For backward compatibility with tests
+class AIActionType:
+    """
+    String constants for AI action types.
+    Used for backward compatibility with test files.
+    
+    In the actual implementation, action_type is a string.
+    """
+    MOVE = "MOVE"
+    ATTACK = "ATTACK"
+    WAIT = "WAIT"
+    ITEM = "ITEM"
+    HEAL = "HEAL"
+    SEIZE = "SEIZE"
+    CAPTURE = "CAPTURE"
+    TALK = "TALK"
+    MOVE_AND_ATTACK = "MOVE_AND_ATTACK"
+
+
 class AIBehaviorType(Enum):
     """
     Types of AI behaviors based on the AI specification.

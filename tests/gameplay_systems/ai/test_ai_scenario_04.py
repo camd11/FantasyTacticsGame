@@ -11,6 +11,7 @@ import pytest
 import logging
 from typing import Dict, Any
 from unittest.mock import Mock
+import os
 
 # Import the required modules
 from src.core_engine.game_state import GameStateManager, FactionEnum, GameState, MapState, UnitState
@@ -86,6 +87,17 @@ class TestAIScenario04:
         # Set map state
         map_state.terrain_grid = terrain_grid
         map_state.map_id = "advanced_tactics_test"
+        
+        # Create a simple MapData object to support fog of war in the visual logger
+        class MapDataObj:
+            def __init__(self):
+                self.id = "advanced_tactics_test"
+                self.name = "Advanced Tactics Test"
+                self.dimensions = (15, 15)
+                self.terrain_grid = terrain_grid
+                self.fog_of_war = False
+                
+        map_state.map_data = MapDataObj()
         
         # Create game state
         game_state = GameState()
@@ -387,6 +399,21 @@ class TestAIScenario04:
         engine = scenario_setup["engine"]
         game_state_manager = scenario_setup["game_state_manager"]
         visual_logger = scenario_setup["visual_logger"]
+        
+        # Ensure logs directory exists
+        log_dir = "logs"
+        # Create both absolute and relative paths to logs directory
+        abs_log_dir = os.path.abspath(log_dir)
+        rel_log_dir = os.path.join(os.path.dirname(__file__), "..", "..", "..", log_dir)
+        
+        # Try to create both
+        for dir_path in [abs_log_dir, rel_log_dir]:
+            try:
+                if not os.path.exists(dir_path):
+                    os.makedirs(dir_path, exist_ok=True)
+                    print(f"Created logs directory: {dir_path}")
+            except Exception as e:
+                print(f"Error creating logs directory {dir_path}: {e}")
         
         # Log initial state
         visual_logger.log_initial_state()

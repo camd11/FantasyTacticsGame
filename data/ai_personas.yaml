@@ -8,6 +8,8 @@
 # - strategic_weights: Influence how goals are scored during Strategic Evaluation
 # - tactical_weights: Influence how actions are scored during Tactical Execution
 
+# --- CORE PERSONAS (ORIGINAL) ---
+
 AGGRESSOR:
   goal_weights:
     ATTACK_UNIT: 1.0
@@ -15,6 +17,8 @@ AGGRESSOR:
     SECURE_POSITION: 0.4
     RETREAT_AND_RECOVER: 0.3
     HEAL_UNIT: 0.2
+    USE_ITEM: 0.2
+    SUPPORT_ALLY: 0.2
   
   strategic_weights:
     ThreatLevel: 1.0
@@ -29,6 +33,8 @@ AGGRESSOR:
     SelfPreservation: 0.6
     TerrainDefense: 0.5
     AlliedFormation: 0.4
+    EnemyThreatAvoidance: 0.3
+    ObjectiveProximity: 0.7
 
 DEFENDER:
   goal_weights:
@@ -37,6 +43,8 @@ DEFENDER:
     HEAL_UNIT: 0.6
     RETREAT_AND_RECOVER: 0.5
     ADVANCE_TO_OBJECTIVE: 0.3
+    USE_ITEM: 0.4
+    SUPPORT_ALLY: 0.5
   
   strategic_weights:
     TerrainAdvantage: 1.0
@@ -51,6 +59,8 @@ DEFENDER:
     AlliedFormation: 0.8
     DamageDealt: 0.7
     KillPotential: 0.6
+    EnemyThreatAvoidance: 0.7
+    ObjectiveProximity: 0.3
 
 SUPPORT:
   goal_weights:
@@ -59,6 +69,8 @@ SUPPORT:
     SECURE_POSITION: 0.7
     ATTACK_UNIT: 0.3
     ADVANCE_TO_OBJECTIVE: 0.2
+    USE_ITEM: 0.8
+    SUPPORT_ALLY: 1.0
   
   strategic_weights:
     AlliedSupport: 1.0
@@ -73,6 +85,8 @@ SUPPORT:
     SelfPreservation: 0.8
     TerrainDefense: 0.7
     AlliedFormation: 0.6
+    EnemyThreatAvoidance: 0.8
+    ObjectiveProximity: 0.2
 
 OBJECTIVE-FOCUSED:
   goal_weights:
@@ -81,6 +95,8 @@ OBJECTIVE-FOCUSED:
     SECURE_POSITION: 0.6
     RETREAT_AND_RECOVER: 0.4
     HEAL_UNIT: 0.3
+    USE_ITEM: 0.3
+    SUPPORT_ALLY: 0.2
   
   strategic_weights:
     ObjectiveProgress: 1.0
@@ -95,6 +111,8 @@ OBJECTIVE-FOCUSED:
     KillPotential: 0.6
     SelfPreservation: 0.5
     TerrainDefense: 0.4
+    EnemyThreatAvoidance: 0.4
+    AlliedFormation: 0.3
 
 BALANCED:
   goal_weights:
@@ -103,6 +121,8 @@ BALANCED:
     SECURE_POSITION: 0.7
     RETREAT_AND_RECOVER: 0.6
     HEAL_UNIT: 0.6
+    USE_ITEM: 0.6
+    SUPPORT_ALLY: 0.6
   
   strategic_weights:
     ThreatLevel: 0.8
@@ -117,3 +137,124 @@ BALANCED:
     SelfPreservation: 0.8
     TerrainDefense: 0.7
     AlliedFormation: 0.7
+    EnemyThreatAvoidance: 0.7
+    ObjectiveProximity: 0.7
+
+# --- THRACIA 776 PERSONAS (DOCUMENTATION-DEFINED) ---
+
+AGGRESSIVE:
+  # "Moves towards and attacks the nearest player unit within range."
+  # A highly aggressive AI that will actively seek out and engage player units,
+  # prioritizing proximity over other tactical considerations.
+  goal_weights:
+    ATTACK_UNIT: 1.0
+    ADVANCE_TO_OBJECTIVE: 0.4
+    SECURE_POSITION: 0.2
+    RETREAT_AND_RECOVER: 0.1
+    HEAL_UNIT: 0.1
+    USE_ITEM: 0.2
+    SUPPORT_ALLY: 0.1
+  
+  strategic_weights:
+    ThreatLevel: 1.0
+    KillOpportunity: 0.9
+    ObjectiveProgress: 0.3
+    TerrainAdvantage: 0.2
+    AlliedSupport: 0.2
+  
+  tactical_weights:
+    DamageDealt: 0.9
+    KillPotential: 0.8
+    SelfPreservation: 0.3
+    TerrainDefense: 0.2
+    AlliedFormation: 0.2
+    EnemyThreatAvoidance: 0.1
+    ObjectiveProximity: 0.3
+
+STATIONARY_GUARD:
+  # "Does not move unless a player unit enters its attack range."
+  # A defensive AI that remains in place until enemies enter its attack range,
+  # then engages. Prioritizes maintaining position over pursuit.
+  goal_weights:
+    SECURE_POSITION: 1.0
+    ATTACK_UNIT: 0.8
+    HEAL_UNIT: 0.5
+    RETREAT_AND_RECOVER: 0.4
+    ADVANCE_TO_OBJECTIVE: 0.1
+    USE_ITEM: 0.3
+    SUPPORT_ALLY: 0.4
+  
+  strategic_weights:
+    TerrainAdvantage: 1.0
+    ThreatLevel: 0.8
+    KillOpportunity: 0.7
+    AlliedSupport: 0.5
+    ObjectiveProgress: 0.1
+  
+  tactical_weights:
+    TerrainDefense: 1.0
+    SelfPreservation: 0.8
+    AlliedFormation: 0.6
+    DamageDealt: 0.7
+    KillPotential: 0.6
+    EnemyThreatAvoidance: 0.3
+    ObjectiveProximity: 0.1
+
+PURSUIT:
+  # "Targets a specific unit or type of unit, potentially ignoring closer threats."
+  # An AI focused on pursuing specific high-value targets (typically lords or vulnerable units),
+  # even if other targets are closer or more tactically advantageous.
+  goal_weights:
+    ATTACK_UNIT: 1.0
+    ADVANCE_TO_OBJECTIVE: 0.6
+    SECURE_POSITION: 0.4
+    RETREAT_AND_RECOVER: 0.3
+    HEAL_UNIT: 0.2
+    USE_ITEM: 0.2
+    SUPPORT_ALLY: 0.2
+  
+  strategic_weights:
+    KillOpportunity: 1.0
+    ThreatLevel: 0.9
+    ObjectiveProgress: 0.5
+    TerrainAdvantage: 0.4
+    AlliedSupport: 0.3
+  
+  tactical_weights:
+    KillPotential: 1.0
+    DamageDealt: 0.9
+    SelfPreservation: 0.5
+    TerrainDefense: 0.4
+    EnemyThreatAvoidance: 0.2
+    AlliedFormation: 0.3
+    ObjectiveProximity: 0.4
+
+FLEE:
+  # "Moves away from player units, especially when HP is low."
+  # An AI focused on avoiding combat and maintaining distance from player units.
+  # Prioritizes retreat and self-preservation above all else.
+  goal_weights:
+    RETREAT_AND_RECOVER: 1.0
+    SECURE_POSITION: 0.7
+    HEAL_UNIT: 0.6
+    USE_ITEM: 0.6
+    ADVANCE_TO_OBJECTIVE: 0.3
+    SUPPORT_ALLY: 0.2
+    ATTACK_UNIT: 0.1
+  
+  strategic_weights:
+    SelfPreservation: 1.0
+    TerrainAdvantage: 0.8
+    ThreatLevel: 0.7
+    AlliedSupport: 0.5
+    ObjectiveProgress: 0.3
+    KillOpportunity: 0.1
+  
+  tactical_weights:
+    SelfPreservation: 1.0
+    EnemyThreatAvoidance: 1.0
+    TerrainDefense: 0.8
+    AlliedFormation: 0.5
+    ObjectiveProximity: 0.3
+    DamageDealt: 0.2
+    KillPotential: 0.1

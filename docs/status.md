@@ -10,6 +10,10 @@ Please update this document after completing significant milestones or before ha
 
 ## Completed
 
+- **Documentation Organization Refinement:** Completed additional documentation organization by moving remaining markdown files to appropriate subdirectories. Created `docs/game_mechanics/rescue_system.md` from `rescue_system_changes.md`, added `docs/research/build_constitution_mechanics.md` from `summary_of_build_constitution.md`, created `docs/research/source_material_index.md` as an index to the large `research.md` file, ensured `docs/setup.md` and `docs/testing.md` are comprehensive, and updated cross-references. This completes the documentation organization phase started earlier. (2025-04-24)
+
+- **Documentation Reorganization:** Completed comprehensive documentation restructuring to improve organization and accessibility. Created a hierarchical structure with dedicated directories (`docs/systems/`, `docs/development/`, `docs/research/`, `docs/game_mechanics/`), consolidated related files (visual system docs, AI research notes), standardized naming to lowercase, and updated cross-references. Created a central `docs/index.md` as a documentation hub and updated README links. (2025-04-22)
+
 - **Visual Logger Fixes:** Corrected `VisualScenarioLogger` initialization order in `src/app.py` to occur after dependencies are ready. Refined logging calls within `EngineCore` to accurately capture turn starts, phase starts, actions, and end-of-turn states. Verified correct visual log output (`logs/visual_log_*.txt`) matches game flow observed in `ai_behavior.log` during AI vs AI simulation.
 
 - **AI Tactical Executor Testing:** Resolved testing issues with the TacticalExecutor class by creating standalone tests that properly mock dependencies. All goal handling functions now have comprehensive tests that verify proper action selection logic for various game scenarios including position securing, attacking, healing, advancing to objectives, and seizing tiles.
@@ -139,12 +143,23 @@ Please update this document after completing significant milestones or before ha
     - Created main entry point `src/main.py`.
     - Created basic CLI handler `src/input/cli_input_handler.py`.
 
+- **AI v2 Enhancements:** 
+    - **Goal Library Expansion:** Implemented additional strategic goals (`UseItemGoal`, `SupportAllyGoal`) with corresponding tactical executors, completing the goal expansion task.
+    - **UseItemGoal:** Allows AI units to intelligently use consumables, keys, and other items.
+    - **SupportAllyGoal:** Enables AI units to provide tactical support to allies with support relationships or leadership capabilities.
+    - **Thracia 776 AI Personas:** Implemented the four canonical AI behavior types from Fire Emblem: Thracia 776:
+        - **AGGRESSIVE:** Moves towards and attacks the nearest player unit within range.
+        - **STATIONARY_GUARD:** Does not move unless a player unit enters its attack range.
+        - **PURSUIT:** Targets a specific unit or type of unit, potentially ignoring closer threats.
+        - **FLEE:** Moves away from player units, especially when HP is low.
+    - **Existing Personas Refinement:** Enhanced all existing personas (AGGRESSOR, DEFENDER, SUPPORT, OBJECTIVE-FOCUSED, BALANCED) with support for the new goal types.
+    - **Refined Goal Implementations:** Enhanced the tactical execution of existing goals to improve AI decision-making:
+        - **SecurePositionGoal:** Improved tile scoring with comprehensive tactical considerations including enemy threat, ally support, terrain advantages, and proximity to objectives. Incorporated persona-specific adjustments to scoring weights.
+        - **AdvanceToObjectiveGoal:** Enhanced pathfinding with threat awareness, strategic waypoints, and multiple path evaluations. Added sophisticated decision-making for selecting routes based on unit health, threat level, and tactical objectives.
+
 ## In Progress
 
 - **AI v2 Enhancements:**
-    - Expand Goal Library: Implement additional strategic goals (e.g., `UseItemGoal`, `SupportAllyGoal`).
-    - Refine Existing Goals: Implement full logic for `SecurePositionGoal` and `AdvanceToObjectiveGoal`.
-    - Expand AI Personas: Create more diverse personas and fine-tune existing weights for varied behaviors.
     - Complex AI Testing: Develop more intricate AI vs AI scenarios to stress-test decision-making.
 
 ## Remaining Tasks

@@ -13,25 +13,9 @@ This document provides technical details about the Fantasy Tactics Game, includi
 
 This section explains how to run the Fantasy Tactics Game and interact with it.
 
-## Setup
-
-1. Ensure you have Python 3 installed.
-2. Clone the repository.
-3. Navigate to the project's root directory in your terminal.
-4. It's recommended to create and activate a virtual environment:
-   ```bash
-   python -m venv venv
-   # On Windows:
-   .\venv\Scripts\activate
-   # On macOS/Linux:
-   source venv/bin/activate
-   ```
-5. Install the required dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
 ## Running the Game
+
+For setup instructions (installing Python, dependencies, etc.), please refer to the [SETUP.md](./SETUP.md) guide.
 
 To run the game, execute the main script from the project's root directory:
 

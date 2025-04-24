@@ -42,18 +42,39 @@ class TestWeaponTriangle(unittest.TestCase):
         map_state.dimensions = (10, 10) # Simple 10x10 map
         map_state.terrain_grid = [['P'] * 10 for _ in range(10)] # All plains
         
-        game_state = GameState("test_chapter", map_state)
-        self.game_state_manager.set_current_game_state(game_state)
+        # Create GameState instance without arguments
+        game_state = GameState()
+        # Set attributes after creation
+        game_state.chapter_id = "test_chapter"
+        game_state.map_state = map_state # Assign the created map_state
         
-        # Define unit placements
-        placements = [
+        # Assign directly to the attribute instead of calling a setter method
+        self.game_state_manager.current_game_state = game_state
+        
+        # Define unit placements as dictionaries
+        placement_dicts = [
             {'unit_id': 'LEIF', 'faction': 'PLAYER', 'position': [1, 1], 'level': 1, 'start_inventory': ['IRON_SWORD']},
             {'unit_id': 'HALVAN', 'faction': 'PLAYER', 'position': [1, 2], 'level': 1, 'start_inventory': ['IRON_AXE']},
             {'unit_id': 'FINN', 'faction': 'PLAYER', 'position': [2, 1], 'level': 1, 'start_inventory': ['IRON_LANCE']}
         ]
         
-        # Deploy units using GameStateManager
-        self.game_state_manager.deploy_units_from_list(placements, self.data_provider)
+        # Convert dicts to simple objects for deploy_units
+        class SimplePlacement:
+            def __init__(self, data):
+                self.unit_id = data.get('unit_id', '')
+                self.faction = data.get('faction', 'PLAYER')
+                self.position = data.get('position', [0, 0])
+                self.level = data.get('level', 1)
+                self.start_inventory = data.get('start_inventory', [])
+                # Add default values for other potential attributes expected by deploy_units
+                self.starting_fatigue = data.get('starting_fatigue', 0)
+                self.needs_autolevel = data.get('needs_autolevel', False)
+                self.target_level = data.get('target_level', 1)
+                
+        placements = [SimplePlacement(p) for p in placement_dicts]
+
+        # Deploy units using the correct method name and object format
+        self.game_state_manager.deploy_units(placements, self.data_provider)
         
         # Get unit IDs
         self.sword_user_id = "LEIF"

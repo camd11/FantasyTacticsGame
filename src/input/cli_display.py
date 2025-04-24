@@ -608,11 +608,19 @@ class CLIDisplay:
         
         # Check if Fog of War is active for the current map
         is_fow_map = False
-        map_data = self.game_state_manager.current_game_state.map_state.map_data
-        if map_data and hasattr(map_data, 'fog_of_war'):
-             is_fow_map = map_data.fog_of_war
-        else:
-             logging.warning("Could not determine if map is Fog of War from map_data.")
+        map_state = self.game_state_manager.current_game_state.map_state
+        
+        # Safely check for fog_of_war attribute in map_data
+        # Handle the case where map_data may not exist on MapState
+        try:
+            if hasattr(map_state, 'map_data') and map_state.map_data and hasattr(map_state.map_data, 'fog_of_war'):
+                is_fow_map = map_state.map_data.fog_of_war
+            else:
+                # Default to no fog of war if map_data is not available
+                is_fow_map = False
+        except AttributeError:
+            logging.warning("Could not determine if map is Fog of War: map_data not available.")
+            is_fow_map = False
         
         # Get map dimensions
         map_width, map_height = self.game_state_manager.current_game_state.map_state.dimensions
@@ -643,21 +651,24 @@ class CLIDisplay:
                 position = (x, y)
                 terrain_char = '?'
                 unit_char = None
+                # Create the enum value directly instead of looking it up
                 visibility = TileVisibilityState.Visible # Default if not FoW
                 
                 # Determine visibility if FoW is active
                 if is_fow_map and self.fog_system:
                     # Access map_visibility_data (assuming it's stored in game state)
                     map_visibility_data = getattr(self.game_state_manager.current_game_state, 'map_visibility_data', None)
-                    # Map data is already fetched above
                     
-                    if map_visibility_data and map_data:
+                    # Only attempt fog visibility checks if we have valid visibility data
+                    if map_visibility_data and hasattr(map_state, 'map_data'):
                         # Call the correct FogOfWarSystem method
-                        if self.fog_system.is_tile_visible_to_player(position, map_visibility_data, player_units, map_data):
+                        if self.fog_system.is_tile_visible_to_player(position, map_visibility_data, player_units, map_state.map_data):
                             visibility = TileVisibilityState.Visible
+                        else:
+                            # Default to fog if not visible
+                            visibility = TileVisibilityState.Fog
                     else:
-                        logging.warning("Map visibility data not found in game state for FoW map.")
-                        visibility = TileVisibilityState.Unknown # Default to unknown if data missing
+                        visibility = TileVisibilityState.Visible # Default to visible if data missing
                         
                 # Render based on visibility
                 if visibility == TileVisibilityState.Unknown:

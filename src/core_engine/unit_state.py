@@ -89,6 +89,7 @@ class UnitState:
         self.support_partner_ids: List[str] = []
         self.leadership_stars: int = 0
         self.pcc: int = 0  # Pursuit Critical Coefficient
+        self.movement_stars: int = 0  # Movement Stars - chance for a second action
         
         # Capture/Rescue State
         self.is_captured: bool = False

@@ -96,7 +96,7 @@ class TestCombatCalculator(unittest.TestCase):
         # Arrange
         unit = MagicMock()
         unit.spd = 10
-        unit.con = 8  # Should be ignored for magical weapons
+        unit.con = 8  # Now should mitigate tome weight
         
         weapon = MagicMock()
         weapon.weight = 3
@@ -109,8 +109,9 @@ class TestCombatCalculator(unittest.TestCase):
         result = self.combat_system._calculate_attack_speed(unit, weapon)
         
         # Assert
-        # Expected: SPD - WT = 10 - 3 = 7 (Con doesn't offset tome weight)
-        self.assertEqual(result, 7)
+        # Expected: SPD - MAX(0, WT - Con) = 10 - MAX(0, 3 - 8) = 10 - 0 = 10
+        # Con now mitigates tome weight in our custom implementation
+        self.assertEqual(result, 10)
     
     def test_calculate_attack_speed_with_capture_penalty(self):
         """Test calculate_attack_speed with capture penalty applied."""

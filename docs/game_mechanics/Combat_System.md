@@ -19,10 +19,9 @@ This document details the combat formulas and mechanics of Fire Emblem: Thracia 
 -   **Effectiveness:** If a weapon is effective (e.g., Armorslayer vs Armor), its Might is tripled (x3) before adding Str/Mag.
 
 ### 2.2. Attack Speed (AS)
--   **Physical:** `AS = Spd - MAX(0, Weapon Weight - Bld)`
-    -   Build (Bld) mitigates weapon weight penalty.
--   **Magical:** `AS = Spd - Weapon Weight`
-    -   Build does *not* mitigate tome weight.
+-   **For All Weapons:** `AS = Spd - MAX(0, Weapon Weight - Bld)`
+    -   Build (Bld) mitigates weapon weight penalty for all weapon types, including tomes.
+    -   *Note: This is a custom implementation that deviates from Thracia 776, where Con only mitigates physical weapon weight.*
 -   Used for follow-up attacks and Avoid calculation.
 
 ### 2.3. Hit Rate (Displayed Formula Components)

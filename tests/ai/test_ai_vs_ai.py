@@ -72,15 +72,41 @@ class TestAIvsAI:
         map_state = MapState()
         map_state.dimensions = (10, 10)
         map_state.terrain_grid = [['P'] * 10 for _ in range(10)]
-        game_state = GameState("test_chapter_ai_vs_ai", map_state)
-        game_state_manager.set_current_game_state(game_state)
+        
+        # Create GameState instance without arguments
+        game_state = GameState()
+        # Set attributes after creation
+        game_state.chapter_id = "test_chapter_ai_vs_ai"
+        game_state.map_state = map_state # Assign the created map_state
+        
+        # Assign directly to the attribute
+        game_state_manager.current_game_state = game_state
 
         # Manually deploy a couple of units for the simulation
-        placements = [
+        placement_dicts = [
             {'unit_id': 'LEIF', 'faction': 'PLAYER', 'position': [1, 1], 'level': 5, 'start_inventory': ['IRON_SWORD'], 'ai_persona': 'AGGRESSOR'},
             {'unit_id': 'ENEMY_FIGHTER_1', 'faction': 'ENEMY', 'position': [8, 8], 'level': 5, 'start_inventory': ['IRON_AXE'], 'ai_persona': 'AGGRESSOR'}
         ]
-        game_state_manager.deploy_units_from_list(placements, data_provider)
+        
+        # Convert dicts to simple objects for deploy_units
+        class SimplePlacement:
+            def __init__(self, data):
+                self.unit_id = data.get('unit_id', '')
+                self.faction = data.get('faction', 'PLAYER')
+                self.position = data.get('position', [0, 0])
+                self.level = data.get('level', 1)
+                self.start_inventory = data.get('start_inventory', [])
+                # Add default values for other potential attributes expected by deploy_units
+                self.starting_fatigue = data.get('starting_fatigue', 0)
+                self.needs_autolevel = data.get('needs_autolevel', False)
+                self.target_level = data.get('target_level', 1)
+                # Include ai_persona if present
+                if 'ai_persona' in data:
+                    self.ai_persona = data['ai_persona']
+
+        placements = [SimplePlacement(p) for p in placement_dicts]
+        
+        game_state_manager.deploy_units(placements, data_provider)
         
         return game_state_manager
     

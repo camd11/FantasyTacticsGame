@@ -33,8 +33,12 @@ class TestAIScenario01:
         map_state = MapState()
         map_state.dimensions = (10, 10)
         map_state.terrain_grid = [['P'] * 10 for _ in range(10)]
-        game_state = GameState("test_chapter_ai_01", map_state)
-        game_state_manager.set_current_game_state(game_state)
+        game_state = GameState()
+        game_state.chapter_id = "test_chapter_ai_01"
+        game_state.map_state = map_state
+        
+        # Directly set the current_game_state rather than using a non-existent method
+        game_state_manager.current_game_state = game_state
         
         # Add mock units for testing (same as scenario 02 for simplicity)
         self._add_mock_units(game_state_manager)
@@ -109,7 +113,7 @@ class TestAIScenario01:
                 "ENEMY_CLERIC": enemy_cleric.position,
                 "ENEMY_ARCHER": enemy_archer.position
             }
-            game_state.map_state.allies["ENEMY"] = ["ENEMY_FIGHTER", "ENEMY_KNIGHT", "ENEMY_CLERIC", "ENEMY_ARCHER"]
+            game_state.map_state.allies = {"ENEMY": ["ENEMY_FIGHTER", "ENEMY_KNIGHT", "ENEMY_CLERIC", "ENEMY_ARCHER"]}
     
     def _mock_pathfinding(self, game_state_manager):
         # Mock necessary GameStateManager methods used by UtilityScorer/Goals

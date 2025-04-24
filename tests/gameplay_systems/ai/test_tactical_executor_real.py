@@ -3,6 +3,7 @@ import os
 import logging
 import pytest
 from unittest.mock import MagicMock, call
+from typing import Tuple
 
 # Add the current directory to the path to ensure src is importable
 sys.path.append(os.path.abspath('.'))
@@ -11,7 +12,6 @@ sys.path.append(os.path.abspath('.'))
 from src.gameplay_systems.ai.tactical_executor import TacticalExecutor
 from src.gameplay_systems.ai.goals import SecurePositionGoal, Goal
 from src.gameplay_systems.ai.ai_types import AIAction
-from src.utilities.position import Position
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
@@ -24,7 +24,7 @@ def mock_unit_state():
     mock_unit = MagicMock()
     mock_unit.id = "secure_ai_unit_1"
     mock_unit.unit_id = "secure_ai_unit_1"
-    mock_unit.position = Position(5, 5)
+    mock_unit.position = (5, 5)
     mock_unit.movement_range = 3
     mock_unit.faction = "enemy"
     mock_unit.get_terrain_movement_cost = MagicMock(return_value=1)
@@ -82,7 +82,7 @@ def mock_movement_system(mock_game_state_manager):
     
     # Default reachable tiles for secure position tests
     mock_ms.calculate_movement_range.return_value = {
-        Position(5, 5), Position(5, 6), Position(6, 5), Position(4, 5), Position(5, 4)
+        (5, 5), (5, 6), (6, 5), (4, 5), (5, 4)
     }
     
     return mock_ms
@@ -124,9 +124,9 @@ def test_secure_position_goal_success(tactical_executor, mock_unit_state, mock_g
     # --- Mocking Setup ---
     start_pos = ai_unit_state.position
     reachable_tiles = {
-        Position(5, 5), Position(5, 6), Position(6, 5), Position(4, 5), Position(5, 4)
+        (5, 5), (5, 6), (6, 5), (4, 5), (5, 4)
     }
-    best_tile = Position(6, 5)
+    best_tile = (6, 5)
     path_to_best = [start_pos, best_tile]
 
     mock_movement_system.calculate_movement_range.return_value = reachable_tiles
@@ -175,7 +175,7 @@ def test_secure_position_goal_stay_put(tactical_executor, mock_unit_state, mock_
     # --- Mocking Setup ---
     start_pos = ai_unit_state.position
     reachable_tiles = {
-        Position(5, 5), Position(5, 6), Position(6, 5), Position(4, 5), Position(5, 4)
+        (5, 5), (5, 6), (6, 5), (4, 5), (5, 4)
     }
 
     mock_movement_system.calculate_movement_range.return_value = reachable_tiles
@@ -215,10 +215,10 @@ def test_secure_position_goal_move_to_best_occupied(tactical_executor, mock_unit
     # --- Mocking Setup ---
     start_pos = ai_unit_state.position
     reachable_tiles = {
-        Position(5, 5), Position(5, 6), Position(6, 5), Position(4, 5), Position(5, 4)
+        (5, 5), (5, 6), (6, 5), (4, 5), (5, 4)
     }
-    best_tile_occupied = Position(6, 5)
-    next_best_tile_unoccupied = Position(5, 6)
+    best_tile_occupied = (6, 5)
+    next_best_tile_unoccupied = (5, 6)
     path_to_next_best = [start_pos, next_best_tile_unoccupied]
 
     mock_movement_system.calculate_movement_range.return_value = reachable_tiles

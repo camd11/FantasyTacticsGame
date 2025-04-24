@@ -330,14 +330,14 @@ class GameApplication:
             return False
 
         # Corrected: Call initialize_chapter instead of initialize_systems
-        # Determine scenario name for logging/loading purposes
-        # scenario_name = self.scenario if self.scenario else None # Already have self.scenario
-        chapter_id_to_use = self.chapter_id # Use the chapter ID provided at app init
+        # Use the chapter ID provided at app init
+        chapter_id_to_use = self.chapter_id 
 
         # Load the chapter/scenario data and initialize engine internal state
         try:
-            self.engine.initialize_chapter(chapter_id=chapter_id_to_use, scenario_name=self.scenario)
-            logging.info(f"EngineCore chapter/scenario initialized: Chapter '{chapter_id_to_use}', Scenario '{self.scenario}'")
+            # Changed to pass None for scenario_name instead of self.scenario
+            self.engine.initialize_chapter(chapter_id=chapter_id_to_use, scenario_name=None)
+            logging.info(f"EngineCore chapter initialized: Chapter '{chapter_id_to_use}'")
         except Exception as e:
             logging.error(f"Failed during EngineCore.initialize_chapter: {e}", exc_info=True)
             return False

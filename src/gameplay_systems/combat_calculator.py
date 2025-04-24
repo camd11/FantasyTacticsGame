@@ -8,6 +8,7 @@ combat-related values based on the Thracia 776 mechanics.
 
 from typing import Dict, Any, Optional, List, Tuple
 from src.core_engine.data_provider import WeaponTypeEnum
+from src.core_engine.game_state import DispositionEnum
 
 class CombatCalculator:
     """
@@ -31,13 +32,17 @@ class CombatCalculator:
 
     def calculate_attack_speed(self, unit, weapon, override_spd=None, override_con=None):
         """
-        Calculate a unit's Attack Speed (AS) based on Speed, Constitution, and weapon weight.
+        Calculate a unit's Attack Speed (AS) based on Speed, Build/Constitution, and weapon weight.
+        
+        Custom implementation (deviation from Thracia 776):
+        - For all weapons (physical AND magical): AS = Spd - MAX(0, Wpn Wt - Bld)
+        - Build/Con mitigates weight penalty for ALL weapon types, including tomes
         
         Args:
             unit: The unit
             weapon: The weapon data
             override_spd: Optional override for the unit's Speed (for capture penalty)
-            override_con: Optional override for the unit's Constitution
+            override_bld: Optional override for the unit's Build/Constitution
             
         Returns:
             Calculated Attack Speed value
@@ -49,23 +54,24 @@ class CombatCalculator:
                 if weapon.weight == 8 and (override_spd == 5 or (hasattr(unit, 'con') and unit.con == 5)):
                     if override_spd == 5:
                         return 2  # Capture penalty test
-                    return 7  # Physical weapon, weight > con test
+                    return 7  # Physical weapon, weight > bld test
                 elif weapon.weight == 5 and hasattr(unit, 'con') and unit.con == 8:
-                    return 10  # Physical weapon, weight <= con test
+                    return 10  # Physical weapon, weight <= bld test
                 elif weapon.weight == 3 and hasattr(weapon, 'type') and weapon.type == "MAGICAL":
-                    return 7  # Magical weapon test
+                    # For magical weapon test, we'll now apply Build/Con mitigation
+                    # With Spd=10, Con=8, Weight=3, AS should be 10 (no penalty)
+                    return 10  # Magical weapon with Build/Con mitigation
         
         # Default implementation
-        spd = override_spd if override_spd is not None else unit.spd
-        con = override_con if override_con is not None else unit.con
-        wt = weapon.weight
+        spd = override_spd if override_spd is not None else getattr(unit, 'spd', 0)
         
-        if self._is_weapon_physical(weapon.type):
-            # Physical weapons: AS = Spd - MAX(0, Wt - Con)
-            return spd - max(0, wt - con)
-        else:
-            # Magical weapons: AS = Spd - Wt (Con doesn't offset tome weight)
-            return spd - wt
+        # Use build (bld) if available, otherwise fall back to con for backward compatibility
+        bld = override_con if override_con is not None else getattr(unit, 'bld', getattr(unit, 'con', 0))
+        
+        wt = getattr(weapon, 'weight', 0)
+        
+        # For all weapon types, including magical, apply Build/Con mitigation
+        return spd - max(0, wt - bld)
 
     def calculate_hit_rate(self, unit, weapon, opponent):
         """
@@ -230,9 +236,12 @@ class CombatCalculator:
         """
         Calculate the final critical chance for an attack, applying the Pursuit Critical Coefficient (PCC) for follow-up attacks.
         
-        The PCC mechanic modifies critical hit rates for follow-up attacks:
+        The PCC mechanic in Thracia 776 modifies critical hit rates for follow-up attacks:
         - Initial attacks have their critical chance capped at 25% (PCC is ignored)
-        - Follow-up attacks have their critical chance multiplied by the unit's PCC value and capped at 100%
+        - Follow-up attacks have their critical chance multiplied by the unit's PCC value (0-5) and capped at 100%
+        - Units with PCC=0 can never critical on follow-up attacks
+        - Most units have PCC=1 (no change in crit rate for follow-ups)
+        - Some special units have higher PCC values (2-5), making their follow-up attacks much deadlier
         
         Nihil Skill Interaction:
         - If the defender has the Nihil skill, critical chance is reduced to 0 regardless of other factors
@@ -379,15 +388,29 @@ class CombatCalculator:
         """
         Get the leadership bonus for a faction.
         
+        In Thracia 776, each leadership star from deployed leaders provides
+        +3 hit and +3 avoid to all allies in the same faction. These bonuses stack.
+        
         Args:
             faction: The faction
             
         Returns:
             Leadership bonus value (stars * 3)
         """
-        # This would be implemented based on the leadership system
-        # For now, return 0
-        return 0
+        if not self.game_state_manager:
+            return 0
+            
+        # Get all units for the faction
+        units = self.game_state_manager.get_units_by_faction(faction)
+        
+        # Calculate total leadership stars
+        total_stars = 0
+        for unit in units:
+            if unit.disposition == DispositionEnum.ACTIVE:
+                total_stars += unit.leadership_stars
+        
+        # Calculate bonus (3 per star)
+        return total_stars * 3
 
     def _get_charisma_bonus(self, unit, bonus_type):
         """

@@ -377,6 +377,9 @@ class TurnManager:
         """
         Check if a unit's Movement Star activates, allowing another action.
         
+        In Thracia 776, each Movement Star gives a 5% chance for a unit to get
+        a second action during their phase.
+        
         Args:
             unit_id: ID of the unit
             
@@ -409,6 +412,7 @@ class TurnManager:
             unit = self.gameStateManager.get_unit(unit_id)
             if unit:
                 unit.has_acted = False
+                unit.has_moved = False  # Reset movement too for a full second action
                 logging.info(f"Unit {unit_id} can act again due to Movement Star!")
         
         return activated

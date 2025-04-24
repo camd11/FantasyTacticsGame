@@ -21,7 +21,7 @@ from src.gameplay_systems.ai.utility_scorer import UtilityScorer
 # Import all relevant goal types
 from src.gameplay_systems.ai.goals import (
     Goal, AttackUnitGoal, HealUnitGoal, MoveToSafetyGoal, SeizeTileGoal,
-    SecurePositionGoal, AdvanceToObjectiveGoal
+    SecurePositionGoal, AdvanceToObjectiveGoal, UseItemGoal, SupportAllyGoal
 )
 from src.gameplay_systems.ai.ai_persona import AIPersona
 from src.core_engine.game_state import FactionEnum
@@ -51,7 +51,7 @@ class StrategicEvaluator:
         # Define the default library including all standard goal types
         default_goal_library = [
             AttackUnitGoal, HealUnitGoal, MoveToSafetyGoal, SeizeTileGoal,
-            SecurePositionGoal, AdvanceToObjectiveGoal
+            SecurePositionGoal, AdvanceToObjectiveGoal, UseItemGoal, SupportAllyGoal
         ]
         self.goal_library = goal_library or default_goal_library
         self.logger = logging.getLogger(__name__)
@@ -230,14 +230,6 @@ class StrategicEvaluator:
             # 6. AdvanceToObjectiveGoal: Target primary objectives (position or unit)
             elif GoalType == AdvanceToObjectiveGoal:
                  for target_pos in advance_targets: # Use extracted advance targets
-                     # target_pos = None # No longer needed
-                     # self.logger.debug(f"Processing objective: {objective}")
-                     # if isinstance(objective, tuple) and len(objective) == 2: # Assume it's a position
-                     #     target_pos = objective
-                     # elif hasattr(objective, 'position'): # Assume it's a unit/object with position
-                     #     target_pos = objective.position
-                     # Add other objective types? (e.g., defeat specific unit ID)
-                      
                      if target_pos: # Target position is already derived
                          self.logger.debug(f"  Found target_pos: {target_pos}")
                          # Create goal with parameters set (unlike placeholder)
@@ -250,9 +242,114 @@ class StrategicEvaluator:
                              validated_count += 1
                          else:
                              self.logger.debug(f"    Goal instance INVALID.")
-                     else:
-                         self.logger.debug(f"  No target_pos found for objective: {target_pos}")
             
+            # 7. UseItemGoal: Consider using each usable item in inventory
+            elif GoalType == UseItemGoal:
+                # Check if unit has an inventory
+                if hasattr(unit, 'inventory') and unit.inventory:
+                    inventory_system = game_state.get_inventory_system()
+                    if inventory_system:
+                        # Loop through the unit's inventory to find usable items
+                        for item_index, item_instance in enumerate(unit.inventory):
+                            # Get item data
+                            item_data = game_state.data_provider.get_item_data(item_instance.item_id)
+                            if not item_data:
+                                continue
+
+                            # Skip weapons (they're handled by AttackUnitGoal)
+                            if hasattr(item_data, 'type') and item_data.type == 'WEAPON':
+                                continue
+                                
+                            # Skip items with no uses left
+                            if hasattr(item_instance, 'current_durability') and item_instance.current_durability <= 0:
+                                continue
+                                
+                            # Handle different item types
+                            if hasattr(item_data, 'type'):
+                                # For healing items that target units (staves, vulneraries)
+                                if (item_data.type == 'STAFF' and hasattr(item_data, 'effect') and 'heal' in item_data.effect) or \
+                                   (item_data.type == 'CONSUMABLE' and hasattr(item_data, 'effect') and 'heal' in item_data.effect):
+                                    # Find potential healing targets (allies with <100% HP)
+                                    for ally in allied_units:
+                                        if hasattr(ally, 'current_hp') and hasattr(ally, 'max_hp') and ally.current_hp < ally.max_hp:
+                                            # Create a goal to use the healing item on this ally
+                                            goal_instance = UseItemGoal(
+                                                item_index=item_index,
+                                                target_unit_id=ally.id,
+                                                ai_unit=unit
+                                            )
+                                            generated_count += 1
+                                            if goal_instance.is_valid(unit, game_state):
+                                                valid_instances.append(goal_instance)
+                                                validated_count += 1
+                                
+                                # For buff items that target units
+                                elif (item_data.type == 'STAFF' or item_data.type == 'CONSUMABLE') and \
+                                     hasattr(item_data, 'effect') and any(effect in item_data.effect for effect in ['buff_str', 'buff_mag', 'buff_def', 'buff_spd']):
+                                    # Find potential buff targets (usually allies)
+                                    for ally in allied_units:
+                                        # Create a goal to use the buff item on this ally
+                                        goal_instance = UseItemGoal(
+                                            item_index=item_index,
+                                            target_unit_id=ally.id,
+                                            ai_unit=unit
+                                        )
+                                        generated_count += 1
+                                        if goal_instance.is_valid(unit, game_state):
+                                            valid_instances.append(goal_instance)
+                                            validated_count += 1
+                                
+                                # For keys, door-opening items, chest-opening items
+                                elif item_data.type == 'KEY' or (hasattr(item_data, 'effect') and any(effect in item_data.effect for effect in ['open_door', 'open_chest'])):
+                                    # Find nearby doors/chests (implementation depends on map system)
+                                    map_system = game_state.get_map_system()
+                                    if map_system and hasattr(map_system, 'get_interactable_objects'):
+                                        interactable_objects = map_system.get_interactable_objects()
+                                        for obj in interactable_objects:
+                                            # Only consider doors or chests
+                                            if obj.get('type') in ['DOOR', 'CHEST'] and 'position' in obj:
+                                                # Create a goal to use the key on this object
+                                                goal_instance = UseItemGoal(
+                                                    item_index=item_index,
+                                                    target_position=tuple(obj['position']),
+                                                    ai_unit=unit
+                                                )
+                                                generated_count += 1
+                                                if goal_instance.is_valid(unit, game_state):
+                                                    valid_instances.append(goal_instance)
+                                                    validated_count += 1
+            
+            # 8. SupportAllyGoal: Consider supporting allies with existing support relationships or using leadership
+            elif GoalType == SupportAllyGoal:
+                # Get support data from data provider
+                support_data = None
+                if hasattr(game_state, 'data_provider') and hasattr(game_state.data_provider, 'get_support_data'):
+                    support_data = game_state.data_provider.get_support_data()
+                
+                # Get the support system if available
+                support_system = getattr(game_state, 'get_support_leadership_system', lambda: None)()
+                
+                has_leadership = hasattr(unit, 'leadership_stars') and unit.leadership_stars > 0
+                    
+                # Evaluate each potential ally for support
+                for ally in allied_units:
+                    is_support_partner = False
+                    
+                    # Check if there's a support relationship
+                    if support_data:
+                        support_pair_key = (unit.unit_id, ally.id)
+                        reverse_pair_key = (ally.id, unit.unit_id)
+                        if support_pair_key in support_data or reverse_pair_key in support_data:
+                            is_support_partner = True
+                    
+                    # If ally is a support partner or unit has leadership, consider supporting
+                    if is_support_partner or has_leadership:
+                        goal_instance = SupportAllyGoal(target_unit_id=ally.id, ai_unit=unit)
+                        generated_count += 1
+                        if goal_instance.is_valid(unit, game_state):
+                            valid_instances.append(goal_instance)
+                            validated_count += 1
+                
             self.logger.debug(f"Goal Type {GoalType.__name__}: Generated {generated_count}, Validated {validated_count}")
         
         self.logger.debug(f"Total valid goal instances generated for unit {unit_id}: {len(valid_instances)}")

@@ -67,6 +67,6 @@ The AI system's core logic (goal selection, action evaluation) is tested using s
 A dedicated framework (`run_ai_vs_ai_test.py`, `test_ai_vs_ai_fixed.py`) allows for running full simulations where AI controls units on opposing teams. This provides a dynamic environment to observe emergent behaviors and interactions between different AI personas or configurations over multiple turns.
 *   **Purpose:** Useful for identifying high-level strategic flaws, balancing personas, and observing long-term goal pursuit.
 *   **Output:** Generates detailed logs (`ai_vs_ai_test.log`) capturing the state and decisions turn-by-turn.
-*   **Further Details:** See `AI_VS_AI_TESTING.md` for instructions on running tests, interpreting logs, and creating new scenarios.
+*   **Further Details:** See `docs/systems/ai_research_summary.md` for instructions on running tests, interpreting logs, and creating new scenarios.
 
 Both scenario-based tests and the AI vs AI framework, combined with the detailed logging system (`ai_logger.py`), are crucial for iterating on AI logic, tuning Persona weights, and ensuring robust and intended behavior.

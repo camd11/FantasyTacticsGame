@@ -4,14 +4,14 @@ A turn-based tactical RPG inspired by Fire Emblem: Thracia 776, featuring comple
 
 ## Overview
 
-This project is a console-based tactical RPG built with Python. It features:
+This project is a tactical RPG built with Python. It features:
 
 - Tactical turn-based combat with diverse units and classes
 - Deep gameplay systems including fatigue, fog of war, capture, and more
 - Advanced goal-oriented utility AI for compelling computer opponents
-- ASCII display mode for testing and gameplay visualization
+- Comprehensive three-component testing system
+- Pygame-based visualization with animations and effects
 - Robust architecture with modular systems for extensibility
-- Optional GUI mode with Pygame (experimental)
 
 ## Getting Started
 
@@ -19,7 +19,7 @@ This project is a console-based tactical RPG built with Python. It features:
 
 - Python 3.7+
 - Git (for cloning the repository)
-- Pygame (for GUI mode)
+- Pygame (for GUI visualization)
 
 ### Installation
 
@@ -63,7 +63,7 @@ python src/main.py --ascii-display
 # Load a specific chapter
 python src/main.py --chapter 2
 
-# Run in GUI mode (experimental)
+# Run with Pygame visualization
 python src/main.py --gui
 ```
 
@@ -79,52 +79,108 @@ The game features a rich command-line interface with the following actions:
 - Visiting locations for rewards and story elements
 - Seizing objectives to complete chapters
 
-### GUI Mode (Experimental)
-A new GUI mode is available that visualizes the game map and units using Pygame. Enable with the `--gui` flag.
+### Pygame Visualization
+The game includes a Pygame-based visualization system that shows:
+- Game map with terrain and units
+- Unit movement and combat animations
+- Particle effects for spells and actions
+- Status effect indicators
+- Menu interfaces for action selection
+
+### Enhanced Animation System
+The game features a sophisticated animation system including:
+- Smooth movement and combat animations
+- Particle effects (explosions, sparks, smoke)
+- Screen transitions with fade in/out
+- Animation chaining for coordinated sequences
+
+## Three-Component Testing Vision
+
+The project follows a comprehensive testing approach with three essential components:
+
+1. **Standard Logging:** Console output and error logs for basic verification
+2. **Visual Logs:** Text-based and HTML visual logs documenting turn-by-turn game state
+3. **Pygame Visuals:** Interactive graphical display showing gameplay mechanics
+
+This approach ensures every aspect of the game is thoroughly validated across logic, behavior, and visual presentation.
 
 ## Documentation
 
 For more detailed information about the game, please refer to these documentation files:
 
-- [Status & Progress Log](docs/status.md) - Current development status and completed features
-- [Technical Documentation](docs/technical.md) - Usage guide and technical details
-- [AI Research Summary](docs/research/ai_research_summary.md) - Comprehensive documentation on the AI system
-- [Game Mechanics Reference](research.md) - Detailed guide to the game mechanics implemented from Thracia 776
-- [Changelog](CHANGELOG.md) - Record of significant changes and features
+- [Documentation Index](docs/index.md) - Central hub and starting point for all documentation
+- [Setup Guide](docs/setup.md) - Instructions for setting up the development environment
+- [Testing Guide](docs/testing.md) - Comprehensive guide to the three-component testing system
+- [Game Mechanics](docs/game_mechanics/) - Detailed explanations of gameplay mechanics
+- [System Documentation](docs/systems/) - Documentation for specific systems:
+  - [Visual System](docs/systems/visual.md) - Visual testing and animation framework
+  - [Audio System](docs/systems/audio.md) - Sound effects implementation
+  - [GUI System](docs/systems/gui.md) - Pygame-based GUI system
+  - [Usage Guide](docs/systems/usage.md) - How to run the game and use its features
+- [Development Plan](docs/development/plan.md) - Roadmap for future development
+- [Project Status](docs/status.md) - Current state of the project
+- [Technical Guide](docs/technical.md) - Technical details and usage instructions
+- [AI Research](docs/archive/ai_research_summary.md) - Documentation on the AI system
 
 ## Project Structure
 
-- `src/` - Source code for the game
-  - `core_engine/` - Core game engine components
-  - `gameplay_systems/` - Individual gameplay systems
-  - `data_structures/` - Data classes and containers
-  - `ui/` - User interface components
-- `data/` - Game data files (units, classes, items, chapters)
-- `tests/` - Test suites for various components
-- `docs/` - Documentation
-- `tools/` - Utility scripts for development and testing
+The project has been organized into a clear directory structure:
+
+- `src/`: Core source code
+- `tests/`: Test cases organized by type (visual, mechanic, etc.)
+- `tools/`: Utility scripts for development
+- `docs/`: Documentation files
+- `assets/`: Game assets (sprites, sounds, etc.)
+- `data/`: Game data files in YAML/JSON format
+
+For more details on the project organization, see [docs/organization.md](docs/organization.md).
+
+# How to Run
+
+```bash
+# Set up the virtual environment (first time only)
+./setup_venv.sh  # On Linux/Mac
+# OR
+setup_venv.bat   # On Windows
+
+# Run the game
+python run_game.py
+
+# Run mechanic tests
+./run_mechanic_tests.sh
+
+# Run visual tests
+python tests/visual_tests/run_visual_tests.py [demo_name]
+```
 
 ## Running Tests
 
-To run the test suite:
+### Standard Tests (pytest)
 ```bash
+# Run all tests
 python -m pytest
-```
 
-To run specific tests:
-```bash
+# Run specific tests
 python -m pytest tests/gameplay_systems/
 ```
 
-## Visual Testing System
+### Visual Log Tests
+```bash
+# Run all visual log tests
+python tests/visual_tests/run_all_visual_tests.py
 
-The project includes a comprehensive visual testing system for validating the game's visual components and animations. This system provides:
+# Run specific visual logger test
+python tests/visual_tests/test_visual_logger.py
+```
 
-- **Test Selector** - For running individual visual tests interactively
-- **Headless Testing** - For automated CI/CD visual testing
-- **Screenshot Management** - To capture and manage visual test results
+### Visual Pygame Tests
+```bash
+# Run specific visual demo
+python tests/visual_tests/run_visual_tests.py simple_attack
 
-For detailed information about the visual testing system, see [Visual Testing Documentation](VISUAL_TESTING.md).
+# Run mechanic test with visual display
+bash tests/mechanic_tests/movement/run_movement_tests.sh --visual
+```
 
 ## Tools
 
@@ -149,4 +205,4 @@ python src/main.py --ai-vs-ai --ascii-display
 - AI scenarios are designed to test specific tactical situations
 - Each AI scenario should be limited to a maximum of 5 turns for performance reasons
 - Scenarios focus on specific tactical challenges like chokepoint control, target prioritization, or resource management
-- Test cases in `tests/gameplay_systems/ai/` demonstrate how to set up and run AI scenarios 
+- Test cases in `tests/gameplay_systems/ai/` demonstrate how to set up and run AI scenarios

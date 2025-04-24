@@ -12,7 +12,7 @@ from src.gameplay_systems.ai.tactical_executor import TacticalExecutor
 from src.gameplay_systems.ai.utility_scorer import UtilityScorer
 from src.gameplay_systems.ai.goals import Goal, AttackUnitGoal, MoveToSafetyGoal, HealUnitGoal, SeizeTileGoal
 from src.gameplay_systems.ai.ai_persona import AIPersona
-from src.gameplay_systems.ai.ai_types import AIAction
+from src.gameplay_systems.ai.ai_types import AIAction, AIActionType
 
 
 class TestAIScenario02:
@@ -34,9 +34,13 @@ class TestAIScenario02:
         map_state = MapState()
         map_state.dimensions = (10, 10)
         map_state.terrain_grid = [['P'] * 10 for _ in range(10)]
-        game_state = GameState("test_chapter_ai_02", map_state)
-        game_state_manager.set_current_game_state(game_state)
-
+        game_state = GameState()
+        game_state.chapter_id = "test_chapter_ai_02"
+        game_state.map_state = map_state
+        
+        # Directly set the current_game_state rather than using a non-existent method
+        game_state_manager.current_game_state = game_state
+        
         # Add mock units for testing
         self._add_mock_units(game_state_manager)
         
@@ -55,11 +59,11 @@ class TestAIScenario02:
         )
         
         return {
-            # "scenario": scenario,
             "game_state_manager": game_state_manager,
             "tactical_executor": tactical_executor,
             "combat_system": mock_combat_system,
-            "healing_system": mock_healing_system
+            "healing_system": mock_healing_system,
+            "data_provider": data_provider
         }
     
     def _add_mock_units(self, game_state_manager):

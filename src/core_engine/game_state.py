@@ -47,6 +47,7 @@ class DispositionEnum(Enum):
     ACTIVE = auto()  # Unit is active in the current chapter
     DEAD = auto()    # Unit has been killed
     ESCAPED = auto() # Unit has escaped the map
+    RETREATED = auto() # Unit has voluntarily retreated from battle
     CAPTURED_BY_ENEMY = auto()  # Unit has been captured by an enemy
     BENCHED = auto() # Unit is not deployed in the current chapter
 
@@ -238,6 +239,7 @@ class MapState:
         self.terrain_grid: List[List[TerrainTypeEnum]] = []
         self.unit_positions: Dict[str, Tuple[int, int]] = {}  # unit_id -> (x, y)
         self.object_states: Dict[Tuple[int, int], ObjectStateEnum] = {}  # (x, y) -> state
+        self.map_data = None  # Will store the full MapData object when available
 
 class GameState:
     """Main container for all dynamic game state data."""
@@ -485,6 +487,7 @@ class GameStateManager:
             unit.support_partner_ids = data_provider.get_support_partners(unit_id)
             unit.leadership_stars = base_data.leadership_stars
             unit.pcc = base_data.pcc
+            unit.movement_stars = base_data.movement_stars  # Initialize movement stars from base data
             
             unit.is_captured = False
             unit.carrying_unit_id = None
