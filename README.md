@@ -116,9 +116,37 @@ To run specific tests:
 python -m pytest tests/gameplay_systems/
 ```
 
+## Visual Testing System
+
+The project includes a comprehensive visual testing system for validating the game's visual components and animations. This system provides:
+
+- **Test Selector** - For running individual visual tests interactively
+- **Headless Testing** - For automated CI/CD visual testing
+- **Screenshot Management** - To capture and manage visual test results
+
+For detailed information about the visual testing system, see [Visual Testing Documentation](VISUAL_TESTING.md).
+
 ## Tools
 
 Utility scripts to assist with development:
 
 - `tools/convert_yaml_to_json.py` - Converts YAML data files to JSON format
 - `tools/run_ai_vs_ai_test.py` - Runs AI vs AI simulations for testing 
+
+## AI Testing and Simulation
+
+The game includes a robust AI system that can be tested and evaluated through AI vs AI simulations:
+
+```bash
+# Run AI vs AI simulation with default settings
+python src/main.py --ai-vs-ai
+
+# Run AI vs AI with visual logging
+python src/main.py --ai-vs-ai --ascii-display
+```
+
+### AI Scenario Guidelines
+- AI scenarios are designed to test specific tactical situations
+- Each AI scenario should be limited to a maximum of 5 turns for performance reasons
+- Scenarios focus on specific tactical challenges like chokepoint control, target prioritization, or resource management
+- Test cases in `tests/gameplay_systems/ai/` demonstrate how to set up and run AI scenarios 
