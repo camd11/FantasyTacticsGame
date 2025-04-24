@@ -8,6 +8,11 @@ handle item stealing, and release captured units.
 Note: Constitution (Con) replaced the Build/Bld stat from previous versions.
 Mounted units are considered to have 20 Con for capturing/rescuing purposes only.
 Units with 20 or more Con cannot be captured or rescued.
+
+IMPORTANT: Mounted units don't actually change their Con value in stats - they retain 
+their original Con stat but are TREATED as having 20 Con for capture mechanics only.
+
+TODO: Implement rescue chains (allowing units to rescue others who are already carrying someone).
 """
 
 import logging

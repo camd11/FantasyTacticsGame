@@ -14,7 +14,7 @@ This directory contains all the core gameplay systems and mechanics for the Fant
 - **Res (Resistance)**: Reduces magical damage taken
 - **Con (Constitution)**: Determines physical build, affects rescue mechanics and weapon weight penalties
   - Formerly called "Build/Bld" in previous versions
-  - Mounted units are considered to have 20 Con for rescue/capture purposes only
+  - Mounted units are considered to have 20 Con for rescue/capture purposes only (their actual Con value doesn't change)
   - Units with 20 or more Con cannot be captured or rescued
 - **Mov (Movement)**: Determines how far a unit can move each turn
 
@@ -42,6 +42,12 @@ This directory contains all the core gameplay systems and mechanics for the Fant
 - The Fatigue System begins tracking fatigue from Chapter 8 onward (this value is configurable)
 - Constitution (Con) is a critical stat for determining rescue mechanics
 - Mounted units have special handling in several systems, particularly for Con-related checks
+  - Important: Their actual Con stat doesn't change, but they're treated as having 20 Con for calculation purposes
 - When carrying a captured unit, the carrier suffers 50% penalty to combat stats
 - Movement penalties apply when carrying units based on Con thresholds
-- Units can steal items from captured enemies even if they lack the Steal skill 
+- Units can steal items from captured enemies even if they lack the Steal skill
+
+## Planned Features
+
+- Rescue chains: Allow units to rescue other units that are already carrying someone
+- Dismounting: Potentially allow mounted units to dismount (affecting their effective Con value) 
