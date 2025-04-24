@@ -824,3 +824,110 @@ class TestCaptureSystem:
         # Verify giver status remains unchanged
         assert giver.status == "Carrying", "Giver status should still be 'Carrying'"
         assert giver.carried_unit == captured, "Giver should still be carrying the captured unit"
+
+    def test_cannot_capture_without_melee_weapon(self, setup_game_components, setup_units):
+        """Test that a unit cannot capture without a melee weapon."""
+        attacker = setup_units["attacker"]
+        defender = setup_units["defender"]
+        
+        # Change weapon to non-melee
+        mock_ranged_weapon = MagicMock()
+        mock_ranged_weapon.min_range = 2
+        mock_ranged_weapon.max_range = 3
+        attacker.inventory = [mock_ranged_weapon]
+        
+        result = self.capture_system.can_initiate_capture(attacker, defender)
+        
+        assert result is False, "Attacker with ranged weapon should not be able to capture defender"
+
+    def test_cannot_capture_unit_with_20_or_more_con(self, setup_game_components, setup_units):
+        """Test that units with 20+ Con cannot be captured."""
+        attacker = setup_units["attacker"]
+        defender = setup_units["high_con_defender"]
+        
+        result = self.capture_system.can_initiate_capture(attacker, defender)
+        
+        assert result is False, "Attacker with high CON should not be able to capture high CON defender"
+        
+        # Test with more than 20 Con
+        defender.stats["Con"] = 21
+        result = self.capture_system.can_initiate_capture(attacker, defender)
+        
+        assert result is False, "Attacker with more than 20 CON should not be able to capture high CON defender"
+
+    def test_mounted_effective_con_20(self, setup_game_components, setup_units):
+        """Test that mounted units have effective Con of 20 for captures."""
+        attacker = setup_units["mounted_attacker"]
+        defender = setup_units["high_con_defender"]
+        
+        result = self.capture_system.can_initiate_capture(attacker, defender)
+        
+        assert result is True, "Mounted attacker with high CON should be able to capture high CON defender"
+        
+        # Verify unmounted low-Con unit cannot capture higher-Con unit
+        unmounted_attacker = setup_units["attacker"]
+        result = self.capture_system.can_initiate_capture(unmounted_attacker, defender)
+        
+        assert result is False, "Unmounted attacker should not be able to capture high CON defender"
+
+    def test_mounted_unit_cannot_be_captured(self, setup_game_components, setup_units):
+        """Test that mounted units cannot be captured regardless of Con."""
+        attacker = setup_units["mounted_attacker"]
+        defender = setup_units["mounted_defender"]
+        
+        result = self.capture_system.can_initiate_capture(attacker, defender)
+        
+        assert result is False, "Mounted attacker should not be able to capture mounted defender"
+
+    def test_carrying_movement_penalty(self, setup_game_components, setup_units):
+        """Test that carrying applies movement penalties based on Con difference."""
+        capturer = setup_units["mounted_attacker"]
+        captured_unit = setup_units["mounted_defender"]
+        
+        original_mov = capturer.stats["Mov"]
+        
+        # Captured unit with Con higher than half capturer's Con
+        captured_unit.stats["Con"] = 11
+        
+        # Apply carrying penalties
+        self.capture_system._apply_carrying_penalties(capturer, captured_unit)
+        
+        assert capturer.stats["Mov"] == original_mov // 2, "Movement should be halved when carrying a heavy unit"
+        
+        # Reset capturer for next test
+        capturer = setup_units["mounted_attacker"]
+        capturer.stats["Mov"] = original_mov
+        
+        # Captured unit with Con less than half capturer's Con
+        captured_unit.stats["Con"] = 4
+        
+        # Apply carrying penalties
+        self.capture_system._apply_carrying_penalties(capturer, captured_unit)
+        
+        assert capturer.stats["Mov"] == original_mov, "Movement should not be halved when carrying a light unit"
+
+    def test_mounted_carrying_threshold(self, setup_game_components, setup_units):
+        """Test that mounted units use Con 20 for determining movement penalties."""
+        mounted_capturer = setup_units["mounted_attacker"]
+        mounted_capturer.stats["Mov"] = 8
+        
+        # Captured unit with Con = 11 (more than half of effective Con 20)
+        captured_unit = setup_units["mounted_defender"]
+        captured_unit.stats["Con"] = 11
+        
+        # Apply carrying penalties
+        self.capture_system._apply_carrying_penalties(mounted_capturer, captured_unit)
+        
+        assert mounted_capturer.stats["Mov"] == 4, "Movement should be halved when carrying a heavy unit"
+        
+        # Reset capturer for next test
+        mounted_capturer = setup_units["mounted_attacker"]
+        mounted_capturer.stats["Mov"] = 8
+        
+        # Captured unit with Con = 9 (less than half of effective Con 20)
+        captured_unit.stats["Con"] = 9
+        
+        # Apply carrying penalties
+        self.capture_system._apply_carrying_penalties(mounted_capturer, captured_unit)
+        
+        assert mounted_capturer.stats["Mov"] == 8, "Movement should not be halved when carrying a light unit"

@@ -4,6 +4,10 @@ Capture System Module
 This module implements the capture mechanics for the Fantasy Tactics Game.
 It allows units to capture enemies under specific conditions, manage captured units,
 handle item stealing, and release captured units.
+
+Note: Constitution (Con) replaced the Build/Bld stat from previous versions.
+Mounted units are considered to have 20 Con for capturing/rescuing purposes only.
+Units with 20 or more Con cannot be captured or rescued.
 """
 
 import logging
@@ -58,9 +62,10 @@ class CaptureSystem:
         Determine if the attacker can attempt to capture the defender.
         
         Conditions:
-        - Defender's Con < 20
+        - Defender's Con < 20 (units with 20+ Con cannot be captured)
         - Defender is not mounted
-        - Attacker's Con > Defender's Con OR Attacker is mounted
+        - Attacker has a weapon usable at range 1 (melee weapon)
+        - Attacker's Con > Defender's Con OR Attacker is mounted (mounted units have effective 20 Con)
         
         Args:
             attacker: The unit attempting to capture
@@ -69,12 +74,27 @@ class CaptureSystem:
         Returns:
             True if capture is possible, False otherwise
         """
-        # Check defender conditions first (these are absolute)
-        if defender.is_mounted or defender.stats['Con'] >= 20:
+        # Check if attacker has a weapon usable at range 1
+        has_melee_weapon = False
+        if attacker.equipped_weapon_index >= 0:
+            weapon = attacker.inventory[attacker.equipped_weapon_index]
+            # Check if weapon can be used at range 1
+            if hasattr(weapon, 'min_range') and hasattr(weapon, 'max_range'):
+                has_melee_weapon = weapon.min_range <= 1 <= weapon.max_range
+        
+        if not has_melee_weapon:
             return False
         
+        # Check defender conditions first (these are absolute)
+        if defender.is_mounted or defender.stats.get('Con', 0) >= 20:
+            return False
+        
+        # Calculate effective Constitution for the attacker
+        attacker_con = attacker.stats.get('Con', 0)
+        effective_attacker_con = 20 if attacker.is_mounted else attacker_con
+        
         # Check attacker conditions
-        if attacker.stats['Con'] > defender.stats['Con'] or attacker.is_mounted:
+        if effective_attacker_con > defender.stats.get('Con', 0):
             return True
         
         return False
@@ -177,11 +197,14 @@ class CaptureSystem:
         capturer.stats["Def"] //= 2
         
         # Apply movement penalty if applicable
-        con_threshold = capturer.stats["Con"] // 2
-        if capturer.is_mounted:
-            con_threshold += 5  # +5 bonus for mounted units
+        capturer_con = capturer.stats.get("Con", 0)
+        con_threshold = capturer_con // 2
+        
+        # Mounted units are considered to have 20 Con for rescue purposes
+        if capturer.is_mounted and not getattr(capturer, 'is_dismounted', False):
+            con_threshold = 10  # Half of effective 20 Con
             
-        if captured_unit.stats["Con"] > con_threshold:
+        if captured_unit.stats.get("Con", 0) > con_threshold:
             capturer.stats["Mov"] //= 2  # Halve movement
 
     def access_captured_inventory(self, trading_unit: UnitState, capturer_unit: UnitState) -> List[Any]:
@@ -271,7 +294,10 @@ class CaptureSystem:
         
         # Check if taker can carry the captured unit (Con check)
         captured_unit = giver.carried_unit
-        if taker.stats["Con"] <= captured_unit.stats["Con"] and not taker.is_mounted:
+        taker_con = taker.stats.get("Con", 0)
+        effective_taker_con = 20 if taker.is_mounted else taker_con
+        
+        if effective_taker_con <= captured_unit.stats.get("Con", 0):
             logging.info(f"{taker.name} cannot carry {captured_unit.name} (Con too low)")
             return False
         

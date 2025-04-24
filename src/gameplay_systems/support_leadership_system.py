@@ -1,9 +1,9 @@
 """
 Support and Leadership System Module
 
-This module implements the Support, Leadership, and Charisma systems from Fire Emblem: Thracia 776.
+This module implements the Support and Leadership systems from Fire Emblem: Thracia 776.
 These systems provide passive combat bonuses to units based on their proximity to allies with
-specific relationships or skills.
+specific relationships or leadership abilities.
 """
 
 from typing import Dict, List, Tuple, Optional, Any
@@ -15,23 +15,22 @@ ACTIVE = DispositionEnum.ACTIVE
 
 class SupportLeadershipSystem:
     """
-    Manages the Support, Leadership, and Charisma systems.
+    Manages the Support and Leadership systems.
     
     These systems provide passive combat bonuses to units based on:
     - Support: Predefined relationships between specific character pairs
     - Leadership: Stars that provide global bonuses to all allied units
-    - Charisma: A skill that provides bonuses to nearby allied units
     """
     
     def __init__(self):
         """Initialize the SupportLeadershipSystem."""
-        self.gameStateManager = None
-        self.dataProvider = None
+        self.game_state_manager = None
+        self.data_provider = None
     
     def initialize(self, game_state_manager, data_provider):
         """Initialize with dependencies."""
-        self.gameStateManager = game_state_manager
-        self.dataProvider = data_provider
+        self.game_state_manager = game_state_manager
+        self.data_provider = data_provider
     
     def calculate_support_bonus(self, unit_id: str) -> Dict[str, int]:
         """
@@ -51,13 +50,13 @@ class SupportLeadershipSystem:
         MAX_BONUS_PER_STAT = 30
         
         # Get the target unit
-        target_unit = self.gameStateManager.get_unit(unit_id)
+        target_unit = self.game_state_manager.get_unit(unit_id)
         if not target_unit:
             return total_bonus
         
         # Get all units and support data
-        all_units = self.gameStateManager.get_all_units()
-        support_data = self.dataProvider.get_support_data()
+        all_units = self.game_state_manager.get_all_units()
+        support_data = self.data_provider.get_support_data()
         
         # Calculate bonuses from nearby supporting units
         for other_unit in all_units:
@@ -106,7 +105,7 @@ class SupportLeadershipSystem:
         total_bonus = {"hit": 0, "avoid": 0}
         
         # Get all units for the faction
-        units = self.gameStateManager.get_units_by_faction(faction)
+        units = self.game_state_manager.get_units_by_faction(faction)
         
         # Calculate total leadership stars
         total_stars = 0
@@ -118,53 +117,6 @@ class SupportLeadershipSystem:
         bonus_per_star = 3
         total_bonus["hit"] = total_stars * bonus_per_star
         total_bonus["avoid"] = total_stars * bonus_per_star
-        
-        return total_bonus
-    
-    def calculate_charisma_bonus(self, unit_id: str) -> Dict[str, int]:
-        """
-        Calculate the total charisma bonus for a given unit based on nearby allies with the Charisma skill.
-        
-        Args:
-            unit_id: The ID of the unit to calculate bonuses for
-            
-        Returns:
-            A dictionary with bonuses for hit and avoid
-        """
-        # Default return value with zero bonuses
-        total_bonus = {"hit": 0, "avoid": 0}
-        
-        # Constants
-        CHARISMA_RANGE = 3
-        CHARISMA_BONUS_PER_UNIT = 10
-        
-        # Get the target unit
-        target_unit = self.gameStateManager.get_unit(unit_id)
-        if not target_unit:
-            return total_bonus
-        
-        # Get all units
-        all_units = self.gameStateManager.get_all_units()
-        
-        # Calculate bonuses from nearby units with Charisma
-        for other_unit in all_units:
-            # Skip self
-            if other_unit is target_unit:
-                continue
-                
-            # Skip units from different factions
-            if other_unit.faction != target_unit.faction:
-                continue
-                
-            # Check if unit has Charisma skill
-            if hasattr(other_unit, 'has_charisma_skill') and other_unit.has_charisma_skill:
-                # Calculate distance
-                distance = self._calculate_distance(target_unit.position, other_unit.position)
-                
-                # Check if within Charisma range
-                if distance <= CHARISMA_RANGE:
-                    total_bonus["hit"] += CHARISMA_BONUS_PER_UNIT
-                    total_bonus["avoid"] += CHARISMA_BONUS_PER_UNIT
         
         return total_bonus
     

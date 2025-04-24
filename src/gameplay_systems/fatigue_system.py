@@ -20,6 +20,7 @@ class FatigueManager:
     """
     
     # Constants
+    # Note: This value is arbitrary and will be finalized when the actual game is developed
     FATIGUE_START_CHAPTER = 8
     FATIGUE_PER_COMBAT = 1
     FATIGUE_PER_STEAL = 1
