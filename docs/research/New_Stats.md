@@ -13,43 +13,46 @@ When mounted units dismount, they experience several key changes:
 5. **Susceptibility to effective weapons changes** (no longer weak to anti-cavalry/flier weapons)
 6. **Terrain interaction changes** (can now benefit from terrain bonuses that mounted units don't get)
 
-### 1.1 Stat Changes When Dismounting
+### 1.1. Mounting Gains / Dismount Penalties
 
-The following table shows the typical stat penalties applied when a unit dismounts:
+When a mounted unit mounts, they gain stats. When they dismount, they lose these stats. The following table shows the accurate stat changes for mounting (conversely, these are the penalties when dismounting):
 
-| Class Type       | STR  | MAG  | SKL  | SPD  | DEF  | MOV  | Notes                                  |
-|------------------|------|------|------|------|------|------|----------------------------------------|
-| Cavalier → Infantry | -2   | -2   | -2   | -2   | -2   | -2   | Typically MOV drops from 7 to 5        |
-| Paladin → Infantry  | -2   | -2   | -2   | -2   | -2   | -3   | Typically MOV drops from 8 to 5        |
-| Pegasus Knight → Infantry | -2   | -2   | -2   | -2   | -2   | -2   | Typically MOV drops from 7 to 5    |
-| Wyvern Rider → Infantry  | -2   | -2   | -2   | -2   | -3   | -3   | Typically MOV drops from 8 to 5    |
-| Bow Knight → Infantry    | -2   | -2   | -2   | -2   | -2   | -2   | Typically MOV drops from 7 to 5    |
-| Lance Knight → Infantry  | -2   | -2   | -2   | -2   | -2   | -2   | Typically MOV drops from 7 to 5    |
-| Great Knight → Infantry  | -2   | -2   | -2   | -2   | -3   | -3   | Typically MOV drops from 8 to 5    |
-| Lord (Leif) → Infantry   | -1   | -1   | -1   | -1   | -1   | -1   | Special case with smaller penalties |
+| Base Class        | Mounted Class     | Str | Skl | Spd | Def | Con | Mov | Weapon Change (Dismount) |
+| :---------------- | :---------------- | :-: | :-: | :-: | :-: | :-: | :-: | :----------------------- |
+| Social Knight     | Paladin           | +1  | +1  | +1  | +2  | +0  | +3  | Lance -> Sword           |
+| Lance Knight      | Duke Knight       | +1  | +1  | +1  | +2  | +0  | +3  | Lance -> Sword           |
+| Axe Knight        | Great Knight      | +1  | +1  | +1  | +2  | +0  | +3  | Axe -> Sword             |
+| Arch Knight       | Bow Knight        | +1  | +1  | +1  | +2  | +0  | +3  | Bow -> Sword             |
+| Free Knight       | Forrest Knight    | +1  | +1  | +1  | +2  | +0  | +3  | Sword only               |
+| Troubadour        | Paladin (F)       | +1  | +0  | +1  | +1  | +0  | +3  | Staff -> Sword/Staff     |
+| Mage (Dismounted) | Mage Knight       | +0  | +1  | +1  | +1  | +0  | +3  | Tomes only               |
+| Pegasus Rider     | Pegasus Knight    | +1  | +1  | +1  | +1  | +0  | +3  | Lance -> Sword           |
+| Dragon Rider      | Dragon/Wyvern Knight | +3  | +2  | +2  | +5  | +0  | +3  | Lance -> Sword        |
 
-Note: HP, LCK, and CON are not affected by dismounting. The stats return to normal when remounting.
+*Note: These are the bonuses gained upon mounting. Dismounting removes these bonuses. The 'Weapon Change' column indicates the weapon type typically restricted to when dismounted.*
 
-### 1.2 Weapon Restrictions When Dismounting
+### 1.2. Weapon Restrictions When Dismounting
 
-| Class Type       | Mounted Weapons               | Dismounted Weapons            | Notes                                  |
-|------------------|-----------------------------|---------------------------|-----------------------------------------|
-| Cavalier         | Swords, Lances              | Swords only               |                                         |
-| Paladin          | Swords, Lances              | Swords only               |                                         |
-| Pegasus Knight   | Lances                      | Swords, Lances            | One of few that retains Lance access    |
-| Wyvern Rider     | Lances, Axes                | Swords only               |                                         |
-| Bow Knight       | Bows                        | Bows only                 | Retains same weapon type when dismounted|
-| Lance Knight     | Lances                      | Swords only               |                                         |
-| Great Knight     | Swords, Lances, Axes        | Swords only               |                                         |
-| Lord (Leif)      | Swords                      | Swords                    | No weapon restriction change            |
+| Class Type            | Mounted Weapons               | Dismounted Weapons          | Notes                                  |
+| :-------------------- | :---------------------------- | :--------------------------- | :------------------------------------- |
+| Social Knight/Paladin | Swords, Lances               | Swords only                  |                                        |
+| Lance Knight/Duke Knight | Lances                     | Swords only                  |                                        |
+| Axe Knight/Great Knight | Axes                        | Swords only                  |                                        |
+| Arch Knight/Bow Knight | Bows                         | Bows only                    | Retains same weapon type when dismounted|
+| Free Knight/Forrest Knight | Swords                   | Swords only                  | No weapon restriction change           |
+| Troubadour/Paladin (F) | Swords, Staves              | Swords, Staves               | Retains staff access                   |
+| Mage Knight           | Tomes                         | Tomes only                   | No weapon restriction change           |
+| Pegasus Rider/Knight  | Lances                       | Swords, Lances               | One of few that retains Lance access   |
+| Dragon/Wyvern Rider/Knight | Lances                  | Swords only                  |                                        |
+| Lord (Leif)           | Swords                       | Swords                       | No weapon restriction change           |
 
 ## 2. Class Base Stats
 
-(This section would normally contain the base stats for each class, but those values are not available in the current documentation)
+(This section would normally contain the base stats for each class, but those values are available in the supplementary_data.md file under section 2.1)
 
 ## 3. Character-Specific Stats
 
-(This section would normally contain character-specific information like PCC, Movement Stars, Leadership Stars, and personal growth rates, but those values are not available in the current documentation)
+(This section would normally contain character-specific information like PCC, Movement Stars, Leadership Stars, and personal growth rates, which are available in the supplementary_data.md file under section 1.1)
 
 ## 4. Implementation Notes
 
@@ -69,4 +72,10 @@ In our implementation:
 5. When dismounting, the system automatically handles weapon restrictions by:
    - Checking if the currently equipped weapon is still usable
    - Unequipping invalid weapons
-   - Attempting to equip a valid weapon from the unit's inventory 
+   - Attempting to equip a valid weapon from the unit's inventory
+
+6. Special terrain interactions:
+   - Mounted units generally can't navigate certain terrain types like Mountains or Thickets
+   - Mounted units don't receive terrain bonuses that infantry do
+   - Flying units ignore terrain movement costs but don't receive terrain Avoid/Defense bonuses
+   - When dismounted, units can utilize terrain bonuses that their mounted forms cannot 
