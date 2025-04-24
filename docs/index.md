@@ -11,10 +11,12 @@ This is the central documentation hub for the Fantasy Tactics Game project. Use 
 
 - [Current Status](status.md) - Current development status, completed features, and known issues
 - [Organization](organization.md) - Project directory structure and organization
+- [Development Roadmap](development/roadmap.md) - Short, medium, and long-term development priorities
 
 ## 📓 Systems Documentation
 
 ### Core Systems
+- [System Architecture](systems/architecture.md) - Overview of the system architecture and component relationships
 - [AI Research Summary](systems/ai_research_summary.md) - Comprehensive AI system design, testing framework, and troubleshooting
 - [AI vs AI Testing Framework](systems/ai_research_summary.md#ai-vs-ai-testing-framework) - Guide for running AI simulations and tests
 
