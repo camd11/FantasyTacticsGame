@@ -11,6 +11,7 @@ import sys
 import time
 import pygame
 import math
+import random
 from enum import Enum
 from typing import List, Dict, Tuple, Set, Optional, Any, Callable
 
@@ -36,20 +37,98 @@ class AnimationType(Enum):
     APPLY_STATUS = 5
     REMOVE_STATUS = 6
     HIGHLIGHT_TILES = 7
+    FADE = 8
+    PARTICLE_EFFECT = 9
+
+class EasingType(Enum):
+    """Types of easing functions for animations."""
+    LINEAR = 0      # Linear interpolation (no easing)
+    EASE_IN = 1     # Slow start, fast end
+    EASE_OUT = 2    # Fast start, slow end
+    EASE_IN_OUT = 3 # Slow start, fast middle, slow end
+    BOUNCE = 4      # Bounce at the end
+    ELASTIC = 5     # Overshoot and oscillate at the end
+    BACK = 6        # Slight overshoot past the end
+
+def apply_easing(progress: float, easing_type: EasingType) -> float:
+    """Apply an easing function to the progress value.
+    
+    Args:
+        progress: Linear progress from 0.0 to 1.0
+        easing_type: Type of easing to apply
+        
+    Returns:
+        Eased progress value from 0.0 to 1.0
+    """
+    if easing_type == EasingType.LINEAR:
+        return progress
+    
+    elif easing_type == EasingType.EASE_IN:
+        # Quadratic ease in: progress^2
+        return progress * progress
+    
+    elif easing_type == EasingType.EASE_OUT:
+        # Quadratic ease out: 1 - (1 - progress)^2
+        return 1 - (1 - progress) * (1 - progress)
+    
+    elif easing_type == EasingType.EASE_IN_OUT:
+        # Cubic ease in/out
+        if progress < 0.5:
+            return 4 * progress * progress * progress
+        else:
+            p = 2 * progress - 2
+            return 0.5 * p * p * p + 1
+    
+    elif easing_type == EasingType.BOUNCE:
+        # Bounce easing
+        if progress < (1/2.75):
+            return 7.5625 * progress * progress
+        elif progress < (2/2.75):
+            progress -= 1.5/2.75
+            return 7.5625 * progress * progress + 0.75
+        elif progress < (2.5/2.75):
+            progress -= 2.25/2.75
+            return 7.5625 * progress * progress + 0.9375
+        else:
+            progress -= 2.625/2.75
+            return 7.5625 * progress * progress + 0.984375
+    
+    elif easing_type == EasingType.ELASTIC:
+        # Elastic easing
+        p = progress - 1
+        return 1 + p * p * p * math.sin(p * 20 * math.pi)
+    
+    elif easing_type == EasingType.BACK:
+        # Back easing - slight overshoot
+        overshoot = 1.70158
+        return progress * progress * ((overshoot + 1) * progress - overshoot)
+    
+    # Default to linear if no valid easing type
+    return progress
 
 class Animation:
     """Base class for animations."""
-    def __init__(self, duration_ms=500, sound_effect=None):
+    def __init__(self, duration_ms=500, sound_effect=None, easing_type=EasingType.LINEAR):
         self.start_time = pygame.time.get_ticks()
         self.duration_ms = duration_ms
         self.completed = False
         self.sound_effect = sound_effect
         self.sound_played = False
+        self.progress = 0.0  # Initialize progress here so all subclasses inherit it
+        self.next_animation = None  # The next animation to play when this one completes
+        self.parent_renderer = None  # Reference to the renderer that created this animation
+        self.easing_type = easing_type  # Type of easing to apply
+        self.paused = False  # Flag to pause the animation
+        self.pause_time = 0  # Time when animation was paused
+        self.total_pause_time = 0  # Total time this animation has been paused
     
     def update(self):
         """Update the animation state."""
+        if self.paused:
+            return False
+            
         current_time = pygame.time.get_ticks()
-        elapsed = current_time - self.start_time
+        elapsed = current_time - self.start_time - self.total_pause_time
         
         # Play sound effect if not already played
         if SOUND_ENABLED and self.sound_effect and not self.sound_played:
@@ -59,20 +138,53 @@ class Animation:
         # Check if animation is complete
         if elapsed >= self.duration_ms:
             self.completed = True
+            
+            # If there's a chained animation and we have a renderer, start it
+            if self.completed and self.next_animation and self.parent_renderer:
+                self.parent_renderer.animations.append(self.next_animation)
+                self.next_animation.parent_renderer = self.parent_renderer
         
-        # Calculate progress from 0.0 to 1.0
-        self.progress = min(1.0, elapsed / self.duration_ms)
+        # Calculate raw progress from 0.0 to 1.0
+        raw_progress = min(1.0, elapsed / self.duration_ms)
+        
+        # Apply easing function
+        self.progress = apply_easing(raw_progress, self.easing_type)
         
         return self.completed
     
     def draw(self, surface):
         """Draw the animation on the surface."""
         pass
+    
+    def chain(self, next_animation):
+        """Chain another animation to play after this one completes.
+        
+        Args:
+            next_animation: Animation that will play after this one
+            
+        Returns:
+            The next animation (for further chaining)
+        """
+        self.next_animation = next_animation
+        return next_animation
+    
+    def pause(self):
+        """Pause the animation."""
+        if not self.paused:
+            self.paused = True
+            self.pause_time = pygame.time.get_ticks()
+    
+    def resume(self):
+        """Resume the animation."""
+        if self.paused:
+            self.paused = False
+            pause_duration = pygame.time.get_ticks() - self.pause_time
+            self.total_pause_time += pause_duration
 
 class MoveAnimation(Animation):
     """Animation for unit movement."""
-    def __init__(self, unit_id, path, sprite, duration_ms=1000, sound_effect=None):
-        super().__init__(duration_ms, sound_effect)
+    def __init__(self, unit_id, path, sprite, duration_ms=1000, sound_effect=None, easing_type=EasingType.EASE_IN_OUT):
+        super().__init__(duration_ms, sound_effect, easing_type)
         self.unit_id = unit_id
         self.path = path
         self.sprite = sprite
@@ -134,8 +246,8 @@ class MoveAnimation(Animation):
 
 class HighlightTilesAnimation(Animation):
     """Animation for highlighting tiles."""
-    def __init__(self, tile_positions, color=(100, 200, 255, 150), duration_ms=5000, sound_effect=None):
-        super().__init__(duration_ms, sound_effect)
+    def __init__(self, tile_positions, color=(100, 200, 255, 150), duration_ms=5000, sound_effect=None, easing_type=EasingType.LINEAR):
+        super().__init__(duration_ms, sound_effect, easing_type)
         self.tile_positions = tile_positions
         self.base_color = color
         self.color = list(color)
@@ -145,7 +257,7 @@ class HighlightTilesAnimation(Animation):
         completed = super().update()
         
         # Pulse the alpha value
-        pulse = abs(pygame.math.sin(self.progress * 6.28 * 2))  # 2 complete pulses
+        pulse = abs(math.sin(self.progress * 6.28 * 2))  # 2 complete pulses
         self.color[3] = int(self.base_color[3] * (0.5 + 0.5 * pulse))
         
         return completed
@@ -167,10 +279,11 @@ class HighlightTilesAnimation(Animation):
 
 class AttackAnimation(Animation):
     """Animation for an attack."""
-    def __init__(self, attacker_pos, defender_pos, duration_ms=500, sound_effect=None):
-        super().__init__(duration_ms, sound_effect)
+    def __init__(self, attacker_pos, defender_pos, duration_ms=500, sound_effect=None, easing_type=EasingType.EASE_OUT):
+        super().__init__(duration_ms, sound_effect, easing_type)
         self.attacker_pos = attacker_pos
         self.defender_pos = defender_pos
+        self.progress = 0.0  # Initialize progress attribute
         
         # Calculate direction vector
         self.direction = (
@@ -217,10 +330,11 @@ class AttackAnimation(Animation):
 
 class DamageAnimation(Animation):
     """Animation for taking damage."""
-    def __init__(self, unit_pos, damage, duration_ms=1000, sound_effect=None):
-        super().__init__(duration_ms, sound_effect)
+    def __init__(self, unit_pos, damage, duration_ms=1000, sound_effect=None, easing_type=EasingType.BOUNCE):
+        super().__init__(duration_ms, sound_effect, easing_type)
         self.unit_pos = unit_pos
         self.damage = damage
+        self.progress = 0.0  # Initialize progress attribute
         self.font = pygame.font.SysFont('Arial', 24, bold=True)
         self.text = self.font.render(str(damage), True, (255, 0, 0))
     
@@ -253,11 +367,12 @@ class DamageAnimation(Animation):
 
 class StatusEffectAnimation(Animation):
     """Animation for applying or removing a status effect."""
-    def __init__(self, unit_pos, status_icon, is_applying=True, duration_ms=1000, sound_effect=None):
-        super().__init__(duration_ms, sound_effect)
+    def __init__(self, unit_pos, status_icon, is_applying=True, duration_ms=1000, sound_effect=None, easing_type=EasingType.ELASTIC):
+        super().__init__(duration_ms, sound_effect, easing_type)
         self.unit_pos = unit_pos
         self.status_icon = status_icon
         self.is_applying = is_applying
+        self.progress = 0.0  # Initialize progress attribute
     
     def draw(self, surface):
         """Draw the status effect icon appearing or disappearing."""
@@ -288,6 +403,582 @@ class StatusEffectAnimation(Animation):
             pos = (center_x - scaled_icon.get_width() // 2, 
                   center_y - scaled_icon.get_height() // 2)
             surface.blit(scaled_icon, pos)
+
+class FadeAnimation(Animation):
+    """Animation for fading in/out the entire screen or a specific area."""
+    def __init__(self, fade_in=True, color=(0, 0, 0), area=None, duration_ms=1000, sound_effect=None, easing_type=EasingType.EASE_IN_OUT):
+        super().__init__(duration_ms, sound_effect, easing_type)
+        self.fade_in = fade_in  # True for fade in, False for fade out
+        self.color = list(color) + [0]  # Add alpha channel
+        self.area = area  # Optional rect for partial screen fade
+    
+    def update(self):
+        """Update the fade animation."""
+        completed = super().update()
+        
+        # Update the alpha value based on progress
+        if self.fade_in:
+            # Fade in: alpha from 255 to 0
+            alpha = int(255 * (1.0 - self.progress))
+        else:
+            # Fade out: alpha from 0 to 255
+            alpha = int(255 * self.progress)
+        
+        # Set the alpha value
+        self.color[3] = alpha
+        
+        return completed
+    
+    def draw(self, surface):
+        """Draw the fade effect."""
+        if self.completed:
+            return
+        
+        # Create a surface for the fade
+        if self.area:
+            fade_surface = pygame.Surface((self.area[2], self.area[3]), pygame.SRCALPHA)
+            fade_surface.fill(self.color)
+            surface.blit(fade_surface, (self.area[0], self.area[1]))
+        else:
+            fade_surface = pygame.Surface(surface.get_size(), pygame.SRCALPHA)
+            fade_surface.fill(self.color)
+            surface.blit(fade_surface, (0, 0))
+
+class VisualEffect:
+    """Base class for visual effects used in animations."""
+    def __init__(self):
+        """Initialize the visual effect."""
+        pass
+    
+    def update(self, progress):
+        """Update the effect based on the animation progress.
+        
+        Args:
+            progress: Animation progress from 0.0 to 1.0
+        """
+        pass
+    
+    def draw(self, surface, position):
+        """Draw the effect on the surface.
+        
+        Args:
+            surface: Pygame surface to draw on
+            position: Position (x, y) to draw at
+        """
+        pass
+
+class Particle:
+    """Individual particle for visual effects."""
+    
+    def __init__(self, position, velocity, color, size, life, gravity=0.0):
+        """Initialize a particle.
+        
+        Args:
+            position: Starting position (x, y)
+            velocity: Initial velocity (vx, vy)
+            color: Color (r, g, b) or (r, g, b, a)
+            size: Size in pixels
+            life: Lifetime in seconds
+            gravity: Gravity effect (positive = down)
+        """
+        self.position = list(position)
+        self.velocity = list(velocity)
+        
+        # Handle color with or without alpha
+        if len(color) == 4:
+            self.color = color[:3]  # RGB
+            self.alpha = color[3]   # Alpha
+        else:
+            self.color = color
+            self.alpha = 255
+        
+        self.initial_size = size
+        self.size = size
+        self.initial_life = life
+        self.life = life
+        self.gravity = gravity
+        self.birth_time = pygame.time.get_ticks() / 1000.0  # Convert to seconds
+        self.is_alive = True
+        
+        # For special particle effects
+        self.age = 0  # Age in seconds
+    
+    def update(self):
+        """Update particle position, velocity, and lifetime.
+        Returns True if the particle is still alive, False otherwise.
+        """
+        # Calculate age
+        current_time = pygame.time.get_ticks() / 1000.0
+        self.age = current_time - self.birth_time
+        
+        # Check if the particle has exceeded its lifetime
+        if self.life != float('inf') and self.age >= self.life:
+            self.is_alive = False
+            return False
+        
+        # Update velocity with gravity
+        self.velocity[1] += self.gravity
+        
+        # Update position
+        self.position[0] += self.velocity[0]
+        self.position[1] += self.velocity[1]
+        
+        # Calculate fade based on lifetime
+        if self.life != float('inf'):
+            life_ratio = 1.0 - (self.age / self.life)
+            self.alpha = int(255 * life_ratio)
+            
+            # Also scale size down slightly as the particle ages
+            self.size = self.initial_size * (0.5 + 0.5 * life_ratio)
+        
+        return True
+    
+    def draw(self, surface):
+        """Draw the particle on the given surface."""
+        if not self.is_alive or self.alpha <= 0:
+            return
+        
+        # Create a temporary surface with per-pixel alpha
+        particle_surface = pygame.Surface((self.size * 2, self.size * 2), pygame.SRCALPHA)
+        
+        # Draw the particle on the temporary surface
+        pygame.draw.circle(
+            particle_surface, 
+            self.color + (self.alpha,),  # Add alpha to color
+            (self.size, self.size), 
+            self.size
+        )
+        
+        # Blit the temporary surface onto the main surface
+        x = int(self.position[0] - self.size)
+        y = int(self.position[1] - self.size)
+        surface.blit(particle_surface, (x, y))
+
+class ParticleSystemEffect(VisualEffect):
+    """Particle system for visual effects like explosions, fire, smoke, etc."""
+    
+    def __init__(self, effect_type, num_particles=20, gravity=0.0, direction=0):
+        """Initialize a particle system effect.
+        
+        Args:
+            effect_type: Type of effect to create ('explosion', 'sparks', 'smoke', etc.)
+            num_particles: Number of particles to create
+            gravity: Gravity effect on particles (negative values make particles rise)
+            direction: Direction the effect points (in radians, 0 = right, PI/2 = down)
+        """
+        super().__init__()
+        self.effect_type = effect_type
+        self.num_particles = num_particles
+        self.gravity = gravity
+        self.direction = direction
+        self.particles = []
+        self.continuous = self.effect_type in ['rain', 'snow']  # Continuous effects regenerate particles
+        
+        # Get screen dimensions for boundary checking
+        self.screen_size = pygame.display.get_surface().get_size() if pygame.display.get_surface() else (800, 600)
+    
+    def spawn_particles(self, position, **kwargs):
+        """Spawn new particles based on the effect type."""
+        particles = []
+        
+        # Convert position to pixel coordinates if they're grid coordinates
+        pos_x, pos_y = position
+        if isinstance(pos_x, int) and isinstance(pos_y, int):
+            # These are grid coordinates, convert to pixels
+            pos_x = pos_x * TILE_SIZE + TILE_SIZE // 2
+            pos_y = pos_y * TILE_SIZE + TILE_SIZE // 2
+        
+        # For direction, use instance direction if not provided in kwargs
+        direction = kwargs.get('direction', self.direction)
+        
+        # Spawn based on effect type
+        if self.effect_type == 'explosion':
+            # Create particles for explosion effect
+            for _ in range(self.num_particles):
+                # Random angle and speed
+                angle = random.uniform(0, math.pi * 2)
+                speed = random.uniform(1.0, 3.0)
+                
+                # Calculate velocity
+                vel_x = math.cos(angle) * speed
+                vel_y = math.sin(angle) * speed
+                
+                # Random color (orange to red)
+                r = random.randint(200, 255)
+                g = random.randint(50, 150)
+                b = random.randint(0, 50)
+                a = random.randint(200, 255)
+                color = (r, g, b, a)
+                
+                # Random size and life
+                size = random.uniform(3, 6)
+                life = random.uniform(0.5, 1.5)
+                
+                particles.append(Particle(
+                    position=(pos_x, pos_y),
+                    velocity=(vel_x, vel_y),
+                    color=color,
+                    size=size,
+                    life=life,
+                    gravity=self.gravity
+                ))
+                
+        elif self.effect_type == 'sparks':
+            # Create particles for sparks effect
+            for _ in range(self.num_particles):
+                # Random angle (mostly upward)
+                angle = random.uniform(-math.pi * 0.8, math.pi * 0.8) - math.pi/2
+                speed = random.uniform(0.5, 2.0)
+                
+                # Calculate velocity
+                vel_x = math.cos(angle) * speed
+                vel_y = math.sin(angle) * speed
+                
+                # Yellow/orange/white color
+                r = random.randint(200, 255)
+                g = random.randint(150, 255)
+                b = random.randint(50, 150)
+                a = random.randint(200, 255)
+                color = (r, g, b, a)
+                
+                # Small size and short life
+                size = random.uniform(1, 3)
+                life = random.uniform(0.3, 0.8)
+                
+                particles.append(Particle(
+                    position=(pos_x, pos_y),
+                    velocity=(vel_x, vel_y),
+                    color=color,
+                    size=size,
+                    life=life,
+                    gravity=0.05  # Sparks fall slightly
+                ))
+                
+        elif self.effect_type == 'smoke':
+            # Create particles for smoke effect
+            for _ in range(self.num_particles):
+                # Random angle (mostly upward)
+                angle = random.uniform(-math.pi * 0.5, math.pi * 0.5) - math.pi/2
+                speed = random.uniform(0.2, 1.0)
+                
+                # Calculate velocity
+                vel_x = math.cos(angle) * speed
+                vel_y = math.sin(angle) * speed
+                
+                # Gray/black color with low alpha
+                gray = random.randint(50, 150)
+                a = random.randint(100, 180)
+                color = (gray, gray, gray, a)
+                
+                # Larger size and longer life
+                size = random.uniform(4, 8)
+                life = random.uniform(1.0, 2.5)
+                
+                particles.append(Particle(
+                    position=(pos_x, pos_y),
+                    velocity=(vel_x, vel_y),
+                    color=color,
+                    size=size,
+                    life=life,
+                    gravity=-0.03  # Smoke rises
+                ))
+                
+        elif self.effect_type == 'rain':
+            # Create particles for rain effect - these particles reset when they reach the bottom
+            rain_width = 30 * TILE_SIZE  # Width of the rain area
+            for _ in range(self.num_particles):
+                # Random position in a wide area above the given position
+                rand_x = pos_x + random.uniform(-rain_width/2, rain_width/2)
+                rand_y = pos_y - random.uniform(0, 20 * TILE_SIZE)  # Start above the screen
+                
+                # Velocity is mostly downward with a slight angle
+                speed = random.uniform(5.0, 10.0)
+                angle = math.pi/2 + random.uniform(-0.1, 0.1)  # Mostly straight down
+                vel_x = math.cos(angle) * speed
+                vel_y = math.sin(angle) * speed
+                
+                # Blue/white color
+                r = random.randint(200, 240)
+                g = random.randint(200, 240)
+                b = random.randint(230, 255)
+                a = random.randint(100, 180)
+                color = (r, g, b, a)
+                
+                # Thin, elongated raindrops
+                size = random.uniform(1, 2)
+                life = float('inf')  # Rain particles don't die, they reset
+                
+                particles.append(Particle(
+                    position=(rand_x, rand_y),
+                    velocity=(vel_x, vel_y),
+                    color=color,
+                    size=size,
+                    life=life,
+                    gravity=0.1  # Rain accelerates as it falls
+                ))
+                
+        elif self.effect_type == 'snow':
+            # Create particles for snow effect - these particles reset when they reach the bottom
+            snow_width = 30 * TILE_SIZE  # Width of the snow area
+            for _ in range(self.num_particles):
+                # Random position in a wide area above the given position
+                rand_x = pos_x + random.uniform(-snow_width/2, snow_width/2)
+                rand_y = pos_y - random.uniform(0, 20 * TILE_SIZE)  # Start above the screen
+                
+                # Velocity is downward but slower than rain and more variable
+                speed = random.uniform(0.5, 2.0)
+                angle = math.pi/2 + random.uniform(-0.3, 0.3)  # More variation
+                vel_x = math.cos(angle) * speed
+                vel_y = math.sin(angle) * speed
+                
+                # White/light blue color
+                r = random.randint(240, 255)
+                g = random.randint(240, 255)
+                b = random.randint(250, 255)
+                a = random.randint(150, 230)
+                color = (r, g, b, a)
+                
+                # Small, round snowflakes
+                size = random.uniform(1, 3)
+                life = float('inf')  # Snow particles don't die, they reset
+                
+                particles.append(Particle(
+                    position=(rand_x, rand_y),
+                    velocity=(vel_x, vel_y),
+                    color=color,
+                    size=size,
+                    life=life,
+                    gravity=0.02  # Snow falls gently
+                ))
+        
+        elif self.effect_type == 'field_of_view':
+            # Create particles for field of view effect
+            # Field of view uses a cone shape of semi-transparent blue particles
+            
+            # Parameters for the cone
+            cone_angle = math.pi / 3  # 60 degrees
+            max_distance = TILE_SIZE * 5  # 5 tiles worth of distance
+            
+            # Extract direction from kwargs if provided (default to facing right)
+            direction = kwargs.get('direction', self.direction)  # direction in radians, 0 = right, PI/2 = down
+            
+            # Store the direction for later use in drawing
+            self.direction = direction
+            
+            # Create a gradient of particles from center outward
+            for _ in range(self.num_particles):
+                # Random angle within the cone, centered on the direction
+                angle = direction + random.uniform(-cone_angle/2, cone_angle/2)
+                
+                # Random distance from center, but with more particles further out
+                # This creates a better visual impression of "looking" in a direction
+                distance_bias = random.random() ** 0.5  # Square root biases toward 1.0
+                distance = TILE_SIZE/2 + distance_bias * (max_distance - TILE_SIZE/2)
+                
+                # Calculate position (start at center and move outward)
+                rand_x = pos_x + math.cos(angle) * distance
+                rand_y = pos_y + math.sin(angle) * distance
+                
+                # Very slight movement for subtle animation
+                vel_x = random.uniform(-0.1, 0.1) + math.cos(angle) * 0.05
+                vel_y = random.uniform(-0.1, 0.1) + math.sin(angle) * 0.05
+                
+                # Blue/cyan color with low alpha for visibility
+                # Closer particles are more opaque
+                opacity_factor = 1.0 - (distance / max_distance) * 0.7
+                r = 20
+                g = random.randint(120, 180) 
+                b = random.randint(220, 255)
+                a = int(random.randint(30, 100) * opacity_factor)  # More visible
+                color = (r, g, b, a)
+                
+                # Varied sizes for depth effect - closer particles slightly larger
+                size_factor = 1.0 - (distance / max_distance) * 0.5
+                size = random.uniform(3, 6) * size_factor
+                life = random.uniform(1.5, 3.0)  # Slightly longer life
+                
+                particles.append(Particle(
+                    position=(rand_x, rand_y),
+                    velocity=(vel_x, vel_y),
+                    color=color,
+                    size=size,
+                    life=life,
+                    gravity=0  # No gravity effect
+                ))
+                
+        return particles
+    
+    def update(self, progress):
+        """Update all particles and potentially spawn new ones for continuous effects."""
+        # Update existing particles
+        active_particles = []
+        
+        for particle in self.particles:
+            # Update the particle
+            particle.update()
+            
+            # Check if the particle is still active
+            if particle.is_alive:
+                # For rain and snow, check if particle is out of bounds and reset if needed
+                if self.effect_type == 'rain' and particle.position[1] > self.screen_size[1]:
+                    # Reset raindrop to the top
+                    particle.position = (
+                        random.uniform(0, self.screen_size[0]),
+                        random.randint(-30, -10)
+                    )
+                elif self.effect_type == 'snow' and particle.position[1] > self.screen_size[1]:
+                    # Reset snowflake to the top
+                    particle.position = (
+                        random.uniform(0, self.screen_size[0]), 
+                        random.randint(-30, -10)
+                    )
+                    # Add some random horizontal drift for snow
+                    particle.velocity = (
+                        random.uniform(-0.5, 0.5),
+                        random.uniform(0.5, 2.0)
+                    )
+                
+                active_particles.append(particle)
+        
+        # Replace the list with only active particles
+        self.particles = active_particles
+        
+        # For continuous effects, maintain a minimum number of particles
+        if self.continuous and len(self.particles) < self.num_particles * 0.7:
+            # Calculate center of screen for spawn position
+            center_x = self.screen_size[0] / 2
+            center_y = self.screen_size[1] / 2
+            
+            # Spawn new particles to replace the ones that died
+            new_particles = self.spawn_particles((center_x, center_y), direction=self.direction)
+            self.particles.extend(new_particles[:self.num_particles - len(self.particles)])
+        
+        # For field of view, gradually make particles more transparent as progress increases
+        if self.effect_type == 'field_of_view':
+            for particle in self.particles:
+                # Fade out particles over time - adjust alpha directly
+                fade_factor = 1.0 - progress
+                particle.alpha = int(particle.alpha * fade_factor)
+        
+        return len(self.particles) > 0
+    
+    def draw(self, surface, position):
+        """Draw all particles on the surface.
+        
+        Args:
+            surface: Surface to draw on
+            position: Center position for the effect (used as reference only)
+        """
+        # For field of view effect, draw a clear indication of the direction
+        if self.effect_type == 'field_of_view' and self.particles:
+            # Convert position to pixel coordinates if needed
+            pos_x, pos_y = position
+            if isinstance(pos_x, int) and isinstance(pos_y, int):
+                pos_x = pos_x * TILE_SIZE + TILE_SIZE // 2
+                pos_y = pos_y * TILE_SIZE + TILE_SIZE // 2
+            
+            # Draw an obvious direction indicator (arrow shape)
+            angle = self.direction
+            # Main line
+            end_x = pos_x + math.cos(angle) * TILE_SIZE * 1.2
+            end_y = pos_y + math.sin(angle) * TILE_SIZE * 1.2
+            
+            # Arrowhead points
+            arrow_length = 10
+            arrow_angle1 = angle + 2.5  # about 140° from main line
+            arrow_angle2 = angle - 2.5  # about 140° from main line
+            arrow_x1 = end_x + math.cos(arrow_angle1) * arrow_length
+            arrow_y1 = end_y + math.sin(arrow_angle1) * arrow_length
+            arrow_x2 = end_x + math.cos(arrow_angle2) * arrow_length
+            arrow_y2 = end_y + math.sin(arrow_angle2) * arrow_length
+            
+            # Draw an arrow showing direction
+            pygame.draw.line(
+                surface, 
+                (150, 200, 250, 180),  # Brighter blue, more visible
+                (pos_x, pos_y), 
+                (end_x, end_y), 
+                3
+            )
+            
+            # Draw arrowhead
+            pygame.draw.line(
+                surface,
+                (150, 200, 250, 180),
+                (end_x, end_y),
+                (arrow_x1, arrow_y1),
+                2
+            )
+            
+            pygame.draw.line(
+                surface,
+                (150, 200, 250, 180),
+                (end_x, end_y),
+                (arrow_x2, arrow_y2),
+                2
+            )
+            
+            # Add a small circular indicator at the source
+            pygame.draw.circle(
+                surface,
+                (150, 200, 250, 180),
+                (int(pos_x), int(pos_y)),
+                5
+            )
+        
+        # Draw all particles
+        for particle in self.particles:
+            particle.draw(surface)
+
+class ParticleEffectAnimation(Animation):
+    """Animation for particle effects."""
+    
+    def __init__(self, position, effect_type='explosion', num_particles=20, duration_ms=1000, 
+                 sound_effect=None, easing_type=EasingType.EASE_OUT, direction=0):
+        """Initialize a particle effect animation.
+        
+        Args:
+            position: Position to create the effect (grid coordinates)
+            effect_type: Type of effect ('explosion', 'sparks', 'smoke', etc.)
+            num_particles: Number of particles to create
+            duration_ms: How long the effect lasts in milliseconds
+            sound_effect: Optional sound to play with the effect
+            easing_type: Easing function for the animation
+            direction: Direction the effect points (in radians, 0 = right, PI/2 = down)
+        """
+        super().__init__(duration_ms, sound_effect, easing_type)
+        self.position = position
+        self.effect_type = effect_type
+        self.num_particles = num_particles
+        self.direction = direction
+        
+        # Create the particle system for this effect
+        self.particle_system = ParticleSystemEffect(
+            effect_type=effect_type, 
+            num_particles=num_particles,
+            direction=direction
+        )
+        
+        # Spawn the initial particles
+        self.particle_system.particles = self.particle_system.spawn_particles(position, direction=direction)
+        
+        # Reference to parent renderer for chaining
+        self.parent_renderer = None
+    
+    def update(self):
+        """Update the particle animation."""
+        # Call the base class update to update progress
+        completed = super().update()
+        
+        # Update the particle system
+        self.particle_system.update(self.progress)
+        
+        return completed
+    
+    def draw(self, surface):
+        """Draw the particle effect on the given surface."""
+        if not self.paused:
+            self.particle_system.draw(surface, self.position)
 
 class GameRenderer:
     """Main renderer class for the game."""
@@ -691,6 +1382,7 @@ class GameRenderer:
         """Play an animation of the specified type."""
         animation = None
         sound_effect = None
+        easing_type = kwargs.get('easing', EasingType.LINEAR)
         
         # Determine which sound effect to use
         if SOUND_ENABLED:
@@ -714,7 +1406,7 @@ class GameRenderer:
                 unit = self.game_state_manager.get_unit(unit_id)
                 if unit:
                     sprite = self.get_unit_sprite(unit)
-                    animation = MoveAnimation(unit_id, path, sprite, sound_effect=sound_effect)
+                    animation = MoveAnimation(unit_id, path, sprite, sound_effect=sound_effect, easing_type=easing_type)
         
         elif animation_type == AnimationType.HIGHLIGHT_TILES:
             # Highlight tiles animation
@@ -723,15 +1415,16 @@ class GameRenderer:
             duration = kwargs.get('duration', 3000)
             
             if tile_positions:
-                animation = HighlightTilesAnimation(tile_positions, color, duration, sound_effect)
+                animation = HighlightTilesAnimation(tile_positions, color, duration, sound_effect, easing_type=easing_type)
         
         elif animation_type == AnimationType.ATTACK:
             # Attack animation
             attacker_pos = kwargs.get('attacker_pos')
             defender_pos = kwargs.get('defender_pos')
+            duration = kwargs.get('duration', 500)
             
             if attacker_pos and defender_pos:
-                animation = AttackAnimation(attacker_pos, defender_pos, sound_effect=sound_effect)
+                animation = AttackAnimation(attacker_pos, defender_pos, duration_ms=duration, sound_effect=sound_effect, easing_type=easing_type)
         
         elif animation_type == AnimationType.TAKE_DAMAGE:
             # Damage animation
@@ -739,7 +1432,7 @@ class GameRenderer:
             damage = kwargs.get('damage', 0)
             
             if unit_pos is not None and damage > 0:
-                animation = DamageAnimation(unit_pos, damage, sound_effect=sound_effect)
+                animation = DamageAnimation(unit_pos, damage, sound_effect=sound_effect, easing_type=easing_type)
         
         elif animation_type == AnimationType.APPLY_STATUS or animation_type == AnimationType.REMOVE_STATUS:
             # Status effect animation
@@ -750,14 +1443,36 @@ class GameRenderer:
                 status_icon = self.get_status_effect_icon(status_type)
                 if status_icon:
                     is_applying = animation_type == AnimationType.APPLY_STATUS
-                    animation = StatusEffectAnimation(unit_pos, status_icon, is_applying, sound_effect=sound_effect)
+                    animation = StatusEffectAnimation(unit_pos, status_icon, is_applying, sound_effect=sound_effect, easing_type=easing_type)
+        
+        elif animation_type == AnimationType.FADE:
+            # Fade animation
+            fade_in = kwargs.get('fade_in', True)
+            color = kwargs.get('color', (0, 0, 0))
+            area = kwargs.get('area')
+            duration = kwargs.get('duration', 1000)
+            
+            animation = FadeAnimation(fade_in, color, area, duration, sound_effect, easing_type=easing_type)
+        
+        elif animation_type == AnimationType.PARTICLE_EFFECT:
+            # Particle effect animation
+            position = kwargs.get('position')
+            effect_type = kwargs.get('effect_type', 'explosion')
+            num_particles = kwargs.get('num_particles', 20)
+            duration = kwargs.get('duration', 1000)
+            direction = kwargs.get('direction', 0)
+            
+            if position:
+                animation = ParticleEffectAnimation(position, effect_type, num_particles, duration, sound_effect, easing_type=easing_type, direction=direction)
         
         # Add the animation to the list if valid
         if animation:
+            # Set the parent renderer for chaining
+            animation.parent_renderer = self
             self.animations.append(animation)
-            return True
+            return animation
         
-        return False
+        return None
     
     def update(self, delta_time=None):
         """Update all active animations and camera movement."""
@@ -897,6 +1612,76 @@ class GameRenderer:
         self.running = False
         pygame.quit()
 
+    def visualize_field_of_view(self, unit_id, direction=0, duration=1000, num_particles=100):
+        """Visualize a unit's field of view.
+        
+        Args:
+            unit_id: ID of the unit whose field of view to visualize
+            direction: Direction to face (in radians, 0 = right, PI/2 = down)
+            duration: Duration in milliseconds
+            num_particles: Number of particles to generate
+            
+        Returns:
+            The created animation if successful, None otherwise
+        """
+        # Get the unit
+        unit = self.game_state_manager.get_unit(unit_id)
+        if unit is None:
+            return None
+        
+        # Create field of view effect at the unit's position
+        return self.play_animation(
+            AnimationType.PARTICLE_EFFECT,
+            position=unit.position,
+            effect_type="field_of_view",
+            num_particles=num_particles,
+            duration=duration,
+            direction=direction
+        )
+
+    def visualize_field_of_view_towards(self, unit_id, target_pos, duration=1000, num_particles=100):
+        """Visualize a unit's field of view towards a specific position.
+        
+        Args:
+            unit_id: ID of the unit whose field of view to visualize
+            target_pos: Target position to face towards
+            duration: Duration in milliseconds
+            num_particles: Number of particles to generate
+            
+        Returns:
+            The created animation if successful, None otherwise
+        """
+        # Get the unit
+        unit = self.game_state_manager.get_unit(unit_id)
+        if unit is None:
+            return None
+        
+        # Calculate direction to target
+        direction = self.calculate_direction(unit.position, target_pos)
+        
+        # Create field of view effect
+        return self.visualize_field_of_view(unit_id, direction, duration, num_particles)
+
+    def calculate_direction(self, from_pos, to_pos):
+        """Calculate the direction in radians from one position to another.
+        
+        Args:
+            from_pos: Starting position (x, y)
+            to_pos: Target position (x, y)
+            
+        Returns:
+            Direction in radians (0 = right, PI/2 = down)
+        """
+        dx = to_pos[0] - from_pos[0]
+        dy = to_pos[1] - from_pos[1]
+        
+        # Handle the case where both dx and dy are 0
+        if dx == 0 and dy == 0:
+            return 0
+        
+        # Calculate angle in radians
+        angle = math.atan2(dy, dx)
+        return angle
 
 def main():
     """Main function for testing the renderer."""
