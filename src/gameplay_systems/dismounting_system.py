@@ -98,13 +98,13 @@ class DismountingSystem:
         
         unit = self.unit_system.get_unit(unit_id)
         mounted_class = self.data_provider.get_class(unit.mounted_class_id)
-        dismounted_class = self.data_provider.get_class(mounted_class.dismounted_equivalent_id)
+        dismounted_class = self.data_provider.get_class(mounted_class.dismount_class_id)
         
         # 1. Update State Flag
         unit.is_mounted = False
         
         # 2. Apply Stat Changes
-        if hasattr(mounted_class, 'dismount_stat_modifiers') and mounted_class.dismount_stat_modifiers:
+        if mounted_class.dismount_stat_modifiers:
             for stat, change in mounted_class.dismount_stat_modifiers.items():
                 # Apply penalties (these are negative values in the class definition)
                 unit.current_stats[stat] += change
@@ -141,13 +141,13 @@ class DismountingSystem:
         
         unit = self.unit_system.get_unit(unit_id)
         mounted_class = self.data_provider.get_class(unit.mounted_class_id)
-        dismounted_class = self.data_provider.get_class(mounted_class.dismounted_equivalent_id)
+        dismounted_class = self.data_provider.get_class(mounted_class.dismount_class_id)
         
         # 1. Update State Flag
         unit.is_mounted = True
         
         # 2. Revert Stat Changes
-        if hasattr(mounted_class, 'dismount_stat_modifiers') and mounted_class.dismount_stat_modifiers:
+        if mounted_class.dismount_stat_modifiers:
             for stat, change in mounted_class.dismount_stat_modifiers.items():
                 # When mounting, reverse the penalties (add the negative value)
                 unit.current_stats[stat] -= change  # Reverse the change
@@ -210,12 +210,12 @@ class DismountingSystem:
         """
         unit = self.unit_system.get_unit(unit_id)
         mounted_class = self.data_provider.get_class(unit.mounted_class_id)
-        dismounted_class = self.data_provider.get_class(mounted_class.dismounted_equivalent_id)
+        dismounted_class = self.data_provider.get_class(mounted_class.dismount_class_id)
         
         unit.is_mounted = False
         
         # Apply stat changes from dismount modifiers
-        if hasattr(mounted_class, 'dismount_stat_modifiers') and mounted_class.dismount_stat_modifiers:
+        if mounted_class.dismount_stat_modifiers:
             for stat, change in mounted_class.dismount_stat_modifiers.items():
                 unit.current_stats[stat] += change
         
@@ -246,7 +246,7 @@ class DismountingSystem:
         unit.is_mounted = True
         
         # Reverse stat changes from dismount modifiers
-        if hasattr(mounted_class, 'dismount_stat_modifiers') and mounted_class.dismount_stat_modifiers:
+        if mounted_class.dismount_stat_modifiers:
             for stat, change in mounted_class.dismount_stat_modifiers.items():
                 unit.current_stats[stat] -= change
         

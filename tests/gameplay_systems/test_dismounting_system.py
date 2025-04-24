@@ -209,7 +209,7 @@ class TestDismountingSystem(unittest.TestCase):
         
         # Mock classes
         mock_mounted_class = MagicMock()
-        mock_mounted_class.dismounted_equivalent_id = "C002"
+        mock_mounted_class.dismount_class_id = "C002"
         mock_mounted_class.dismount_stat_modifiers = None
         
         mock_dismounted_class = MagicMock()
@@ -255,7 +255,7 @@ class TestDismountingSystem(unittest.TestCase):
             
             # Mock classes
             mock_mounted_class = MagicMock()
-            mock_mounted_class.dismounted_equivalent_id = "C002"
+            mock_mounted_class.dismount_class_id = "C002"
             mock_mounted_class.dismount_stat_modifiers = None
             
             mock_dismounted_class = MagicMock()
@@ -303,7 +303,7 @@ class TestDismountingSystem(unittest.TestCase):
         
         # Case 1: Using specific dismount modifiers
         mock_mounted_class_with_modifiers = MagicMock()
-        mock_mounted_class_with_modifiers.dismounted_equivalent_id = "C002"
+        mock_mounted_class_with_modifiers.dismount_class_id = "C002"
         mock_mounted_class_with_modifiers.dismount_stat_modifiers = {
             STR: -1, SPD: -2, DEF: -1, MOV: -3
         }
@@ -357,7 +357,7 @@ class TestDismountingSystem(unittest.TestCase):
         
         # Mock classes
         mock_mounted_cavalry_class = MagicMock()
-        mock_mounted_cavalry_class.dismounted_equivalent_id = "DC001"
+        mock_mounted_cavalry_class.dismount_class_id = "DC001"
         mock_mounted_cavalry_class.dismount_stat_modifiers = None
         
         mock_dismounted_cavalry_class = MagicMock()
@@ -366,7 +366,7 @@ class TestDismountingSystem(unittest.TestCase):
         mock_dismounted_cavalry_class.usable_weapon_types_dismounted = [SWORD]
         
         mock_mounted_flying_class = MagicMock()
-        mock_mounted_flying_class.dismounted_equivalent_id = "DF001"
+        mock_mounted_flying_class.dismount_class_id = "DF001"
         mock_mounted_flying_class.dismount_stat_modifiers = None
         
         mock_dismounted_flying_class = MagicMock()
@@ -417,7 +417,7 @@ class TestDismountingSystem(unittest.TestCase):
         
         # Mock classes
         mock_mounted_class = MagicMock()
-        mock_mounted_class.dismounted_equivalent_id = "C002"
+        mock_mounted_class.dismount_class_id = "C002"
         mock_mounted_class.dismount_stat_modifiers = None
         mock_mounted_class.usable_weapon_types_mounted = [SWORD, LANCE]
         
@@ -465,7 +465,7 @@ class TestDismountingSystem(unittest.TestCase):
         
         # Mock classes
         mock_mounted_class = MagicMock()
-        mock_mounted_class.dismounted_equivalent_id = "C002"
+        mock_mounted_class.dismount_class_id = "C002"
         mock_mounted_class.mov = 8
         mock_mounted_class.movement_type = CAVALRY
         mock_mounted_class.dismount_stat_modifiers = None
@@ -510,7 +510,7 @@ class TestDismountingSystem(unittest.TestCase):
             
             # Mock classes
             mock_mounted_class = MagicMock()
-            mock_mounted_class.dismounted_equivalent_id = "C002"
+            mock_mounted_class.dismount_class_id = "C002"
             mock_mounted_class.mov = 8
             mock_mounted_class.movement_type = CAVALRY
             
@@ -556,7 +556,7 @@ class TestDismountingSystem(unittest.TestCase):
         
         # Case 1: Using specific dismount modifiers (which should be reversed)
         mock_mounted_class = MagicMock()
-        mock_mounted_class.dismounted_equivalent_id = "C002"
+        mock_mounted_class.dismount_class_id = "C002"
         mock_mounted_class.mov = 8
         mock_mounted_class.movement_type = CAVALRY
         mock_mounted_class.dismount_stat_modifiers = {
@@ -609,7 +609,7 @@ class TestDismountingSystem(unittest.TestCase):
         
         # Mock classes
         mock_mounted_cavalry_class = MagicMock()
-        mock_mounted_cavalry_class.dismounted_equivalent_id = "DC001"
+        mock_mounted_cavalry_class.dismount_class_id = "DC001"
         mock_mounted_cavalry_class.dismount_stat_modifiers = None
         mock_mounted_cavalry_class.movement_type = CAVALRY
         mock_mounted_cavalry_class.mov = 8
@@ -617,7 +617,7 @@ class TestDismountingSystem(unittest.TestCase):
         mock_dismounted_cavalry_class = MagicMock()
         
         mock_mounted_flying_class = MagicMock()
-        mock_mounted_flying_class.dismounted_equivalent_id = "DF001"
+        mock_mounted_flying_class.dismount_class_id = "DF001"
         mock_mounted_flying_class.dismount_stat_modifiers = None
         mock_mounted_flying_class.movement_type = FLYING
         mock_mounted_flying_class.mov = 7
@@ -667,7 +667,7 @@ class TestDismountingSystem(unittest.TestCase):
         
         # Mock classes
         mock_mounted_class = MagicMock()
-        mock_mounted_class.dismounted_equivalent_id = "C002"
+        mock_mounted_class.dismount_class_id = "C002"
         mock_mounted_class.mov = 8
         mock_mounted_class.movement_type = CAVALRY
         
