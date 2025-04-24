@@ -55,13 +55,14 @@ This document details systems unique or particularly characteristic to Fire Embl
 ## 4. Rescue
 
 -   **Action:** Unit uses 'Rescue' command on an adjacent allied unit.
--   **Condition:** `Rescuer Bld >= Target Bld / 2`.
-    -   If the rescuer is mounted, add +5 to their Bld for this check.
+-   **Condition:** `Rescuer Con > Target Con`.
+    -   Mounted units and ballistas are considered to have **20 Con** for rescue purposes.
 -   **Rule:** Cannot rescue a unit that is already rescuing/carrying another unit.
 -   **Effect:** Rescuer picks up the allied unit. Carried ally is removed from the map temporarily but remains associated with the rescuer.
 -   **Penalties on Rescuer:**
     -   **Stats Halved:** Str, Mag, Skl, Spd, Def are halved.
-    -   **Movement Halved:** Movement stat is halved (rounded down) if `Carried Unit Bld > Carrier Bld / 2` (adjust carrier Bld +5 if mounted).
+    -   **Movement Halved:** Movement stat is halved (rounded down) if `Carried Unit Con > Carrier Con / 2`.
+    -   Note: For movement penalties, the **actual Con** value is used (not the effective 20 Con for mounted units).
 -   **Commands:**
     -   **Take:** Transfer a carried unit from an adjacent ally to the current unit (if conditions met).
     -   **Give:** Transfer the currently carried unit to an adjacent ally (if conditions met).
