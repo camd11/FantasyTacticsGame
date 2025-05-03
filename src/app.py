@@ -10,29 +10,29 @@ import pygame
 from typing import Dict, Any, Optional
 
 # Import core engine components
-from src.core_engine.game_state import GameStateManager, FactionEnum, PhaseEnum
-from src.core_engine.data_provider import DataProvider
-from src.core_engine.turn_manager import TurnManager
-from src.core_engine.action_handler import ActionHandler
-from src.core_engine.event_handler import EventHandler
-from src.core_engine.engine import EngineCore
-from src.core_engine.engine_api import GameEngineAPI
+from src.fantasy_tactics_core.game_state import GameStateManager, FactionEnum, PhaseEnum
+from src.fantasy_tactics_core.data_provider import DataProvider
+from src.fantasy_tactics_core.turn_manager import TurnManager
+from src.fantasy_tactics_core.action_handler import ActionHandler
+from src.fantasy_tactics_core.event_handler import EventHandler
+from src.fantasy_tactics_core.engine import EngineCore
+from src.fantasy_tactics_core.engine_api import GameEngineAPI
 
 # Import gameplay systems
-from src.gameplay_systems.ai.ai_manager import AIManager
-from src.gameplay_systems.ai.strategic_evaluator import StrategicEvaluator
-from src.gameplay_systems.ai.tactical_executor import TacticalExecutor
-from src.gameplay_systems.ai.utility_scorer import UtilityScorer
-from src.gameplay_systems.combat_system import CombatSystem
-from src.gameplay_systems.map_system import MapSystem
-from src.gameplay_systems.movement_system import MovementSystem
-from src.gameplay_systems.unit_system import UnitSystem
-from src.gameplay_systems.inventory_system import InventorySystem
+from src.fantasy_tactics_gameplay.ai.ai_manager import AIManager
+from src.fantasy_tactics_gameplay.ai.strategic_evaluator import StrategicEvaluator
+from src.fantasy_tactics_gameplay.ai.tactical_executor import TacticalExecutor
+from src.fantasy_tactics_gameplay.ai.utility_scorer import UtilityScorer
+from src.fantasy_tactics_gameplay.combat.combat_system import CombatSystem
+from src.fantasy_tactics_gameplay.systems.map_system import MapSystem
+from src.fantasy_tactics_gameplay.systems.movement_system import MovementSystem
+from src.fantasy_tactics_gameplay.systems.unit_system import UnitSystem
+from src.fantasy_tactics_gameplay.systems.inventory_system import InventorySystem
 # Import input handler
-from src.input.cli_input_handler import CommandLineInputHandler
-from src.ui.input_handler import InputHandler
-from src.ui.views.map_view import MapView
-from src.ui.gui_manager import GUIManager
+from src.fantasy_tactics_ui.cli.cli_input_handler import CommandLineInputHandler
+from src.fantasy_tactics_ui.input_handler import InputHandler
+from src.fantasy_tactics_ui.views.map_view import MapView
+from src.fantasy_tactics_ui.gui_manager import GUIManager
 
 
 
@@ -118,7 +118,7 @@ class GameApplication:
         root_logger.addHandler(ai_file_handler)
         
         # Configure AI-specific loggers to ensure they output to the file
-        ai_logger = logging.getLogger('src.gameplay_systems.ai')
+        ai_logger = logging.getLogger('src.fantasy_tactics_gameplay.ai')
         ai_logger.setLevel(logging.DEBUG)
         
         logging.info("Logging initialized with AI behavior logging to ai_behavior.log")
