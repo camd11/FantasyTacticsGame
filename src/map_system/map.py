@@ -1,6 +1,9 @@
 # src/map_system/map.py
 
-from typing import List, Optional
+from typing import List, Optional, Dict # Added Dict
+
+# Global registry for Maps to ensure ID uniqueness
+MAP_REGISTRY: Dict[str, 'Map'] = {} # Forward reference 'Map'
 
 # Import necessary classes for type hinting
 from .tile import TileInstance
@@ -70,6 +73,10 @@ class Map:
         self.width: int = width
         self.height: int = height
         self.map_tileset: Tileset = tileset # Renamed from self.tileset for clarity
+
+        if map_id in MAP_REGISTRY:
+            raise ValueError(f"MapID '{map_id}' already exists in the registry. Map IDs must be unique.")
+        MAP_REGISTRY[map_id] = self
         
         # Initialize TileGrid as a 2D list of lists, filled with None initially.
         # Each element will be a TileInstance or None.
@@ -77,9 +84,9 @@ class Map:
             [[None for _ in range(width)] for _ in range(height)]
         
         # Future properties based on spec:
+        self.objective: str = "" # Initialize objective property
         # self.initial_unit_placements: List[UnitPlacement] = []
         # self.map_events: List[Event] = []
-        # self.objective: str = ""
 
     def is_valid_coordinate(self, x: int, y: int) -> bool:
         """
@@ -147,6 +154,22 @@ class Map:
             raise TypeError(f"tile_instance must be a TileInstance object or None, got {type(tile_instance)}")
 
         if self.is_valid_coordinate(x, y):
+            if tile_instance is not None:
+                # Validate TileInstance's IDs against the map's tileset
+                # Assumes self.map_tileset has has_tile_id and has_palette_id methods
+                # (as provided by MockTileset in tests, or a real Tileset should implement them)
+                if not hasattr(self.map_tileset, 'has_tile_id') or \
+                   not hasattr(self.map_tileset, 'has_palette_id'):
+                    # This case should ideally not happen if Tileset interface is consistent.
+                    # For robustness, one might log a warning or have a fallback,
+                    # but for TDD, we expect the tests to use a tileset that supports this.
+                    pass # Or raise a different error if interface is violated
+
+                if not self.map_tileset.has_tile_id(tile_instance.tile_id):
+                    raise ValueError(f"TileID {tile_instance.tile_id} is not valid for the map's tileset.")
+                if not self.map_tileset.has_palette_id(tile_instance.palette_id):
+                    raise ValueError(f"PaletteID {tile_instance.palette_id} is not valid for the map's tileset.")
+            
             self.tile_grid[y][x] = tile_instance
         else:
             raise IndexError(f"Coordinates ({x}, {y}) are out of map bounds (Width: {self.width}, Height: {self.height}).")

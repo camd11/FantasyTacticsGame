@@ -160,6 +160,7 @@ class TestTilesetCreation:
             Tileset()
 
 # These fixtures are used by multiple test classes, so define them at module level.
+
 @pytest.fixture
 def valid_tileset_data_json_str():
     # 16 colors for one palette
@@ -341,3 +342,39 @@ class TestTilesetGetTileGraphic:
         tileset.tiles.append(GraphicTile(4, b'\x00'*32))
         with pytest.raises(IndexError, match="Cannot get tile graphic: No palettes loaded in this tileset."):
             tileset.get_tile_graphic(0, 0, False, False)
+
+class TestTilesetRegistryAndUniqueness:
+    # The module-level autouse fixture `clear_tileset_registry_fixture_module_level`
+    # will handle clearing the registry for these tests as well.
+
+    def test_tileset_id_uniqueness_enforced(self):
+        """
+        TEST: TilesetID must be unique across all tilesets.
+        Attempts to create two tilesets with the same ID, expecting an error.
+        """
+        from src.map_system.tileset import Tileset
+
+        tileset_id = "UniqueTilesetID_1"
+        tileset1 = Tileset(tileset_id) # First creation should succeed
+        assert tileset1.tileset_id == tileset_id
+
+        with pytest.raises(ValueError, match=f"TilesetID '{tileset_id}' already exists in the registry. Tileset IDs must be unique."):
+            Tileset(tileset_id) # Second creation with the same ID should fail
+
+    def test_different_tileset_ids_are_allowed(self):
+        """Tests that different TilesetIDs can be registered without error."""
+        from src.map_system.tileset import Tileset
+        import src.map_system.tileset as tileset_module
+
+        tileset_id1 = "AllowedID_1"
+        tileset_id2 = "AllowedID_2"
+
+        tileset1 = Tileset(tileset_id1)
+        assert tileset1.tileset_id == tileset_id1
+        assert tileset_id1 in tileset_module.TILESET_REGISTRY
+
+        tileset2 = Tileset(tileset_id2)
+        assert tileset2.tileset_id == tileset_id2
+        assert tileset_id2 in tileset_module.TILESET_REGISTRY
+        
+        assert len(tileset_module.TILESET_REGISTRY) == 2

@@ -196,3 +196,61 @@ class TerrainType:
                 self.avoid_bonus == other.avoid_bonus and
                 self.is_impassable == other.is_impassable and
                 self.heals_units == other.heals_units)
+
+# Global Terrain Registry
+# As per spec: "// TEST: A global registry of TerrainTypes must be accessible."
+# This registry would typically be populated from game data files.
+# For now, we'll pre-populate a few common types for testing and basic functionality.
+
+TERRAIN_REGISTRY: Dict[TerrainTypeID, TerrainType] = {}
+
+def _populate_default_terrain_types():
+    """Helper function to populate the TERRAIN_REGISTRY with some defaults."""
+    
+    # Define some generic movement costs and impassable flags for default population
+    # Using string keys as MovementType enum is not yet integrated here.
+    default_movement_costs = {
+        "Infantry": 1, "Armored": 1, "Cavalry": 1, "Flier": 1
+    }
+    default_is_impassable = {
+        "Infantry": False, "Armored": False, "Cavalry": False, "Flier": False
+    }
+    peak_is_impassable = {
+        "Infantry": True, "Armored": True, "Cavalry": True, "Flier": False # Fliers can pass peaks
+    }
+
+
+    TERRAIN_REGISTRY[TerrainTypeID.Plains] = TerrainType(
+        terrain_id=TerrainTypeID.Plains,
+        name="Plains",
+        movement_costs=default_movement_costs.copy(), # Use copy to avoid shared dict modification
+        defense_bonus=0,
+        avoid_bonus=0,
+        is_impassable=default_is_impassable.copy(),
+        heals_units=False
+    )
+
+    TERRAIN_REGISTRY[TerrainTypeID.Forest] = TerrainType(
+        terrain_id=TerrainTypeID.Forest,
+        name="Forest",
+        movement_costs={**default_movement_costs, "Infantry": 1, "Cavalry": 2}, # Example: Cavalry slower in forest
+        defense_bonus=1,
+        avoid_bonus=20,
+        is_impassable=default_is_impassable.copy(),
+        heals_units=False
+    )
+
+    TERRAIN_REGISTRY[TerrainTypeID.Peak] = TerrainType(
+        terrain_id=TerrainTypeID.Peak,
+        name="Peak",
+        movement_costs=default_movement_costs.copy(), # Movement cost is high, but handled by impassable usually
+        defense_bonus=0, # Or could be high if somehow occupied
+        avoid_bonus=0,
+        is_impassable=peak_is_impassable.copy(),
+        heals_units=False
+    )
+    
+    # Add other terrain types as needed or load them from data.
+    # For the test to pass, Plains, Forest, and Peak are required.
+
+_populate_default_terrain_types()

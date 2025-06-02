@@ -28,6 +28,7 @@ CLASS Map
     STRING Objective // Description of the map's objective
     // TEST: Map dimensions must be positive integers
     // TEST: TileGrid dimensions must match Width and Height
+    // TEST: MapID must be unique across all maps.
 
     // METHODS
     CONSTRUCTOR(MapID, Width, Height, Tileset)
@@ -70,6 +71,7 @@ CLASS Tileset
     // Config data (metatile definitions, tile indices, flips) would be processed during map loading
     // to populate TileInstance objects on the Map.
     // TEST: All referenced TileIDs and PaletteIDs in a map must exist in its Tileset
+    // TEST: TilesetID must be unique across all tilesets.
 
     // METHODS
     CONSTRUCTOR(TilesetID)
@@ -167,6 +169,49 @@ CLASS TerrainType
     // METHODS
     CONSTRUCTOR(ID, Name, MovementCosts, DefenseBonus, AvoidBonus, IsImpassableFlags, HealsUnits)
 END CLASS
+
+// NOTE: TerrainType objects are typically defined globally (e.g., loaded from a game data file)
+// and referenced by their ID. The TerrainType class here defines the structure of that data.
+// TEST: A global registry of TerrainTypes must be accessible.
+```
+
+### 2.5. External/Dependent Data Structures (Placeholders)
+
+This section defines placeholders for data structures that the Map System depends on but are likely detailed in other specification documents.
+
+```pseudocode
+// Placeholder for Unit Placement data (details in Character System Spec)
+CLASS UnitPlacement
+    // PROPERTIES
+    STRING UnitID // Identifier for the unit type/character
+    INTEGER StartX
+    INTEGER StartY
+    STRING Faction // e.g., "Player", "Enemy", "NPC"
+    // Other initial state (e.g., facing, inventory - TBD)
+    // TEST: StartX, StartY must be valid coordinates on the map
+    // TEST: UnitID must correspond to a defined unit
+END CLASS
+
+// Placeholder for Movement Type enum (details in Character System Spec)
+ENUM MovementType
+    Infantry
+    Armored
+    Flier
+    Cavalry
+    // ... other types
+END ENUM
+// TEST: All units must have a valid MovementType
+
+// Placeholder for Event data (details in Game Flow/Event System Spec)
+CLASS Event
+    // PROPERTIES
+    STRING EventID // Unique identifier for the event
+    STRING TriggerType // e.g., "TurnBased", "AreaEnter", "UnitTalk"
+    // Conditions (e.g., specific turn, unit in area, character interaction)
+    // Actions (e.g., spawn units, show dialogue, change map state)
+    // TEST: EventID must be unique
+    // TEST: TriggerType must be a recognized type
+END CLASS
 ```
 
 ## 3. Map Loading and Initialization
@@ -198,4 +243,4 @@ END CLASS
 *   `// TEST: Map_UnitPlacement_Correct`: Units are placed at their designated starting positions on map load.
 *   `// TEST: Map_EventTriggering_Basic`: A simple map event (e.g., turn-based) triggers correctly.
 
-This provides a solid base for the map system. Next, I will investigate files related to characters.
+This document has been reviewed and refined. It now includes placeholders for dependent data structures (`UnitPlacement`, `Event`, `MovementType`) and additional clarity on ID uniqueness and `TerrainType` management. The specification for the Map System is now considered robust. The next logical step is to review and refine the specification for the Character and Class System, likely found in [`docs/spec/02_CharacterAndClassSystem.md`](docs/spec/02_CharacterAndClassSystem.md).

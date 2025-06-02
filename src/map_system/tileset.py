@@ -1,6 +1,9 @@
 # src/map_system/tileset.py
 
-from typing import List
+from typing import List, Dict # Added Dict
+
+# Global registry for Tilesets to ensure ID uniqueness
+TILESET_REGISTRY: Dict[str, 'Tileset'] = {} # Forward reference 'Tileset'
 
 class Color:
     """
@@ -185,6 +188,10 @@ class Tileset:
         self.tiles: List[GraphicTile] = []
         self.palettes: List[Palette] = []
 
+        if tileset_id in TILESET_REGISTRY:
+            raise ValueError(f"TilesetID '{tileset_id}' already exists in the registry. Tileset IDs must be unique.")
+        TILESET_REGISTRY[tileset_id] = self
+
     def load_from_source(self, path_to_data: str) -> None:
         """
         Loads tiles and palettes from a source data file (e.g., JSON).
@@ -349,6 +356,18 @@ class Tileset:
         # For TDD, the tests mock the call to a helper method that would do this.
         # Here, we call the (not fully implemented) helper.
         return self._generate_image_data_from_tile_and_palette(selected_tile, selected_palette, h_flip, v_flip)
+
+    def has_tile_id(self, tile_id: int) -> bool:
+        """Checks if the given tile_id is a valid index for the tiles list."""
+        if not isinstance(tile_id, int):
+            return False # Or raise TypeError depending on desired strictness
+        return 0 <= tile_id < len(self.tiles)
+
+    def has_palette_id(self, palette_id: int) -> bool:
+        """Checks if the given palette_id is a valid index for the palettes list."""
+        if not isinstance(palette_id, int):
+            return False # Or raise TypeError
+        return 0 <= palette_id < len(self.palettes)
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, Tileset):

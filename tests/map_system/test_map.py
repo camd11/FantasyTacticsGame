@@ -8,18 +8,32 @@ from tests.map_system.test_tile import MockTerrainType, mock_terrain # Import th
 
 # Mock Tileset class for now, as it's not the focus of these initial tests
 class MockTileset(Tileset): # Inherit from Tileset
-    def __init__(self, tileset_id, num_tiles=0, num_palettes=0, tile_width=8, tile_height=8):
+    def __init__(self, tileset_id, num_graphic_tiles=1, num_palettes=1): # Simplified args
         super().__init__(tileset_id=tileset_id)
-        # Additional attributes for mock if needed, e.g.
-        # self.num_tiles = num_tiles
-        # self.num_palettes = num_palettes
-        # self.tile_width = tile_width
-        # self.tile_height = tile_height
-        # self.id is handled by super().__init__ as self.tileset_id
+        # Populate with mock GraphicTile and Palette objects based on counts
+        # This allows checking valid ID ranges (0 to num-1)
+        from src.map_system.tileset import GraphicTile, Palette, Color # For mock population
+        
+        self.tiles = [GraphicTile(bit_depth=4, pixel_data=b'\x00'*32) for _ in range(num_graphic_tiles)]
+        
+        mock_color = Color(0,0,0)
+        self.palettes = [Palette(colors=[mock_color]*16) for _ in range(num_palettes)]
+
+    def has_tile_id(self, tile_id: int) -> bool:
+        return 0 <= tile_id < len(self.tiles)
+
+    def has_palette_id(self, palette_id: int) -> bool:
+        return 0 <= palette_id < len(self.palettes)
 
 @pytest.fixture
-def mock_tileset():
-    return MockTileset("test_tileset")
+def mock_tileset_with_content():
+    # Provides a tileset with a known number of tiles/palettes for validation tests
+    return MockTileset("test_tileset_with_content", num_graphic_tiles=2, num_palettes=2)
+
+@pytest.fixture
+def mock_tileset_empty():
+    # Provides a tileset with no tiles/palettes
+    return MockTileset("test_tileset_empty", num_graphic_tiles=0, num_palettes=0)
 
 # Local MockTerrainType and mock_terrain_type fixture are removed, using imported ones.
 
@@ -56,11 +70,13 @@ def mock_tile_instance(mock_terrain): # Default tile with no specific terrain, u
 @pytest.fixture
 def mock_tile_with_terrain(mock_terrain): # Uses imported mock_terrain
     # Adjusting to pass appropriate int tile_id and the terrain object
-    return MockTileInstance(tile_id_val=2, terrain_val=mock_terrain)
+    # Using tile_id_val=1, which is valid for mock_tileset_with_content (num_graphic_tiles=2)
+    # Also adding flip arguments as required by MockTileInstance constructor
+    return MockTileInstance(tile_id_val=1, palette_id_val=0, h_flip_val=False, v_flip_val=False, terrain_val=mock_terrain)
 
 
 class TestMapCreation:
-    def test_map_creation_valid_dimensions(self, mock_tileset):
+    def test_map_creation_valid_dimensions(self, mock_tileset_with_content): # Use fixture that provides a tileset
         """
         TEST: Map dimensions must be positive integers.
         TEST: TileGrid dimensions must match Width and Height.
@@ -69,38 +85,51 @@ class TestMapCreation:
         map_id = "Chapter1"
         width = 30
         height = 20
-        game_map = Map(map_id, width, height, mock_tileset)
+        game_map = Map(map_id, width, height, mock_tileset_with_content)
 
         assert game_map.map_id == map_id
         assert game_map.width == width
         assert game_map.height == height
-        assert game_map.map_tileset == mock_tileset
+        assert game_map.map_tileset == mock_tileset_with_content
         assert len(game_map.tile_grid) == height
         assert all(len(row) == width for row in game_map.tile_grid)
         # Ensure tile_grid is initialized (e.g., with None or default TileInstance)
         # For now, just checking structure. Content check will come with TileInstance tests.
 
-    def test_map_creation_invalid_dimensions_zero(self, mock_tileset):
+    def test_map_creation_invalid_dimensions_zero(self, mock_tileset_with_content): # Use fixture
         """Test map creation with zero width or height."""
         from src.map_system.map import Map
         with pytest.raises(ValueError, match=r"Map (width|height) must be a positive integer"):
-            Map("Chapter0", 0, 20, mock_tileset)
+            Map("Chapter0", 0, 20, mock_tileset_with_content)
         with pytest.raises(ValueError, match=r"Map (width|height) must be a positive integer"):
-            Map("Chapter0", 30, 0, mock_tileset)
+            Map("Chapter0", 30, 0, mock_tileset_with_content)
 
-    def test_map_creation_invalid_dimensions_negative(self, mock_tileset):
+    def test_map_creation_invalid_dimensions_negative(self, mock_tileset_with_content): # Use fixture
         """Test map creation with negative width or height."""
         from src.map_system.map import Map
         with pytest.raises(ValueError, match=r"Map (width|height) must be a positive integer"):
-            Map("ChapterN", -5, 20, mock_tileset)
+            Map("ChapterN", -5, 20, mock_tileset_with_content)
         with pytest.raises(ValueError, match=r"Map (width|height) must be a positive integer"):
-            Map("ChapterN", 30, -5, mock_tileset)
+            Map("ChapterN", 30, -5, mock_tileset_with_content)
+
+    def test_map_objective_property(self, mock_tileset_with_content):
+        """Tests the objective property of the map."""
+        from src.map_system.map import Map
+        game_map = Map("ObjectiveMap", 10, 10, mock_tileset_with_content)
+        
+        # Check initial value
+        assert game_map.objective == "", "Objective should be an empty string initially."
+        
+        # Set and check new value
+        new_objective = "Seize the throne."
+        game_map.objective = new_objective
+        assert game_map.objective == new_objective
 
 class TestMapCoordinateValidation:
     @pytest.fixture
-    def sample_map(self, mock_tileset):
+    def sample_map(self, mock_tileset_with_content): # Use fixture
         from src.map_system.map import Map
-        return Map("SampleMap", 10, 8, mock_tileset)
+        return Map("SampleMap", 10, 8, mock_tileset_with_content)
 
     @pytest.mark.parametrize("x, y, expected", [
         (0, 0, True),      # Top-left corner
@@ -128,9 +157,9 @@ class TestMapCoordinateValidation:
 
 class TestMapTileOperations:
     @pytest.fixture
-    def game_map(self, mock_tileset):
+    def game_map(self, mock_tileset_with_content): # Use fixture that has content
         from src.map_system.map import Map
-        return Map("TileOpMap", 5, 3, mock_tileset)
+        return Map("TileOpMap", 5, 3, mock_tileset_with_content)
 
     def test_get_tile_initially_none(self, game_map):
         """Test that get_tile returns None for all cells in a newly created map."""
@@ -206,3 +235,76 @@ class TestMapTileOperations:
         assert game_map.get_terrain_type(0, -1) is None
         assert game_map.get_terrain_type(game_map.width, 0) is None
         assert game_map.get_terrain_type(0, game_map.height) is None
+
+    def test_set_tile_invalid_tile_id_for_tileset(self, game_map, mock_terrain): # game_map uses mock_tileset_with_content
+        """Test set_tile with a TileInstance having a tile_id invalid for the map's tileset."""
+        # mock_tileset_with_content has num_graphic_tiles=2 (so valid tile_ids are 0, 1)
+        invalid_tile_id = 2
+        tile_with_invalid_id = TileInstance(
+            tile_id=invalid_tile_id, palette_id=0, horizontal_flip=False, vertical_flip=False, terrain=mock_terrain
+        )
+        with pytest.raises(ValueError, match=f"TileID {invalid_tile_id} is not valid for the map's tileset."):
+            game_map.set_tile(0, 0, tile_with_invalid_id)
+
+    def test_set_tile_invalid_palette_id_for_tileset(self, game_map, mock_terrain): # game_map uses mock_tileset_with_content
+        """Test set_tile with a TileInstance having a palette_id invalid for the map's tileset."""
+        # mock_tileset_with_content has num_palettes=2 (so valid palette_ids are 0, 1)
+        invalid_palette_id = 2
+        tile_with_invalid_palette = TileInstance(
+            tile_id=0, palette_id=invalid_palette_id, horizontal_flip=False, vertical_flip=False, terrain=mock_terrain
+        )
+        with pytest.raises(ValueError, match=f"PaletteID {invalid_palette_id} is not valid for the map's tileset."):
+            game_map.set_tile(0, 0, tile_with_invalid_palette)
+
+    def test_set_tile_valid_ids_for_tileset(self, game_map, mock_terrain): # game_map uses mock_tileset_with_content
+        """Test set_tile with a TileInstance having valid tile_id and palette_id."""
+        # mock_tileset_with_content has num_graphic_tiles=2, num_palettes=2
+        valid_tile_id = 1
+        valid_palette_id = 1
+        tile_with_valid_ids = TileInstance(
+            tile_id=valid_tile_id, palette_id=valid_palette_id, horizontal_flip=False, vertical_flip=False, terrain=mock_terrain
+        )
+        # This should not raise an error
+        game_map.set_tile(0, 0, tile_with_valid_ids)
+        retrieved = game_map.get_tile(0,0)
+        assert retrieved is not None
+        assert retrieved.tile_id == valid_tile_id
+        assert retrieved.palette_id == valid_palette_id
+
+class TestMapRegistryAndUniqueness:
+    # The clear_map_registry_globally fixture from conftest.py will handle registry clearing.
+    # The clear_tileset_registry_globally fixture from conftest.py handles tileset registry.
+
+    def test_map_id_uniqueness_enforced(self, mock_tileset_with_content):
+        """
+        TEST: MapID must be unique across all maps.
+        Attempts to create two maps with the same ID, expecting an error.
+        """
+        from src.map_system.map import Map
+
+        map_id = "UniqueMapID_1"
+        # First creation should succeed
+        map1 = Map(map_id, 10, 10, mock_tileset_with_content)
+        assert map1.map_id == map_id
+
+        # Second creation with the same ID should fail
+        with pytest.raises(ValueError, match=f"MapID '{map_id}' already exists in the registry. Map IDs must be unique."):
+            Map(map_id, 15, 15, mock_tileset_with_content)
+
+    def test_different_map_ids_are_allowed(self, mock_tileset_with_content):
+        """Tests that different MapIDs can be registered without error."""
+        from src.map_system.map import Map
+        import src.map_system.map as map_module # To access MAP_REGISTRY
+
+        map_id1 = "AllowedMapID_1"
+        map_id2 = "AllowedMapID_2"
+
+        map1 = Map(map_id1, 10, 10, mock_tileset_with_content)
+        assert map1.map_id == map_id1
+        assert map_id1 in map_module.MAP_REGISTRY
+
+        map2 = Map(map_id2, 12, 12, mock_tileset_with_content)
+        assert map2.map_id == map_id2
+        assert map_id2 in map_module.MAP_REGISTRY
+        
+        assert len(map_module.MAP_REGISTRY) == 2

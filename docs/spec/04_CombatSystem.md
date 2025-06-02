@@ -66,7 +66,7 @@ This document outlines the data structures and mechanics for combat encounters i
 
 ### 3.2. Defense Power (Def) / Resistance Power (Res)
 *   Physical Defense: `UnitDefense + TerrainDefenseBonus`
-*   Magical Defense: `UnitMagic + TerrainDefenseBonus` (Note: In many FEs, Res is a separate stat; Thracia often uses Magic for magical defense too. This needs verification for FE5 specifics, but Magic is a common stand-in if Res stat is low or non-existent for many classes).
+*   Magical Defense: `UnitMagic + TerrainDefenseBonus` (Note: In Thracia 776, the Magic stat is used for both magical attack and magical defense; there is no separate Resistance stat for units).
     *   // TEST: Defense/Resistance calculation includes terrain bonuses.
 
 ### 3.3. Attack Speed (AS)
@@ -117,8 +117,21 @@ This document outlines the data structures and mechanics for combat encounters i
     *   // TEST: Poison status is applied on hit by poison weapons.
 *   **Petrify/Sleep/Berserk Weapon Effects**: (`from WeaponEffectTable.csv`) Inflict respective status effects on hit.
     *   // TEST: Petrify, Sleep, Berserk statuses are applied correctly.
-*   **Hel Effect**: (`from WeaponEffectTable.csv`) Reduces target's HP to 1 (or halves current HP, needs verification for FE5).
+*   **Hel Effect**: (`from WeaponEffectTable.csv`) Reduces target's current HP to 1. Does not kill.
     *   // TEST: Hel effect correctly reduces target HP.
+*   **Capture Mechanic**:
+    *   Units can attempt to "Capture" an enemy unit instead of dealing lethal damage.
+    *   To initiate a Capture, the attacker must have higher Constitution (Con) and Speed (Spd) than the target.
+    *   If the "Capture" command is selected and conditions are met, the attacker's damage is halved, but if the attack reduces the target's HP to 0, the target is "Captured" instead of killed.
+    *   A unit carrying a captured enemy has their Skill, Speed, and Movement halved (rounded down).
+    *   Captured units can be released, or their items can be taken. If a captured unit is released, they become an NPC/ally (needs verification for FE5 specifics on allegiance change).
+    *   If the capturer is defeated, the captured unit is freed.
+    *   // TEST: Capture command only available if Con and Spd are higher.
+    *   // TEST: Damage is halved during a capture attempt.
+    *   // TEST: Target is captured (not killed) if HP reaches 0 during capture.
+    *   // TEST: Capturer's Skl, Spd, Mov are halved while carrying.
+    *   // TEST: Items can be taken from a captured unit.
+    *   // TEST: Captured unit is freed if capturer is defeated.
 *   **Combat Skills**:
     *   **Adept**: Chance to attack again immediately.
         *   // TEST: Adept triggers based on skill chance and grants extra attack.
@@ -163,4 +176,11 @@ This document outlines the data structures and mechanics for combat encounters i
 *   `// TEST: Combat_EXP_Awarded`: Correct EXP is awarded to attacker and defender.
 *   `// TEST: Combat_LeadershipStars_BonusApplied`: Units near a leader receive Hit/Avoid bonuses.
 
+*   `// TEST: Combat_Capture_Successful`: Unit successfully captures an enemy.
+*   `// TEST: Combat_Capture_ConditionsNotMet`: Capture command is unavailable or fails if Con/Spd are too low.
+*   `// TEST: Combat_Capture_DamageHalved`: Damage dealt during a capture attempt is halved.
+*   `// TEST: Combat_Capture_StatPenalties`: Capturing unit has Skl/Spd/Mov halved.
+*   `// TEST: Combat_Capture_TakeItems`: Items are successfully taken from a captured unit.
+*   `// TEST: Combat_Capture_ReleaseCaptured`: Captured unit is released.
+*   `// TEST: Combat_Capture_FreedOnCapturerDefeat`: Captured unit is freed when the capturer is defeated.
 This specification covers the primary aspects of combat. Further details on specific skill interactions or unique boss mechanics will be added as they are discovered or designed.

@@ -19,14 +19,34 @@ This document outlines the data structures and functionalities for items, includ
 
 The exact source for comprehensive item data (Name, Type, Mt, Hit, Crit, Wt, Range, Uses, Cost, Weapon Rank, etc.) is still TBD. The following structure is a general representation.
 
+ENUM ItemType
+    Sword
+    Lance
+    Axe
+    Bow
+    Dagger // For Thieves/specific characters, if distinct from Swords
+    FireTome
+    ThunderTome
+    WindTome
+    LightTome
+    DarkTome
+    Staff
+    Consumable // General category for items like Vulneraries, Elixirs, Stat Boosters
+    Scroll // For growth rate modification
+    Key // For doors, chests, bridges
+    Valuable // Items primarily for selling (e.g., gems)
+    // Ring // If rings with passive effects exist as a distinct category
+    // Shield // If shields with defensive properties exist as a distinct category
+END ENUM
+
 ```pseudocode
 // Represents any item in the game
 CLASS Item
     // PROPERTIES
     ItemID ID // Unique identifier (e.g., "IronSword", "Vulnerary", "OdosScroll")
     STRING Name // Display name
-    ItemType Type // (e.g., Sword, Lance, Axe, Bow, FireTome, Staff, Usable, Scroll, Key, Valuables)
-    INTEGER Uses // Durability; 0 or -1 for infinite, or max uses
+    ItemType Type // Enum defining the general category of the item
+    INTEGER Uses // Durability; -1 for infinite, or max uses (Standardize to -1 for infinite)
     INTEGER MaxUses // Original number of uses for repair purposes
     INTEGER Cost // Purchase price
     IconID Icon // Identifier for its menu icon
@@ -49,26 +69,26 @@ END CLASS
 // Represents a weapon
 CLASS Weapon EXTENDS Item
     // PROPERTIES
-    WeaponTypeID WeaponType // (e.g., Sword, Lance, Axe, Bow, Fire, Thunder, Wind, Light, Dark)
+    WeaponTypeID WeaponType // Specific type of weapon, aligning with ItemType where applicable
     INTEGER Might
     INTEGER HitRate
     INTEGER CriticalRate // Base critical chance of the weapon
     INTEGER Weight
     RangeData Range // Min and Max range (e.g., 1-1, 1-2, 2-2)
     WeaponRankID RequiredRank // Minimum weapon rank to use (e.g., E, D, C, B, A)
-    EffectivenessFlags Effectiveness // Against whom this weapon is effective (e.g., Armored, Flying, Mounted)
+    ARRAY<TargetAttribute> Effectiveness // List of attributes this weapon is effective against
     ARRAY<SkillID> GrantedSkills // Skills granted when this weapon is equipped (e.g., Vantage on Killer Axe)
     ItemStatBonuses StatBonuses // Direct stat boosts when equipped (from [`FireEmblem5/SRC/ItemData.asm:31-57`](FireEmblem5/SRC/ItemData.asm:31))
     BOOLEAN IsMagicDamage // True if it targets RES, false for DEF
-    BOOLEAN IsBrave // Attacks twice if AS allows
-    BOOLEAN IsPoison // Applies poison status
-    ItemID TransformsToID // If it's a transforming item (e.g., PoisonSword -> IronSword, from [`FireEmblem5/SRC/ItemData.asm:15-22`](FireEmblem5/SRC/ItemData.asm:15))
-    // Other special properties (e.g., Devil effect, unbreakable, negates criticals)
+    // Note: IsBrave, IsPoison are now covered by WeaponSpecialProperties
+    ItemID TransformsToID // If it's a transforming item (e.g., PoisonSword -> IronSword after uses deplete or repair attempt, from [`FireEmblem5/SRC/ItemData.asm:15-22`](FireEmblem5/SRC/ItemData.asm:15))
+    ARRAY<WeaponSpecialProperty> SpecialProperties // List of special attributes for the weapon
     // TEST: Weapon properties (Mt, Hit, Wt, Range) must be within reasonable game balance.
     // TEST: RequiredRank must be a valid WeaponRankID.
+    // TEST: Uses should be -1 for unbreakable weapons, or a positive integer.
 
     // METHODS
-    CONSTRUCTOR(ID, Name, Uses, Cost, Icon, Description, WeaponType, Might, Hit, Crit, Weight, Range, ReqRank, Effectiveness, GrantedSkills, StatBonuses, SpecialProperties)
+    CONSTRUCTOR(ID, Name, Uses, Cost, Icon, Description, WeaponType, Might, Hit, Crit, Weight, Range, ReqRank, Effectiveness, GrantedSkills, StatBonuses, SpecialPropertiesArray)
 END CLASS
 
 CLASS RangeData
@@ -78,18 +98,28 @@ CLASS RangeData
     // TEST: MaxRange must be >= MinRange.
 END CLASS
 
-ENUM WeaponTypeID
+ENUM WeaponTypeID // Corresponds to specific weapon categories, used for combat calculations and weapon rank checks.
     Sword
     Lance
     Axe
     Bow
-    Dagger // For Thieves if distinct from swords
-    Fire
-    Thunder
-    Wind
-    Light
-    Dark
-    Ballista // Siege weapon type
+    Dagger // Typically used by Thieves, may have unique properties.
+    FireTome
+    ThunderTome
+    WindTome
+    LightTome
+    DarkTome
+    Ballista // Siege weapon type, distinct from Bows for rank/usage purposes.
+END ENUM
+
+ENUM TargetAttribute // Attributes a unit or class can have, used for effectiveness checks.
+    Armored
+    Flying
+    Mounted
+    Dragon
+    MagicalBeast // e.g., Manaketes, Laguz if applicable to this FE version
+    Infantry // If specific weapons are effective against unmounted, non-armored units
+    // Add other specific Thracia 776 effectiveness categories as identified
 END ENUM
 
 ENUM WeaponRankID // Numerical or E-S
@@ -114,6 +144,22 @@ CLASS ItemStatBonuses // From [`FireEmblem5/SRC/ItemData.asm:33-35`](FireEmblem5
     INTEGER MOV_Bonus
     // TEST: All bonus values must be integers.
 END CLASS
+
+ENUM WeaponSpecialProperty
+    BraveEffect // Attacks twice if Attack Speed allows
+    PoisonStrike // Applies poison status on hit
+    DevilEffect // Chance to damage self instead of enemy
+    Unbreakable // Item does not consume uses (Uses should be -1)
+    NegatesCriticals // Prevents enemy critical hits when this weapon is used/equipped
+    Eclipse // Reduces enemy HP to 1 (specific to certain tomes/staves if weaponized)
+    StealsHP // Heals user for a portion of damage dealt
+    CannotBeCountered // Weapon attacks without risk of counter-attack (e.g., some siege tomes)
+    ReaverEffect // Reverses weapon triangle advantage (e.g. LanceReaver Sword)
+    CriticalBoost // Higher base critical rate than normal for its type (often implicit in Crit stat, but can be explicit flag)
+    MovementCostModifier // Affects unit movement when equipped (e.g. Knight Killer)
+    EffectiveDamageOnly // Deals damage only if effectiveness applies (e.g. some anti-cavalry weapons in other FEs)
+    // Add other specific Thracia 776 weapon properties as identified
+END ENUM
 ```
 
 ### 2.3. Staff Data (Extends Item)
@@ -137,21 +183,26 @@ CLASS Staff EXTENDS Item
 END CLASS
 
 ENUM StaffEffectType
-    HealSingleTarget
-    HealAreaOfEffect
-    CureStatusSingleTarget
-    CureStatusAreaOfEffect
-    ApplyDebuffSingleTarget // Silence, Sleep, Berserk
-    ApplyDebuffAreaOfEffect
-    WarpAlly
-    RescueAlly
-    UnlockDoorChest
-    RepairItem
-    Fortify // Heal all allies in range
-    Restore // Heal and cure status for all allies in range
-    Torch // Increase vision range
-    Rewarp // Warp self
-    // etc.
+    HealSingleFixed // e.g., Heal staff (Potency = fixed HP)
+    HealSingleUserMag // e.g., Mend staff (Potency = User MAG + fixed amount)
+    HealAreaFixed // e.g., Physic (fixed range, fixed heal amount)
+    // HealAreaUserMag is less common for AoE, usually fixed. Replaced by Fortify.
+    Fortify // Heal all allies in defined range (Potency = User MAG + fixed, or just fixed)
+    RestoreSingle // Cures status ailments for a single target
+    RestoreAllInRange // Heal and cure status for all allies in range (like original Restore)
+    SilenceTarget // Prevents target from using magic for a duration
+    SleepTarget // Puts target to sleep for a duration
+    BerserkTarget // Makes target attack nearest unit (friend or foe) for a duration
+    WarpAlly // Teleports an ally to a chosen tile within staff's range
+    RescueAlly // Teleports an ally from staff's range to an adjacent tile to user
+    RewarpSelf // Teleports user to a chosen tile within staff's range
+    Unlock // Opens doors or chests (Potency might indicate lock level if applicable)
+    RepairItem // Repairs a chosen item for the target (Potency = uses restored, or full repair)
+    TorchStaff // Increases vision range in Fog of War for a number of turns (Potency = radius, Duration = turns)
+    Barrier // Boosts target's Resistance temporarily (Potency = RES boost, Duration = turns)
+    Hammerne // Fully repairs one item for an ally (Potency = N/A, always full)
+    ThiefStaff // Allows user to steal a non-equipped item from an enemy within range (e.g., Thief, Steal staves)
+    // TODO: Add any other specific Thracia 776 staff effects (e.g., status staves like Petrify, Enfeeble, specific PRF staff effects)
 END ENUM
 ```
 
@@ -161,33 +212,48 @@ END ENUM
 // Represents a consumable item
 CLASS UsableItem EXTENDS Item
     // PROPERTIES
-    UsableEffectType Effect // (e.g., HealHP, CurePoison, StatBoostPermanent, KeyOpen)
-    INTEGER EffectPotency // (e.g., amount healed, which stat boosted, key type)
+    UsableEffectType Effect // Defines the primary effect of the item
+    INTEGER EffectPotency // Magnitude of the effect (e.g., HP healed, stat points gained)
+    ARRAY<ClassID> PromotionTargetClasses // For PromotionItem: specifies the class(es) it can promote to. Empty if not a promotion item.
+    INTEGER DurationTurns // For temporary effects (e.g., PureWater, TorchItem). 0 or -1 if permanent or instant.
     // TEST: Effect must be a valid UsableEffectType.
+    // TEST: If Effect is PromotionItem, PromotionTargetClasses must not be empty and contain valid ClassIDs.
+    // TEST: If DurationTurns > 0, effect should be temporary.
 
     // METHODS
-    CONSTRUCTOR(ID, Name, Uses, Cost, Icon, Description, Effect, Potency)
+    CONSTRUCTOR(ID, Name, Uses, Cost, Icon, Description, Effect, Potency, PromotionTargetClassesArray, DurationTurns)
     FUNCTION ApplyEffect(TargetUnit) // Consumes the item and applies its effect
                                    // TEST: Effect applies correctly and item is consumed.
+                                   // TEST: Temporary effects apply for correct duration.
+                                   // TEST: Promotion items correctly check class eligibility.
 END CLASS
 
 ENUM UsableEffectType
-    HealFixedHP // Vulnerary
-    HealMaxHP // Elixir
-    CurePoison
-    CureAllStatus
-    PermanentStatBoostHP
-    PermanentStatBoostStr
-    PermanentStatBoostMag
-    // ... other stat boosts (Skill, Speed, Luck, Def, Con, Mov)
-    PromotionItem // For specific class promotions
-    Key // Opens doors/chests
-    ChestKey
-    DoorKey
-    BridgeKey
-    Antitoxin
-    PureWater // Temp Mag Res boost
-    TorchItem // Lights up FoW
+    HealFixedHP // e.g., Vulnerary (Potency = HP healed)
+    HealMaxHP // e.g., Elixir (Potency is ignored, heals to full)
+    Antitoxin // Cures poison (Potency might be ignored)
+    PureWater // Temporary MAG boost (Potency = MAG increase, DurationTurns > 0)
+    TorchItem // Increases vision in Fog of War around user (Potency = vision radius increase, DurationTurns > 0)
+    Lockpick // Opens doors/chests, typically for Thieves (Potency might be number of uses if different from item uses, or quality of lock it can open)
+    ChestKey // Opens chests
+    DoorKey // Opens doors
+    BridgeKey // Specific key for map interactions (e.g., repairing a bridge)
+    StaminaDrink // Restores unit's stamina/fatigue if that mechanic is implemented (Potency = stamina restored)
+    EnergyRing // Permanent STR boost (Potency = STR increase)
+    SecretBook // Permanent SKL boost (Potency = SKL increase)
+    SpeedRing // Permanent SPD boost (Potency = SPD increase)
+    GoddessIcon // Permanent LCK boost (Potency = LCK increase)
+    Dracoshield // Permanent DEF boost (Potency = DEF increase)
+    BodyRing // Permanent CON/Build boost (Potency = CON increase)
+    MagicRing // Permanent MAG boost (Potency = MAG increase)
+    LifeRing // Permanent Max HP boost (Potency = Max HP increase)
+    SkillBook // Permanent Weapon Rank EXP boost (Potency = EXP amount, may need a target WeaponTypeID property on UsableItem)
+    PromotionItem // Promotes to one of the PromotionTargetClasses (Potency might be unused or indicate specific conditions)
+    StatDropItem // Reduces an enemy stat (if usable by player, e.g. via a skill that creates a temporary item. Potency = stat decrease, DurationTurns > 0)
+    MemberCard // Grants access to secret shops (Passive effect, or used at shop entrance)
+    LightRune // Creates a temporary barrier that damages enemies passing through (Potency = damage, DurationTurns > 0)
+    Mine // Placeable trap (Potency = damage)
+    // TODO: Add other specific Thracia 776 consumables (e.g., specific quest items if they have direct "usable" effects, other stat boosters like Luck Ring, Move Ring if they exist)
 END ENUM
 ```
 
@@ -208,12 +274,14 @@ CLASS Scroll EXTENDS Item
     INTEGER GrowthConstitution_Modifier
     INTEGER GrowthLuck_Modifier
     INTEGER GrowthMovement_Modifier
-    // TEST: All growth modifiers must be integers.
+    // TEST: All growth modifiers must be integers (can be 0, positive, or negative).
 
     // METHODS
-    CONSTRUCTOR(ID, Name, Cost, Icon, Description, GrowthModifiersArray)
-    // Scrolls are typically always "equipped" if in inventory, or need a specific "Hold" mechanic.
-    // Their effect is passive on the character's growth calculations.
+    CONSTRUCTOR(ID, Name, Cost, Icon, Description, HP_Mod, Str_Mod, Mag_Mod, Skl_Mod, Spd_Mod, Def_Mod, Con_Mod, Luk_Mod, Mov_Mod)
+    // Scrolls are typically always "equipped" if in inventory (their effect is passive).
+    // The "Hold" mechanic in Thracia 776 means they simply need to be in the unit's personal inventory.
+    // Their effect is applied during level-up calculations.
+    // TEST: Scroll in inventory correctly modifies growth rates on level up.
 END CLASS
 ```
 

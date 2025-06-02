@@ -11,6 +11,7 @@ This document outlines the high-level system architecture for the Fire Emblem Th
 *   **Data-Driven Design**: Core game data (character stats, item properties, map layouts, event scripts) is externalized, allowing for easier modification and expansion without altering core system logic.
 *   **Extensibility**: The architecture is designed to accommodate future features and modifications with minimal impact on existing components. Clear interfaces and modularity support this.
 *   **Testability**: Each module can be tested independently. Interfaces between modules are clear, facilitating integration testing. The AI system is designed to potentially drive player units for automated playtesting.
+*   **Security Considerations**: While not a primary focus for internal game logic, data loaded from external files (maps, scripts, game data) will undergo validation to prevent crashes or unexpected behavior due to malformed data. No hardcoded secrets or environment variables will be embedded in game data files.
 
 ## 3. High-Level Component Diagram
 
@@ -170,11 +171,18 @@ graph TD
 
 *   **Description**: Handles loading of game data and saving/loading of player progress.
 *   **Key Responsibilities**:
-    *   Loads all static game data at startup (character definitions, class definitions, item definitions, map data, tileset data, event scripts, AI scripts, etc.) from files.
-    *   Provides access to this static data for other systems.
-    *   Manages saving the current game state (active units, chapter progress, inventory, event flags) to a save file.
-    *   Manages loading a previously saved game state.
-    *   Handles game configuration settings (e.g., volume, text speed).
+    *   Loads all static game data at startup from various file formats (e.g., `.event` scripts, CSV tables, binary data for maps/tilesets). This includes, but is not limited to:
+        *   `Character` definitions, `GameClass` definitions, `Skill` definitions, `MovementType` data.
+        *   `Item`, `Weapon`, `Staff`, `UsableItem`, `Scroll` definitions.
+        *   `Map` layouts, `Tileset` data, `TerrainType` definitions.
+        *   `Event` scripts, `UnitGroup` definitions.
+        *   AI script pointers (`MovementAIScriptID`, `ActionAIScriptID`), `AutolevelScheme` data.
+        *   Other tabular data (e.g., `TerrainDefense.csv`, `TerrainAvoid.csv`, `WeaponEffectTable.csv`, `ScrollTable.csv`).
+    *   Validates loaded static game data for integrity and correctness to prevent runtime errors and ensure consistency.
+    *   Provides efficient and structured access to this static data for all other systems.
+    *   Manages saving the current dynamic game state (active `UnitInstance`s, chapter progress, global and chapter event flags, convoy inventory, player gold, etc.) to a save file.
+    *   Manages loading a previously saved game state, restoring all dynamic elements.
+    *   Handles game configuration settings (e.g., volume, text speed, animation preferences).
 *   **Primary Data Managed**: Parsed game data structures, save game file format, player preferences.
 
 ## 5. Key Interfaces and Data Flows

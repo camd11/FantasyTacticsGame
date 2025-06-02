@@ -40,7 +40,7 @@ CLASS Character
     INTEGER BaseConstitution // Build in Thracia 776
     INTEGER BaseMovement // Can be modified by class, skills, items
 
-    // Growth Rates (percentages, 0-255 or 0-100 scale TBD)
+    // Growth Rates (percentages, 0-100 scale, e.g., 30 means 30%)
     INTEGER GrowthHP
     INTEGER GrowthStrength
     INTEGER GrowthMagic
@@ -133,12 +133,23 @@ CLASS GameClass // Renamed from "Class" to avoid keyword clash
     CONSTRUCTOR(ID, Name, PromotionInfo, BaseStats, MaxStats, ClassGrowths, ClassSkills, MovementType, WeaponRanks, MountedInfo)
 END CLASS
 
+ENUM RankLevel
+    None // No proficiency
+    E
+    D
+    C
+    B
+    A
+    S // Or equivalent highest rank for Thracia (Prf/SS)
+END ENUM
+
 CLASS WeaponRankEntry
     // PROPERTIES
     WeaponTypeID WeaponType
-    RankLevel InitialRank // e.g., E, D, C, B, A, S (or numeric equivalent)
-    INTEGER MaxRank // Max rank achievable in this class for this weapon type
-    // TEST: InitialRank and MaxRank must be valid rank levels.
+    RankLevel InitialRank
+    RankLevel MaxRankInClass // Max rank achievable in this class for this weapon type
+    // TEST: InitialRank and MaxRankInClass must be valid RankLevel values.
+    // TEST: MaxRankInClass must be >= InitialRank if InitialRank is not None.
 END CLASS
 ```
 
@@ -286,8 +297,10 @@ CLASS Skill
     SkillID ID
     STRING Name
     STRING Description
-    // Effects (e.g., passive stat boosts, combat activation chance, special commands)
-    // ActivationCondition (e.g., OnCombatStart, OnHit, Passive, Command)
+    // Effects: Defines the skill's impact (e.g., passive stat boosts, combat activation chance, special commands).
+    //          Implementation may involve a strategy pattern or a registry of effect handlers.
+    // ActivationCondition: Defines when/how the skill triggers (e.g., OnCombatStart, OnHit, Passive, Command).
+    //                      Similar to Effects, this may require a flexible system.
     // TEST: SkillID must be unique.
     // TEST: Name and Description must not be empty.
 

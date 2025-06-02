@@ -1,0 +1,1 @@
+# This file makes the tests/character_system directory a Python package.
