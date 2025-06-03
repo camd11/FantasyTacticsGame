@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Level Editor &mdash; lt-maker  documentation</title>
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/theme_overrides.css?v=5f1687b9" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/jquery.js?v=5d32c60e"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/doctools.js?v=9a2dae69"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="https://lt-maker.readthedocs.io/en/latest/_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Overworld Editor" href="Overworld-Editor.html" />
+    <link rel="prev" title="Editors" href="index.html" /> 
+<script async type="text/javascript" src="https://lt-maker.readthedocs.io/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="lt-maker" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/source/editors/Level-Editor.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            lt-maker
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../home.html">Lex Talionis Wiki</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Editor Guides:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Editors-Overview.html">Editors Overview</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Editors</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="Editors-Overview.html">Editors Overview</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="Level-Editor.html#">Level Editor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Level-Editor.html#level-music">Level Music</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Level-Editor.html#display-formatting">Display Formatting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Level-Editor.html#formations-and-deployment">Formations and Deployment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Level-Editor.html#ai-groups">AI Groups</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Overworld-Editor.html">Overworld Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Event-Editor.html">Event Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="database-editors/index.html">Database Editors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="resource-editors/index.html">Resource Editors</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Events:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../events/index.html">Events</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Guides:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guides/Guides-Overview.html">Guides Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/index.html">Guides</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">appendix:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/Text-Formatting-Commands.html">Text Formatting Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/Item-Component-Reference.html">Item Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/Skill-Component-Reference.html">Skill Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/Special-Variables.html">Special Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/Special-Tags.html">Special Tags</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/trigger-reference.html">Event Triggers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/Random-Seed-Mechanics.html">Random Seed Mechanics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/FAQ.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/Contributing_to_the_LTWiki.html">Contributing to the LTWiki</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/index.html">Code Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">lt-maker</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Editors</a></li>
+      <li class="breadcrumb-item active">Level Editor</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://gitlab.com/rainlash/lt-maker/blob/master/docs/source/editors/Level-Editor.md" class="fa fa-gitlab"> Edit on GitLab</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="level-editor">
+<h1>Level Editor<a class="headerlink" href="Level-Editor.html#level-editor" title="Link to this heading"></a></h1>
+<p><em>last updated 2024-11-11</em></p>
+<section id="level-music">
+<h2>Level Music<a class="headerlink" href="Level-Editor.html#level-music" title="Link to this heading"></a></h2>
+<p>A lesser known behavior of the LT music system is that “battle” variations of music will only play if the music is set to the battle slot as well as the phase slot. If you set music to only the phase slot but not the battle slot, the non-battle variant will continue playing.</p>
+<p><img alt="YesMusic" src="../../_images/PropertiesYesBattle.png" /> <img alt="NoMusic" src="../../_images/PropertiesNoBattle.png" /></p>
+<p>The setup on the left will play the battle variation in combat, while the one on the left will not. You can take advantage of this behavior and set/unset battle music via an event midway through a chapter for additional musical effect.</p>
+</section>
+<section id="display-formatting">
+<h2>Display Formatting<a class="headerlink" href="Level-Editor.html#display-formatting" title="Link to this heading"></a></h2>
+<p>Unlike the text in many other editors/eventing, the objective displays use commas to break lines, like so.</p>
+<p><img alt="Comma0" src="../../_images/PropertiesComma0.png" /> <img alt="Comma1" src="../../_images/PropertiesComma1.png" /> <img alt="Comma2" src="../../_images/PropertiesComma2.png" /></p>
+</section>
+<section id="formations-and-deployment">
+<h2>Formations and Deployment<a class="headerlink" href="Level-Editor.html#formations-and-deployment" title="Link to this heading"></a></h2>
+<p>Formation regions set your default deployment count for a chapter. For those that want a greater control over deploy count, the <code class="docutils literal notranslate"><span class="pre">_prep_slots</span></code> and <code class="docutils literal notranslate"><span class="pre">_minimum_deployment</span></code> level variables can be used to set upper and lower bounds for deployment count. More information can be found in the <a class="reference internal" href="../appendix/Special-Variables.html#level-variables"><span class="std std-ref">Level Variables</span></a> appendix entry.</p>
+</section>
+<section id="ai-groups">
+<h2>AI Groups<a class="headerlink" href="Level-Editor.html#ai-groups" title="Link to this heading"></a></h2>
+<p>AI Groups can be set in the units editor for both generics and normal units, allowing units in the same group to all charge at once if a number of units equal to the threshold could attack your army.</p>
+<p><img alt="AIGroups" src="../../_images/AIGroups.png" /></p>
+<p>However, as seen below, enemies with the ‘Guard’ type AI will still have a stationary range display. This is a lie; they will charge.</p>
+<p><img alt="ItLies" src="../../_images/ItLies.png" /></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Editors" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Overworld-Editor.html" class="btn btn-neutral float-right" title="Overworld Editor" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, rainlash.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

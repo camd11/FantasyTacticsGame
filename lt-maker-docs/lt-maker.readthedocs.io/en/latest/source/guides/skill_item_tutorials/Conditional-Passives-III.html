@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3. Conditional Passives III - Tomefaire, Axe Breaker and Wyrmbane &mdash; lt-maker  documentation</title>
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/theme_overrides.css?v=5f1687b9" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/jquery.js?v=5d32c60e"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/doctools.js?v=9a2dae69"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="https://lt-maker.readthedocs.io/en/latest/_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="4. Tile Oriented Passives - Outdoor Fighter and Indoor Fighter" href="Tile-Passives.html" />
+    <link rel="prev" title="4. Conditional Passives II - Warding Blow, Rainlashslayer" href="Conditional-Passives-II.html" /> 
+<script async type="text/javascript" src="https://lt-maker.readthedocs.io/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="lt-maker" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/source/guides/skill_item_tutorials/Conditional-Passives-III.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            lt-maker
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../home.html">Lex Talionis Wiki</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Editor Guides:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../editors/Editors-Overview.html">Editors Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../editors/index.html">Editors</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Events:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../events/index.html">Events</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Guides:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Guides-Overview.html">Guides Overview</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Guides</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../setup_tutorials/index.html">Project Setup Tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../eventing_tutorials/index.html">Eventing Tutorials</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Skill and Item Tutorials</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="Creating-Items.html">0. Creating Items</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Direct-Passives.html">1. Direct Passives - Hit +20, MAG +2 and Gamble</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Conditional-Passives-I.html">2. Conditional Passives I - Lucky Seven, Odd Rhythm, Wrath and Quick Burn</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Conditional-Passives-II.html">4. Conditional Passives II - Warding Blow, Rainlashslayer</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="Conditional-Passives-III.html#">3. Conditional Passives III - Tomefaire, Axe Breaker and Wyrmbane</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Conditional-Passives-III.html#required-editors-and-components">Required editors and components</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Conditional-Passives-III.html#skill-descriptions">Skill descriptions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Conditional-Passives-III.html#step-1-check-and-adjust-the-weapon-types-in-your-project">Step 1: Check and adjust the Weapon Types in your project</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Conditional-Passives-III.html#step-2-create-a-class-skill">Step 2: Create a Class Skill</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Conditional-Passives-III.html#step-3-add-the-combat-components">Step 3: Add the Combat Components</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Conditional-Passives-III.html#step-4-add-a-conditional-component">Step 4: Add a conditional component</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Conditional-Passives-III.html#step-5-test-the-stat-alterations-in-game">Step 5: Test the stat alterations in-game</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Tile-Passives.html">4. Tile Oriented Passives - Outdoor Fighter and Indoor Fighter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Auras.html">3. Auras - Hex, Bond and Focus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Skill-Swap.html">[System] Skill Swap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Creating-Capture.html">Capture skill</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Recruit-Skill.html">Recruit Skill</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Summoning.html">Summoning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Shelter-Skill.html">Shelter Skill</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Multi-Items.html">Multi Items</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Nihil.html">Nihil</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">appendix:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Text-Formatting-Commands.html">Text Formatting Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Item-Component-Reference.html">Item Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Skill-Component-Reference.html">Skill Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Special-Variables.html">Special Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Special-Tags.html">Special Tags</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/trigger-reference.html">Event Triggers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Random-Seed-Mechanics.html">Random Seed Mechanics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/FAQ.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Contributing_to_the_LTWiki.html">Contributing to the LTWiki</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/index.html">Code Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">lt-maker</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Guides</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Skill and Item Tutorials</a></li>
+      <li class="breadcrumb-item active">3. Conditional Passives III - Tomefaire, Axe Breaker and Wyrmbane</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://gitlab.com/rainlash/lt-maker/blob/master/docs/source/guides/skill_item_tutorials/Conditional-Passives-III.md" class="fa fa-gitlab"> Edit on GitLab</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <p><small><code class="docutils literal notranslate"><span class="pre">Originally</span> <span class="pre">written</span> <span class="pre">by</span> <span class="pre">Hillgarm.</span> <span class="pre">Last</span> <span class="pre">Updated</span> <span class="pre">2022-09-01</span></code></small></p>
+<section id="conditional-passives-iii-tomefaire-axe-breaker-and-wyrmbane">
+<h1>3. Conditional Passives III - Tomefaire, Axe Breaker and Wyrmbane<a class="headerlink" href="Conditional-Passives-III.html#conditional-passives-iii-tomefaire-axe-breaker-and-wyrmbane" title="Link to this heading"></a></h1>
+<p>This guide is a follow up on <strong>Conditional Passives I - Lucky Seven, Odd Rhythm, Wrath and Quick Burn</strong>, and will cover other common elements used for conditions.</p>
+<p>By the end of it, you should be able to create the majority of the iconic passive skills in any Fire Emblem game.</p>
+<p><strong>INDEX</strong></p>
+<ul class="simple">
+<li><p><strong>Required editors and components</strong></p></li>
+<li><p><strong>Skill descriptions</strong></p></li>
+<li><p><strong>Step 1: Check and adjust the Weapon Types in your project</strong></p>
+<ul>
+<li><p>Step 1.A: Create a new Weapon Type</p></li>
+<li><p>Step 1.B: Replace Anima, Light and Dark with Tome</p></li>
+</ul>
+</li>
+<li><p><strong>Step 2: Create a Class Skill</strong></p></li>
+<li><p><strong>Step 3: Add the Combat Components</strong></p></li>
+<li><p><strong>Step 4: Add a conditional component</strong></p>
+<ul>
+<li><p>Step 4.A: <strong>[Tomefaire]</strong> Add and set the Condition component</p></li>
+<li><p>Step 4.B: <strong>[Axe Breaker]</strong> Add and set the Combat Condition component</p></li>
+<li><p>Step 4.C: <strong>[Wyrmbane]</strong> Add and set the Combat Condition and the Condition component</p></li>
+</ul>
+</li>
+<li><p><strong>Step 5: Test the stat alterations in-game</strong></p></li>
+</ul>
+<section id="required-editors-and-components">
+<h2>Required editors and components<a class="headerlink" href="Conditional-Passives-III.html#required-editors-and-components" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Skills:</p>
+<ul>
+<li><p>Attribute components - Class Skills</p></li>
+<li><p>Combat components - Avoid, Hit, Crit and <strong>Damage</strong> and  <strong>Damage Multiplier</strong></p></li>
+<li><p>Advanced components - Condition and <strong>Combat Condition</strong></p></li>
+</ul>
+</li>
+<li><p><strong>Weapon Types</strong></p></li>
+<li><p>Classes</p></li>
+<li><p>Objects, Attributes and Methods:</p>
+<ul>
+<li><p>unit - <strong>get_weapon()</strong></p></li>
+<li><p><strong>target</strong> - <strong>get_weapon()</strong> and <strong>tags</strong></p></li>
+<li><p><strong>item_system</strong> - <strong>weapon_type({unit object}, {item object})</strong></p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="skill-descriptions">
+<h2>Skill descriptions<a class="headerlink" href="Conditional-Passives-III.html#skill-descriptions" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>Tomefaire</strong> - Might +5 when equipped with a tome.</p></li>
+<li><p><strong>Axe Breaker</strong> - Hit/Avoid +50 when enemy is equipped with an axe.</p></li>
+<li><p><strong>Wyrmbane</strong> - Deals effective damage to dragon units while the user is a (transformed) Manakete.</p></li>
+</ul>
+</section>
+<section id="step-1-check-and-adjust-the-weapon-types-in-your-project">
+<h2>Step 1: Check and adjust the Weapon Types in your project<a class="headerlink" href="Conditional-Passives-III.html#step-1-check-and-adjust-the-weapon-types-in-your-project" title="Link to this heading"></a></h2>
+<p>Depending on how much you changed your project, it might be a good idea to check certain elements in order to ensure they will work properly with any tutorial. It is mandatory for you to know the exact <strong>Unique ID</strong> of the referenced elements or else engine won’t be able to retrieve the data nor interact with it.</p>
+<p>We’ll need to ensure our <strong>Weapon Types</strong> are compatible with what we will use, create a new one for <em>Wyrmbane</em> and merge all magic into Tome to create <em>Tomefaire</em>.</p>
+<p>I will also cover an option for <em>Anima</em>, <em>Dark</em> and <em>Light</em> but it’s highly recommended to do so in advance for the <em>Shadowgift</em> guide, tough you may replace it with any other kind of sub weapon. You may skip this step completely if you haven’t changed any of the default <strong>Weapon types</strong> nor need to add a new one.</p>
+<p>The <strong>Weapon Types Editor</strong> can be found within the <strong>Edit Menu</strong>.</p>
+<p><img alt="1" src="../../../_images/11.png" /></p>
+<section id="step-1-a-create-a-new-weapon-type">
+<h3>Step 1.A: Create a new Weapon Type<a class="headerlink" href="Conditional-Passives-III.html#step-1-a-create-a-new-weapon-type" title="Link to this heading"></a></h3>
+<p>We can now create a new Weapon Type. For this guide, we will create Dragonstone and set its <strong>Unique ID</strong> to <em>Wyrm</em>.</p>
+<p>It should look like this:</p>
+<p><img alt="2" src="../../../_images/21.png" /></p>
+<p>There’s also the option to create a Manakate class instead but that isn’t the best option to replicate the effects. If that’s how you want to do it, check the guide that covers the <em>Dance</em> ability.</p>
+</section>
+<section id="step-1-b-replace-anima-light-and-dark-with-tome">
+<h3>Step 1.B: Replace Anima, Light and Dark with Tome<a class="headerlink" href="Conditional-Passives-III.html#step-1-b-replace-anima-light-and-dark-with-tome" title="Link to this heading"></a></h3>
+<p>For this guide, we’ll be changing <em>Light</em> <strong>Unique ID</strong> to <em>Tome</em> and remove all of the advantages and disadvantages. You can do it by right clicking on them.</p>
+<p><img alt="3" src="../../../_images/31.png" /></p>
+<p>Next, we got to delete <em>Anima</em> and <em>Dark</em>, also by right clicking on them, and set <em>Tome</em> as their replacement.</p>
+<p><img alt="4" src="../../../_images/41.png" /></p>
+<p>It should look like this:</p>
+<p><img alt="5" src="../../../_images/51.png" /></p>
+</section>
+</section>
+<section id="step-2-create-a-class-skill">
+<h2>Step 2: Create a Class Skill<a class="headerlink" href="Conditional-Passives-III.html#step-2-create-a-class-skill" title="Link to this heading"></a></h2>
+</section>
+<section id="step-3-add-the-combat-components">
+<h2>Step 3: Add the Combat Components<a class="headerlink" href="Conditional-Passives-III.html#step-3-add-the-combat-components" title="Link to this heading"></a></h2>
+<p>For <em>Wyrmbane</em> and <em>Tomefaire</em>, we will need the <strong>Damage component</strong>, found within the <strong>Combat Components</strong> menu.</p>
+<p><img alt="6" src="../../../_images/6.png" /></p>
+<p>The <strong>Damage component</strong> will increase the <strong>atk</strong> stat by the set amount, which can be checked in the <strong>unit information window</strong>.</p>
+<p>We also have the option to use the <strong>Damage Multiplier component</strong> for <em>Wyrmbane</em>, also within the <strong>Combat Components</strong> menu.</p>
+<p><img alt="7" src="../../../_images/7.png" /></p>
+<p>Unlike the direct counterpart, it will only manifest itself when an attack is calculated.</p>
+<p>When it comes to weapon effective damage, the standard is flat damage bonus, and it isn’t an unified value either. For the sake of consistency, you’d want to use the <strong>Damage component</strong> for our skill, but you may use instead <strong>Damage Multiplier component</strong> if that suits your preferences.</p>
+<p>We’ll use 5 damage as our bonus for <em>Wyrmbane</em>.</p>
+</section>
+<section id="step-4-add-a-conditional-component">
+<h2>Step 4: Add a conditional component<a class="headerlink" href="Conditional-Passives-III.html#step-4-add-a-conditional-component" title="Link to this heading"></a></h2>
+<p>All the three skills in this guide need two or more conditions to be set, mostly to ensure any potential bug. In order to do that, we need to know the three <strong>logical operators</strong> - <strong>‘and’</strong>, <strong>‘or’</strong> and <strong>‘not’</strong>.</p>
+<p>We use them by adding them between two conditions, tying them together. The syntax is:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;condition A&gt; &lt;logical operator&gt; &lt;condition B&gt;
+&lt;condition A&gt; &lt;logical operator&gt; &lt;condition B&gt; &lt;logical operator&gt; &lt;condition C&gt;
+&lt;condition A&gt; &lt;logical operator&gt; &lt;condition B&gt; &lt;logical operator&gt; &lt;condition C&gt; ... &lt;logical operator&gt; &lt;condition H&gt; ... ∞
+</pre></div>
+</div>
+<p>The exception is <strong>not</strong>, applied before any logical element.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>not {logical element}
+not &lt;condition&gt;
+</pre></div>
+</div>
+<p><strong>‘And’</strong> is the one responsible for combining all of the conditions into a larger one, which will return <strong>False</strong> if any of the conditions within isn’t fulfilled.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Operator ‘and’</p></th>
+<th class="head"><p>A is True</p></th>
+<th class="head"><p>A is False</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>B is True</strong></p></td>
+<td><p>True</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>B is False</strong></p></td>
+<td><p>False</p></td>
+<td><p>False</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>‘Or’</strong> also combines conditions but it will returning the <strong>True</strong> value if any of the conditions within is fulfilled.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Operator ‘or’</p></th>
+<th class="head"><p>A is True</p></th>
+<th class="head"><p>A is False</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>B is True</strong></p></td>
+<td><p>True</p></td>
+<td><p>True</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>B is False</strong></p></td>
+<td><p>True</p></td>
+<td><p>False</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>‘Not’</strong> whole deal is to reverse the value of any logical element or condition.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Operator ‘not’</p></th>
+<th class="head"><p>Result</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>A is True</strong></p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>A is False</strong></p></td>
+<td><p>True</p></td>
+</tr>
+</tbody>
+</table>
+<p>We can combine these into larger conditions and have distinct results. You may tie as many of them as you want, but they will always follow the hierarchy <strong>not</strong> → <strong>and</strong> → <strong>or</strong>, which can be manipulated by setting parenthesis.</p>
+<p>We can then set three illustrative examples and calculate the output.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>Orange is not Color and Orange is Vegetable and Orange is Round or Orange is Sour
+not True and False and True or True
+False and False and True or True
+(False and False and True) or True        &lt;&lt;&lt;        solving hierarchy
+False or True
+True
+</pre></div>
+</div>
+<p>Now we add parenthesis.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>(Orange is not Color and Orange is Vegetable) and (Orange is Round or Orange is Sour)
+(not True and True) and (True or True)
+(False and False) and (True or True)
+False and True
+False
+</pre></div>
+</div>
+<p>At last, we set a <strong>not</strong> at the start of our first conditional block.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>not (Orange is not Color and Orange is Vegetable) and (Orange is Round or Orange is Sour)
+not (not True and True) and (True or True)
+not (False and False) and (True or True)
+not False and True
+True and True
+True
+</pre></div>
+</div>
+<p>We could go further by adding more conditions and more parenthesis, but we’d be here forever. These are all the tools we need to create our conditions.</p>
+<section id="step-4-a-tomefaire-add-and-set-the-condition-component">
+<h3>Step 4.A: [Tomefaire] Add and set the Condition component<a class="headerlink" href="Conditional-Passives-III.html#step-4-a-tomefaire-add-and-set-the-condition-component" title="Link to this heading"></a></h3>
+<p>For <em>Tomefaire</em>, we will be using the <strong>unit object</strong> and <strong>item_system object</strong>. The <strong>item_system object</strong> is responsible for handling multiple methods that connect <strong>units</strong> to their inventory <strong>items</strong>.</p>
+<p>The method that retrieves the currently equipped weapon is <strong>get_weapon()</strong>, and it belongs to the <strong>unit object</strong>. It will always return the <strong>item object</strong> equipped if any is available, otherwise it will return <strong>None</strong>.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>unit.get_weapon()
+</pre></div>
+</div>
+<p>We can then use that method to check if that same weapon matches our skill type. For this, we need the <strong>weapon_type(,)</strong> method within the <strong>item_system</strong> object.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>item_system.weapon_type({unit object}, {item object})
+</pre></div>
+</div>
+<p>The <strong>item_system</strong> is a mediator and has no internal data regarding the <strong>unit object</strong> nor the <strong>item object</strong>. We need to specify the unit and item in order to use it.</p>
+<p>Since our skill is based on the own user, we will set <strong>unit</strong> as our <strong>unit object</strong> and <strong>unit.get_weapon()</strong> as our <strong>item object</strong>.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>item_system.weapon_type(unit, unit.get_weapon())
+</pre></div>
+</div>
+<p>Next, we specify the <strong>Unique ID</strong> from our required <strong>Weapon Type</strong> in the condition.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>item_system.weapon_type(unit, unit.get_weapon()) == &#39;Tome&#39;
+</pre></div>
+</div>
+<p>In case you need to provide a list of <strong>Weapon Types</strong>, the syntax change to:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>item_system.weapon_type(unit, unit.get_weapon()) in (&#39;Weapon Type A&#39;, &#39;Weapon Type B&#39;, &#39;Weapon Type C&#39;, ... &#39;Weapon Type G&#39;, ... ∞)
+</pre></div>
+</div>
+<p>For the standard magic split, we should take it as:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>item_system.weapon_type(unit, unit.get_weapon()) in (&#39;Anima&#39;, &#39;Light&#39;, &#39;Dark&#39;)
+</pre></div>
+</div>
+<p>In practice, this should be enough, but this might lead to some bugs if the skill owner doesn’t has an equipable weapon of if its inventory is empty. We can use the get_weapon() method to check that information, and abort it immediately if <strong>None</strong> is found.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>unit.get_weapon() and item_system.weapon_type(unit, unit.get_weapon()) == &#39;Tome&#39;
+							or
+unit.get_weapon() and item_system.weapon_type(unit, unit.get_weapon()) in (&#39;Anima&#39;, &#39;Light&#39;, &#39;Dark&#39;)
+</pre></div>
+</div>
+<p>The end result should look like this:</p>
+<p><img alt="8" src="../../../_images/8.png" /></p>
+</section>
+<section id="step-4-b-axe-breaker-add-and-set-the-combat-condition-component">
+<h3>Step 4.B: [Axe Breaker] Add and set the Combat Condition component<a class="headerlink" href="Conditional-Passives-III.html#step-4-b-axe-breaker-add-and-set-the-combat-condition-component" title="Link to this heading"></a></h3>
+<p>The <strong>Condition component</strong> can only interact with the user and global objects, along their respective methods and attributes. To access other units, we need to use the <strong>Combat Condition component</strong> instead, which can be found within the <strong>Advanced Components</strong> menu.</p>
+<p><img alt="9" src="../../../_images/9.png" /></p>
+<p>Whenever we need to reference an unit that is selected by an action, we need to use the <strong>target object</strong>. The <strong>target object</strong> is an instance of an <strong>unit object</strong> and will have all the same attributes and methods. You can just replace the referenced object in your syntax.</p>
+<p>There can’t be a <strong>target object</strong> without an <strong>unit object</strong> to target it and different <strong>units</strong> can have different <strong>targets</strong> at the time. <strong>Targets</strong> can be allies, enemies or even the user itself. It all depends on the context.</p>
+<p>When it comes to direct combat, the <strong>target</strong> of the <em>attacker</em> will be the <em>defender</em>, and the <strong>target</strong> of the <em>defender</em> will be the <em>attacker</em>.</p>
+<p>By replacing the <strong>unit object</strong> and our <strong>Weapon Type</strong> to ‘Axe’, we will get the following:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>target.get_weapon() and item_system.weapon_type(target, target.get_weapon()) == &#39;Axe&#39;
+</pre></div>
+</div>
+<p>The end result should look like this:</p>
+<p><img alt="10" src="../../../_images/10.png" /></p>
+</section>
+<section id="step-4-c-wyrmbane-add-and-set-the-combat-condition-and-the-condition-component">
+<h3>Step 4.C: [Wyrmbane] Add and set the Combat Condition and the Condition component<a class="headerlink" href="Conditional-Passives-III.html#step-4-c-wyrmbane-add-and-set-the-combat-condition-and-the-condition-component" title="Link to this heading"></a></h3>
+<p>At last, we will do the same using both conditional components. It can be done using a single component but it’s easier to maintain and adjust by using the two of them. The engine will be computed as if they had the <strong>‘and’</strong> operator connecting them.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&lt;condition component&gt; and &lt;combat condition component&gt;
+</pre></div>
+</div>
+<p>Effective damage tied to unit <strong>tags</strong>. We can get that information by accessing the <strong>tags</strong> attribute found within <strong>unit object</strong>. Since what matters is the enemy, we will reference <strong>target object</strong> in the <strong>Combat Condition component</strong>.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&#39;Tag&#39; in target.tags
+</pre></div>
+</div>
+<p>In a default project, the <strong>tag</strong> we are looking for is ‘Dragon’, which results in:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&#39;Dragon&#39; in target.tags
+</pre></div>
+</div>
+<p>Next, we need to add our weapon restriction. It’s the same as the -faire type skills. The <strong>Unique ID</strong> of our new <strong>Weapon Type</strong> was ‘Wyrm’, and that’s all we need to replace from step 4.A.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>unit.get_weapon() and item_system.weapon_type(unit, unit.get_weapon()) == &#39;Wyrm&#39;
+</pre></div>
+</div>
+<p>The end result should look like this:</p>
+<p><img alt="11" src="../../../_images/111.png" /></p>
+<p>You can see that the <strong>Damage Multiplier component</strong> is present, but it shouldn’t be present in the final skill. The only reason it is kept is because the skill can be tested and tuned with either of the options.</p>
+<p>We can virtually disable it by setting it at 1,00, and the same can be done to the <strong>Damage component</strong> if we set it to 0. This is just a convenient way to adjust skills before picking the definitive iteration.</p>
+</section>
+</section>
+<section id="step-5-test-the-stat-alterations-in-game">
+<h2>Step 5: Test the stat alterations in-game<a class="headerlink" href="Conditional-Passives-III.html#step-5-test-the-stat-alterations-in-game" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Conditional-Passives-II.html" class="btn btn-neutral float-left" title="4. Conditional Passives II - Warding Blow, Rainlashslayer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Tile-Passives.html" class="btn btn-neutral float-right" title="4. Tile Oriented Passives - Outdoor Fighter and Indoor Fighter" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, rainlash.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

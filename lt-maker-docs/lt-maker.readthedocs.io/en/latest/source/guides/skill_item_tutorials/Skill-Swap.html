@@ -1,0 +1,1874 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>[System] Skill Swap &mdash; lt-maker  documentation</title>
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/theme_overrides.css?v=5f1687b9" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/jquery.js?v=5d32c60e"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/doctools.js?v=9a2dae69"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="https://lt-maker.readthedocs.io/en/latest/_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Capture skill" href="Creating-Capture.html" />
+    <link rel="prev" title="3. Auras - Hex, Bond and Focus" href="Auras.html" /> 
+<script async type="text/javascript" src="https://lt-maker.readthedocs.io/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="lt-maker" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/source/guides/skill_item_tutorials/Skill-Swap.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            lt-maker
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../home.html">Lex Talionis Wiki</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Editor Guides:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../editors/Editors-Overview.html">Editors Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../editors/index.html">Editors</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Events:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../events/index.html">Events</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Guides:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Guides-Overview.html">Guides Overview</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Guides</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../setup_tutorials/index.html">Project Setup Tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../eventing_tutorials/index.html">Eventing Tutorials</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Skill and Item Tutorials</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="Creating-Items.html">0. Creating Items</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Direct-Passives.html">1. Direct Passives - Hit +20, MAG +2 and Gamble</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Conditional-Passives-I.html">2. Conditional Passives I - Lucky Seven, Odd Rhythm, Wrath and Quick Burn</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Conditional-Passives-II.html">4. Conditional Passives II - Warding Blow, Rainlashslayer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Conditional-Passives-III.html">3. Conditional Passives III - Tomefaire, Axe Breaker and Wyrmbane</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Tile-Passives.html">4. Tile Oriented Passives - Outdoor Fighter and Indoor Fighter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Auras.html">3. Auras - Hex, Bond and Focus</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="Skill-Swap.html#">[System] Skill Swap</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Skill-Swap.html#required-editors-and-components">Required editors and components</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Skill-Swap.html#understanding-the-problem">Understanding the problem</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Skill-Swap.html#events-and-variables">Events and Variables</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Skill-Swap.html#step-0-understanding-how-to-build-tuple-with-strings">Step 0: Understanding how to build tuple with strings</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Skill-Swap.html#step-1-remove-all-skills-from-classes-and-units">Step 1: Remove all skills from classes and units</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Skill-Swap.html#step-2-set-the-raw-data-table">Step 2: Set the Raw Data table</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Skill-Swap.html#step-3-build-an-initializer-event">Step 3: Build an Initializer event</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Skill-Swap.html#step-4-build-the-skill-unlock-event">Step 4: Build the skill unlock event</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Skill-Swap.html#step-5-create-the-skill-swap-base">Step 5: Create the Skill Swap base</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Skill-Swap.html#step-6-add-skill-swap-as-a-menu-option">Step 6: Add skill swap as a menu option</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Skill-Swap.html#step-7-build-the-skill-swap-operations-event">Step 7: Build the Skill Swap Operations event</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Skill-Swap.html#step-8-build-the-operations">Step 8: Build the operations</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Skill-Swap.html#step-9-test-the-system">Step 9: Test the system</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Creating-Capture.html">Capture skill</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Recruit-Skill.html">Recruit Skill</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Summoning.html">Summoning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Shelter-Skill.html">Shelter Skill</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Multi-Items.html">Multi Items</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Nihil.html">Nihil</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">appendix:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Text-Formatting-Commands.html">Text Formatting Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Item-Component-Reference.html">Item Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Skill-Component-Reference.html">Skill Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Special-Variables.html">Special Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Special-Tags.html">Special Tags</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/trigger-reference.html">Event Triggers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Random-Seed-Mechanics.html">Random Seed Mechanics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/FAQ.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Contributing_to_the_LTWiki.html">Contributing to the LTWiki</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/index.html">Code Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">lt-maker</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Guides</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Skill and Item Tutorials</a></li>
+      <li class="breadcrumb-item active">[System] Skill Swap</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://gitlab.com/rainlash/lt-maker/blob/master/docs/source/guides/skill_item_tutorials/Skill-Swap.md" class="fa fa-gitlab"> Edit on GitLab</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <p><small><code class="docutils literal notranslate"><span class="pre">Originally</span> <span class="pre">written</span> <span class="pre">by</span> <span class="pre">Hillgarm.</span> <span class="pre">Last</span> <span class="pre">Updated</span> <span class="pre">2022-09-01</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">This</span> <span class="pre">has</span> <span class="pre">not</span> <span class="pre">been</span> <span class="pre">updated</span> <span class="pre">recently</span> <span class="pre">and</span> <span class="pre">has</span> <span class="pre">been</span> <span class="pre">reported</span> <span class="pre">as</span> <span class="pre">no</span> <span class="pre">longer</span> <span class="pre">working</span> <span class="pre">in</span> <span class="pre">current</span> <span class="pre">versions</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">engine.</span></code></small></p>
+<section id="system-skill-swap">
+<h1>[System] Skill Swap<a class="headerlink" href="Skill-Swap.html#system-skill-swap" title="Link to this heading"></a></h1>
+<p>Lex Talionis Event Editor offers enough power to build custom systems. They can be quite complex, and this is the case with skill swap.</p>
+<p>In this guide, we will be covering all the requirements to build your own skill swap system using the tools available in the latest engine build.</p>
+<p>It is expected for the reader to have prior experience in the editors and components used, as most of them will be glossed over due the amount of steps required. Check the documentation and other guides to get learn about these components.</p>
+<p>We will be building the pieces in order of functionality, which may lead to a few back and forward.</p>
+<p>You will be able to get the code at the end of every major step, mostly ready to use. It’s still recommended to go over every single step in order to understand the mechanisms and how to adjust them to individual project demands.</p>
+<p><strong>Index</strong></p>
+<ul class="simple">
+<li><p><strong>Required editors and components</strong></p></li>
+<li><p><strong>Understanding the problem</strong></p></li>
+<li><p><strong>Events and Variables</strong></p></li>
+<li><p><strong>Step 0: Understanding how to build tuple with strings</strong></p></li>
+<li><p><strong>Step 1: Remove all skills from classes and units</strong></p></li>
+<li><p><strong>Step 2: Set the Raw Data table</strong></p></li>
+<li><p><strong>Step 3: Build an Initializer event</strong></p>
+<ul>
+<li><p>Step 3.1: Create a level start manager</p></li>
+<li><p>Step 3.2: Set the initialization condition</p></li>
+<li><p>Step 3.3: Retrieve the current class Index value</p></li>
+<li><p>Step 3.4:  Retrieve the current class data</p>
+<ul>
+<li><p>Step 3.4.1: Add self contained class exceptions</p></li>
+</ul>
+</li>
+<li><p>Step 3.5:  Retrieve the previous class data</p></li>
+<li><p>Step 3.6: Set both skill tuples</p></li>
+<li><p>Step 3.7: Assign the equipped skills</p></li>
+<li><p><strong>Complete script</strong></p></li>
+<li><p>Step 3.7+: Add more learned skills</p></li>
+</ul>
+</li>
+<li><p><strong>Step 4: Build the skill unlock event</strong></p>
+<ul>
+<li><p>Step 4.1: Find the ClassData corresponding index</p></li>
+<li><p>Step 4.2: Retrieve the skill based on the unit level</p>
+<ul>
+<li><p>Step 4.2.1: Add self contained class exceptions</p></li>
+</ul>
+</li>
+<li><p>Step 4.3: Add the skill to the LearnedSkill tuple</p></li>
+<li><p>Step 4.4: Auto equip the new skill</p></li>
+<li><p><strong>Complete script</strong></p></li>
+</ul>
+</li>
+<li><p><strong>Step 5: Create the Skill Swap base</strong></p>
+<ul>
+<li><p>Step 5.1: Create Slot skills</p></li>
+<li><p>Step 5.2: Process the equipped skills group</p></li>
+<li><p>Step 5.3: Build the equipped skills menu</p></li>
+<li><p>Step 5.4: Add a refresh mechanism</p></li>
+<li><p><strong>Complete script</strong></p></li>
+</ul>
+</li>
+<li><p><strong>Step 6: Add skill swap as a menu option</strong></p></li>
+<li><p><strong>Step 7: Build the Skill Swap Operations event</strong></p>
+<ul>
+<li><p><strong>Complete script</strong></p></li>
+</ul>
+</li>
+<li><p><strong>Step 8: Build the operations</strong></p>
+<ul>
+<li><p>Step 8.A: Remove</p></li>
+<li><p>Step 8.B: Reorder</p></li>
+<li><p>Step 8.C: Add</p></li>
+<li><p>Step 8.D: Replace</p></li>
+<li><p>Step 8.E: Replace on level up</p></li>
+</ul>
+</li>
+<li><p><strong>Step 9: Test the system</strong></p></li>
+</ul>
+<section id="required-editors-and-components">
+<h2>Required editors and components<a class="headerlink" href="Skill-Swap.html#required-editors-and-components" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Event:</p>
+<ul>
+<li><p>Commands - game_var, set_unit_field, give_skill, remove_skill, trigger_script, for, if, table, choice</p></li>
+</ul>
+</li>
+<li><p>Skills</p></li>
+<li><p>Raw Data</p></li>
+<li><p>Objects, Attributes and Methods:</p>
+<ul>
+<li><p>unit - klass, get_field(‘{field}’),</p></li>
+<li><p>game - get_data(‘{raw data}’)</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="understanding-the-problem">
+<h2>Understanding the problem<a class="headerlink" href="Skill-Swap.html#understanding-the-problem" title="Link to this heading"></a></h2>
+<p>Skill swap is a really simple concept but it takes a couple of minor systems to work. We will use the standards set in Fire Emblem: Awakening for this guide.</p>
+<p>A way to describe skill swap is the follow:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>A system that grant units new individual skills by
+leveling up based on their current class, providing
+a wider array of options and personal customization
+for each unique class the unit ventures in, only
+limited by a maximum amount of simultaneously
+equipped skills.
+</pre></div>
+</div>
+<p>Here are the basic directions:</p>
+<ul class="simple">
+<li><p><strong>[SLOTS]</strong> Each unit can have up to a certain amount of skills, 5 in this instance.</p></li>
+<li><p><strong>[POLL]</strong> Every unit has its own individual collection of skills to pick from.</p></li>
+<li><p><strong>[INHERIT]</strong> Units have to own all the skills corresponding to their current class level and promotion path.</p></li>
+<li><p><strong>[UNLOCK]</strong> Skills are unlocked by leveling up</p></li>
+<li><p><strong>[ASSIGN]</strong> Skills are automatically equipped if a slot is available when the unit is introduced or when it learns a new skill.</p></li>
+<li><p><strong>[MANAGEMENT]</strong> The player can add, remove or swap skills at will.</p></li>
+</ul>
+<p>These 6 points are the foundation of the system, and will have address them from scratch. On a technical side, <strong>Management</strong> and <strong>Slots</strong> can’t work with the native skill assignment system, so we will have to built a new one as well.</p>
+<p>In addition, the <strong>Management</strong> element also has 4 smaller components.</p>
+<ul class="simple">
+<li><p><strong>[ADD]</strong> Equip a learned skills</p></li>
+<li><p><strong>[REMOVE]</strong> Unequip a skill</p></li>
+<li><p><strong>[SWAP]</strong> Replace an equipped skill with an unequipped one</p></li>
+<li><p><strong>[REORDER]</strong> Move an equipped skill to the first slot.</p></li>
+</ul>
+<p>Those operations require items to be added and removed from our <strong>poll</strong>, and will give us two options.</p>
+<ol class="arabic simple">
+<li><p>Make the equipped skills poll a completely different set from the learned skills poll. Operations will move items from one poll to the other.</p></li>
+<li><p>Make the equipped skills poll an assortment of the items from the learned skills poll. Operations will change the items within the equipped skills poll, but not the learned skills poll.</p></li>
+</ol>
+<p>Here’s a visual example</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p></p></th>
+<th class="head"><p>Equipped<br/>skills</p></th>
+<th class="head"><p>Learned<br/>skills</p></th>
+<th class="head"><p>All<br/>skills</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Option 1</strong></p></td>
+<td><p>Sol,<br/>Luna</p></td>
+<td><p>Axefaire</p></td>
+<td><p>Sol,<br/>Luna,<br/>Axefaire</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Option 2</strong></p></td>
+<td><p>Sol,<br/>Luna</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Sol</span></code>,<br/><code class="docutils literal notranslate"><span class="pre">Luna</span></code>,<br/>Axefaire</p></td>
+<td><p>Sol,<br/>Luna,<br/>Axefaire</p></td>
+</tr>
+</tbody>
+</table>
+<p>In a strict sense, option 1 is the most accurate. The only issue with it is that if we fail to properly handle any addition or removal operation, we may end up with duplicated skills or even delete it completely.</p>
+<p>We will stick to the second one as it is easier to handle, less prone to bugs and also allows some extra customization options such as forced pair skills (it is a possibility but won’t be covered in this guide).</p>
+<p>As such, the equipped skill poll will be a slice of the learned skill poll, and we will filter those skills out whenever we need to.</p>
+</section>
+<section id="events-and-variables">
+<h2>Events and Variables<a class="headerlink" href="Skill-Swap.html#events-and-variables" title="Link to this heading"></a></h2>
+<p>For this guide we will have a total of 12 events. One of them being solely used as a conversion tool. It is possible to reduce them by half but that can make things significantly more confusing. Our events will have an underscore between words.</p>
+<p>To save time, create all of the listed events in advance, preferably using the same names, as those will be the ones listed in the guide. Don’t forget to set their triggers as well. Those who have events listed as triggers have to be set as <strong>None</strong>. All of them use the Global level.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Event</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Trigger</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Unit_Fetcher</span></code></p></td>
+<td><p>Collector</p></td>
+<td><p>level_start</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Unit_Initializer</span></code></p></td>
+<td><p>Assignment</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Unit_Fetcher</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Check_Skill_Unlock</span></code></p></td>
+<td><p>Assignment</p></td>
+<td><p>unit_level_up</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Target_Fix</span></code></p></td>
+<td><p>Conversion</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Skill_Swap_Select</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Skill_Swap_Select</span></code></p></td>
+<td><p>Interface</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">base;</span></code> or <code class="docutils literal notranslate"><span class="pre">prep;</span></code> commands</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Skill_Swap_Setup</span></code></p></td>
+<td><p>Interface</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Target_Fix</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Skill_Swap_Operations</span></code></p></td>
+<td><p>Interface</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Skill_Swap_Setup</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">Skill_Swap_Add</span></code>,<br/><code class="docutils literal notranslate"><span class="pre">Skill_Swap_Remove</span></code>,<br/><code class="docutils literal notranslate"><span class="pre">Skill_Swap_Reorder</span></code>,<br/><code class="docutils literal notranslate"><span class="pre">Skill_Swap_Replace</span></code></p></td>
+<td><p>Option</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Skill_Swap_Operations</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Skill_Swap_Level_Up</span></code></p></td>
+<td><p>Option</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">Check_Skill_Unlock</span></code></p></td>
+</tr>
+</tbody>
+</table>
+<p>Here’s a simple flowchart on how they will be connected.</p>
+<p><img alt="1" src="../../../_images/12.png" /></p>
+<p>As for our variables, most of them will be temporary data managers, and all of them are mandatory.  All of our variables names will be written in upper case and have an underscore between words.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Variable</p></th>
+<th class="head"><p>Type</p></th>
+<th class="head"><p>Role</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>*<code class="docutils literal notranslate"><span class="pre">_SKILLS</span></code></p></td>
+<td><p>String/Tuple</p></td>
+<td><p>Holds all the skills <code class="docutils literal notranslate"><span class="pre">EQUIPPED</span></code>/<code class="docutils literal notranslate"><span class="pre">LEARNED</span></code> by a given unit</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">AUX_</span></code>*</p></td>
+<td><p>Boolean, Integer, String, Nid</p></td>
+<td><p>Temporary variable of a given type.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">C_INDEX</span></code></p></td>
+<td><p>Integer</p></td>
+<td><p>Same as <code class="docutils literal notranslate"><span class="pre">AUX_INT</span></code>, but only used to retrieve indexes.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">FECHED_</span></code>*</p></td>
+<td><p>Nid</p></td>
+<td><p>Contains the Nid of the current <code class="docutils literal notranslate"><span class="pre">UNIT</span></code>/<code class="docutils literal notranslate"><span class="pre">CLASS</span></code>/<code class="docutils literal notranslate"><span class="pre">SKILL</span></code> in a loop.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">EXIT_SKILL_SWAP</span></code></p></td>
+<td><p>Boolean</p></td>
+<td><p>Allows skill swap to be refreshed or terminated.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">UNIT_EQUIPPED_SKILLS</span></code></p></td>
+<td><p>Nid</p></td>
+<td><p>Selected skill from the list of equipped skills, that will undergo a skill swap operation.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">UNIT_LEARNED_SKILLS</span></code></p></td>
+<td><p>Nid</p></td>
+<td><p>Selected skill from the list of learned skills, that will undergo either add or swap/replace operations.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">EQUIP_NEW_SKILL</span></code></p></td>
+<td><p>String</p></td>
+<td><p>Yes/No option to swap an equipped skill with the last skill obtained when no equippable slot is available.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">SKILL_SWAP_CAP</span></code> (Optional)</p></td>
+<td><p>Integer</p></td>
+<td><p>Defines the maximum number of equippable skill slots.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">SELECTED_UNIT</span></code></p></td>
+<td><p>nid</p></td>
+<td><p>Unit selected for skill swap.</p></td>
+</tr>
+</tbody>
+</table>
+<p>Our field list will be significantly shorter. They won’t use underscore and will start with a capital letter for each word split.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Field</p></th>
+<th class="head"><p>Assign on Editor</p></th>
+<th class="head"><p>Role</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">Initialized</span></code></p></td>
+<td><p>No</p></td>
+<td><p>Checks if the unit went through initialization</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">BaseClass</span></code></p></td>
+<td><p>Yes</p></td>
+<td><p>Contains the corresponding index of the base class. Exclusive to pre-promoted units.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">LearnedSkills</span></code></p></td>
+<td><p>No</p></td>
+<td><p>Tuple containing all the skills learned by the unit.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">EquippedSkills</span></code></p></td>
+<td><p>No</p></td>
+<td><p>Tuple containing all the currently equipped skills by the unit.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="step-0-understanding-how-to-build-tuple-with-strings">
+<h2>Step 0: Understanding how to build tuple with strings<a class="headerlink" href="Skill-Swap.html#step-0-understanding-how-to-build-tuple-with-strings" title="Link to this heading"></a></h2>
+<p>Before we get into the guide itself, there’s a simple concept we need to understand as it will be a core aspect of our systems. Tuples are a type of array, which is a kind of variable that works as a item list. Instead of having a single value, it holds multiple entries that carry their individual values in itself, which is what exactly has slots work.</p>
+<p>The event editor allows us to create tuples and retrieve tuple data but doesn’t allow us to use any of the tuple related operations directly. As such, we’re forced into converting them depending on what kind of operation we need to perform. We’ll build them from strings, convert them to tuple then later conver it strings, perform an operation through strings, and convert it back to tuple.</p>
+<p>Out of all the operations we will perform, adding a new entry is the most essential. To do it through strings, we need to stack our elements in a single auxiliary string while respecting the tuple building syntax, like adding extra carts to a train.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>game_var;EXAMPLE;&quot;&quot;
+game_var;EXAMPLE;&quot;&#39;First item&#39;,&quot;
+game_var;EXAMPLE;&quot;{v:EXAMPLE}&quot; + &quot;&#39;Second item,&#39;&quot;
+game_var;EXAMPLE;&quot;{v:EXAMPLE}&quot; + &quot;&#39;Third item,&#39;&quot;
+</pre></div>
+</div>
+<p>We will have to wipe our string before every stacking process to prevent leftover data and, in some cases, set it to a specific value that will be forced as the first item as well.</p>
+<p>In this example, our string value should be:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>&#39;First item&#39;,&#39;Second Item&#39;,&#39;Third item&#39;,
+</pre></div>
+</div>
+<p>It can then be converted into a tuple, by calling itself in brackets.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>game_var;EXAMPLE;[{v:EXAMPLE}]
+</pre></div>
+</div>
+<p>Every non-numeric item in it has to be contained in a pair of apostrophes followed by a comma. Otherwise it will interpret the commas as part a valid text element.</p>
+<ul class="simple">
+<li><p><em>A tuple containing <code class="docutils literal notranslate"><span class="pre">'A','B','C'</span></code> has 3 elements - [A], [B] and [C]</em></p></li>
+<li><p><em>A tuple containing <code class="docutils literal notranslate"><span class="pre">'A,B','C'</span></code> has 2 elements - [A, B] and [C]</em></p></li>
+</ul>
+</section>
+<section id="step-1-remove-all-skills-from-classes-and-units">
+<h2>Step 1: Remove all skills from classes and units<a class="headerlink" href="Skill-Swap.html#step-1-remove-all-skills-from-classes-and-units" title="Link to this heading"></a></h2>
+<p>As said before, the base system won’t work with the level of control that we want. In order to use a custom assignment system we need to wipe out all of the skills from the base system.</p>
+<p><img alt="2" src="../../../_images/22.png" /></p>
+<p>It is recommended to remove all of the skills, including Flying and Canto, if you plan to have class change and class promotion in your project.</p>
+</section>
+<section id="step-2-set-the-raw-data-table">
+<h2>Step 2: Set the Raw Data table<a class="headerlink" href="Skill-Swap.html#step-2-set-the-raw-data-table" title="Link to this heading"></a></h2>
+<p>The first step to create or new skill assignment system is to build a replacement for the data we deleted. We can do that by building a <strong>raw data</strong> list, named <code class="docutils literal notranslate"><span class="pre">ClassData</span></code>.</p>
+<p><img alt="3" src="../../../_images/32.png" /></p>
+<p>Our table will use the following columns.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p></p></th>
+<th class="head"><p>nid</p></th>
+<th class="head"><p>class1</p></th>
+<th class="head"><p>class2</p></th>
+<th class="head"><p>skill1</p></th>
+<th class="head"><p>skill2</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>data</strong></p></td>
+<td><p>-</p></td>
+<td><p>-</p></td>
+<td><p>previous class A</p></td>
+<td><p>previous class B</p></td>
+<td><p>1st skill unlocked</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>type</strong></p></td>
+<td><p>class unique ID</p></td>
+<td><p>int</p></td>
+<td><p>int or <em>blank</em></p></td>
+<td><p>skill nid</p></td>
+<td><p>skill nid</p></td>
+</tr>
+</tbody>
+</table>
+<p>For this guide, we will also add an index (starting at 0) column to make it easier to read and assign class codes. You can add more columns to fit your project needs, such as class3, skill4, etc.</p>
+<p>Next, we need to fill the table with the data. Both <strong>class fields</strong> will be exclusively used by advanced classes, filling each with the base class it promotes from. If a class only has one promotion option, fill the <code class="docutils literal notranslate"><span class="pre">class1</span></code> <strong>field</strong> and leave the other one empty.</p>
+<p>Here’s a quick example.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>index</p></th>
+<th class="head"><p>nid</p></th>
+<th class="head"><p>class1</p></th>
+<th class="head"><p>class2</p></th>
+<th class="head"><p>skill1</p></th>
+<th class="head"><p>skill2</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p>Lord</p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p>DualStrike+</p></td>
+<td><p>Charm</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p>Cavalier</p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p>Discipline</p></td>
+<td><p>OutdoorFighter</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p>Knight</p></td>
+<td><p></p></td>
+<td><p></p></td>
+<td><p>Defense+2</p></td>
+<td><p>UbdoorFighter</p></td>
+</tr>
+<tr class="row-odd"><td><p>3</p></td>
+<td><p>GreatLord</p></td>
+<td><p>0</p></td>
+<td><p></p></td>
+<td><p>Aether</p></td>
+<td><p>RightfulKing</p></td>
+</tr>
+<tr class="row-even"><td><p>4</p></td>
+<td><p>GreatKnight</p></td>
+<td><p>1</p></td>
+<td><p>2</p></td>
+<td><p>Luna</p></td>
+<td><p>DualGuard+</p></td>
+</tr>
+<tr class="row-odd"><td><p>5</p></td>
+<td><p>General</p></td>
+<td><p>2</p></td>
+<td><p></p></td>
+<td><p>RallyDefense</p></td>
+<td><p>Pavise</p></td>
+</tr>
+</tbody>
+</table>
+<p>The end result should look similar to this:</p>
+<p><img alt="4" src="../../../_images/42.png" /></p>
+<p><small><em>This is a simplified table for the units that will be used in the guide, with many skills and classes being replaced by similar. You will run into errors if any data in it is missing or incorrect. Be sure to check and test all of it once the system is complete.</em></small></p>
+<p>Just to reinforce an important point. Both <code class="docutils literal notranslate"><span class="pre">class1</span></code> and <code class="docutils literal notranslate"><span class="pre">class2</span></code> must contain only numerical values, as those are indexes that reference other classes in our table. For <strong>Eirika_Great_Lord</strong>, only <code class="docutils literal notranslate"><span class="pre">class1</span></code> is used, and has the value 0 assigned, which is <strong>Eirika_Lord’s</strong> index. Meanwhile, <strong>Great_Knight</strong> has two possible classes to be promoted from, and 2 and 3 correspond to <strong>Cavalier</strong> and <strong>Knight</strong> respectively.</p>
+<p><img alt="5" src="../../../_images/52.png" /></p>
+<p>Skills also have to be assigned with proper nid’s, as shown in the image below.</p>
+<p><img alt="6" src="../../../_images/61.png" /></p>
+<p>This base concept can also be used to assign unit exclusive and/or secret skills, though the specifics won’t be covered in this guide.</p>
+</section>
+<section id="step-3-build-an-initializer-event">
+<h2>Step 3: Build an Initializer event<a class="headerlink" href="Skill-Swap.html#step-3-build-an-initializer-event" title="Link to this heading"></a></h2>
+<p>Next. we will assign skills to our units. This is an issue on its own as it has to be applied to both allies, enemies and neutral units when they first appear in the game.</p>
+<p>To do so, we will have to run an event that assign skills to our units at the start of each chapter. This process, known as initialization, only has to be done once per unit as running it multiple times will cause the unit to gain duplicate copies of skills whenever it moves to a new chapter.</p>
+<section id="step-3-1-create-a-level-start-manager">
+<h3>Step 3.1: Create a level start manager<a class="headerlink" href="Skill-Swap.html#step-3-1-create-a-level-start-manager" title="Link to this heading"></a></h3>
+<p>Our first is <code class="docutils literal notranslate"><span class="pre">Unit_Fetcher</span></code> and it has a really simple, get all the units and cast the initialization event on them. As said before, it has to happen at the start of every level - a <strong>Global</strong> with <strong>level_start</strong> trigger.</p>
+<p>We’ll use a <code class="docutils literal notranslate"><span class="pre">for-endf</span></code> loop with a <code class="docutils literal notranslate"><span class="pre">trigger_script</span></code> inside, passing our unit data.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>for;FETCHED_UNIT;[u for u in game.level.units]
+    trigger_script;Global Unit_Initializer;{FETCHED_UNIT}
+endf
+</pre></div>
+</div>
+<p>This event is also the best place to set our skill slot size limiter. For this guide, we will use them to keep our code consistent.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>game_var;SKILL_SWAP_CAP;5
+</pre></div>
+</div>
+<p><small><em>Using a variable as a limiter also offers more flexibility when testing how many skills you want your game to have, and it can also be used in creative ways such as forcing certain units to have a different number of slots or even change the cap based on difficulty or as an optional toggle.</em></small></p>
+<p>Once assembled, is should look like this:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>game_var;SKILL_SWAP_CAP;5
+for;FETCHED_UNIT;[u for u in game.level.units]
+    trigger_script;Global Unit_Initializer;{FETCHED_UNIT}
+endf
+</pre></div>
+</div>
+</section>
+<section id="step-3-2-set-the-initialization-condition">
+<h3>Step 3.2: Set the initialization condition<a class="headerlink" href="Skill-Swap.html#step-3-2-set-the-initialization-condition" title="Link to this heading"></a></h3>
+<p>Next, we need to build the <code class="docutils literal notranslate"><span class="pre">Unit_Initializer</span></code> event that was called in the previous step. Since it can’t be run more than once, we need to start with the lock.</p>
+<p>This time, we’ll set a simple <code class="docutils literal notranslate"><span class="pre">if-end</span></code> checking the field <code class="docutils literal notranslate"><span class="pre">Initialized</span></code>. All of our initialization code will be set inside it.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>if;not unit.get_field(&#39;Initialized&#39;)
+    #...
+end
+</pre></div>
+</div>
+<p>One interesting aspect of fields is that the engine will interpret fields that don’t exist as <code class="docutils literal notranslate"><span class="pre">False</span></code>, which saves us a lot of work from setting up every single class and unit.</p>
+<p>To complete our lock mechanism, we’ll set that field to true. In this particular case, it will create the field as well.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>#...
+set_unit_field;{unit};Initialized;True
+</pre></div>
+</div>
+<p>It is recommended to keep the field creation command at the very last line of our condition so it won’t block the event if a critical error occurs.</p>
+<p>Once assembled, it will read like this:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>if;not unit.get_field(&#39;Initialized&#39;)
+    #...
+    set_unit_field;{unit};Initialized;True
+end
+</pre></div>
+</div>
+<p>If the field doesn’t exist or has <code class="docutils literal notranslate"><span class="pre">False</span></code> as its value, create the field and/or set it to <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+<p>We can go ahead and adding our three core collection variables that will contain the skill data. Since those three will be used extensively, they have to be set as empty strings to avoid any data leakage from previous runs.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>game_var;LEARNED_SKILLS;&quot;&quot;
+game_var;EQUIPPED_SKILLS;&quot;&quot;
+game_var;AUX_SKILL;&quot;&quot;
+</pre></div>
+</div>
+<p>For now, we should have:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>if;not unit.get_field(&#39;Initialized&#39;)
+    game_var;LEARNED_SKILLS;&quot;&quot;
+    game_var;EQUIPPED_SKILLS;&quot;&quot;
+    game_var;AUX_SKILL;&quot;&quot;
+    #...
+    set_unit_field;{unit};Initialized;True
+end
+</pre></div>
+</div>
+</section>
+<section id="step-3-3-retrieve-the-current-class-index-value">
+<h3>Step 3.3: Retrieve the current class Index value<a class="headerlink" href="Skill-Swap.html#step-3-3-retrieve-the-current-class-index-value" title="Link to this heading"></a></h3>
+<p>The next step is more complex, we need to get all the data from our unit class that was set to the <code class="docutils literal notranslate"><span class="pre">ClassData</span></code> table.</p>
+<p>At first, we’ll stumble into three issues regarding the tools we have in our disposal.</p>
+<ol class="arabic simple">
+<li><p>There’s only one type of loop available</p></li>
+<li><p>This loop doesn’t return an index number</p></li>
+<li><p>We can only interact with a single field at time</p></li>
+</ol>
+<p>The operation we want to do is <strong>index</strong> retrieval, which will allow us to access every single field from that index row. We can build a work around by adding a counter variable inside our loop, and eject right when we find a matching pair.</p>
+<p>Our <strong>index</strong> retrieval mechanism requires an <strong>int</strong> to act as a counter itself and a <strong>bool</strong> to act as the lock, similar to what was done in the initialization. Again, as this will be used by every single unit, they have to be set at their minimum corresponding values.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>#...
+game_var;C_INDEX;0
+game_var;AUX_BOL;False
+</pre></div>
+</div>
+<p>For the loop, the only reliable parameter available in our unit is <code class="docutils literal notranslate"><span class="pre">klass</span></code>. Which is what we defined the <code class="docutils literal notranslate"><span class="pre">ClassData</span></code> table <code class="docutils literal notranslate"><span class="pre">nid</span></code> to be as well. We can add our counter to it as well, which can be done with the native  command <code class="docutils literal notranslate"><span class="pre">inc_game_var</span></code></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>for;FETCHED_CLASS;game.get_data(&#39;ClassData&#39;)
+    #...
+    inc_game_var;C_INDEX
+    #...
+endf
+</pre></div>
+</div>
+<p>Note that the command <code class="docutils literal notranslate"><span class="pre">game.get_data()</span></code> is targeting a bidimensional array (table) and has multiple fields to pick from. That property will be used later. As the field wasn’t specified, the engine will seek the <code class="docutils literal notranslate"><span class="pre">nid</span></code> field.</p>
+<p>At this point, the counter will only return the total number of rows in our table, so we need to set two locks one right next to each other. The first one will check if the unit <code class="docutils literal notranslate"><span class="pre">klass</span></code> matches an entry in our table, and then set the <strong>bool</strong> as <code class="docutils literal notranslate"><span class="pre">True</span></code>. The second one will be added around our counter as a negative, preventing it from happening while the <strong>bool</strong> is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>#...
+if;&quot;{FETCHED_CLASS}&quot; == unit.klass
+    game_var;AUX_BOL;True
+end
+if;not {v:AUX_BOL}
+    inc_game_var;C_INDEX
+end
+</pre></div>
+</div>
+<p>The engine will run the same order as the table follows. In the end, <code class="docutils literal notranslate"><span class="pre">C_INDEX</span></code> will have hold the number corresponding to that class position in the table. With the <strong>index</strong> value in hands, we can access all of the fields from the unit class.</p>
+</section>
+<section id="step-3-4-retrieve-the-current-class-data">
+<h3>Step 3.4:  Retrieve the current class data<a class="headerlink" href="Skill-Swap.html#step-3-4-retrieve-the-current-class-data" title="Link to this heading"></a></h3>
+<p>It’s time to expand the command used in the <strong>index</strong> retrieval loop. Other properties can be accessed with the following syntax:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>game.get_data(&#39;RawData&#39;)[{index}].field
+</pre></div>
+</div>
+<p>A quick example with <code class="docutils literal notranslate"><span class="pre">class1</span></code> turns into:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>game.get_data(&#39;ClassData&#39;)[{C_INDEX}].class1
+</pre></div>
+</div>
+<p>We can finally retrieve the first data for our unit. Since we will work with lists, this data has to be stacked into a single place. This is where we’ll need <code class="docutils literal notranslate"><span class="pre">LEARNED_SKILLS</span></code> and <strong>tuple</strong> building.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>game_var;AUX_SKILL;game.get_data(&#39;ClassData&#39;)[{v:C_INDEX}].skill1
+game_var;LEARNED_SKILLS;&quot;{v:LEARNED_SKILLS}&quot; + &quot;&#39;{v:AUX_SKILL}&#39;,&quot;
+</pre></div>
+</div>
+<p>This covers the basics but classes have predefined skill unlock levels. For awakening, they were set as:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p></p></th>
+<th class="head"><p>Skill 1 level</p></th>
+<th class="head"><p>Skill 2 level</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Base</strong></p></td>
+<td><p>1</p></td>
+<td><p>10</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Advancement</strong></p></td>
+<td><p>5</p></td>
+<td><p>15</p></td>
+</tr>
+</tbody>
+</table>
+<p>Let’s take our current class as a non-promoted. The first skill will always be available so we just need to worry about restricting the second one. A simple <code class="docutils literal notranslate"><span class="pre">if-end</span></code> would do.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>if;unit.level &gt;= 10
+    game_var;AUX_SKILL;game.get_data(&#39;ClassData&#39;)[{v:C_INDEX}].skill2
+    game_var;LEARNED_SKILLS;&quot;{v:LEARNED_SKILLS}&quot; + &quot;&#39;{v:AUX_SKILL}&#39;,&quot;
+end
+</pre></div>
+</div>
+<p>Be sure that he condition is set as <strong>greater or equal</strong> (&gt;=).</p>
+<p>That’s good enough for this tier but we need to cover the advancement as well. One option would be to add individual conditions for each one of them but we can use a more elegant solution by checking a common pattern. Promoted classes level milestones are delayed by 5 levels when compared to the base classes.</p>
+<p>It is possible to create a formula for it if we use the class <code class="docutils literal notranslate"><span class="pre">tier</span></code> value. Let’s store that value in <code class="docutils literal notranslate"><span class="pre">AUX_INT</span></code>. We’ll retrieve it from the internal database, within the class data.</p>
+<p>To access it, we need to use the following syntax:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{e:DB.classes.get(&#39;class nid&#39;).tier}
+</pre></div>
+</div>
+<p>Here, <code class="docutils literal notranslate"><span class="pre">class</span> <span class="pre">nid</span></code> will be replaced by  <code class="docutils literal notranslate"><span class="pre">{e:unit.klass}</span></code>.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>game_var;AUX_INT;{e:DB.classes.get(&#39;{e:unit.klass}&#39;).tier}
+</pre></div>
+</div>
+<p>This command lines is using an evaluation inside another evaluation. This is required as the our data is being promptly converted into text, and we need it to be retrieved first, otherwise it will seek the class <code class="docutils literal notranslate"><span class="pre">unit.klass</span></code> <strong>nid</strong>.</p>
+<p>For the formulas, they’re really simple. When the tier value increases by 1 the level requirement increases by 5. Multiply those and add a base number to get the corresponding values.</p>
+<p>First skill:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>5 * {tier} - 5
+</pre></div>
+</div>
+<p>Second skill:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>5 * {tier} + 5
+</pre></div>
+</div>
+<p>While the first skill level isn’t totally accurate, the condition for it will still be greater or equal. On practice, it won’t make any difference.</p>
+<p>Once we add the formula, it should look like this:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>if;unit.level &gt;= 5 * {v:AUX_INT} - 5
+    game_var;AUX_SKILL;game.get_data(&#39;ClassData&#39;)[{v:C_INDEX}].skill2
+    game_var;LEARNED_SKILLS;&quot;{v:LEARNED_SKILLS}&quot; + &quot;&#39;{v:AUX_SKILL}&#39;,&quot;
+end
+if;unit.level &gt;= 5 * {v:AUX_INT} + 5
+    game_var;AUX_SKILL;game.get_data(&#39;ClassData&#39;)[{v:C_INDEX}].skill2
+    game_var;LEARNED_SKILLS;&quot;{v:LEARNED_SKILLS}&quot; + &quot;&#39;{v:AUX_SKILL}&#39;,&quot;
+end
+</pre></div>
+</div>
+<p>As a matter of preference and processing optimization, we’ll move the second condition inside the first one. The whole block should look like this:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>game_var;AUX_INT;{e:DB.classes.get(&#39;{e:unit.klass}&#39;).tier}
+if;unit.level &gt;= 5 * {v:AUX_INT} - 5
+    game_var;AUX_SKILL;game.get_data(&#39;ClassData&#39;)[{v:C_INDEX}].skill1
+    game_var;LEARNED_SKILLS;&quot;{v:LEARNED_SKILLS}&quot; + &quot;&#39;{v:AUX_SKILL}&#39;,&quot;
+    if;unit.level &gt;= 5 * {v:AUX_INT} + 5
+        game_var;AUX_SKILL;game.get_data(&#39;ClassData&#39;)[{v:C_INDEX}].skill2
+        game_var;LEARNED_SKILLS;&quot;{v:LEARNED_SKILL}&quot; + &quot;&#39;{v:AUX_SKILL}&#39;,&quot;
+    end
+end
+</pre></div>
+</div>
+<section id="step-3-4-1-add-self-contained-class-exceptions">
+<h4>Step 3.4.1: Add self contained class exceptions<a class="headerlink" href="Skill-Swap.html#step-3-4-1-add-self-contained-class-exceptions" title="Link to this heading"></a></h4>
+<p>Here is where we run into an annoying issue that isn’t exclusive to Fire Emblem: Awakening but may not be part of your project.</p>
+<p>There are a few classes that follow a different set of rules and they can’t work with a standard formula. The first skill is granted at the base class level but the second one is granted at the advanced level, 1 and 15 respectively.</p>
+<p>The most effective way to address it is by expanding our second skill condition, as those classes are categorized as unpromoted, but it is easier to handle it by adding an additional conditional branch instead.</p>
+<p>Our base condition for those classes would be:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>unit.klass in (&#39;Bride&#39;, &#39;Dancer&#39;, &#39;Dread Fighter&#39;, &#39;Manakete&#39;, &#39;Taguel&#39;, &#39;Villager&#39;)
+</pre></div>
+</div>
+<p>As this restriction is exclusive the the group second skill, the level can be set manually.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>unit.klass in (&#39;Bride&#39;, &#39;Dancer&#39;, &#39;Dread Fighter&#39;, &#39;Manakete&#39;, &#39;Taguel&#39;, &#39;Villager&#39;) and unit.level &gt;= 15
+</pre></div>
+</div>
+<p>Every single exception has to be checked first. We should have something like:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>if;unit.level &gt;= 5 * {v:AUX_INT} - 5
+    game_var;AUX_SKILL;game.get_data(&#39;ClassData&#39;)[{v:C_INDEX}].skill1
+    game_var;LEARNED_SKILLS;&quot;{v:LEARNED_SKILLS}&quot; + &quot;&#39;{v:AUX_SKILL}&#39;,&quot;
+    if;unit.klass in (&#39;Bride&#39;, &#39;Dancer&#39;, &#39;Dread Fighter&#39;, &#39;Manakete&#39;, &#39;Taguel&#39;, &#39;Villager&#39;) and unit.level &gt;= 15
+        game_var;AUX_SKILL;game.get_data(&#39;ClassData&#39;)[{v:C_INDEX}].skill2
+        game_var;LEARNED_SKILLS;&quot;{v:LEARNED_SKILL}&quot; + &quot;&#39;{v:AUX_SKILL}&#39;,&quot;
+    elif;unit.level &gt;= 5 * {v:AUX_INT} + 5
+        game_var;AUX_SKILL;game.get_data(&#39;ClassData&#39;)[{v:C_INDEX}].skill2
+        game_var;LEARNED_SKILLS;&quot;{v:LEARNED_SKILL}&quot; + &quot;&#39;{v:AUX_SKILL}&#39;,&quot;
+    end
+end
+</pre></div>
+</div>
+</section>
+</section>
+<section id="step-3-5-retrieve-the-previous-class-data">
+<h3>Step 3.5:  Retrieve the previous class data<a class="headerlink" href="Skill-Swap.html#step-3-5-retrieve-the-previous-class-data" title="Link to this heading"></a></h3>
+<p>Here’s where we take the first visual compromise. In Fire Emblem Awakening, pre-promoted units skills will be listed as if the unit was leveled by the player. In short, base class skills appear first.</p>
+<p>For now, we will ignore that aspect and focus on retrieving data from a second class.</p>
+<p>All of the key units have their base classes pre-determined, and that information can only be set manually. Fortunately the editor can save us a lot of work.</p>
+<p>First, we go back to our raw data table and get the corresponding <strong>index</strong>. We will use Seth as our example unit, as a base Great Knight promoted from Knight.</p>
+<p><img alt="7" src="../../../_images/71.png" /></p>
+<p>Great Knight <strong>index</strong> is 9, promoted from indexes 2 and 3. The first one is Cavalier and the Second one is Knight. For this exercise, we’ll pretend he was promoted from Knight.</p>
+<p>In the unit editor, we’ll add the field <code class="docutils literal notranslate"><span class="pre">BaseClass</span></code> and set its value to Knight’s index, 3.</p>
+<p><img alt="8" src="../../../_images/81.png" /></p>
+<p>Back to the event editor, we need to add a verifier for the <code class="docutils literal notranslate"><span class="pre">tier</span></code> and <strong>field</strong>.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>game_var;AUX_INT;{e:DB.classes.get(&#39;{e:unit.klass}&#39;).tier}
+if;{v:AUX_INT} &gt;= 2
+    if; unit.get_field(&#39;BaseClass&#39;)
+        game_var;AUX_INT;unit.get_field(&#39;BaseClass&#39;)
+    else
+        #...
+    end
+    #...
+end
+</pre></div>
+</div>
+<p>At this point you may see a critical issue regarding this approach. It will surely work as long as every one of our key units have the field defined with a valid value. Which is the same as saying, if the unit is a generic or a key unit that didn’t received such field, it won’t get base class skills. A valid option if intended, but we should have some sort of backup if not.</p>
+<p>Our options would be</p>
+<ol class="arabic simple">
+<li><p>Define every map encounters through events</p></li>
+<li><p>Use class1 as the default when a class isn’t specified</p></li>
+<li><p>Not assign base class skills</p></li>
+<li><p>Assign a class at random</p></li>
+</ol>
+<p>At this point, you should be able to do 1 to 3 on your own by tinkering with the previous steps. We’ll focus on the 4th then.</p>
+<p>The easiest approach is by adding all of our possible class options to a tuple and pick one of them at random. This new code will be deployed inside the else branch.</p>
+<p>Starting with a refresh.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>#...
+game_var;AUX_STR;&quot;&quot;
+</pre></div>
+</div>
+<p>And follow up with some stacking.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>if;game.get_data(&#39;ClassData&#39;)[{v:C_INDEX}].class1
+    game_var;AUX_STR;&quot;{v:AUX_STR}&quot; + game.get_data(&#39;ClassData&#39;)[{v:C_INDEX}].class1 + &quot;,&quot;
+end
+</pre></div>
+</div>
+<p><small><em>As all entries in the tuple are numbers, they won’t require the use of apostrophes.</em></small></p>
+<p>We want to add that conditional statement to skip any potential empty cell, as they can mess up our poll. This block can copied and pasted for every single class slot the project uses, using the corresponding column name (<code class="docutils literal notranslate"><span class="pre">class1</span></code>, <code class="docutils literal notranslate"><span class="pre">class2</span></code>, <code class="docutils literal notranslate"><span class="pre">class3</span></code>, …).</p>
+<p>Next, we build the tuple, pick the random number based on our tuple size and retrieve the value using the sorted index.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>game_var;AUX_STR;[{v:AUX_STR}]
+game_var;AUX_INT;game.get_random(0,len({v:AUX_STR})-1)
+game_var;AUX_INT;{v:AUX_STR}[{v:AUX_INT}]
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">len()</span></code> method will give use the last index number +1, and that extra increment has to be corrected.</p>
+<p>Our random picker should look something like this:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>if;game.get_data(&#39;ClassData&#39;)[{v:C_INDEX}].class1
+    game_var;AUX_STR;&quot;{v:AUX_STR}&quot; + game.get_data(&#39;ClassData&#39;)[{v:C_INDEX}].class1 + &quot;,&quot;
+end
+if;game.get_data(&#39;ClassData&#39;)[{v:C_INDEX}].class2
+    game_var;AUX_STR;&quot;{v:AUX_STR}&quot; + game.get_data(&#39;ClassData&#39;)[{v:C_INDEX}].class2 + &quot;,&quot;
+end
+game_var;AUX_STR;[{v:AUX_STR}]
+game_var;AUX_INT;game.get_random(0,len({v:AUX_STR})-1)
+game_var;AUX_INT;{v:AUX_STR}[{v:AUX_INT}]
+</pre></div>
+</div>
+<p>Assembling it with the previous branch, we get the following:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>game_var;AUX_INT;{e:DB.classes.get(&#39;{e:unit.klass}&#39;).tier}
+if;{v:AUX_INT} &gt;= 2
+    if; unit.get_field(&#39;BaseClass&#39;)
+        game_var;AUX_INT;unit.get_field(&#39;BaseClass&#39;)
+    else
+        if;game.get_data(&#39;ClassData&#39;)[{v:C_INDEX}].class1
+            game_var;AUX_STR;&quot;{v:AUX_STR}&quot; + game.get_data(&#39;ClassData&#39;)[{v:C_INDEX}].class1 + &quot;,&quot;
+        end
+        if;game.get_data(&#39;ClassData&#39;)[{v:C_INDEX}].class2
+            game_var;AUX_STR;&quot;{v:AUX_STR}&quot; + game.get_data(&#39;ClassData&#39;)[{v:C_INDEX}].class2 + &quot;,&quot;
+        end
+        game_var;AUX_STR;[{v:AUX_STR}]
+        game_var;AUX_INT;game.get_random(0,len({v:AUX_STR})-1)
+        game_var;AUX_INT;{v:AUX_STR}[{v:AUX_INT}]
+    end
+    #...
+end
+</pre></div>
+</div>
+<p>That last empty space can be filled with the skill retrieval. Same syntax as the previous step, but this time we won’t need any conditions.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>#...
+game_var;AUX_SKILL;game.get_data(&#39;ClassData&#39;)[{v:AUX_INT}].skill1
+game_var;LEARNED_SKILLS;&quot;{v:LEARNED_SKILLS}&quot; + &quot;&#39;{v:AUX_SKILL}&#39;,&quot;
+game_var;AUX_SKILL;game.get_data(&#39;ClassData&#39;)[{v:AUX_INT}].skill2
+game_var;LEARNED_SKILLS;&quot;{v:LEARNED_SKILLS}&quot; + &quot;&#39;{v:AUX_SKILL}&#39;,&quot;
+</pre></div>
+</div>
+<p>At last, our code should look like this:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>game_var;AUX_INT;{e:DB.classes.get(&#39;{e:unit.klass}&#39;).tier}
+if;{v:AUX_INT} &gt;= 2
+    if;unit.get_field(&#39;BaseClass&#39;)
+        game_var;AUX_INT;unit.get_field(&#39;BaseClass&#39;)
+    else
+        game_var;AUX_STR;&quot;&quot;
+        if;game.get_data(&#39;ClassData&#39;)[{v:C_INDEX}].class1
+            game_var;AUX_STR;&quot;{v:AUX_STR}&quot; + game.get_data(&#39;ClassData&#39;)[{v:C_INDEX}].class1 + &quot;,&quot;
+        end
+        if;game.get_data(&#39;ClassData&#39;)[{v:C_INDEX}].class2
+            game_var;AUX_STR;&quot;{v:AUX_STR}&quot; + game.get_data(&#39;ClassData&#39;)[{v:C_INDEX}].class2 + &quot;,&quot;
+        end
+
+        game_var;AUX_STR;[{v:AUX_STR}]
+        game_var;AUX_INT;game.get_random(0,len({v:AUX_STR})-1)
+        game_var;AUX_INT;{v:AUX_STR}[{v:AUX_INT}]
+    end
+    game_var;AUX_SKILL;game.get_data(&#39;ClassData&#39;)[{v:AUX_INT}].skill1
+    game_var;LEARNED_SKILLS;&quot;{v:LEARNED_SKILLS}&quot; + &quot;&#39;{v:AUX_SKILL}&#39;,&quot;
+    game_var;AUX_SKILL;game.get_data(&#39;ClassData&#39;)[{v:AUX_INT}].skill2
+    game_var;LEARNED_SKILLS;&quot;{v:LEARNED_SKILLS}&quot; + &quot;&#39;{v:AUX_SKILL}&#39;,&quot;
+end
+</pre></div>
+</div>
+<p><small><em>This block only address for single promotion trees. Extensive class tree will require more conditions, events and/or loops.</em></small></p>
+<p>Bear in mind that this chunk of code has to come first to keep the skill display order as a natural progression. The order should be the following:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>if;not unit.get_field(&#39;Initialized&#39;)
+    game_var;LEARNED_SKILLS;&quot;&quot;
+    game_var;EQUIPPED_SKILLS;&quot;&quot;
+
+    #&lt;3.3&gt;
+    #&lt;3.5&gt;
+    #&lt;3.4&gt;
+
+    #...
+
+    set_unit_field;{unit};Initialized;True
+end
+</pre></div>
+</div>
+<p><small><em>The three number codes within tags are replacing the final code of their respective steps. This indicator will be used on later steps as well.</em></small></p>
+</section>
+<section id="step-3-6-set-both-skill-tuples">
+<h3>Step 3.6: Set both skill tuples<a class="headerlink" href="Skill-Swap.html#step-3-6-set-both-skill-tuples" title="Link to this heading"></a></h3>
+<p>Next in the line is tuple building. Nothing new in here, except that we’ll also set a value to <code class="docutils literal notranslate"><span class="pre">EQUIPPED_SKILLS</span></code>. In this particular structure, it should be impossible for an unit to be deployed with more than 4 equipped skills unlocked. That is the sole reason we ignored <code class="docutils literal notranslate"><span class="pre">EQUIPPED_SKILLS</span></code> until now. You may need to do a couple of adjustments if your game uses fewer slots or more skills per class.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>#...
+game_var;EQUIPPED_SKILLS;&quot;{v:LEARNED_SKILLS}&quot;
+game_var;EQUIPPED_SKILLS;[{v:EQUIPPED_SKILLS}]
+game_var;LEARNED_SKILLS;[{v:LEARNED_SKILLS}]
+</pre></div>
+</div>
+<p>The two first lines could be combined for optimization but we want to have more room for test control, such as giving specific units or classes extra skills. This is one of many good reasons to add a hard block to our <code class="docutils literal notranslate"><span class="pre">EQUIPPED_SKILLS</span></code> poll.</p>
+<p>As a tuple we can use the <code class="docutils literal notranslate"><span class="pre">len()</span></code> to count how many indexes our tuple has and the <code class="docutils literal notranslate"><span class="pre">[start</span> <span class="pre">index:end</span> <span class="pre">index]</span></code> structure to trim it based on the indexes.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>if;len({v:EQUIPPED_SKILLS}) &gt; {v:SKILL_SWAP_CAP}
+    game_var;EQUIPPED_SKILLS;{v:EQUIPPED_SKILLS}[0:{v:SKILL_SWAP_CAP}]
+end
+</pre></div>
+</div>
+<p>This will check if our tuple is above our limit and cut everything added past our boundary.</p>
+<p>At last, we pass the tuple information to our fields.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>set_unit_field;{unit};EquippedSkills;{v:EQUIPPED_SKILLS}
+set_unit_field;{unit};LearnedSkills;sorted({v:LEARNED_SKILLS})
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">sorted()</span></code> method will order all the tuple elements alphabetically. A small quality of life aspect for browsing.</p>
+<p>It should look like this:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>game_var;EQUIPPED_SKILLS;&quot;{v:LEARNED_SKILLS}&quot;
+game_var;EQUIPPED_SKILLS;[{v:EQUIPPED_SKILLS}]
+game_var;LEARNED_SKILLS;[{v:LEARNED_SKILLS}]
+
+if;len({v:EQUIPPED_SKILLS}) &gt; {v:SKILL_SWAP_CAP}
+    game_var;EQUIPPED_SKILLS;{v:EQUIPPED_SKILLS}[0:{v:SKILL_SWAP_CAP}]
+end
+
+set_unit_field;{unit};EquippedSkills;{v:EQUIPPED_SKILLS}
+set_unit_field;{unit};LearnedSkills;sorted({v:LEARNED_SKILLS})
+</pre></div>
+</div>
+</section>
+<section id="step-3-7-assign-the-equipped-skills">
+<h3>Step 3.7: Assign the equipped skills<a class="headerlink" href="Skill-Swap.html#step-3-7-assign-the-equipped-skills" title="Link to this heading"></a></h3>
+<p>Up to this point we only managed the data. If we were to play a test chapter, none of the units would have any skills assigned.</p>
+<p>We can run a simple loop to add the <code class="docutils literal notranslate"><span class="pre">EQUIPPED_SKILLS</span></code>.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>for;FETCHED_SKILL;{v:EQUIPPED_SKILLS}
+    give_skill;{unit};{FETCHED_SKILL};no_banner
+endf
+</pre></div>
+</div>
+</section>
+<section id="complete-script">
+<h3>Complete script<a class="headerlink" href="Skill-Swap.html#complete-script" title="Link to this heading"></a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>if;not unit.get_field(&#39;Initialized&#39;)
+    game_var;LEARNED_SKILLS;&quot;&quot;
+    game_var;EQUIPPED_SKILLS;&quot;&quot;
+    game_var;AUX_SKILL;&quot;&quot;
+    game_var;C_INDEX;0
+    game_var;AUX_BOL;False
+
+    #&lt;3.3&gt;
+    for;FETCHED_CLASS;game.get_data(&#39;ClassData&#39;)
+        if;&quot;{FETCHED_CLASS}&quot; == unit.klass
+            game_var;AUX_BOL;True
+        end
+        if;not {v:AUX_BOL}
+            inc_game_var;C_INDEX
+        end
+    endf
+
+    #&lt;3.5&gt;
+    game_var;AUX_INT;{e:DB.classes.get(&#39;{e:unit.klass}&#39;).tier}
+    if;{v:AUX_INT} &gt;= 2
+        if;unit.get_field(&#39;BaseClass&#39;)
+            game_var;AUX_INT;unit.get_field(&#39;BaseClass&#39;)
+        else
+            game_var;AUX_STR;&quot;&quot;
+            if;game.get_data(&#39;ClassData&#39;)[{v:C_INDEX}].class1
+                game_var;AUX_STR;&quot;{v:AUX_STR}&quot; + game.get_data(&#39;ClassData&#39;)[{v:C_INDEX}].class1 + &quot;,&quot;
+            end
+            if;game.get_data(&#39;ClassData&#39;)[{v:C_INDEX}].class2
+                game_var;AUX_STR;&quot;{v:AUX_STR}&quot; + game.get_data(&#39;ClassData&#39;)[{v:C_INDEX}].class2 + &quot;,&quot;
+            end
+            game_var;AUX_STR;[{v:AUX_STR}]
+            game_var;AUX_INT;game.get_random(0,len({v:AUX_STR})-1)
+            game_var;AUX_INT;{v:AUX_STR}[{v:AUX_INT}]
+        end
+        game_var;AUX_SKILL;game.get_data(&#39;ClassData&#39;)[{v:AUX_INT}].skill1
+        game_var;LEARNED_SKILLS;&quot;{v:LEARNED_SKILLS}&quot; + &quot;&#39;{v:AUX_SKILL}&#39;,&quot;
+        game_var;AUX_SKILL;game.get_data(&#39;ClassData&#39;)[{v:AUX_INT}].skill2
+        game_var;LEARNED_SKILLS;&quot;{v:LEARNED_SKILLS}&quot; + &quot;&#39;{v:AUX_SKILL}&#39;,&quot;
+    end
+
+    #&lt;3.4&gt;
+    game_var;AUX_INT;game.get_data(&#39;ClassData&#39;)
+    if;unit.level &gt;= 5 * {v:AUX_INT} - 5
+        game_var;AUX_SKILL;game.get_data(&#39;ClassData&#39;)[{v:C_INDEX}].skill1
+        game_var;LEARNED_SKILLS;&quot;{v:LEARNED_SKILLS}&quot; + &quot;&#39;{v:AUX_SKILL}&#39;,&quot;
+        if;unit.klass in (&#39;Bride&#39;, &#39;Dancer&#39;, &#39;Dread Fighter&#39;, &#39;Manakete&#39;, &#39;Taguel&#39;, &#39;Villager&#39;) and unit.level &gt;= 15
+            game_var;AUX_SKILL;game.get_data(&#39;ClassData&#39;)[{v:C_INDEX}].skill2
+            game_var;LEARNED_SKILLS;&quot;{v:LEARNED_SKILL}&quot; + &quot;&#39;{v:AUX_SKILL}&#39;,&quot;
+        elif;unit.level &gt;= 5 * {v:AUX_INT} + 5
+            game_var;AUX_SKILL;game.get_data(&#39;ClassData&#39;)[{v:C_INDEX}].skill2
+            game_var;LEARNED_SKILLS;&quot;{v:LEARNED_SKILL}&quot; + &quot;&#39;{v:AUX_SKILL}&#39;,&quot;
+        end
+    end
+
+    #&lt;3.6&gt;
+    game_var;EQUIPPED_SKILLS;&quot;{v:LEARNED_SKILLS}&quot;
+    game_var;EQUIPPED_SKILLS;[{v:EQUIPPED_SKILLS}]
+    game_var;LEARNED_SKILLS;[{v:LEARNED_SKILLS}]
+    if;len({v:EQUIPPED_SKILLS}) &gt; 5
+        game_var;EQUIPPED_SKILLS;{v:EQUIPPED_SKILLS}[0:5]
+    end
+    set_unit_field;{unit};EquippedSkills;{v:EQUIPPED_SKILLS}
+    set_unit_field;{unit};LearnedSkills;sorted({v:LEARNED_SKILLS})
+
+    #&lt;3.7&gt;
+    for;FETCHED_SKILL;{v:EQUIPPED_SKILLS}
+        give_skill;{unit};{FETCHED_SKILL};no_banner
+    endf
+
+    set_unit_field;{unit};Initialized;True
+end
+</pre></div>
+</div>
+</section>
+<section id="step-3-7-add-more-learned-skills">
+<h3>Step 3.7+: Add more learned skills<a class="headerlink" href="Skill-Swap.html#step-3-7-add-more-learned-skills" title="Link to this heading"></a></h3>
+<p>To add more skills we just need to concatenate more items to our string before the tuple conversion done in 3.6.</p>
+<p>For this example we will be using <strong>Seth</strong> as our unit and also <strong>Trickster</strong> as a class. Our skills will be Luna and Sol, but we won’t add the the latter to the equipped skills poll.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>if;unit.nid == &#39;Seth&#39; or unit.klass == &#39;Trickster&#39;
+    game_var;AUX_SKILL;&quot;Luna&quot;
+    game_var;EQUIPPED_SKILLS;&quot;{v:EQUIPPED_SKILLS}&quot; + &quot;&#39;{v:AUX_SKILL}&#39;,&quot;
+    game_var;AUX_SKILL;&quot;{v:AUX_SKILL}&quot; + &quot;Sol&quot;
+    game_var;LEARNED_SKILLS;&quot;{v:LEARNED_SKILLS}&quot; + &quot;{v:AUX_SKILL},&quot;
+end
+</pre></div>
+</div>
+<p><small><em>There’s also the option to only add skills to the equipped poll, however these skills won’t be restored once removed or swapped.</em></small></p>
+<p>You may run a test to check if the extra skill was applied correctly. Of course, you won’t be able to see Sol in it until we build the UI.</p>
+</section>
+</section>
+<section id="step-4-build-the-skill-unlock-event">
+<h2>Step 4: Build the skill unlock event<a class="headerlink" href="Skill-Swap.html#step-4-build-the-skill-unlock-event" title="Link to this heading"></a></h2>
+<p>Initialization only takes care of the base setup, we still need to allow our units to gain skills upon leveling or class change. Fortunately, both can be done in the same event without any workaround.</p>
+<p>It’s time to build the <code class="docutils literal notranslate"><span class="pre">Check_Skill_Unlock</span></code> event. On a conceptual level, unlocking skills is a fragment of the whole process of assigning skills based on the unit level. A lot of the structures we used to build the initialization will be reused in here.</p>
+<section id="step-4-1-find-the-classdata-corresponding-index">
+<h3>Step 4.1: Find the ClassData corresponding index<a class="headerlink" href="Skill-Swap.html#step-4-1-find-the-classdata-corresponding-index" title="Link to this heading"></a></h3>
+<p>Once again, the first step is to get the class index, just as we did in 3.3, along the <code class="docutils literal notranslate"><span class="pre">AUX_SKILL</span></code> reset. This time, we will follow it up by retrieving the class <code class="docutils literal notranslate"><span class="pre">tier</span></code> right away.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>game_var;AUX_SKILL;&quot;&quot;
+game_var;C_INDEX;0
+game_var;AUX_BOL;False
+for;FETCHED_CLASS;game.get_data(&#39;ClassData&#39;)
+    if;&quot;{FETCHED_CLASS}&quot; == unit.klass
+        game_var;AUX_BOL;True
+    end
+    if;not {v:AUX_BOL}
+        inc_game_var;C_INDEX
+    end
+endf
+game_var;AUX_INT;{e:DB.classes.get(&#39;{e:unit.klass}&#39;).tier}
+</pre></div>
+</div>
+</section>
+<section id="step-4-2-retrieve-the-skill-based-on-the-unit-level">
+<h3>Step 4.2: Retrieve the skill based on the unit level<a class="headerlink" href="Skill-Swap.html#step-4-2-retrieve-the-skill-based-on-the-unit-level" title="Link to this heading"></a></h3>
+<p>Next, we have have to check if the unit has reached an unlock level and retrieve the skill. Again, we will take a chunk of the code used in 3.4.</p>
+<p>Here we have a crucial distinction to that variant. Our conditions have to use <strong>equal</strong> (<strong>==</strong>) instead of <strong>greater or equal</strong> (<strong>&gt;=</strong>), otherwise we will be flooded by duplicates.</p>
+<p>Additionally, we’ll have to use the <code class="docutils literal notranslate"><span class="pre">max()</span></code> command for our first skill. This command returns the highest value of two numbers, we set one of them as 1 and it will cover for all base classes.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>if;unit.level == max (1, 5 * {v:AUX_INT} - 5)
+    game_var;AUX_SKILL;game.get_data(&#39;ClassData&#39;)[{v:C_INDEX}].skill1
+elif;unit.level = 5 * {v:AUX_INT} + 5
+    game_var;AUX_SKILL;game.get_data(&#39;ClassData&#39;)[{v:C_INDEX}].skill2
+end
+</pre></div>
+</div>
+<p>Following up, we need to be sure that our skill haven’t been learned before moving on, which may happen depending on how the game is structured. The condition is simple.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>if;&#39;{v:AUX_SKILL}&#39; not in unit.get_field(&#39;LearnedSkills&#39;)
+    #...
+end
+</pre></div>
+</div>
+<p>The only issue with this condition is that the engine won’t interpret the empty value as a skill that doesn’t exist in the tuple, so we need to correct that by checking if <code class="docutils literal notranslate"><span class="pre">{v:AUX_SKILL}</span></code> has a value. Just patch the condition with <code class="docutils literal notranslate"><span class="pre">{v:AUX_SKILL}</span> <span class="pre">and</span> </code> to fix it.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>if;{v:AUX_SKILL} and &#39;{v:AUX_SKILL}&#39; not in unit.get_field(&#39;LearnedSkills&#39;)
+    #...
+end
+</pre></div>
+</div>
+<p>All of our following code will be added inside that <code class="docutils literal notranslate"><span class="pre">if-end</span></code> statement.</p>
+<section id="step-4-2-1-add-self-contained-class-exceptions">
+<h4>Step 4.2.1: Add self contained class exceptions<a class="headerlink" href="Skill-Swap.html#step-4-2-1-add-self-contained-class-exceptions" title="Link to this heading"></a></h4>
+<p>Same as 3.4.1, adapt the code to allow our exceptions.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>if;unit.level == max (1, 5 * {v:AUX_INT} - 5)
+    game_var;AUX_SKILL;game.get_data(&#39;ClassData&#39;)[{v:C_INDEX}].skill1
+elif;unit.klass in (&#39;Bride&#39;, &#39;Dancer&#39;, &#39;Dread Fighter&#39;, &#39;Manakete&#39;, &#39;Taguel&#39;, &#39;Villager&#39;) and unit.level == 15
+    game_var;AUX_SKILL;game.get_data(&#39;ClassData&#39;)[{v:C_INDEX}].skill2
+elif;unit.level == 5 * {v:AUX_INT} + 5
+    game_var;AUX_SKILL;game.get_data(&#39;ClassData&#39;)[{v:C_INDEX}].skill2
+end
+</pre></div>
+</div>
+</section>
+</section>
+<section id="step-4-3-add-the-skill-to-the-learnedskill-tuple">
+<h3>Step 4.3: Add the skill to the LearnedSkill tuple<a class="headerlink" href="Skill-Swap.html#step-4-3-add-the-skill-to-the-learnedskill-tuple" title="Link to this heading"></a></h3>
+<p>It’s time to put the explanation from step 0 into practice. To do so, we have to rely on <code class="docutils literal notranslate"><span class="pre">','.join(&quot;Expression&quot;)</span></code>, a method that converts arrays into strings based on the input expression.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>game_var;LEARNED_SKILLS;&#39;,&#39;.join(s for s in unit.get_field(&#39;LearnedSkills&#39;)) + &quot;,&#39;{v:AUX_SKILL}&#39;&quot;
+</pre></div>
+</div>
+<p>One issue with <code class="docutils literal notranslate"><span class="pre">','.join()</span></code> is that it will return a direct string for each entry. If our tuple had <code class="docutils literal notranslate"><span class="pre">'Sol',</span> <span class="pre">'Luna',</span> <span class="pre">'Astra'</span></code> the output would be <code class="docutils literal notranslate"><span class="pre">Sol,</span> <span class="pre">Luna,</span> <span class="pre">Astra</span></code>. While that is handy, our string will become a tuple again once we add the extra item and we need it to be properly formatted. Fortunately, this can be easily addressed by adding the apostrophes around <code class="docutils literal notranslate"><span class="pre">s</span></code>.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>game_var;LEARNED_SKILLS;&#39;,&#39;.join(&quot;&#39;&quot; + s + &quot;&#39;&quot; for s in unit.get_field(&#39;LearnedSkills&#39;)) + &quot;,&#39;{v:AUX_SKILL}&#39;&quot;
+</pre></div>
+</div>
+<p>Now that the entry was added, we convert it back.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>set_unit_field;{unit};LearnedSkills;sorted([{v:LEARNED_SKILLS}])
+</pre></div>
+</div>
+<p>Since that string has no use past this point, it can be added along the field update command.</p>
+</section>
+<section id="step-4-4-auto-equip-the-new-skill">
+<h3>Step 4.4: Auto equip the new skill<a class="headerlink" href="Skill-Swap.html#step-4-4-auto-equip-the-new-skill" title="Link to this heading"></a></h3>
+<p>At last, we have to check if we to auto equip our skill if the unit has any vacant slot. We will adjust the code used in 3.6, but this time using the field directly.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>if;len(unit.get_field(&#39;EquippedSkills&#39;)) &lt; {v:SKILL_SWAP_CAP}
+    #...
+else
+    #...
+end
+</pre></div>
+</div>
+<p>Our previous block of code will be added inside the <code class="docutils literal notranslate"><span class="pre">True</span></code> output branch, and we will follow it up by assigning the skill to the unit.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>#...
+give_skill;{unit};{v:AUX_SKILL};
+</pre></div>
+</div>
+<p>Of course, our <code class="docutils literal notranslate"><span class="pre">EquippedSkills</span></code> field has to be updated as well, just like in 4.3.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>game_var;EQUIPPED_SKILLS;&#39;,&#39;.join(&quot;&#39;&quot; + s + &quot;&#39;&quot; for s in unit.get_field(&#39;EquippedSkills&#39;)) + &quot;,&#39;{v:AUX_SKILL}&#39;&quot;
+set_unit_field;{unit};EquippedSkills;[{v:EQUIPPED_SKILLS}]
+</pre></div>
+</div>
+<p>For the <code class="docutils literal notranslate"><span class="pre">False</span></code> side, we want to display an message and a menu for the player to pick if it wants to equip the new skill or not.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>alert;&lt;blue&gt;{e:unit.nid}&lt;/&gt; learned &lt;blue&gt;{e:DB.skills.get(&#39;{v:AUX_SKILL}&#39;).name}&lt;/&gt;;;{v:AUX_SKILL}
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">&lt;blue&gt;&lt;/&gt;</span></code> will format the message to appear more similar to the default skill unlock message.</p>
+<p>Next, we add our first menu using the <code class="docutils literal notranslate"><span class="pre">choice</span></code> command, it will pass the options <strong>Yes</strong> and <strong>No</strong>.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>choice;EQUIP_NEW_SKILL;Equip the skill?;Yes,No
+</pre></div>
+</div>
+<p>To access the player choice, we have to build comparing the retrieved value to the used in our target option.</p>
+<p>Here’s the syntax:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>if;&#39;{choice variable}&#39; == &#39;option text&#39;
+    #...
+end
+</pre></div>
+</div>
+<p>Which turns into:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>if;&#39;{v:EQUIP_NEW_SKILL}&#39; == &#39;Yes&#39;
+    #...
+end
+</pre></div>
+</div>
+<p>We can add a call for the event, though it will be one of the last things built in this guide.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>if;&#39;{v:EQUIP_NEW_SKILL}&#39; == &#39;Yes&#39;
+    trigger_script;Skill_Swap_Level_Up (Global Skill_Swap_Level_Up);{unit}
+end
+</pre></div>
+</div>
+<p>Our assembled code should look like this:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>if;len(unit.get_field(&#39;EquippedSkills&#39;)) &lt; {v:SKILL_SWAP_CAP}
+    give_skill;{unit};{v:AUX_SKILL};
+    game_var;EQUIPPED_SKILLS;&#39;,&#39;.join(&quot;&#39;&quot; + s + &quot;&#39;&quot; for s in unit.get_field(&#39;EquippedSkills&#39;)) + &quot;,&#39;{v:AUX_SKILL}&#39;&quot;
+    set_unit_field;{unit};EquippedSkills;sorted([{v:EQUIPPED_SKILLS}])
+else
+    alert;&lt;blue&gt;{e:unit.nid}&lt;/&gt; learned &lt;blue&gt;{e:DB.skills.get(&#39;{v:AUX_SKILL}&#39;).name}&lt;/&gt;;;{v:AUX_SKILL}
+    choice;EQUIP_NEW_SKILL;Equip the skill?;Yes,No
+    if;&#39;{v:EQUIP_NEW_SKILL}&#39; == &#39;Yes&#39;
+        trigger_script;Skill_Swap_Level_Up (Global Skill_Swap_Level_Up);{unit}
+    end
+end
+</pre></div>
+</div>
+</section>
+<section id="id1">
+<h3>Complete script<a class="headerlink" href="Skill-Swap.html#id1" title="Link to this heading"></a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>game_var;C_INDEX;0
+game_var;AUX_BOL;False
+game_var;AUX_SKILL;&quot;&quot;
+
+#&lt;4.1&gt;
+for;FETCHED_CLASS;game.get_data(&#39;ClassData&#39;)
+    if;&quot;{FETCHED_CLASS}&quot; == unit.klass
+        game_var;AUX_BOL;True
+    end
+    if;not {v:AUX_BOL}
+        inc_game_var;C_INDEX
+    end
+endf
+game_var;AUX_INT;{e:DB.classes.get(&#39;{e:unit.klass}&#39;).tier}
+
+#&lt;4.2&gt;
+if;unit.level == max (1, 5 * {v:AUX_INT} - 5)
+    game_var;AUX_SKILL;game.get_data(&#39;ClassData&#39;)[{v:C_INDEX}].skill1
+elif;unit.klass in (&#39;Bride&#39;, &#39;Dancer&#39;, &#39;Dread Fighter&#39;, &#39;Manakete&#39;, &#39;Taguel&#39;, &#39;Villager&#39;) and unit.level == 15
+    game_var;AUX_SKILL;game.get_data(&#39;ClassData&#39;)[{v:C_INDEX}].skill2
+elif;unit.level == 5 * {v:AUX_INT} + 5
+    game_var;AUX_SKILL;game.get_data(&#39;ClassData&#39;)[{v:C_INDEX}].skill2
+end
+
+if;&#39;{v:AUX_SKILL}&#39; and &#39;{v:AUX_SKILL}&#39; not in unit.get_field(&#39;LearnedSkills&#39;)
+
+    #&lt;4.3&gt;
+    game_var;LEARNED_SKILLS;&#39;,&#39;.join(&quot;&#39;&quot; + s + &quot;&#39;&quot; for s in unit.get_field(&#39;LearnedSkills&#39;)) + &quot;,&#39;{v:AUX_SKILL}&#39;&quot;
+    set_unit_field;{unit};LearnedSkills;sorted([{v:LEARNED_SKILLS}])
+
+    #&lt;4.4&gt;
+    if;len(unit.get_field(&#39;EquippedSkills&#39;)) &lt; {v:SKILL_SWAP_CAP}
+        game_var;EQUIPPED_SKILLS;&#39;,&#39;.join(&quot;&#39;&quot; + s + &quot;&#39;&quot; for s in unit.get_field(&#39;EquippedSkills&#39;)) + &quot;,&#39;{v:AUX_SKILL}&#39;&quot;
+        set_unit_field;{unit};EquippedSkills;[{v:EQUIPPED_SKILLS}]
+        give_skill;{unit};{v:AUX_SKILL};
+    else
+        alert_skill;&lt;blue&gt;{e:unit.nid}&lt;/&gt; learned &lt;blue&gt;{e:DB.skills.get(&#39;{v:AUX_SKILL}&#39;).name}&lt;/&gt;;;{v:AUX_SKILL}
+        choice;EQUIP_NEW_SKILL;;Yes,No
+        if;&#39;{v:EQUIP_NEW_SKILL}&#39; == &#39;Yes&#39;
+            trigger_script;Skill_Swap_Level_Up (Global Skill_Swap_Level_Up);{unit}
+        end
+    end
+
+end
+</pre></div>
+</div>
+</section>
+</section>
+<section id="step-5-create-the-skill-swap-base">
+<h2>Step 5: Create the Skill Swap base<a class="headerlink" href="Skill-Swap.html#step-5-create-the-skill-swap-base" title="Link to this heading"></a></h2>
+<p>The backstage is complete, onto the UI. This time, it will be the <code class="docutils literal notranslate"><span class="pre">Skill_Swap_Setup</span></code> event.</p>
+<section id="step-5-1-create-slot-skills">
+<h3>Step 5.1: Create Slot skills<a class="headerlink" href="Skill-Swap.html#step-5-1-create-slot-skills" title="Link to this heading"></a></h3>
+<p>But before that, there’s also an extra requirement that haven’t been addressed yet and it’s mostly a mix of technicality with some visual benefits.</p>
+<p>First, we have to understand a particular limitation regarding the engine:</p>
+<ul class="simple">
+<li><p>In order for skills to be displayed in a list with their icon, the list can’t have anything that isn’t a skill</p></li>
+<li><p>If an unit has vacant slots, it needs a text to inform it in the list.</p></li>
+<li><p>If all of the learned skills are already equipped, the learned skill needs a text to inform it in the list.</p></li>
+</ul>
+<p>This limitation applies to every single icon based list. Fortunately, it can be done with a simple workaround using two skills with no components nor icons.</p>
+<p>The first skill will be named <code class="docutils literal notranslate"><span class="pre">Add_New_Skill</span></code>, used for the equipped skills group, and the second one will be named <code class="docutils literal notranslate"><span class="pre">Empty_Skill_List</span></code>, only to be used when all the learned skills are equipped.</p>
+<p><img alt="9" src="../../../_images/91.png" /></p>
+<p>You may dismiss the <code class="docutils literal notranslate"><span class="pre">&lt;grey&gt;&lt;/&gt;</span></code> tag if you want to, but it great visual indicator that our dummy skills aren’t real skills.</p>
+</section>
+<section id="step-5-2-process-the-equipped-skills-group">
+<h3>Step 5.2: Process the equipped skills group<a class="headerlink" href="Skill-Swap.html#step-5-2-process-the-equipped-skills-group" title="Link to this heading"></a></h3>
+<p>Back to <code class="docutils literal notranslate"><span class="pre">Skill_Swap_Setup</span></code>. Our equipped skill list has to be displayed in a menu and doing so requires two key processes. The first is a conversion from tuple to string, as the <code class="docutils literal notranslate"><span class="pre">choice</span></code> only accepts the latter, and the second is the addition of the dummy skill whenever the unit presents a vacant slot.</p>
+<p>Again, we’ll rely on <code class="docutils literal notranslate"><span class="pre">','.join()</span></code>.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>game_var;EQUIPPED_SKILLS;&#39;,&#39;.join([s for s in unit.get_field(&#39;EquippedSkills&#39;)])
+</pre></div>
+</div>
+<p>For the vacant slot check, we have two distinct scenarios, one with no skills equipped at all and the other with skills equipped and a vacant slot.</p>
+<p>Let’s start by checking the size of our <code class="docutils literal notranslate"><span class="pre">EquippedSkills</span></code> field. As a tuple, we can use <code class="docutils literal notranslate"><span class="pre">len()</span></code> again.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>if;len(unit.get_field(&#39;EquippedSkills&#39;)) == 0
+    #...
+elif;len(unit.get_field(&#39;EquippedSkills&#39;)) &lt; {v:SKILL_SWAP_CAP}
+    #...
+end
+</pre></div>
+</div>
+<p>As redundant as this may look, it is vital to split these conditions when handing <code class="docutils literal notranslate"><span class="pre">choice</span></code> options.</p>
+<p>Going for the bottom condition first. We want our option list to be extended with our dummy skill.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>#...
+game_var;EQUIPPED_SKILLS;&quot;{v:EQUIPPED_SKILLS},Add_New_Skill&quot;
+</pre></div>
+</div>
+<p>Meanwhile, the empty list will receive the dummy skill and nothing else.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>#...
+game_var;EQUIPPED_SKILLS;&quot;Add_New_Skill&quot;
+</pre></div>
+</div>
+<p>Let’s run two quick tests to see the problem at hand. One with <code class="docutils literal notranslate"><span class="pre">Luna,</span> <span class="pre">Sol</span></code> as our skills, and the second one with no skill at all, both taking the <code class="docutils literal notranslate"><span class="pre">&lt;</span> <span class="pre">{v:SKILL_SWAP_CAP}</span></code> approach.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Tuple</p></th>
+<th class="head"><p>Number of<br/>entries</p></th>
+<th class="head"><p>Output</p></th>
+<th class="head"><p>Corrected<br/>output</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>‘Luna’,<br/>’Sol’</p></td>
+<td><p>2</p></td>
+<td><p>Luna, <br/>Sol</p></td>
+<td><p>Luna, <br/>Sol, <br/>(Empty skill slot)</p></td>
+</tr>
+<tr class="row-odd"><td><p></p></td>
+<td><p>0</p></td>
+<td><p></p></td>
+<td><p>,<br/>(Empty skill slot)</p></td>
+</tr>
+</tbody>
+</table>
+<p>The engine can’t find a match for that case and will return an invalid skill, which is why we need to enforce a hard reset.</p>
+<p>For the learned skill poll we’ll also need a counter in case the list is empty, but the idea is different. Since both polls should overlap, what we need to know is if the <code class="docutils literal notranslate"><span class="pre">LearnedSkill</span></code> poll is larger than the <code class="docutils literal notranslate"><span class="pre">EquippedSkill</span></code> poll, using our dummy skill only when it isn’t.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>if;len(unit.get_field(&#39;LearnedSkills&#39;)) &gt; len(unit.get_field(&#39;EquippedSkills&#39;))
+    #...
+else
+    game_var;LEARNED_SKILLS;&quot;Empty_Skill_List&quot;
+end
+</pre></div>
+</div>
+<p>To exclude the equipped skills, we can add a single condition into the <code class="docutils literal notranslate"><span class="pre">','.join()</span></code> method.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>#...
+game_var;LEARNED_SKILLS;&#39;,&#39;.join([s for s in unit.get_field(&#39;LearnedSkills&#39;) if s not in unit.get_field(&#39;EquippedSkills&#39;)])
+</pre></div>
+</div>
+<p>This will force the engine to compare if any entry exists in both tuples, only adding those exclusive to the <code class="docutils literal notranslate"><span class="pre">LearnedSkills</span></code> poll.</p>
+<p>Once assembled, it should look like this:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>game_var;EQUIPPED_SKILLS;&#39;,&#39;.join([s for s in unit.get_field(&#39;EquippedSkills&#39;)])
+if;len(unit.get_field(&#39;EquippedSkills&#39;)) == 0
+    game_var;EQUIPPED_SKILLS;&quot;Add_New_Skill&quot;
+elif;len(unit.get_field(&#39;EquippedSkills&#39;)) &lt; {v:SKILL_SWAP_CAP}
+    game_var;EQUIPPED_SKILLS;&quot;{v:EQUIPPED_SKILLS},Add_New_Skill&quot;
+end
+
+if;len(unit.get_field(&#39;LearnedSkills&#39;)) &gt; len(unit.get_field(&#39;EquippedSkills&#39;))
+    game_var;LEARNED_SKILLS;&#39;,&#39;.join([s for s in unit.get_field(&#39;LearnedSkills&#39;) if s not in unit.get_field(&#39;EquippedSkills&#39;)])
+else
+    game_var;LEARNED_SKILLS;&quot;Empty_Skill_List&quot;
+end
+</pre></div>
+</div>
+</section>
+<section id="step-5-3-build-the-equipped-skills-menu">
+<h3>Step 5.3: Build the equipped skills menu<a class="headerlink" href="Skill-Swap.html#step-5-3-build-the-equipped-skills-menu" title="Link to this heading"></a></h3>
+<p>At this point we will be able to check our background work in action. Most of the work has already been done so we just need to set the menu. Since it is an extensive line with a lot of colons, we’ll go over each item for a short explanation.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>choice;UNIT_EQUIPPED_SKILLS;Equipped Skills;{v:EQUIPPED_SKILLS};100;vert;top_left;;Skill_Swap_Operations (Global Skill_Swap_Operations);type_skill;{v:SKILL_SWAP_CAP},1;backable
+</pre></div>
+</div>
+<p>There are a couple of important elements to take a look at.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">100</span></code> - Since our interface uses two windows it will look better if we have a static width.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">top_left</span></code> - Again, we need to consider the second window, so we’re setting the first menu to be on the left.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Skill_Swap_Operations</span></code> - That’s our follow up event that will handle the operations, preemptively set.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">type_skill</span></code> - This will allow our skills to be displayed with an icon next to them, which is the reason our dummy skills don’t have one.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">{v:SKILL_SWAP_CAP},1</span></code> - A table size limiter, rows defined by our slot limiter and 1 column.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">backable</span></code> - This flag allows the cancel button to be used to exit the menu.</p></li>
+</ul>
+<p>That’s only equipped side of the our menu. For the learned skills we will emulate the same visuals through a static <code class="docutils literal notranslate"><span class="pre">table</span></code>.  Bear in mind that the table has to encapsulate the <code class="docutils literal notranslate"><span class="pre">choice</span></code> we just build.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>table;UNIT_RIGHT_SKILLS;{v:LEARNED_SKILLS};Learned Skills;{v:SKILL_SWAP_CAP},1;100;top_right;menu_bg_base (menu_bg_base);type_skill
+#...
+remove_table;UNIT_RIGHT_SKILLS
+</pre></div>
+</div>
+<p><small><em>The table name doesn’t matter.</em> </small></p>
+<p>As you can see, some properties are identical to the menu and we have <code class="docutils literal notranslate"><span class="pre">top_right</span></code> as a counterpart.</p>
+<p>Our event should look like this:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>game_var;EXIT_SKILL_SWAP;True
+game_var;EQUIPPED_SKILLS;&#39;,&#39;.join([s for s in unit.get_field(&#39;EquippedSkills&#39;)])
+if;len(unit.get_field(&#39;EquippedSkills&#39;)) == 0
+    game_var;EQUIPPED_SKILLS;&quot;Add_New_Skill&quot;
+elif;len(unit.get_field(&#39;EquippedSkills&#39;)) &lt; {v:SKILL_SWAP_CAP}
+    game_var;EQUIPPED_SKILLS;&quot;{v:EQUIPPED_SKILLS},Add_New_Skill&quot;
+end
+
+if;len(unit.get_field(&#39;LearnedSkills&#39;)) &gt; len(unit.get_field(&#39;EquippedSkills&#39;))
+    game_var;LEARNED_SKILLS;&#39;,&#39;.join([s for s in unit.get_field(&#39;LearnedSkills&#39;) if s not in unit.get_field(&#39;EquippedSkills&#39;)])
+else
+    game_var;LEARNED_SKILLS;&quot;Empty_Skill_List&quot;
+end
+
+table;UNIT_RIGHT_SKILLS;{v:LEARNED_SKILLS};Learned Skills;{v:SKILL_SWAP_CAP},1;100;top_right;menu_bg_base (menu_bg_base);type_skill
+choice;UNIT_EQUIPPED_SKILLS;Equipped Skills;{v:EQUIPPED_SKILLS};100;vert;top_left;;Skill_Swap_Operations (Global Skill_Swap_Operations);type_skill;{v:SKILL_SWAP_CAP},1;backable
+rmtable;UNIT_RIGHT_SKILLS
+</pre></div>
+</div>
+</section>
+<section id="step-5-4-add-a-refresh-mechanism">
+<h3>Step 5.4: Add a refresh mechanism<a class="headerlink" href="Skill-Swap.html#step-5-4-add-a-refresh-mechanism" title="Link to this heading"></a></h3>
+<p>Another particular issue with skill swap is that our lists are both persistent and dynamic. While we have a flag for the first, we don’t have any tool that allows our choice list to be updated while active. The only resource we have to update those lists is by resetting it once it finishes any operation request.</p>
+<p>Of course, this can lead to another issue, getting stuck in an infinite looping. We can avoid that by adding a condition to our refresh mechanism.</p>
+<p>At the very top of the event script, we have to add our variable and its value.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>game_var;EXIT_SKILL_SWAP;True
+</pre></div>
+</div>
+<p>And at the very end, the condition with the opposite value.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>if;not {v:EXIT_SKILL_SWAP}
+    #...
+end
+</pre></div>
+</div>
+<p>As for the syntax, we’ll just use <code class="docutils literal notranslate"><span class="pre">trigger_script</span></code>, but referencing the own event.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>#...
+trigger_script;Skill_Swap_Setup (Global Skill_Swap_Setup)
+</pre></div>
+</div>
+<p>As it is, the condition will be ignored every time. We will address that at the start of <code class="docutils literal notranslate"><span class="pre">Skill_Swap_Setup</span></code>.</p>
+</section>
+<section id="id2">
+<h3>Complete script<a class="headerlink" href="Skill-Swap.html#id2" title="Link to this heading"></a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>game_var;EXIT_SKILL_SWAP;True
+
+#&lt;5.2&gt;
+game_var;EQUIPPED_SKILLS;&#39;,&#39;.join([s for s in unit.get_field(&#39;EquippedSkills&#39;)])
+if;len(unit.get_field(&#39;EquippedSkills&#39;)) == 0
+    game_var;EQUIPPED_SKILLS;&quot;Add_New_Skill&quot;
+elif;len(unit.get_field(&#39;EquippedSkills&#39;)) &lt; {v:SKILL_SWAP_CAP}
+    game_var;EQUIPPED_SKILLS;&quot;{v:EQUIPPED_SKILLS},Add_New_Skill&quot;
+end
+
+if;len(unit.get_field(&#39;LearnedSkills&#39;)) &gt; len(unit.get_field(&#39;EquippedSkills&#39;))
+    game_var;LEARNED_SKILLS;&#39;,&#39;.join([s for s in unit.get_field(&#39;LearnedSkills&#39;) if s not in unit.get_field(&#39;EquippedSkills&#39;)])
+else
+    game_var;LEARNED_SKILLS;&quot;Empty_Skill_List&quot;
+end
+
+#&lt;5.3&gt;
+game_var;EXIT_SKILL_SWAP;True
+game_var;EQUIPPED_SKILLS;&#39;,&#39;.join([s for s in unit.get_field(&#39;EquippedSkills&#39;)])
+if;len(unit.get_field(&#39;EquippedSkills&#39;)) == 0
+    game_var;EQUIPPED_SKILLS;&quot;Add_New_Skill&quot;
+elif;len(unit.get_field(&#39;EquippedSkills&#39;)) &lt; {v:SKILL_SWAP_CAP}
+    game_var;EQUIPPED_SKILLS;&quot;{v:EQUIPPED_SKILLS},Add_New_Skill&quot;
+end
+
+if;len(unit.get_field(&#39;LearnedSkills&#39;)) &gt; len(unit.get_field(&#39;EquippedSkills&#39;))
+    game_var;LEARNED_SKILLS;&#39;,&#39;.join([s for s in unit.get_field(&#39;LearnedSkills&#39;) if s not in unit.get_field(&#39;EquippedSkills&#39;)])
+else
+    game_var;LEARNED_SKILLS;&quot;Empty_Skill_List&quot;
+end
+
+table;UNIT_RIGHT_SKILLS;{v:LEARNED_SKILLS};Learned Skills;{v:SKILL_SWAP_CAP},1;100;top_right;menu_bg_base (menu_bg_base);type_skill
+choice;UNIT_EQUIPPED_SKILLS;Equipped Skills;{v:EQUIPPED_SKILLS};100;vert;top_left;;Skill_Swap_Operations (Global Skill_Swap_Operations);type_skill;{v:SKILL_SWAP_CAP},1;backable
+rmtable;UNIT_RIGHT_SKILLS
+
+#&lt;5.4&gt;
+if;not {v:EXIT_SKILL_SWAP}
+    trigger_script;Skill_Swap_Setup (Global Skill_Swap_Setup)
+end
+</pre></div>
+</div>
+</section>
+</section>
+<section id="step-6-add-skill-swap-as-a-menu-option">
+<h2>Step 6: Add skill swap as a menu option<a class="headerlink" href="Skill-Swap.html#step-6-add-skill-swap-as-a-menu-option" title="Link to this heading"></a></h2>
+<p>This time, we don’t have defined event. We’ll use any available event that <strong>wasn’t used in this guide</strong> and has the <code class="docutils literal notranslate"><span class="pre">level_start</span></code> trigger. If you don’t have any, create a new one with any nameyou want.</p>
+<p>In this external event, we’ll add Skill Swap as a menu option for base and/or battle preparation, targeting the <code class="docutils literal notranslate"><span class="pre">Skill_Swap_Select</span></code> event.</p>
+<p>Both use a similar syntax structure.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>base;;;Skill Swap;;Skill_Swap_Select
+prep;;;Skill Swap;;Skill_Swap_Select
+</pre></div>
+</div>
+<p><small><em>Both commands will overwrite whichever previous iteration of them by default. Be sure to adjust them for a merge in case they are used elsewhere.</em></small></p>
+<p>The first field set is the option text, and the second one is the event being called.</p>
+<p>Now we have to build a menu for our units in <code class="docutils literal notranslate"><span class="pre">Skill_Swap_Select</span></code>. For this guide, we’ll use the DEBUG chapter and list the playable units in there. Just for fun, we’ll add Bone as well.</p>
+<p>Same as we did with the previous menu, fill a string with all the nids and use it on the <code class="docutils literal notranslate"><span class="pre">choice</span></code> command.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>game_var;AUX_STR;&quot;Eirika,Vanessa,Seth,Moulder,Bone&quot;
+choice;SELECTED_UNIT;Swap skills from which unit?;{v:AUX_STR};73;;top_left;;Target_Fix (Global Target_Fix);type_unit;8,3;scroll_bar;persist;backable
+</pre></div>
+</div>
+<p>A couple of things to notice:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">type_unit</span></code> - This option adds each unit class animated sprite to the list as well. It is a great visual component but may cause a massive lag spike as well. A good alternative for it is <code class="docutils literal notranslate"><span class="pre">type_chibi</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scroll_bar</span></code> - Enables a scroll bar. It’s a great tool to use whith menus that have fixed size.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">persist</span></code> - Maintains the menu open until the user hits the back key. It can be used since the options won’t be changed during the operation.</p></li>
+</ul>
+<p>Lastly, we add a single line of code to <code class="docutils literal notranslate"><span class="pre">Target_Fix</span></code>.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>trigger_script;Skill_Swap_Setup (Global Skill_Swap_Setup);{v:SELECTED_UNIT}
+</pre></div>
+</div>
+<p>As the name implies, we’re just fixing the event target so we can access it directly as <code class="docutils literal notranslate"><span class="pre">unit</span></code>. You may use <code class="docutils literal notranslate"><span class="pre">{v:SELECTED_UNIT}</span></code> but it can lead to a couple of issues depending on how the event flux is defined.</p>
+<p>We can finally see some of our work done by running a chapter. Try out with different classes, tiers and unit levels to see if everything is being listed as expected. You can also add extra skills by following step 3.7+.</p>
+</section>
+<section id="step-7-build-the-skill-swap-operations-event">
+<h2>Step 7: Build the Skill Swap Operations event<a class="headerlink" href="Skill-Swap.html#step-7-build-the-skill-swap-operations-event" title="Link to this heading"></a></h2>
+<p>Now that our base UI elements are either set or implemented, we have to build <code class="docutils literal notranslate"><span class="pre">Skill_Swap_Operations</span></code>. This event will act as a HUB between the previous menu and the real operations performed in the system. Just as said in 5.4, we need to set the refresh control variable to its opposite value.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>game_var;EXIT_SKILL_SWAP;False
+</pre></div>
+</div>
+<p>Here’s how the trick work, as long as <code class="docutils literal notranslate"><span class="pre">Skill_Swap_Operations</span></code> event happens, the <code class="docutils literal notranslate"><span class="pre">Skill_Swap_Setup</span></code> event will be restarted.</p>
+<p>Except for <strong>Cancel</strong>, all of our operations are dependent on context, and will be available at the same time. We need to set an order for them and cover all the scenarios where each option is eligible.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Option</p></th>
+<th class="head"><p>Equipped<br/>skill selected</p></th>
+<th class="head"><p>Learned<br/>skill poll<br/>size</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Add</strong></p></td>
+<td><p>Dummy</p></td>
+<td><p>Not zero</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Swap</strong></p></td>
+<td><p>Not dummy</p></td>
+<td><p>Not zero</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Remove</strong></p></td>
+<td><p>Not dummy</p></td>
+<td><p>Any</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Reorder</strong></p></td>
+<td><p>Last non-dummy skill<br/>in the list</p></td>
+<td><p>Any</p></td>
+</tr>
+</tbody>
+</table>
+<p><small> <em>One important thing to have in mind is that order we set our options will also be the order they will appear in the menu. The options were listed from most to least used.</em> </small></p>
+<p>Before getting into the filtering, let’s restart <code class="docutils literal notranslate"><span class="pre">AUX_STR</span></code> so it can be safely used for our string block.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>game_var;AUX_STR;&quot;&quot;
+</pre></div>
+</div>
+<p>Let’s take the two top options first. They share the same condition regarding the status of learned skills but opposite binary on the learned skill side. In both cases, we can check if value of <code class="docutils literal notranslate"><span class="pre">LEARNED_SKILLS</span></code> and <code class="docutils literal notranslate"><span class="pre">UNIT_EQUIPPED_SKILLS</span></code> match their corresponding dummies.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>if;&quot;{v:LEARNED_SKILLS}&quot; != &quot;Empty_Skill_List&quot;
+    if;&quot;{v:UNIT_EQUIPPED_SKILLS}&quot; == &#39;Add_New_Skill&#39;
+        #...
+    else
+        #...
+    end
+end
+</pre></div>
+</div>
+<p>As these may be the starting ends of a chain, we need to settle them as the text for the first option followed by a comma.</p>
+<p>It should look like this:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>if;&quot;{v:LEARNED_SKILLS}&quot; != &quot;Empty_Skill_List&quot;
+    if;&quot;{v:UNIT_EQUIPPED_SKILLS}&quot; == &#39;Add_New_Skill&#39;
+        game_var;AUX_STR;&quot;Add,&quot;
+    else
+        game_var;AUX_STR;&quot;Swap,&quot;
+    end
+end
+</pre></div>
+</div>
+<p>For <strong>Remove</strong>, the only condition is that our skill is something other than the dummy. This time, we’ll increment our variable with the <strong>Remove</strong> option instead of setting it, as it can either be the first option or come after <strong>Swap</strong>.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>if;&quot;{v:UNIT_EQUIPPED_SKILLS}&quot; != &quot;Add_New_Skill&quot;
+    game_var;AUX_STR;&quot;{v:AUX_STR}&quot; + &quot;Remove,&quot;
+    #...
+end
+</pre></div>
+</div>
+<p>Same thing for <strong>Reorder</strong>, but checking if our selected skill isn’t the first index in our tuple.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>#...
+if;unit.get_field(&#39;EquippedSkills&#39;)[0] != &#39;{v:UNIT_EQUIPPED_SKILLS}&#39;
+    game_var;AUX_STR;&quot;{v:AUX_STR}&quot; + &quot;Reorder,&quot;
+end
+</pre></div>
+</div>
+<p>We wrap it up by setting a <strong>choice</strong>, acting as our second menu.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>choice;SKILL_SWAP_OPERATION;;{v:AUX_STR}Cancel;40;backable
+</pre></div>
+</div>
+<p>It may not look elegant but we have no need to add an extra line just to stich <strong>Cancel</strong> in our menu. It will only be used in single particular case where none of the other options is eligible.</p>
+<p>The complete structure should look like this:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>game_var;AUX_STR;&quot;&quot;
+if;&quot;{v:LEARNED_SKILLS}&quot; != &quot;Empty_Skill_List&quot;
+    if;&quot;{v:UNIT_EQUIPPED_SKILLS}&quot; == &#39;Add_New_Skill&#39;
+        game_var;AUX_STR;&quot;Add,&quot;
+    else
+        game_var;AUX_STR;&quot;Swap,&quot;
+    end
+end
+if;&#39;{v:UNIT_EQUIPPED_SKILLS}&#39; != &#39;Add_New_Skill&#39;
+    game_var;AUX_STR;&quot;{v:AUX_STR}&quot; + &quot;Remove,&quot;
+    if;unit.get_field(&#39;EquippedSkills&#39;)[0] != &#39;{v:UNIT_EQUIPPED_SKILLS}&#39;
+        game_var;AUX_STR;&quot;{v:AUX_STR}&quot; + &quot;Reorder,&quot;
+    end
+end
+choice;SKILL_SWAP_OPERATION;;{v:AUX_STR}Cancel;40;backable
+</pre></div>
+</div>
+<p>Following it, we can set our option branches checkers, and get them to pre-emptively call each individual event:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>if;&#39;{v:SKILL_SWAP_OPERATION}&#39; == &#39;Remove&#39;
+    trigger_script;Skill_Swap_Remove (Global Skill_Swap_Remove);
+elif;&#39;{v:SKILL_SWAP_OPERATION}&#39; == &#39;Reorder&#39;
+    trigger_script;Skill_Swap_Reorder (Global Skill_Swap_Reorder);
+elif;&#39;{v:SKILL_SWAP_OPERATION}&#39; == &#39;Add&#39;
+    trigger_script;Skill_Swap_Add (Global Skill_Swap_Add);{unit}
+elif;&#39;{v:SKILL_SWAP_OPERATION}&#39; == &#39;Swap&#39;
+    trigger_script;Skill_Swap_Replace (Global Skill_Swap_Replace);
+end
+</pre></div>
+</div>
+<section id="id3">
+<h3>Complete script<a class="headerlink" href="Skill-Swap.html#id3" title="Link to this heading"></a></h3>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>game_var;EXIT_SKILL_SWAP;False
+game_var;AUX_STR;&quot;&quot;
+if;&quot;{v:LEARNED_SKILLS}&quot; != &quot;Empty_Skill_List&quot;
+    if;&quot;{v:UNIT_EQUIPPED_SKILLS}&quot; == &#39;Add_New_Skill&#39;
+        game_var;AUX_STR;&quot;Add,&quot;
+    else
+        game_var;AUX_STR;&quot;Swap,&quot;
+    end
+end
+if;&#39;{v:UNIT_EQUIPPED_SKILLS}&#39; != &#39;Add_New_Skill&#39;
+    game_var;AUX_STR;&quot;{v:AUX_STR}&quot; + &quot;Remove,&quot;
+    if;unit.get_field(&#39;EquippedSkills&#39;)[0] != &quot;{v:AUX_SKILL}&quot;
+        game_var;AUX_STR;&quot;{v:AUX_STR}&quot; + &quot;Reorder,&quot;
+    end
+end
+
+choice;SKILL_SWAP_OPERATION;;{v:AUX_STR}Cancel;40;backable
+
+if;&#39;{v:SKILL_SWAP_OPERATION}&#39; == &#39;Remove&#39;
+    trigger_script;Skill_Swap_Remove (Global Skill_Swap_Remove);
+elif;&#39;{v:SKILL_SWAP_OPERATION}&#39; == &#39;Reorder&#39;
+    trigger_script;Skill_Swap_Reorder (Global Skill_Swap_Reorder);
+elif;&#39;{v:SKILL_SWAP_OPERATION}&#39; == &#39;Add&#39;
+    trigger_script;Skill_Swap_Add (Global Skill_Swap_Add);{unit}
+elif;&#39;{v:SKILL_SWAP_OPERATION}&#39; == &#39;Swap&#39;
+    trigger_script;Skill_Swap_Replace (Global Skill_Swap_Replace);
+end
+</pre></div>
+</div>
+</section>
+</section>
+<section id="step-8-build-the-operations">
+<h2>Step 8: Build the operations<a class="headerlink" href="Skill-Swap.html#step-8-build-the-operations" title="Link to this heading"></a></h2>
+<p>At this point you may do them in whichever order you want, however they are ordered by complexity. They also share lines of code and those won’t be explained past the first occurence.</p>
+<p>All of the operations will use <code class="docutils literal notranslate"><span class="pre">EquippedSkills</span></code> tuple. Retrieving its value, then changing one of the indexes, and end with an update with the corrected data.</p>
+<p>Remember, every single option below has to be done in its respective named event. Check the table of contents or the previous step to get their names correctly if you haven’t created them already.</p>
+<section id="step-8-a-remove">
+<h3>Step 8.A: Remove<a class="headerlink" href="Skill-Swap.html#step-8-a-remove" title="Link to this heading"></a></h3>
+<p>Goal is simple, check which of the skills in our tuple is the one selected, then build a new tuple without it. We must start by emptying <code class="docutils literal notranslate"><span class="pre">AUX_STR</span></code>.</p>
+<p>Next, we check which index in <code class="docutils literal notranslate"><span class="pre">EquippedSkills</span></code> matches our skill. Since we’re building the tuple again, we want to check the <code class="docutils literal notranslate"><span class="pre">False</span></code> output and stack that information in our string.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>for;FETCHED_SKILL;unit.get_field(&#39;EquippedSkills&#39;)
+    if;&#39;{FETCHED_SKILL}&#39; != &#39;{v:UNIT_EQUIPPED_SKILLS}&#39;
+        game_var;AUX_STR;&quot;{v:AUX_STR}&quot; + &quot;&#39;{FETCHED_SKILL}&#39;,&quot;
+    end
+endf
+</pre></div>
+</div>
+<p>All that is left to do is remove the skill from the unit and update the field with the new tuple data.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>remove_skill;{unit};{v:UNIT_EQUIPPED_SKILLS}
+set_unit_field;{unit};EquippedSkills;[{v:AUX_STR}]
+</pre></div>
+</div>
+<p>The end result should be:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>game_var;AUX_STR;&quot;&quot;
+for;FETCHED_SKILL;unit.get_field(&#39;EquippedSkills&#39;)
+    if;&#39;{FETCHED_SKILL}&#39; != &#39;{v:UNIT_EQUIPPED_SKILLS}&#39;
+        game_var;AUX_STR;&quot;{v:AUX_STR}&quot; + &quot;&#39;{FETCHED_SKILL}&#39;,&quot;
+    end
+endf
+remove_skill;{unit};{v:UNIT_EQUIPPED_SKILLS}
+set_unit_field;{unit};EquippedSkills;[{v:AUX_STR}]
+</pre></div>
+</div>
+</section>
+<section id="step-8-b-reorder">
+<h3>Step 8.B: Reorder<a class="headerlink" href="Skill-Swap.html#step-8-b-reorder" title="Link to this heading"></a></h3>
+<p><strong>Reorder</strong> is almost identical to remove. We’ll only change the first line to set the selected skill as <code class="docutils literal notranslate"><span class="pre">AUX_STR</span></code>’s value.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>game_var;AUX_STR;&quot;&#39;{v:UNIT_EQUIPPED_SKILLS}&#39;,&quot;
+</pre></div>
+</div>
+<p>By doing this, the new tuple will start with the selected skill data as index 0. So we just need to remove original entry.</p>
+<p>We can copy the remaining structure of 8.A, and delete the line that removes our selected skill. The skill is being kept after all.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>for;FETCHED_SKILL;unit.get_field(&#39;EquippedSkills&#39;)
+    if;&#39;{FETCHED_SKILL}&#39; != &#39;{v:UNIT_EQUIPPED_SKILLS}&#39;
+        game_var;AUX_STR;&quot;{v:AUX_STR}&quot; + &quot;&#39;{FETCHED_SKILL}&#39;,&quot;
+    end
+endf
+
+`remove_skill;{unit};{v:UNIT_EQUIPPED_SKILLS}`
+
+set_unit_field;{unit};EquippedSkills;[{v:AUX_STR}]
+</pre></div>
+</div>
+<p>The end result should be:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>game_var;AUX_STR;&quot;&#39;{v:UNIT_EQUIPPED_SKILLS}&#39;,&quot;
+for;FETCHED_SKILL;unit.get_field(&#39;EquippedSkills&#39;)
+    if;&#39;{FETCHED_SKILL}&#39; != &#39;{v:UNIT_EQUIPPED_SKILLS}&#39;
+        game_var;AUX_STR;&quot;{v:AUX_STR}&quot; + &quot;&#39;{FETCHED_SKILL}&#39;,&quot;
+    end
+endf
+set_unit_field;{unit};EquippedSkills;[{v:AUX_STR}]
+</pre></div>
+</div>
+</section>
+<section id="step-8-c-add">
+<h3>Step 8.C: Add<a class="headerlink" href="Skill-Swap.html#step-8-c-add" title="Link to this heading"></a></h3>
+<p>This time, we’ll need to access our right panel. Turns out, we can’t as that is a static information window.</p>
+<p>The workaround for this is building a menu using the exact same properties to cover it completely.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>choice;UNIT_LEARNED_SKILLS;Learned Skills;{v:LEARNED_SKILLS};100;vert;top_right;;;type_skill;{v:SKILL_SWAP_CAP},1;scroll_bar;backable
+</pre></div>
+</div>
+<p>The selected skill can be added directly to our unit.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>give_skill;{unit};{v:UNIT_LEARNED_SKILLS}
+</pre></div>
+</div>
+<p>And then to our tuple. As usual, we will have to convert it into a string, then add our new skill, and convert it back into a tuple. This time, it can be done directly into the <code class="docutils literal notranslate"><span class="pre">','.join()</span></code> method.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>game_var;LIST_STRING;&#39;,&#39;.join([&quot;&#39;&quot; + s + &quot;&#39;&quot; for s in unit.get_field(&#39;EquippedSkills&#39;)]) + &quot;,&#39;{v:UNIT_LEARNED_SKILLS}&#39;&quot;
+</pre></div>
+</div>
+<p>There’s still the possibility, even if marginal, that a player may remove all of the equipped skills first, which can lead to a major error in our system.</p>
+<p>It can be patched by checking the tuple size first, and take the selected skill directly as the new tuple value. We can save a bit of trouble by copying the value from <code class="docutils literal notranslate"><span class="pre">UNIT_LEARNED_SKILLS</span></code> into a string with the proper formatting.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>if;len(unit.get_field(&#39;EquippedSkills&#39;)) &gt; 0
+    game_var;AUX_STR;&quot;,&#39;{v:AUX_UNIT_LEARNED_SKILLS}&#39;&quot;
+else
+    game_var;AUX_STR;&quot;&#39;{v:AUX_UNIT_LEARNED_SKILLS}&#39;&quot;
+end
+#...
+</pre></div>
+</div>
+<p>Of course, this means we have to fix the previous line  with the string in mind. and move it past the previous condition.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>#...
+game_var;AUX_STR;&#39;,&#39;.join(&quot;&#39;&quot; + s + &quot;&#39;&quot; for s in unit.get_field(&#39;EquippedSkills&#39;)) + &quot;{v:AUX_STR}&quot;
+</pre></div>
+</div>
+<p>The last thing we have to do is to address the <code class="docutils literal notranslate"><span class="pre">backable</span></code> set on our <code class="docutils literal notranslate"><span class="pre">choice</span></code> command. When the menu is cancelled, the variable <code class="docutils literal notranslate"><span class="pre">UNIT_LEARNED_SKILLS</span></code> will still “BACK” as its new value, which isn’t a valid skill. We have to encapsulate all of the code below the <code class="docutils literal notranslate"><span class="pre">choice</span></code> command.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>if;&#39;{v:UNIT_LEARNED_SKILLS}&#39; != &#39;BACK&#39;
+    #...
+end
+</pre></div>
+</div>
+<p>Last, we have to update the field.</p>
+<p>The end result should be:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>choice;UNIT_LEARNED_SKILLS;Learned Skills;{v:LEARNED_SKILLS};100;vert;top_right;;;type_skill;{v:SKILL_SWAP_CAP},1;scroll_bar;backable
+if;&#39;{v:UNIT_LEARNED_SKILLS}&#39; != &#39;BACK&#39;
+    give_skill;{unit};{v:UNIT_LEARNED_SKILLS}
+    if;len(unit.get_field(&#39;EquippedSkills&#39;)) &gt; 0
+        game_var;AUX_STR;&quot;,&#39;{v:AUX_UNIT_LEARNED_SKILLS}&#39;&quot;
+    else
+        game_var;AUX_STR;&quot;&#39;{v:AUX_UNIT_LEARNED_SKILLS}&#39;&quot;
+    end
+    game_var;AUX_STR;&#39;,&#39;.join(&quot;&#39;&quot; + s + &quot;&#39;&quot; for s in unit.get_field(&#39;EquippedSkills&#39;)) + &quot;{v:AUX_STR}&quot;
+    set_unit_field;{unit};EquippedSkills;[{v:AUX_STR}]
+end
+</pre></div>
+</div>
+</section>
+<section id="step-8-d-replace">
+<h3>Step 8.D: Replace<a class="headerlink" href="Skill-Swap.html#step-8-d-replace" title="Link to this heading"></a></h3>
+<p>In theory, <strong>Replace</strong> should be a direct combination of <strong>Add</strong> and <strong>Remove</strong>, but there is more to do if you really want to commit to the idea of slots. In this case, skill being added has to be displayed in the same position as the one that was removed.</p>
+<p>We’ll start by taking the pieces that work from those two elements. From <strong>Add</strong>, we’ll take the menu structure and “BACK” condition, from <strong>Remove</strong> we take the <code class="docutils literal notranslate"><span class="pre">AUX_STR</span></code> reset and the field loop.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>choice;UNIT_LEARNED_SKILLS;Learned Skills;{v:LEARNED_SKILLS};100;vert;top_right;;;type_skill;{v:SKILL_SWAP_CAP},1;scroll_bar;backable
+if;&#39;{v:UNIT_LEARNED_SKILLS}&#39; != &#39;BACK&#39;
+    game_var;AUX_STR;&quot;&quot;
+    for;FETCHED_SKILL;unit.get_field(&#39;EquippedSkills&#39;)
+        #...
+    endf
+end
+</pre></div>
+</div>
+<p>For our bit of original code, we want to check which slot our equipped skills is in.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>if;&#39;{FETCHED_SKILL}&#39; == &#39;{v:UNIT_EQUIPPED_SKILLS}&#39;
+    #...
+else
+    #...
+end
+</pre></div>
+</div>
+<p>Let’s address the <code class="docutils literal notranslate"><span class="pre">else</span></code> branch first. When it comes to the engine side, the skills are displayed in the order they were added to the unit. This means that to manipulate that visual aspect, we need to remove all of the skills and add them again.</p>
+<p>We’ll do just that and start building our tuple as well.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>#...
+game_var;AUX_STR;&quot;{v:AUX_STR}&quot; + &quot;&#39;{FETCHED_SKILL}&#39;,&quot;
+remove_skill;{unit};{FETCHED_SKILL};no_banner
+give_skill;{unit};{FETCHED_SKILL};no_banner
+</pre></div>
+</div>
+<p>This chunk of code can be copied onto the <code class="docutils literal notranslate"><span class="pre">True</span></code> output side, replacing <code class="docutils literal notranslate"><span class="pre">FETCHED_SKILL</span></code> with the corresponding variables.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>#...
+game_var;AUX_STR;&quot;{v:AUX_STR}&quot; + &quot;&#39;{v:UNIT_LEARNED_SKILLS}&#39;,&quot;
+remove_skill;{unit};{v:UNIT_EQUIPPED_SKILLS}
+give_skill;{unit};{v:UNIT_LEARNED_SKILLS}
+</pre></div>
+</div>
+<p><small><em>Here we’re letting the engine use the default alerts for both skill commands, you may use <code class="docutils literal notranslate"><span class="pre">no_banner</span></code> to suppress it or even add a custom alert if you want to.</em></small></p>
+<p>At last, we update the field.</p>
+<p>The end result should be something like:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>choice;UNIT_LEARNED_SKILLS;Learned Skills;{v:LEARNED_SKILLS};100;vert;top_right;;;type_skill;{v:SKILL_SWAP_CAP},1;scroll_bar;backable
+if;&#39;{v:UNIT_LEARNED_SKILLS}&#39; != &#39;BACK&#39;
+    game_var;AUX_STR;&quot;&quot;
+    for;FETCHED_SKILL;unit.get_field(&#39;EquippedSkills&#39;)
+        if;&#39;{FETCHED_SKILL}&#39; == &#39;{v:UNIT_EQUIPPED_SKILLS}&#39;
+            game_var;AUX_STR;&quot;{v:AUX_STR}&quot; + &quot;&#39;{v:UNIT_LEARNED_SKILLS}&#39;,&quot;
+            remove_skill;{unit};{v:UNIT_EQUIPPED_SKILLS}
+            give_skill;{unit};{v:UNIT_LEARNED_SKILLS}
+        else
+            game_var;AUX_STR;&quot;{v:AUX_STR}&quot; + &quot;&#39;{FETCHED_SKILL}&#39;,&quot;
+            remove_skill;{unit};{FETCHED_SKILL};no_banner
+            give_skill;{unit};{FETCHED_SKILL};no_banner
+        end
+    endf
+    set_unit_field;{unit};EquippedSkills;[{v:AUX_STR}]
+end
+</pre></div>
+</div>
+</section>
+<section id="step-8-e-replace-on-level-up">
+<h3>Step 8.E: Replace on level up<a class="headerlink" href="Skill-Swap.html#step-8-e-replace-on-level-up" title="Link to this heading"></a></h3>
+<p>Here we’ll use an event that was being called in 4.4, <code class="docutils literal notranslate"><span class="pre">Skill_Swap_Level_Up</span></code>. It will be the one triggered when a skill is unlocked but the unit lacks available slots to auto-equip it.</p>
+<p>This event is almost an identical copy of replace, with the only difference being the menu, which will be the one used in <code class="docutils literal notranslate"><span class="pre">Skill_Swap_Setup</span></code>. Copy the whole code from 8.D for now.</p>
+<p>Next, we’ll add two lines of code from 5.2, the first will be added to the top of our event script, and the other will replace a counterpart from 8.D.</p>
+<p>The one being added is the line that builds the string for or menu, no adjustment is required.</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>game_var;EQUIPPED_SKILLS;&#39;,&#39;.join(s for s in unit.get_field(&#39;EquippedSkills&#39;))
+</pre></div>
+</div>
+<p>Then, we will replace <code class="docutils literal notranslate"><span class="pre">choice</span></code> command with the one from 5.2. We need to change the title and remove the associated event. None of the processing done in 5.2 is needed here as this menu will always be full.</p>
+<p>From this:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>choice;UNIT_EQUIPPED_SKILLS;Equipped Skills;{v:EQUIPPED_SKILLS};100;vert;top_left;;Skill_Swap_Operations (Global Skill_Swap_Operations);type_skill;
+</pre></div>
+</div>
+<p>To this:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>choice;UNIT_EQUIPPED_SKILLS;Replace skill?;{v:EQUIPPED_SKILLS};100;vert;top_left;;;type_skill;
+</pre></div>
+</div>
+<p>At last, replace <code class="docutils literal notranslate"><span class="pre">UNIT_LEARNED_SKILLS</span></code> with <code class="docutils literal notranslate"><span class="pre">AUX_SKILL</span></code>. It still contains the data retrieved at <code class="docutils literal notranslate"><span class="pre">Check_Skill_Unlock</span></code>.</p>
+<p>The end result should be something like:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>game_var;EQUIPPED_SKILLS;&#39;,&#39;.join(s for s in unit.get_field(&#39;EquippedSkills&#39;))
+choice;UNIT_EQUIPPED_SKILLS;Replace skill?;{v:EQUIPPED_SKILLS};100;vert;top_left;;;type_skill;backable
+if;&#39;{v:UNIT_EQUIPPED_SKILLS}&#39; != &#39;BACK&#39;
+    game_var;AUX_STR;&quot;&quot;
+    for;FETCHED_SKILL;unit.get_field(&#39;EquippedSkills&#39;)
+        if;&#39;{FETCHED_SKILL}&#39; == &#39;{v:UNIT_EQUIPPED_SKILLS}&#39;
+            game_var;AUX_STR;&quot;{v:AUX_STR}&quot; + &quot;&#39;{FETCHED_SKILL}&#39;,&quot;
+            remove_skill;{unit};{v:UNIT_EQUIPPED_SKILLS}
+            give_skill;{unit};{v:AUX_SKILL}
+        else
+            game_var;AUX_STR;&quot;{v:AUX_STR}&quot; + &quot;&#39;{FETCHED_SKILL}&#39;,&quot;
+            remove_skill;{unit};{FETCHED_SKILL};no_banner
+            give_skill;{unit};{FETCHED_SKILL};no_banner
+        end
+    endf
+    set_unit_field;{unit};EquippedSkills;[{v:AUX_STR}]
+end
+</pre></div>
+</div>
+<p>And now we have the whole system working. Bear in mind that this version of ‘replace on level up’ isn’t asking for the confirmation on the action. Users may replace skills by accident if they go too fast.</p>
+<p>This extra piece can be built using things covered in this guide, so take it as a challenge if you care for this particular scenario.</p>
+</section>
+</section>
+<section id="step-9-test-the-system">
+<h2>Step 9: Test the system<a class="headerlink" href="Skill-Swap.html#step-9-test-the-system" title="Link to this heading"></a></h2>
+<p>Congratulations, you have successfully build a skill swap system using the event editor. You can now test all the interactions and thinker with it to fill your needs.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Auras.html" class="btn btn-neutral float-left" title="3. Auras - Hex, Bond and Focus" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Creating-Capture.html" class="btn btn-neutral float-right" title="Capture skill" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, rainlash.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Overworld Editor &mdash; lt-maker  documentation</title>
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/theme_overrides.css?v=5f1687b9" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/jquery.js?v=5d32c60e"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/doctools.js?v=9a2dae69"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="https://lt-maker.readthedocs.io/en/latest/_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Event Editor" href="Event-Editor.html" />
+    <link rel="prev" title="Level Editor" href="Level-Editor.html" /> 
+<script async type="text/javascript" src="https://lt-maker.readthedocs.io/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="lt-maker" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/source/editors/Overworld-Editor.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            lt-maker
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../home.html">Lex Talionis Wiki</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Editor Guides:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Editors-Overview.html">Editors Overview</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Editors</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="Editors-Overview.html">Editors Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Level-Editor.html">Level Editor</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="Overworld-Editor.html#">Overworld Editor</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Overworld-Editor.html#overworld-editor-location-and-usage">Overworld Editor Location and Usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Overworld-Editor.html#eventing-the-overworld">Eventing the Overworld</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Overworld-Editor.html#overworld-nodes">Overworld Nodes</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Event-Editor.html">Event Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="database-editors/index.html">Database Editors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="resource-editors/index.html">Resource Editors</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Events:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../events/index.html">Events</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Guides:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guides/Guides-Overview.html">Guides Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/index.html">Guides</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">appendix:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/Text-Formatting-Commands.html">Text Formatting Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/Item-Component-Reference.html">Item Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/Skill-Component-Reference.html">Skill Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/Special-Variables.html">Special Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/Special-Tags.html">Special Tags</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/trigger-reference.html">Event Triggers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/Random-Seed-Mechanics.html">Random Seed Mechanics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/FAQ.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/Contributing_to_the_LTWiki.html">Contributing to the LTWiki</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/index.html">Code Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">lt-maker</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Editors</a></li>
+      <li class="breadcrumb-item active">Overworld Editor</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://gitlab.com/rainlash/lt-maker/blob/master/docs/source/editors/Overworld-Editor.md" class="fa fa-gitlab"> Edit on GitLab</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="overworld-editor">
+<h1>Overworld Editor<a class="headerlink" href="Overworld-Editor.html#overworld-editor" title="Link to this heading"></a></h1>
+<p>Given that you’re on a FE Hack-like engine’s repository, I dare to assume that you know what the overworld is. This page will briefly describe how to create an overworld in the editor and manage it in-game via events.</p>
+<section id="overworld-editor-location-and-usage">
+<h2>Overworld Editor Location and Usage<a class="headerlink" href="Overworld-Editor.html#overworld-editor-location-and-usage" title="Link to this heading"></a></h2>
+<p>The Overworld Editor can be accessed via the overworld tab, in much the same fashion as the Level Editor. <img alt="image" src="../../_images/Overworld1.png" /></p>
+<p>This is the overworld which ships with the <code class="docutils literal notranslate"><span class="pre">default.ltproj</span></code> project. You can use this as a base for your overworld, or create a new one. I’ll make a new one for the benefit of the reader, but it’ll be uninspired. You’ll see.</p>
+<p><strong>Click the Create New Overworld button to do the thing, and double click to enter the editor.</strong><img alt="image" src="../../_images/Overworld2.png" /></p>
+<p>On the left side, there are a lot of fields that are effectively self-explanatory.</p>
+<ul class="simple">
+<li><p><strong>Overworld ID</strong> is the internal ID of the overworld. Make it memorable, make it count.</p></li>
+<li><p><strong>World Name</strong> is the name of the overworld that will be displayed in the game to the player.</p></li>
+<li><p><strong>Overworld Theme</strong> allows you to select the theme that plays on the overworld first. Don’t be too attached; this can be changed via events, of course.</p></li>
+<li><p><strong>Select Tilemap</strong> allows you to select one of the existing tilemaps to be used as the overworld background. Given that you can import any image as a tilemap, this should allow you to use an arbitrary image of your choice - maybe even one you made yourself - as your world map.</p></li>
+<li><p><strong>Border Width</strong> is a number that indicates how thick the border of the map is. This border determines how close a cursor can get to the edge of the map. It’s fine leaving this at 0, but for those with fancy borders on their maps, it may be more immersive to make use of a more restrictive cursor area.</p></li>
+</ul>
+<p>Let’s make an uninspired overworld:</p>
+<p><img alt="image" src="../../_images/Overworld3.png" /></p>
+<p>You can see that I’ve set the border to 1. The player cannot interact with the red zone, so be sure that you don’t place anything important in it.</p>
+<p>Now, onto <strong>nodes</strong> and <strong>roads</strong>!</p>
+<p>The instructions are at the bottom of the screen, but to reiterate, all controls involve the mouse or the delete key. <strong>Left-Click</strong> selects an object; <strong>Right-Click</strong> moves it, while <strong>Ctrl+Right-Click</strong> creates roads. If a road does not start and end in a node it will not appear in game. <strong>Double-L-Click</strong> creates nodes.</p>
+<p>We can make two nodes and a road between:</p>
+<p><img alt="image" src="../../_images/Overworld4.png" />The fields are as follows:</p>
+<ul class="simple">
+<li><p><strong>Node ID:</strong> The ID of the node. You can’t choose this one, but that’s OK, because you can name the</p></li>
+<li><p><strong>Location Name</strong>: You can name it whatever you like.</p></li>
+<li><p><strong>Level:</strong> The level associated with this node. This is fairly important, as it indicates, in concert with the selected level, what set of events to use upon entering the node. Make sure to label your nodes with their proper levels!</p></li>
+<li><p>Finally, the clickable button at the bottom is the <strong>Icon Selector</strong>, where you can choose which icon to use to represent the node. You can see in the image above the use of the Forest Temple icon.</p></li>
+</ul>
+</section>
+<section id="eventing-the-overworld">
+<h2>Eventing the Overworld<a class="headerlink" href="Overworld-Editor.html#eventing-the-overworld" title="Link to this heading"></a></h2>
+<p>This is one of those sections where a picture is worth a thousand words, and a gif with 60 frames by definition would be worth sixty thousand words. Incidentally, I’ll be using the default overworld instead of the pile of garbage I created above, so please open <code class="docutils literal notranslate"><span class="pre">default.ltproj</span></code> for reference.</p>
+<p>You can find this event in <code class="docutils literal notranslate"><span class="pre">default.ltproj</span></code>, level 1, <code class="docutils literal notranslate"><span class="pre">Outro</span></code>.</p>
+<p><img alt="image" src="../../_images/Overworld5.png" /></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">speak</span><span class="p">;</span><span class="n">Eirika</span><span class="p">;</span><span class="n">Thank</span> <span class="n">you</span><span class="p">,</span> <span class="n">Tana</span><span class="o">.</span>
+<span class="n">transition</span><span class="p">;</span><span class="n">Close</span>
+<span class="n">end_skip</span>
+<span class="c1">#</span>
+<span class="c1"># Let&#39;s have some fun in the overworld. Remove the background:</span>
+<span class="n">change_background</span>
+<span class="c1"># This command is necessary to load the overworld tilemap</span>
+<span class="n">overworld_cinematic</span><span class="p">;</span><span class="n">Magvel</span> <span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="c1"># The next two commands are self-explanatory. You&#39;ll use these to manipulate overworld data.</span>
+<span class="n">reveal_overworld_node</span><span class="p">;</span><span class="n">Border</span> <span class="n">Mulan</span> <span class="p">(</span><span class="mi">0</span><span class="p">);</span><span class="n">t</span>
+<span class="n">set_overworld_position</span><span class="p">;</span><span class="n">Eirika</span><span class="s1">&#39;s Group (Eirika);Border Mulan (0)</span>
+<span class="c1">#</span>
+<span class="c1"># Here are examples of overworld animations and sounds.</span>
+<span class="c1"># Notice that they are the same as the normal tilemap commands.</span>
+<span class="n">transition</span><span class="p">;</span><span class="nb">open</span><span class="p">;</span><span class="mi">1500</span>
+<span class="n">wait</span><span class="p">;</span><span class="mi">1000</span>
+<span class="n">sound</span><span class="p">;</span><span class="n">RefreshDance</span>
+<span class="n">map_anim</span><span class="p">;</span><span class="n">AOE_Mend</span><span class="p">;</span><span class="n">Frelia</span> <span class="n">Castle</span> <span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">reveal_overworld_node</span><span class="p">;</span><span class="n">Frelia</span> <span class="n">Castle</span> <span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">wait</span><span class="p">;</span><span class="mi">500</span>
+<span class="n">sound</span><span class="p">;</span><span class="n">Mend</span>
+<span class="n">reveal_overworld_road</span><span class="p">;</span><span class="n">Border</span> <span class="n">Mulan</span> <span class="p">(</span><span class="mi">0</span><span class="p">);</span><span class="n">Frelia</span> <span class="n">Castle</span> <span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+<span class="c1">#</span>
+<span class="c1"># Because narration is more involved than dialogue, we need some different commands</span>
+<span class="c1"># to animate the narration window in.</span>
+<span class="n">toggle_narration_mode</span><span class="p">;</span><span class="nb">open</span><span class="p">;</span><span class="mi">1000</span>
+<span class="n">wait</span><span class="p">;</span><span class="mi">500</span>
+<span class="n">narrate</span><span class="p">;</span><span class="n">Narrator</span><span class="p">;</span><span class="n">Eirika</span> <span class="ow">and</span> <span class="n">her</span> <span class="n">companions</span> <span class="n">have</span> <span class="n">liberated</span> <span class="n">the</span> <span class="n">border</span> <span class="n">castle</span><span class="o">.</span>
+<span class="n">overworld_move_unit</span><span class="p">;</span><span class="n">Eirika</span><span class="s1">&#39;s Group (Eirika);Frelia Castle (2);no_block</span>
+<span class="n">narrate</span><span class="p">;</span><span class="n">Narrator</span><span class="p">;</span><span class="n">Alongside</span> <span class="n">Princess</span> <span class="n">Tana</span> <span class="n">of</span> <span class="n">Frelia</span><span class="p">,</span> <span class="n">they</span> <span class="n">ride</span> <span class="n">to</span> <span class="n">the</span> <span class="n">Frelian</span> <span class="n">Capital</span><span class="o">.</span>
+<span class="n">wait</span><span class="p">;</span><span class="mi">500</span>
+<span class="n">transition</span><span class="p">;</span><span class="n">close</span>
+<span class="n">toggle_narration_mode</span><span class="p">;</span><span class="n">close</span>
+<span class="c1">#</span>
+</pre></div>
+</div>
+<p>And you can see the results below:</p>
+<p><img alt="demo" src="../../_images/demo.gif" /></p>
+<p>Not so painful, is it? There a variety of commands that are used in the overworld. All of them are documented in the <code class="docutils literal notranslate"><span class="pre">Show</span> <span class="pre">Commands</span></code> button in the event editor; feel free to check them out.</p>
+</section>
+<section id="overworld-nodes">
+<h2>Overworld Nodes<a class="headerlink" href="Overworld-Editor.html#overworld-nodes" title="Link to this heading"></a></h2>
+<p>This guide will serve as an introduction to the “Overworld Node Menu Options” feature. If you have not done so, please read the guide on Overworlds in order to familiarize yourself with how they work, before reading this guide.</p>
+<p>Overworld Node Menu Events are basically menu options that will appear when a player selects an Overworld Node that they are standing on. When selected, these options will call an event. There are various features available to control how much access the player has to these options.</p>
+<p>To demonstrate how this feature works, we will create an Overworld Armory on Renais Castle.</p>
+<p>Before we start with the new features, let’s set up the event we need.
+<img alt="Picture1" src="../../_images/Overworld6.png" /></p>
+<p>Keeping it short and simple for tutorial purposes. This event prompts the player to select a unit from their party, and then initiates a shop with that unit. The trigger, condition, and priority for this event do not matter, Node Menu options ignore these.</p>
+<p><strong>IMPORTANT</strong>: The event <strong>MUST</strong> be Global (not tied to any level or Debug), or else it cannot be called by the Overworld Node Menu Option.</p>
+<p>Now that that’s set up, let’s walk through how to create a Node Menu Option. Navigate to the Overworld Editor, and select any node (I will be using Renais Castle, which is node NID 25 in the Sacred Stones project). To create a menu option for the node, click on the “Create Event” button.</p>
+<p><img alt="Picture2" src="../../_images/Overworld7.png" />
+<img alt="Picture3" src="../../_images/Overworld8.png" /></p>
+<p>The new option will be automatically selected, and you will be presented with the following attributes.</p>
+<p>Menu Option ID: This is the unique identifier of the option. Note that  this identifier is only unique for the Node itself (i.e., Two different nodes can have an option with the ID of “Armory”, but a single node cannot have 2 options of ID “Armory”).</p>
+<p>Display Name: This is the name that is shown to the player in the menu. Mostly just aesthetic.</p>
+<p>Event: The event this option will call. Only Global events will be available from this drop down.</p>
+<p>Visible in Menu?: Whether this option is visible in the menu by default. Can be changed during gameplay via events. If an option isn’t visible, it cannot be selected even if it is enabled. If visible but not enabled, the option will be grayed out.</p>
+<p>Can be selected?: Whether this option is enabled by default. Can be changed during gameplay via events. If an option isn’t visible, it cannot be selected even if it is enabled. If visible but not enabled, the option will be grayed out.</p>
+<p>From here, we can set up our menu option.</p>
+<p><img alt="Picture4" src="../../_images/Overworld9.png" /></p>
+<p>Our Node Menu Option is now ready! Time to test it in-engine. For this example, I have set things up such that the Overworld is triggered after the prologue, with both Border Mulan and Castle Renais being available. I have also given the party some money.</p>
+<p>We simply need to navigate the party onto Castle Renais, and… voila! Our event is available.</p>
+<p><img alt="Picture5" src="../../_images/OverworldA.png" /></p>
+<p>Let’s select our event and see what happens.
+We’re given a (kinda ugly, I didn’t care about the aesthetics) menu prompting us to select the unit to shop with.</p>
+<p><img alt="Picture6" src="../../_images/OverworldB.png" /></p>
+<p>Select any of them, and…!</p>
+<p><img alt="Picture7" src="../../_images/OverworldC.png" /></p>
+<p>The shop works!</p>
+<p>And that’s all it takes to make a simple Node Menu Option. In the next tutorial, we will explore this feature in more depth, and go over the events you can use to alter the player’s access to Node Menu Options.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Level-Editor.html" class="btn btn-neutral float-left" title="Level Editor" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Event-Editor.html" class="btn btn-neutral float-right" title="Event Editor" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, rainlash.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

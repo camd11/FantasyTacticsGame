@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Test Events &mdash; lt-maker  documentation</title>
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/theme_overrides.css?v=5f1687b9" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/jquery.js?v=5d32c60e"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/doctools.js?v=9a2dae69"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="https://lt-maker.readthedocs.io/en/latest/_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Python Eventing" href="Python-Eventing.html" />
+    <link rel="prev" title="Miscellaneous Events" href="Miscellaneous-Events.html" /> 
+<script async type="text/javascript" src="https://lt-maker.readthedocs.io/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="lt-maker" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/source/events/Test-Events.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            lt-maker
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../home.html">Lex Talionis Wiki</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Editor Guides:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../editors/Editors-Overview.html">Editors Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../editors/index.html">Editors</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Events:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Events</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="Event-Overview.html">Event Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Conditionals.html">Conditionals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Region-Events.html">Region Events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Miscellaneous-Events.html">Miscellaneous Events</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="Test-Events.html#">Test Events</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Test-Events.html#what-s-different-about-test-events">What’s different about Test Events?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Test-Events.html#test-event-at-a-specific-point">Test Event at a Specific Point</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Python-Eventing.html">Python Eventing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Event-Debugger.html">Debugger</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Guides:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guides/Guides-Overview.html">Guides Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/index.html">Guides</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">appendix:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/Text-Formatting-Commands.html">Text Formatting Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/Item-Component-Reference.html">Item Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/Skill-Component-Reference.html">Skill Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/Special-Variables.html">Special Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/Special-Tags.html">Special Tags</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/trigger-reference.html">Event Triggers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/Random-Seed-Mechanics.html">Random Seed Mechanics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/FAQ.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/Contributing_to_the_LTWiki.html">Contributing to the LTWiki</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/index.html">Code Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">lt-maker</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Events</a></li>
+      <li class="breadcrumb-item active">Test Events</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://gitlab.com/rainlash/lt-maker/blob/master/docs/source/events/Test-Events.md" class="fa fa-gitlab"> Edit on GitLab</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="test-events">
+<h1>Test Events<a class="headerlink" href="Test-Events.html#test-events" title="Link to this heading"></a></h1>
+<p>You can test your events from the Events Editor without having to test your full game.</p>
+<p>Simply press the Test Event button and then choose how you want your conditional <code class="docutils literal notranslate"><span class="pre">if</span></code> statements to be automatically resolved.</p>
+<p><img alt="TestEventButton" src="../../_images/test-event-button.png" /></p>
+<section id="what-s-different-about-test-events">
+<h2>What’s different about Test Events?<a class="headerlink" href="Test-Events.html#what-s-different-about-test-events" title="Link to this heading"></a></h2>
+<p>Many different commands <strong>will not run</strong> in a test event! In fact, most event commands will not be processed and just skipped.</p>
+<p>These are the <strong>ONLY</strong> commands that will run:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;if&quot;</span>
+<span class="s2">&quot;elif&quot;</span>
+<span class="s2">&quot;end&quot;</span>
+<span class="s2">&quot;for&quot;</span>
+<span class="s2">&quot;endf&quot;</span>
+<span class="s2">&quot;finish&quot;</span> 
+<span class="s2">&quot;wait&quot;</span>
+<span class="s2">&quot;end_skip&quot;</span>
+<span class="s2">&quot;music&quot;</span>
+<span class="s2">&quot;music_clear&quot;</span>
+<span class="s2">&quot;sound&quot;</span>
+<span class="s2">&quot;stop_sound&quot;</span>
+<span class="s2">&quot;add_portrait&quot;</span>
+<span class="s2">&quot;multi_add_portrait&quot;</span>
+<span class="s2">&quot;remove_portrait&quot;</span>
+<span class="s2">&quot;multi_remove_portrait&quot;</span>
+<span class="s2">&quot;move_portrait&quot;</span>
+<span class="s2">&quot;mirror_portrait&quot;</span>
+<span class="s2">&quot;bop_portrait&quot;</span>
+<span class="s2">&quot;expression&quot;</span>
+<span class="s2">&quot;speak_style&quot;</span>
+<span class="s2">&quot;speak&quot;</span>
+<span class="s2">&quot;unhold&quot;</span>
+<span class="s2">&quot;transition&quot;</span>
+<span class="s2">&quot;change_background&quot;</span>
+<span class="s2">&quot;table&quot;</span>
+<span class="s2">&quot;remove_table&quot;</span>
+<span class="s2">&quot;draw_overlay_sprite&quot;</span>
+<span class="s2">&quot;remove_overlay_sprite&quot;</span>
+<span class="s2">&quot;location_card&quot;</span>
+<span class="s2">&quot;credits&quot;</span>
+<span class="s2">&quot;ending&quot;</span>
+<span class="s2">&quot;paired_ending&quot;</span>
+<span class="s2">&quot;pop_dialog&quot;</span>
+<span class="s2">&quot;narrate&quot;</span>
+<span class="s2">&quot;toggle_narration_mode&quot;</span>
+<span class="s2">&quot;unpause&quot;</span>
+<span class="s2">&quot;screen_shake&quot;</span>
+</pre></div>
+</div>
+<p>In addition, you do not have access to any actual units or the game map. If you want access to these, just test your event using the real “Test Chapter” button in the editor. If you try to run a command that requires the map or actual units to exist in memory, it may skip the command or even crash.</p>
+<p>This means the Test Event button is best used for testing your dialogue scenes that don’t rely on the map.</p>
+<p><img alt="ExampleTestEvent" src="../../_images/example-test-event.png" /></p>
+</section>
+<section id="test-event-at-a-specific-point">
+<h2>Test Event at a Specific Point<a class="headerlink" href="Test-Events.html#test-event-at-a-specific-point" title="Link to this heading"></a></h2>
+<p>If you don’t want to test the full event, you can instead test the event at a specific point by clicking on the line number pane.</p>
+<p><img alt="SpecificPointTestEvent" src="../../_images/specific-point-test-event.png" /></p>
+<p>Once this symbol appears, now when you test your event, it will start from that specific line.</p>
+<p><img alt="ExampleTestEvent2" src="../../_images/example-test-event2.png" /></p>
+<p>Because the previous lines were never run, Seth’s portrait does not show up here.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Miscellaneous-Events.html" class="btn btn-neutral float-left" title="Miscellaneous Events" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Python-Eventing.html" class="btn btn-neutral float-right" title="Python Eventing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, rainlash.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

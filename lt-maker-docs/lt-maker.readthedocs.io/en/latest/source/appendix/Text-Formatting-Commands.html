@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Text Formatting Commands &mdash; lt-maker  documentation</title>
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/theme_overrides.css?v=5f1687b9" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/jquery.js?v=5d32c60e"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/doctools.js?v=9a2dae69"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="https://lt-maker.readthedocs.io/en/latest/_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Item Component Dictionary" href="Item-Component-Reference.html" />
+    <link rel="prev" title="Nihil" href="../guides/skill_item_tutorials/Nihil.html" /> 
+<script async type="text/javascript" src="https://lt-maker.readthedocs.io/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="lt-maker" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/source/appendix/Text-Formatting-Commands.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            lt-maker
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../home.html">Lex Talionis Wiki</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Editor Guides:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../editors/Editors-Overview.html">Editors Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../editors/index.html">Editors</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Events:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../events/index.html">Events</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Guides:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guides/Guides-Overview.html">Guides Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/index.html">Guides</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">appendix:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="Text-Formatting-Commands.html#">Text Formatting Commands</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Text-Formatting-Commands.html#dialogue-formatting-commands">Dialogue Formatting Commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Text-Formatting-Commands.html#general-formatting-commands">General Formatting Commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Text-Formatting-Commands.html#evaluated-descriptions">Evaluated Descriptions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Text-Formatting-Commands.html#what-are-they">What Are They</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Text-Formatting-Commands.html#evaluated-variables">Evaluated Variables</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Text-Formatting-Commands.html#examples">Examples</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Text-Formatting-Commands.html#item-ownership">Item Ownership</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Text-Formatting-Commands.html#dynamic-gender-and-pronouns">Dynamic Gender and Pronouns</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Text-Formatting-Commands.html#kill-tracker">Kill Tracker</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Text-Formatting-Commands.html#advanced-usage">Advanced Usage</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Item-Component-Reference.html">Item Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Skill-Component-Reference.html">Skill Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Special-Variables.html">Special Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Special-Tags.html">Special Tags</a></li>
+<li class="toctree-l1"><a class="reference internal" href="trigger-reference.html">Event Triggers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Random-Seed-Mechanics.html">Random Seed Mechanics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Contributing_to_the_LTWiki.html">Contributing to the LTWiki</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">Code Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">lt-maker</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Text Formatting Commands</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://gitlab.com/rainlash/lt-maker/blob/master/docs/source/appendix/Text-Formatting-Commands.md" class="fa fa-gitlab"> Edit on GitLab</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="text-formatting-commands">
+<h1>Text Formatting Commands<a class="headerlink" href="Text-Formatting-Commands.html#text-formatting-commands" title="Link to this heading"></a></h1>
+<p><em>written by rainlash</em>
+<em>last updated 2024-11-13</em></p>
+<section id="dialogue-formatting-commands">
+<h2>Dialogue Formatting Commands<a class="headerlink" href="Text-Formatting-Commands.html#dialogue-formatting-commands" title="Link to this heading"></a></h2>
+<p>In order to have your in-game dialog between characters or between the narrator and the player flow well and be more interesting to read, you can use several special dialog commands.</p>
+<p><code class="docutils literal notranslate"><span class="pre">{w},</span> <span class="pre">{wait}</span></code>: Waits for the user to press A. Automatically placed at the end of any speak command unless text ends with {no_wait}.</p>
+<p><code class="docutils literal notranslate"><span class="pre">{no_wait}</span></code>: Place at the end of a dialog and the dialog will not wait for the user to press A.</p>
+<p><code class="docutils literal notranslate"><span class="pre">{br},</span> <span class="pre">{break}</span></code>: Line break.</p>
+<p><code class="docutils literal notranslate"><span class="pre">{clear}</span></code>: Clear the text and line break.</p>
+<p><code class="docutils literal notranslate"><span class="pre">|</span></code>: shorthand for <code class="docutils literal notranslate"><span class="pre">{w}{br}</span></code> in sequence.</p>
+<p><code class="docutils literal notranslate"><span class="pre">{semicolon}</span></code>: Adds a <code class="docutils literal notranslate"><span class="pre">;</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">{lt}</span></code>: Adds a <code class="docutils literal notranslate"><span class="pre">&lt;</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">{gt}</span></code>: Adds a <code class="docutils literal notranslate"><span class="pre">&gt;</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">{lcb}</span></code>: Adds a <code class="docutils literal notranslate"><span class="pre">{</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">{rcb}</span></code>: Adds a <code class="docutils literal notranslate"><span class="pre">}</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">{tgs}</span></code>: Toggles whether the speaking sound occurs.</p>
+<p><code class="docutils literal notranslate"><span class="pre">{tgm}</span></code>: Toggles whether the portrait’s mouth will move while talking.</p>
+<p><code class="docutils literal notranslate"><span class="pre">{max_speed}</span></code>: After this command, dialog will be drawn immediately to the screen.</p>
+<p><code class="docutils literal notranslate"><span class="pre">{starting_speed}</span></code>: After this command, dialog will be drawn at the normal speed to the screen.</p>
+<p><code class="docutils literal notranslate"><span class="pre">{command:??},</span> <span class="pre">{c:??}</span></code>: Allows you to run any event command inline while dialog is being drawn to the screen. For instance: <code class="docutils literal notranslate"><span class="pre">s;Eirika;I'm...</span> <span class="pre">so....</span> <span class="pre">{c:set_expression;Eirika;CloseEyes}</span> <span class="pre">sleepy...</span></code></p>
+</section>
+<section id="general-formatting-commands">
+<h2>General Formatting Commands<a class="headerlink" href="Text-Formatting-Commands.html#general-formatting-commands" title="Link to this heading"></a></h2>
+<p>The below formatting can be used in both dialogue and most description boxes for units/items/skills/etc.</p>
+<p><code class="docutils literal notranslate"><span class="pre">&lt;red&gt;</span></code>: Can be used to turn the font to red color. Turn back to normal with <code class="docutils literal notranslate"><span class="pre">&lt;/red&gt;</span></code> or <code class="docutils literal notranslate"><span class="pre">&lt;/&gt;</span></code>. Can also use <code class="docutils literal notranslate"><span class="pre">&lt;blue&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;green&gt;</span></code>, etc.</p>
+<p><code class="docutils literal notranslate"><span class="pre">&lt;icon&gt;??&lt;/&gt;</span></code>: Paste any 16x16 icon with a name directly into the text. For instance, <code class="docutils literal notranslate"><span class="pre">&lt;icon&gt;Waffle&lt;/&gt;</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">&lt;text&gt;</span></code>: Can be used to change the font. Turn back to normal with <code class="docutils literal notranslate"><span class="pre">&lt;/text&gt;</span></code> or <code class="docutils literal notranslate"><span class="pre">&lt;/&gt;</span></code>. Can also use <code class="docutils literal notranslate"><span class="pre">&lt;nconvo&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;narrow&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;iconvo&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;bconvo&gt;</span></code>, etc.</p>
+<p><code class="docutils literal notranslate"><span class="pre">&lt;wave&gt;</span></code>: Can be used to change the text effect. Turn back to normal with <code class="docutils literal notranslate"><span class="pre">&lt;/wave&gt;</span></code> or <code class="docutils literal notranslate"><span class="pre">&lt;/&gt;</span></code>. Can also use <code class="docutils literal notranslate"><span class="pre">&lt;wave2&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;sin&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;jitter&gt;</span></code>, <code class="docutils literal notranslate"><span class="pre">&lt;jitter2&gt;</span></code>, etc.
+Advanced usage: some text effects may have arguments that can be used to customize the effect. For example, wave has a <code class="docutils literal notranslate"><span class="pre">amplitude</span></code> argument that can be used to customize the amplitude of vertical wave oscillation.
+The exact usage would look like <code class="docutils literal notranslate"><span class="pre">&lt;wave</span> <span class="pre">amplitude=4.5&gt;some</span> <span class="pre">text&lt;/&gt;</span></code>. The general format for effect arguments is <code class="docutils literal notranslate"><span class="pre">&lt;effect</span> <span class="pre">arg1=val1</span> <span class="pre">arg2=val2</span> <span class="pre">...&gt;</span></code>. Parsing for arguments is whitespace and case sensitive.
+For a full effect list look at <code class="docutils literal notranslate"><span class="pre">app/engine/graphics/text/text_effects.py</span></code>. Both <code class="docutils literal notranslate"><span class="pre">TextEffect</span></code> and <code class="docutils literal notranslate"><span class="pre">CoordinatedTextEffect</span></code> classes are available to use as text effects in dialog, and the corresponding names for each effect is under the effect class as its <code class="docutils literal notranslate"><span class="pre">nid</span></code> and the available arguments for each effect is the arguments to its <code class="docutils literal notranslate"><span class="pre">__init__</span></code> function excluding <code class="docutils literal notranslate"><span class="pre">self</span></code> and <code class="docutils literal notranslate"><span class="pre">idx</span></code> arguments.</p>
+</section>
+<section id="evaluated-descriptions">
+<h2>Evaluated Descriptions<a class="headerlink" href="Text-Formatting-Commands.html#evaluated-descriptions" title="Link to this heading"></a></h2>
+<section id="what-are-they">
+<h3>What Are They<a class="headerlink" href="Text-Formatting-Commands.html#what-are-they" title="Link to this heading"></a></h3>
+<p>Some descriptions in the editor allow you to use evaluated text. These are things like <code class="docutils literal notranslate"><span class="pre">{v:}</span></code> and <code class="docutils literal notranslate"><span class="pre">{e:}</span></code>.</p>
+<p>Specifically at the moment this includes:</p>
+<ol class="arabic simple">
+<li><p>Unit descriptions</p></li>
+<li><p>Item descriptions and skill descriptions</p></li>
+</ol>
+</section>
+<section id="evaluated-variables">
+<h3>Evaluated Variables<a class="headerlink" href="Text-Formatting-Commands.html#evaluated-variables" title="Link to this heading"></a></h3>
+<p>The evaluated text for the statements above all have access to a few common variables.</p>
+<p>Like all evaluated statements evaluated text has access to a variable called <code class="docutils literal notranslate"><span class="pre">game</span></code>. This is the variable for the game state.</p>
+<p>All descriptions also have access to a variable called <code class="docutils literal notranslate"><span class="pre">self</span></code>. This refers to the variable in the engine code that represents the object that the description belongs to. For example, the <code class="docutils literal notranslate"><span class="pre">self</span></code> variable for a unit description refers to a unit object in the engine code. Likewise for items and skills.</p>
+<p>Items and skill descriptions have access to an additional variable called <code class="docutils literal notranslate"><span class="pre">unit</span></code>. This variable refers to the unit that currently owns this item or skill. This is equivalent to the statement <code class="docutils literal notranslate"><span class="pre">{e:game.get_unit(self.owner_nid)}</span></code> and is just a convenience variable.</p>
+</section>
+<section id="examples">
+<h3>Examples<a class="headerlink" href="Text-Formatting-Commands.html#examples" title="Link to this heading"></a></h3>
+<section id="item-ownership">
+<h4>Item Ownership<a class="headerlink" href="Text-Formatting-Commands.html#item-ownership" title="Link to this heading"></a></h4>
+<p>This is a simple concrete example. We can add a description for who’s item it is in the item description. For example if Seth is holding a Steel Sword, we can modify the description of a Steel Sword to be <code class="docutils literal notranslate"><span class="pre">{unit}'s</span> <span class="pre">{e:self.name}</span></code></p>
+<p>This will be evaluated and displayed as <code class="docutils literal notranslate"><span class="pre">Seth's</span> <span class="pre">Steel</span> <span class="pre">Sword</span></code>.</p>
+<p><img alt="SteelSwordDescription" src="../../_images/steel-sword-description-editor.png" />
+<img alt="SteelSwordDescription" src="../../_images/steel-sword-description-game.png" /></p>
+</section>
+<section id="dynamic-gender-and-pronouns">
+<h4>Dynamic Gender and Pronouns<a class="headerlink" href="Text-Formatting-Commands.html#dynamic-gender-and-pronouns" title="Link to this heading"></a></h4>
+<p>If we wanted to add dynamic gender we can use this feature. For example if we wanted dynamic gender for a certain unit, we can set a persistent variable during unit creation and use it in the description.</p>
+<p><code class="docutils literal notranslate"><span class="pre">&quot;A</span> <span class="pre">wild</span> <span class="pre">{e:&quot;man&quot;</span> <span class="pre">if</span> <span class="pre">&quot;{v:WildPronoun}&quot;</span> <span class="pre">==</span> <span class="pre">&quot;He&quot;</span> <span class="pre">else</span> <span class="pre">&quot;woman&quot;</span> <span class="pre">if</span> <span class="pre">&quot;{v:WildPronoun}&quot;</span> <span class="pre">==</span> <span class="pre">&quot;She&quot;</span> <span class="pre">else</span> <span class="pre">&quot;person&quot;}</span> <span class="pre">raised</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">forests</span> <span class="pre">of</span> <span class="pre">Nabu.</span> <span class="pre">Has</span> <span class="pre">a</span> <span class="pre">fear</span> <span class="pre">of</span> <span class="pre">blood</span> <span class="pre">and</span> <span class="pre">hates</span> <span class="pre">spiders.&quot;</span></code></p>
+<p>Lets say <code class="docutils literal notranslate"><span class="pre">WildPronoun</span></code> was set to <code class="docutils literal notranslate"><span class="pre">&quot;He&quot;</span></code> then the entire description would evaluate to: <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">wild</span> <span class="pre">man</span> <span class="pre">raised</span> <span class="pre">in</span> <span class="pre">the</span> <span class="pre">forests</span> <span class="pre">of</span> <span class="pre">Nabu.</span> <span class="pre">Has</span> <span class="pre">a</span> <span class="pre">fear</span> <span class="pre">of</span> <span class="pre">blood</span> <span class="pre">and</span> <span class="pre">hates</span> <span class="pre">spiders.</span></code></p>
+</section>
+<section id="kill-tracker">
+<h4>Kill Tracker<a class="headerlink" href="Text-Formatting-Commands.html#kill-tracker" title="Link to this heading"></a></h4>
+<p>We can add a kill tracker to an item or skill using this feature. We can set a persistent variable tracking the number of kills a unique weapon has been used for and show it in the description.</p>
+<p><code class="docutils literal notranslate"><span class="pre">&quot;A</span> <span class="pre">blade</span> <span class="pre">that</span> <span class="pre">has</span> <span class="pre">taken</span> <span class="pre">{v:UniqueWeaponKills}</span> <span class="pre">lives.&quot;</span></code></p>
+<p>Lets say <code class="docutils literal notranslate"><span class="pre">UniqueWeaponKills</span></code> has tracked 10 kills so fa, then this description would evaluate to: <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">blade</span> <span class="pre">that</span> <span class="pre">has</span> <span class="pre">taken</span> <span class="pre">10</span> <span class="pre">lives.</span></code></p>
+</section>
+</section>
+<section id="advanced-usage">
+<h3>Advanced Usage<a class="headerlink" href="Text-Formatting-Commands.html#advanced-usage" title="Link to this heading"></a></h3>
+<p>Since <code class="docutils literal notranslate"><span class="pre">self</span></code> refers to the object that the description belongs to, you have access to all variables accessible from that object. You can use that knowledge however you like.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../guides/skill_item_tutorials/Nihil.html" class="btn btn-neutral float-left" title="Nihil" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Item-Component-Reference.html" class="btn btn-neutral float-right" title="Item Component Dictionary" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, rainlash.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

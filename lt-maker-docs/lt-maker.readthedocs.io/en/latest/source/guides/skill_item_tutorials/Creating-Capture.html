@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Capture skill &mdash; lt-maker  documentation</title>
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/theme_overrides.css?v=5f1687b9" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/jquery.js?v=5d32c60e"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/doctools.js?v=9a2dae69"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="https://lt-maker.readthedocs.io/en/latest/_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Recruit Skill" href="Recruit-Skill.html" />
+    <link rel="prev" title="[System] Skill Swap" href="Skill-Swap.html" /> 
+<script async type="text/javascript" src="https://lt-maker.readthedocs.io/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="lt-maker" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/source/guides/skill_item_tutorials/Creating-Capture.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            lt-maker
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../home.html">Lex Talionis Wiki</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Editor Guides:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../editors/Editors-Overview.html">Editors Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../editors/index.html">Editors</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Events:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../events/index.html">Events</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Guides:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Guides-Overview.html">Guides Overview</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Guides</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../setup_tutorials/index.html">Project Setup Tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../eventing_tutorials/index.html">Eventing Tutorials</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Skill and Item Tutorials</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="Creating-Items.html">0. Creating Items</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Direct-Passives.html">1. Direct Passives - Hit +20, MAG +2 and Gamble</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Conditional-Passives-I.html">2. Conditional Passives I - Lucky Seven, Odd Rhythm, Wrath and Quick Burn</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Conditional-Passives-II.html">4. Conditional Passives II - Warding Blow, Rainlashslayer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Conditional-Passives-III.html">3. Conditional Passives III - Tomefaire, Axe Breaker and Wyrmbane</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Tile-Passives.html">4. Tile Oriented Passives - Outdoor Fighter and Indoor Fighter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Auras.html">3. Auras - Hex, Bond and Focus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Skill-Swap.html">[System] Skill Swap</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="Creating-Capture.html#">Capture skill</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Recruit-Skill.html">Recruit Skill</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Summoning.html">Summoning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Shelter-Skill.html">Shelter Skill</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Multi-Items.html">Multi Items</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Nihil.html">Nihil</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">appendix:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Text-Formatting-Commands.html">Text Formatting Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Item-Component-Reference.html">Item Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Skill-Component-Reference.html">Skill Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Special-Variables.html">Special Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Special-Tags.html">Special Tags</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/trigger-reference.html">Event Triggers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Random-Seed-Mechanics.html">Random Seed Mechanics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/FAQ.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Contributing_to_the_LTWiki.html">Contributing to the LTWiki</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/index.html">Code Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">lt-maker</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Guides</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Skill and Item Tutorials</a></li>
+      <li class="breadcrumb-item active">Capture skill</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://gitlab.com/rainlash/lt-maker/blob/master/docs/source/guides/skill_item_tutorials/Creating-Capture.md" class="fa fa-gitlab"> Edit on GitLab</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="capture-skill">
+<h1>Capture skill<a class="headerlink" href="Creating-Capture.html#capture-skill" title="Link to this heading"></a></h1>
+<p>This tutorial will teach you how to create the capture mechanic from Thracia 776. If you are looking for capture from Fates this will also be a good place to start.</p>
+<p>In Thracia 776, capture works the following way: An attack is initiated with stats halved. If the attack reduces the enemy to 0 or less HP, and if the enemy’s CON is less than the attacker’s CON, the attacker essentially ‘rescues’ the enemy unit that it’s capturing–and can then trade away their items.</p>
+<p>We will implement this in Lex Talionis. First, we’ll create the capture skill.</p>
+<p><img alt="Capture_Skill" src="../../../_images/capture_skill.png" /></p>
+<p>Combat Art “CaptureArt” refers to the following skill:</p>
+<p><img alt="Screenshot_2022-01-10_153443" src="../../../_images/capture_art.png" /></p>
+<p>Event After Initiated Combat “Global Capture” refers to an event named Capture in the global section that we’ll create later.</p>
+<p>Following our desired implementation, attacking with the Capture command will have the unit initiate an attack with their strength, magic, skill, luck, and speed halved. After the battle, the Capture event will be called. Here’s what that event looks like:</p>
+<p><img alt="Screenshot_2022-01-10_170330" src="../../../_images/CreatingCapture1.png" /></p>
+<p>The Level for this event is Global and the Trigger is None. Let’s walk through what’s happening here.</p>
+<p>In the if statement the event is checking that the defending unit died after combat. After all, we only want to capture units we kill. It then uses an “and” statement to check that the attacker’s constitution is greater than the enemy’s constitution, again in line with Thracia 776. If you’re looking for a more Fates-like capture or aren’t using CON, remove this part. Finally, we’ll make sure that the attacker isn’t already rescuing someone. Alternatively, this could be in a Condition component in the Capture skill.</p>
+<p>Within the if statement, a few things happen. First, the dead defender is resurrected. They become a player team unit. The pair_up command might seem confusing - after all, we’re capturing, not pairing up - but pair_up can actually be used to rescue a unit if pair up is turned off in Constants. Since the same syntax is used make sure that {unit2} (the defender) is the first parameter. Finally, we set the current health of the now revived defender to 0. That might surprise you, but there’s a reason why.</p>
+<p>Remember, we need a captured enemy to die when dropped. Units with 0 HP don’t actually die until after they are next in combat. Since we’ll be keeping our new friend rescued they won’t ever be in combat. The next thing we’ll do is make sure they die when dropped. You might not, for whatever reason, want units at 0 HP to instantly die while on the field. If that’s the case, change the set_current_hp command to set_name and input an appropriate name.</p>
+<p>The elif statement denotes a special edge case in Thracia: when an enemy is not wielding a weapon or has a staff equipped. We check to see if the enemy is completely unarmed or has a weapon equipped that cannot deal damage. If so, we capture them no matter what.</p>
+<p>We’ll now create a new event in the Global level. I called mine “Search for Empty HP” and gave it a trigger of unit_wait.</p>
+<p><img alt="Screenshot_2022-01-10_154802" src="../../../_images/CreatingCapture2.png" /></p>
+<p>This is the only line in the event. Loop units can sometimes be hard to understand, so let’s break it down. The first parameter (the one surrounded by square brackets) gives the command a list of units that are on the map. The second parameter refers to an event we’re about to write named “Kill Empty HP”.</p>
+<p><strong>NOTE: Do not let the event editor autofill the second parameter for you!</strong></p>
+<p>Again in the global level, create an event named “Kill Empty HP” with a Trigger of None. The contents of the command should be simple:</p>
+<p><img alt="Screenshot_2022-01-10_155150" src="../../../_images/CreatingCapture3.png" /></p>
+<p>If the given unit is at 0 HP, kill it. If you chose to replace the set_current_hp command with set_name before, change the if statement to
+<code class="docutils literal notranslate"><span class="pre">if;unit.name</span> <span class="pre">==</span> <span class="pre">'NAMEYOUCHOSEEARLIER'</span></code></p>
+<p>Now, a problem might arise if you ended the chapter while holding a captured unit (namely, it would recruit them). Luckily, this shouldn’t be a difficult fix. You’ll want to find the events in your level where win_game (the command to end the chapter) is called. Prior to the win_game call, add the following line:
+<code class="docutils literal notranslate"><span class="pre">loop_units;[unit.nid</span> <span class="pre">for</span> <span class="pre">unit</span> <span class="pre">in</span> <span class="pre">game.get_player_units()</span> <span class="pre">if</span> <span class="pre">unit.traveler];Kill</span> <span class="pre">0</span> <span class="pre">HP</span> <span class="pre">Travelers</span></code></p>
+<p>Where Kill 0 HP Travelers refers to the following event in the Global level:</p>
+<p><img alt="Screenshot_2022-01-10_170330" src="../../../_images/kill_event.png" /></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span><span class="p">;</span><span class="n">game</span><span class="o">.</span><span class="n">get_unit</span><span class="p">(</span><span class="n">unit</span><span class="o">.</span><span class="n">traveler</span><span class="p">)</span> <span class="ow">and</span> <span class="n">game</span><span class="o">.</span><span class="n">get_unit</span><span class="p">(</span><span class="n">unit</span><span class="o">.</span><span class="n">traveler</span><span class="p">)</span><span class="o">.</span><span class="n">get_hp</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span>
+    <span class="n">kill_unit</span><span class="p">;{</span><span class="nb">eval</span><span class="p">:</span><span class="n">game</span><span class="o">.</span><span class="n">get_unit</span><span class="p">(</span><span class="n">unit</span><span class="o">.</span><span class="n">traveler</span><span class="p">)};</span><span class="n">immediate</span>
+<span class="n">end</span>
+</pre></div>
+</div>
+<p>And that’s it! You should now have a Thracia-style capture system. You can trade with captured units and transfer them between party members, as well as release them to remove them from the map.</p>
+<p>If you want to check for the status of a unit at the end of a chapter (i.e., if Lifis is captured by the player at the end of 2x) you’ll want to use a similar loop_units setup. Create a game_var or level_var and set it to 0. Construct a block of event code that looks similar to this:</p>
+<p><img alt="Screenshot_2022-01-10_170330" src="../../../_images/CreatingCapture4.png" /></p>
+<p>You can see that it refers to another event. That event contains the following:</p>
+<p><img alt="Screenshot_2022-01-10_170330" src="../../../_images/CreatingCapture5.png" /></p>
+<p>With this, the game will check if anyone is carrying Lifis!</p>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Skill-Swap.html" class="btn btn-neutral float-left" title="[System] Skill Swap" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Recruit-Skill.html" class="btn btn-neutral float-right" title="Recruit Skill" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, rainlash.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

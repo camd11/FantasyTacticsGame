@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Region Events &mdash; lt-maker  documentation</title>
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/theme_overrides.css?v=5f1687b9" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/jquery.js?v=5d32c60e"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/doctools.js?v=9a2dae69"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="https://lt-maker.readthedocs.io/en/latest/_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Miscellaneous Events" href="Miscellaneous-Events.html" />
+    <link rel="prev" title="Conditionals" href="Conditionals.html" /> 
+<script async type="text/javascript" src="https://lt-maker.readthedocs.io/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="lt-maker" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/source/events/Region-Events.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            lt-maker
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../home.html">Lex Talionis Wiki</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Editor Guides:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../editors/Editors-Overview.html">Editors Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../editors/index.html">Editors</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Events:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Events</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="Event-Overview.html">Event Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Conditionals.html">Conditionals</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="Region-Events.html#">Region Events</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Region-Events.html#villages-houses">Villages / Houses</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Region-Events.html#shops-armories">Shops / Armories</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Region-Events.html#seize">Seize</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Region-Events.html#escape">Escape</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Region-Events.html#switch">Switch</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Region-Events.html#chest-door">Chest / Door</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Miscellaneous-Events.html">Miscellaneous Events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Test-Events.html">Test Events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Python-Eventing.html">Python Eventing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Event-Debugger.html">Debugger</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Guides:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guides/Guides-Overview.html">Guides Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/index.html">Guides</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">appendix:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/Text-Formatting-Commands.html">Text Formatting Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/Item-Component-Reference.html">Item Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/Skill-Component-Reference.html">Skill Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/Special-Variables.html">Special Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/Special-Tags.html">Special Tags</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/trigger-reference.html">Event Triggers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/Random-Seed-Mechanics.html">Random Seed Mechanics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/FAQ.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/Contributing_to_the_LTWiki.html">Contributing to the LTWiki</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/index.html">Code Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">lt-maker</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Events</a></li>
+      <li class="breadcrumb-item active">Region Events</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://gitlab.com/rainlash/lt-maker/blob/master/docs/source/events/Region-Events.md" class="fa fa-gitlab"> Edit on GitLab</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="region-events">
+<h1>Region Events<a class="headerlink" href="Region-Events.html#region-events" title="Link to this heading"></a></h1>
+<p><em>last update v0.1</em></p>
+<p><img alt="RegionEventPane" src="../../_images/RegionEventPane.png" /></p>
+<p>Event regions are a flexible way for the game designer to give the player additional actions their characters can perform while on specific regions of the map. With event regions, you can implement visiting villages, visiting shops, seizing thrones, escaping the map, flicking switches, and unlocking chests or doors, and much more.</p>
+<p>The condition box in the Region pane allows you to specify which units will be able to access that region’s action. For instance, if you only want Eirika to be able to Seize, you can set the condition to <code class="docutils literal notranslate"><span class="pre">unit.nid</span> <span class="pre">==</span> <span class="pre">'Eirika'</span></code>.</p>
+<section id="villages-houses">
+<h2>Villages / Houses<a class="headerlink" href="Region-Events.html#villages-houses" title="Link to this heading"></a></h2>
+<p><img alt="VillageRegion" src="../../_images/VillageRegion.png" /></p>
+<p><img alt="VillageRegionEvent" src="../../_images/VillageRegionEvent.png" /></p>
+<p>The condition in the Event Editor specifies <em>which</em> region this event corresponds to.</p>
+<p>A normal visit event looks something like this</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">transition</span><span class="p">;</span><span class="n">Close</span>
+<span class="n">change_background</span><span class="p">;</span><span class="n">House</span>
+<span class="n">transition</span><span class="p">;</span><span class="n">Open</span>
+<span class="n">add_portrait</span><span class="p">;{</span><span class="n">unit</span><span class="p">};</span><span class="n">Left</span><span class="p">;</span><span class="n">no_block</span>
+<span class="n">add_portrait</span><span class="p">;</span><span class="n">Man</span><span class="p">;</span><span class="n">Right</span>
+<span class="n">speak</span><span class="p">;</span><span class="n">Man</span><span class="p">;</span><span class="n">You</span><span class="s1">&#39;ll never defeat Gharnef!</span>
+<span class="n">remove_portrait</span><span class="p">;{</span><span class="n">unit</span><span class="p">};</span><span class="n">no_block</span>
+<span class="n">remove_portrait</span><span class="p">;</span><span class="n">Man</span>
+<span class="n">transition</span><span class="p">;</span><span class="n">Close</span>
+<span class="n">change_background</span>
+<span class="n">transition</span><span class="p">;</span><span class="n">Open</span>
+<span class="n">give_item</span><span class="p">;{</span><span class="n">unit</span><span class="p">};</span><span class="n">Red</span> <span class="n">Gem</span>
+<span class="n">has_attacked</span><span class="p">;{</span><span class="n">unit</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">has_attacked</span></code> command at the end is important if you don’t want the unit to be able to move or attack after visiting the village</p>
+</section>
+<section id="shops-armories">
+<h2>Shops / Armories<a class="headerlink" href="Region-Events.html#shops-armories" title="Link to this heading"></a></h2>
+<p><img alt="ShopRegion" src="../../_images/ShopRegion.png" /></p>
+<p><img alt="ShopRegionEvent" src="../../_images/ShopRegionEvent.png" /></p>
+<p>A normal shop event looks something like this</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">transition</span><span class="p">;</span><span class="n">Close</span>
+<span class="n">music</span><span class="p">;</span><span class="n">Armory</span> <span class="n">Music</span>
+<span class="n">shop</span><span class="p">;{</span><span class="n">unit</span><span class="p">};</span><span class="n">Iron</span> <span class="n">Sword</span><span class="p">,</span><span class="n">Iron</span> <span class="n">Lance</span><span class="p">,</span><span class="n">Iron</span> <span class="n">Axe</span>
+<span class="n">transition</span><span class="p">;</span><span class="n">Open</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">shop</span></code> command handles all the intricacies of shopping for you, including making sure the unit can’t move back after making a transaction.</p>
+</section>
+<section id="seize">
+<h2>Seize<a class="headerlink" href="Region-Events.html#seize" title="Link to this heading"></a></h2>
+<p>A normal seize event looks something like this</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">win_game</span>
+</pre></div>
+</div>
+</section>
+<section id="escape">
+<h2>Escape<a class="headerlink" href="Region-Events.html#escape" title="Link to this heading"></a></h2>
+<p><img alt="EscapeRegion" src="../../_images/EscapeRegion.png" /></p>
+<p><img alt="EscapeRegionEvent" src="../../_images/EscapeRegionEvent.png" /></p>
+<p>A normal escape event looks something like this</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">remove_unit</span><span class="p">;{</span><span class="n">unit</span><span class="p">}</span>
+<span class="n">wait</span><span class="p">;</span><span class="mi">400</span>
+<span class="k">if</span><span class="p">;</span><span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">unit</span><span class="o">.</span><span class="n">team</span> <span class="o">==</span> <span class="s1">&#39;player&#39;</span> <span class="k">for</span> <span class="n">unit</span> <span class="ow">in</span> <span class="n">game</span><span class="o">.</span><span class="n">units</span> <span class="k">if</span> <span class="n">unit</span><span class="o">.</span><span class="n">position</span><span class="p">)</span>
+    <span class="n">win_game</span>
+<span class="n">end</span>
+</pre></div>
+</div>
+</section>
+<section id="switch">
+<h2>Switch<a class="headerlink" href="Region-Events.html#switch" title="Link to this heading"></a></h2>
+<p><img alt="SwitchRegion" src="../../_images/SwitchRegion.png" /></p>
+<p><img alt="SwitchRegionEvent" src="../../_images/SwitchRegionEvent.png" /></p>
+<p>You can increment a counter every time a switch event is processed if you want to keep track</p>
+</section>
+<section id="chest-door">
+<h2>Chest / Door<a class="headerlink" href="Region-Events.html#chest-door" title="Link to this heading"></a></h2>
+<p><img alt="ChestRegion" src="../../_images/ChestRegion.png" /></p>
+<p><img alt="ChestRegionEvent" src="../../_images/ChestRegionEvent.png" /></p>
+<p>A normal chest event looks something like this</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">show_layer</span><span class="p">;</span><span class="n">Chest1</span>
+<span class="n">unlock</span><span class="p">;{</span><span class="n">unit</span><span class="p">}</span>
+<span class="n">give_money</span><span class="p">;</span><span class="mi">2000</span>
+<span class="n">has_attacked</span><span class="p">;{</span><span class="n">unit</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>The unlock command handles spending the unlockable you used to unlock the chest (whether that be by a key, lockpick, or with locktouch)</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Conditionals.html" class="btn btn-neutral float-left" title="Conditionals" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Miscellaneous-Events.html" class="btn btn-neutral float-right" title="Miscellaneous Events" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, rainlash.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

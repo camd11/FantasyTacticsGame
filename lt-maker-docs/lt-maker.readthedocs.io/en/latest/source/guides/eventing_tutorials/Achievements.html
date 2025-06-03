@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Achievements &mdash; lt-maker  documentation</title>
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/theme_overrides.css?v=5f1687b9" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/jquery.js?v=5d32c60e"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/doctools.js?v=9a2dae69"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="https://lt-maker.readthedocs.io/en/latest/_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="A Simple Mercenary Shop Tutorial" href="A-Simple-Mercenary-Shop.html" />
+    <link rel="prev" title="Unit Groups" href="Unit-Groups.html" /> 
+<script async type="text/javascript" src="https://lt-maker.readthedocs.io/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="lt-maker" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/source/guides/eventing_tutorials/Achievements.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            lt-maker
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../home.html">Lex Talionis Wiki</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Editor Guides:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../editors/Editors-Overview.html">Editors Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../editors/index.html">Editors</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Events:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../events/index.html">Events</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Guides:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Guides-Overview.html">Guides Overview</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Guides</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../setup_tutorials/index.html">Project Setup Tutorials</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Eventing Tutorials</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="Arena.html">GBA-style Arena</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Breakable-Walls.html">Breakable Walls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Death-Quotes.html">Universal Death Quotes Tutorial</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Choices-and-Battle-Saves.html">Choices and Battle Saves</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Unit-Groups.html">Unit Groups</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="Achievements.html#">Achievements</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Achievements.html#basic-functionality">Basic Functionality</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Achievements.html#secret-achievements">Secret Achievements</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Achievements.html#player-record-storage">Player record storage</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="A-Simple-Mercenary-Shop.html">A Simple Mercenary Shop Tutorial</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Promotion-Personal-Skills.html">Promotion Personal Skills Tutorial</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../skill_item_tutorials/index.html">Skill and Item Tutorials</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">appendix:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Text-Formatting-Commands.html">Text Formatting Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Item-Component-Reference.html">Item Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Skill-Component-Reference.html">Skill Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Special-Variables.html">Special Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Special-Tags.html">Special Tags</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/trigger-reference.html">Event Triggers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Random-Seed-Mechanics.html">Random Seed Mechanics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/FAQ.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Contributing_to_the_LTWiki.html">Contributing to the LTWiki</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/index.html">Code Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">lt-maker</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Guides</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Eventing Tutorials</a></li>
+      <li class="breadcrumb-item active">Achievements</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://gitlab.com/rainlash/lt-maker/blob/master/docs/source/guides/eventing_tutorials/Achievements.md" class="fa fa-gitlab"> Edit on GitLab</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="achievements">
+<h1>Achievements<a class="headerlink" href="Achievements.html#achievements" title="Link to this heading"></a></h1>
+<p>You may wish to create an achievement system for your game. Alternatively, you may simply want to save content outside of a given save file. This could be for a New Game+ feature, an Undertale-like playthrough system, or timeline shenanigans. This guide will cover all of these potential use cases.</p>
+<section id="basic-functionality">
+<h2>Basic Functionality<a class="headerlink" href="Achievements.html#basic-functionality" title="Link to this heading"></a></h2>
+<p>The create_achievement command creates a new achievement with the given specifications and saves it to saves/PROJECTID-achievements.p.</p>
+<p><code class="docutils literal notranslate"><span class="pre">create_achievement;Sample;Test</span> <span class="pre">Goal;It's</span> <span class="pre">only</span> <span class="pre">a</span> <span class="pre">test!</span></code></p>
+<p>Try it out by putting this line before a base event command in any given level. Test the level and go to Codex &gt; Achievements.</p>
+<p><img alt="TestAchievement" src="../../../_images/TestAchievement.png" /></p>
+<p>Voila! You have an incomplete achievement listed there. Of course, we’d like to have the player be able to complete that achievement.</p>
+<p>In any event you’d like, place this command:</p>
+<p><code class="docutils literal notranslate"><span class="pre">complete_achievement;Sample;1</span></code></p>
+<p>Where Sample is the NID of the achievement you created above. Run that event then check the records screen again - the achievement will be complete!</p>
+</section>
+<section id="secret-achievements">
+<h2>Secret Achievements<a class="headerlink" href="Achievements.html#secret-achievements" title="Link to this heading"></a></h2>
+<p>Many games have achievements for defeating endgame bosses. In order to avoid spoilers for those bosses, we’d like to hide some achievement information from the player.</p>
+<p>The first option we have is to only run the create_achievement command when the boss is first defeated. That way the achievement won’t appear in the Records menu early, since it won’t exist.</p>
+<p>Most game platforms, like Steam, display certain achievements as “Locked” prior to their completion. Let’s implement a system for our game.</p>
+<p>Create a new achievement.</p>
+<p><code class="docutils literal notranslate"><span class="pre">create_achievement;KillGodOrSomething;???;Continue</span> <span class="pre">the</span> <span class="pre">story</span> <span class="pre">to</span> <span class="pre">unlock;hidden</span></code></p>
+<p><img alt="LockedAchievement" src="../../../_images/LockedAchievement.png" /></p>
+<p>Players can see that they haven’t unlocked all achievements, but will naturally later on. We can use the update_achievement command to change the details of the displayed achievement.</p>
+<p><code class="docutils literal notranslate"><span class="pre">update_achievement;KillGodOrSomething;Kill</span> <span class="pre">God;You</span> <span class="pre">managed</span> <span class="pre">to</span> <span class="pre">slay</span> <span class="pre">a</span> <span class="pre">deity.</span></code></p>
+<p><img alt="UnlockedAchievement" src="../../../_images/UnlockedAchievement.png" /></p>
+<p>The details of the achievement have been updated.</p>
+</section>
+<section id="player-record-storage">
+<h2>Player record storage<a class="headerlink" href="Achievements.html#player-record-storage" title="Link to this heading"></a></h2>
+<p>I’d like to remember if the player has completed the game. I can’t keep that data tied to a particular save file, so the persistent record system is perfect here.</p>
+<p>Similarly to achievements, we’ll create a new record first.</p>
+<p><code class="docutils literal notranslate"><span class="pre">create_record;CompleteGame;False</span></code></p>
+<p>When you create or update a new record, remember that you must provide it a valid Python expression after the name. It is therefore recommended that you provide one of True, False, or a number unless you are confident you know what you’re doing.</p>
+<p>Similar to achievements, you can use update_record or replace_record to change the value later. You can also check the value of records, as seen below.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span><span class="p">;</span><span class="n">RECORDS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;CompleteGame&quot;</span><span class="p">)</span>
+    <span class="n">speak</span><span class="p">;</span><span class="n">Eirika</span><span class="p">;</span><span class="n">I</span><span class="s1">&#39;ve won before</span>
+<span class="k">else</span>
+    <span class="n">speak</span><span class="p">;</span><span class="n">Eirika</span><span class="p">;</span><span class="n">I</span> <span class="n">haven</span><span class="s1">&#39;t won yet.</span>
+<span class="n">end</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Unit-Groups.html" class="btn btn-neutral float-left" title="Unit Groups" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="A-Simple-Mercenary-Shop.html" class="btn btn-neutral float-right" title="A Simple Mercenary Shop Tutorial" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, rainlash.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

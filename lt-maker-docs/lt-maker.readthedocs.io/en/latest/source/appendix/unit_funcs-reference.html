@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Unit Helper Functions &mdash; lt-maker  documentation</title>
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/theme_overrides.css?v=5f1687b9" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/jquery.js?v=5d32c60e"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/doctools.js?v=9a2dae69"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="https://lt-maker.readthedocs.io/en/latest/_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Item Helper Functions" href="item_funcs-reference.html" />
+    <link rel="prev" title="Party Object" href="party-reference.html" /> 
+<script async type="text/javascript" src="https://lt-maker.readthedocs.io/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="lt-maker" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/source/appendix/unit_funcs-reference.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            lt-maker
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../home.html">Lex Talionis Wiki</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Editor Guides:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../editors/Editors-Overview.html">Editors Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../editors/index.html">Editors</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Events:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../events/index.html">Events</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Guides:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guides/Guides-Overview.html">Guides Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/index.html">Guides</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">appendix:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Text-Formatting-Commands.html">Text Formatting Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Item-Component-Reference.html">Item Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Skill-Component-Reference.html">Skill Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Special-Variables.html">Special Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Special-Tags.html">Special Tags</a></li>
+<li class="toctree-l1"><a class="reference internal" href="trigger-reference.html">Event Triggers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Random-Seed-Mechanics.html">Random Seed Mechanics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Contributing_to_the_LTWiki.html">Contributing to the LTWiki</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Code Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="game-state-reference.html">GameState class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="level-reference.html">Level Object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit-reference.html">UnitObject class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="region-reference.html">RegionObject class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="region-reference.html#regionprefab-class">RegionPrefab class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="party-reference.html">Party Object</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="unit_funcs-reference.html#">Unit Helper Functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="unit_funcs-reference.html#app.engine.unit_funcs.growth_rate"><code class="docutils literal notranslate"><span class="pre">growth_rate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_funcs-reference.html#app.engine.unit_funcs.growth_contribution"><code class="docutils literal notranslate"><span class="pre">growth_contribution()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_funcs-reference.html#app.engine.unit_funcs.base_growth_rate"><code class="docutils literal notranslate"><span class="pre">base_growth_rate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_funcs-reference.html#app.engine.unit_funcs.difficulty_growth_rate"><code class="docutils literal notranslate"><span class="pre">difficulty_growth_rate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_funcs-reference.html#app.engine.unit_funcs.get_next_level_up"><code class="docutils literal notranslate"><span class="pre">get_next_level_up()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_funcs-reference.html#app.engine.unit_funcs.auto_level"><code class="docutils literal notranslate"><span class="pre">auto_level()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_funcs-reference.html#app.engine.unit_funcs.difficulty_auto_level"><code class="docutils literal notranslate"><span class="pre">difficulty_auto_level()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_funcs-reference.html#app.engine.unit_funcs.apply_stat_changes"><code class="docutils literal notranslate"><span class="pre">apply_stat_changes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_funcs-reference.html#app.engine.unit_funcs.apply_growth_changes"><code class="docutils literal notranslate"><span class="pre">apply_growth_changes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_funcs-reference.html#app.engine.unit_funcs.get_starting_skills"><code class="docutils literal notranslate"><span class="pre">get_starting_skills()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_funcs-reference.html#app.engine.unit_funcs.get_personal_skills"><code class="docutils literal notranslate"><span class="pre">get_personal_skills()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_funcs-reference.html#app.engine.unit_funcs.get_global_skills"><code class="docutils literal notranslate"><span class="pre">get_global_skills()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_funcs-reference.html#app.engine.unit_funcs.can_unlock"><code class="docutils literal notranslate"><span class="pre">can_unlock()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_funcs-reference.html#app.engine.unit_funcs.can_pairup"><code class="docutils literal notranslate"><span class="pre">can_pairup()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_funcs-reference.html#app.engine.unit_funcs.check_focus"><code class="docutils literal notranslate"><span class="pre">check_focus()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_funcs-reference.html#app.engine.unit_funcs.check_flanked"><code class="docutils literal notranslate"><span class="pre">check_flanked()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_funcs-reference.html#app.engine.unit_funcs.check_flanking"><code class="docutils literal notranslate"><span class="pre">check_flanking()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_funcs-reference.html#app.engine.unit_funcs.wait"><code class="docutils literal notranslate"><span class="pre">wait()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_funcs-reference.html#app.engine.unit_funcs.usable_wtypes"><code class="docutils literal notranslate"><span class="pre">usable_wtypes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit_funcs-reference.html#app.engine.unit_funcs.get_weapon_cap"><code class="docutils literal notranslate"><span class="pre">get_weapon_cap()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="item_funcs-reference.html">Item Helper Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="query_funcs-reference.html">Useful Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="constants-reference.html">Constants</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">lt-maker</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Code Documentation</a></li>
+      <li class="breadcrumb-item active">Unit Helper Functions</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://gitlab.com/rainlash/lt-maker/blob/master/docs/source/appendix/unit_funcs-reference.rst" class="fa fa-gitlab"> Edit on GitLab</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="unit-helper-functions">
+<h1>Unit Helper Functions<a class="headerlink" href="unit_funcs-reference.html#unit-helper-functions" title="Link to this heading"></a></h1>
+<p>You can access any of these functions from within an evaluable in an event with <cite>unit_funcs.name_of_func(args)</cite></p>
+<dl class="py function" id="module-app.engine.unit_funcs">
+<dt class="sig sig-object py" id="app.engine.unit_funcs.growth_rate">
+<span class="sig-prename descclassname"><span class="pre">app.engine.unit_funcs.</span></span><span class="sig-name descname"><span class="pre">growth_rate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">nid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">NID</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="unit_funcs-reference.html#app.engine.unit_funcs.growth_rate" title="Link to this definition"></a></dt>
+<dd><p>Calculates the growth rate of a unit for a given stat.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>unit</strong> (<a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><em>UnitObject</em></a>) – The unit for which to calculate the growth rate.</p></li>
+<li><p><strong>nid</strong> (<em>NID</em>) – The NID (Name IDentifier) of the stat.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The calculated growth rate.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.engine.unit_funcs.growth_contribution">
+<span class="sig-prename descclassname"><span class="pre">app.engine.unit_funcs.</span></span><span class="sig-name descname"><span class="pre">growth_contribution</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">nid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">NID</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="unit_funcs-reference.html#app.engine.unit_funcs.growth_contribution" title="Link to this definition"></a></dt>
+<dd><p>Calculates the growth rate of a unit for a given stat and returns it individually as dict elements.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>unit</strong> (<a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><em>UnitObject</em></a>) – The unit for which to calculate the growth rate.</p></li>
+<li><p><strong>nid</strong> (<em>NID</em>) – The NID (Name IDentifier) of the stat.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The calculated growth rates</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dict[str, int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.engine.unit_funcs.base_growth_rate">
+<span class="sig-prename descclassname"><span class="pre">app.engine.unit_funcs.</span></span><span class="sig-name descname"><span class="pre">base_growth_rate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">nid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">NID</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="unit_funcs-reference.html#app.engine.unit_funcs.base_growth_rate" title="Link to this definition"></a></dt>
+<dd><p>Calculates the base growth rate of a unit for a given stat.
+Base growth rate can either be unit growths or unit growths + klass growths depending on DB settings.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>unit</strong> (<a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><em>UnitObject</em></a>) – The unit for which to calculate the base growth rate.</p></li>
+<li><p><strong>nid</strong> (<em>NID</em>) – The NID (Name IDentifier) of the stat.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The calculated base growth rate.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.engine.unit_funcs.difficulty_growth_rate">
+<span class="sig-prename descclassname"><span class="pre">app.engine.unit_funcs.</span></span><span class="sig-name descname"><span class="pre">difficulty_growth_rate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">nid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">NID</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="unit_funcs-reference.html#app.engine.unit_funcs.difficulty_growth_rate" title="Link to this definition"></a></dt>
+<dd><p>Calculates the additional growth rate that comes from the difficulty mode for a unit for a given stat.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>unit</strong> (<a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><em>UnitObject</em></a>) – The unit for which to calculate the difficulty growth rate.</p></li>
+<li><p><strong>nid</strong> (<em>NID</em>) – The NID (Name IDentifier) of the stat.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The calculated difficulty growth rate.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.engine.unit_funcs.get_next_level_up">
+<span class="sig-prename descclassname"><span class="pre">app.engine.unit_funcs.</span></span><span class="sig-name descname"><span class="pre">get_next_level_up</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">NID</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="unit_funcs-reference.html#app.engine.unit_funcs.get_next_level_up" title="Link to this definition"></a></dt>
+<dd><p>Determines the unit’s next level-up stat changes based on its current level and the leveling method.</p>
+<p>If you are using ‘Dynamic’ leveling method, does modify the state of the unit’s growth points.
+Otherwise, this function does not actually change anything about the unit</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>unit</strong> (<a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><em>UnitObject</em></a>) – The unit for which to determine the next level-up stat changes.</p></li>
+<li><p><strong>level</strong> (<em>int</em>) – The current level of the unit.</p></li>
+<li><p><strong>custom_method</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em>) – A custom leveling method to use. Defaults to None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary containing the next level-up stat changes for the unit.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict (Dict[NID, int])</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.engine.unit_funcs.auto_level">
+<span class="sig-prename descclassname"><span class="pre">app.engine.unit_funcs.</span></span><span class="sig-name descname"><span class="pre">auto_level</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_levels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">custom_method</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">NID</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="unit_funcs-reference.html#app.engine.unit_funcs.auto_level" title="Link to this definition"></a></dt>
+<dd><p>Levels up a unit’s stats for a specified number of levels. Primarily used for generics.</p>
+<p>This does modify the stats and growth points of the unit. After this runs, it resets
+the unit’s current hp and current mana to their full value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>unit</strong> (<a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><em>UnitObject</em></a>) – The unit to level up.</p></li>
+<li><p><strong>base_level</strong> (<em>int</em>) – The base level of the unit.</p></li>
+<li><p><strong>num_levels</strong> (<em>int</em>) – The number of levels to increase or decrease.</p></li>
+<li><p><strong>custom_method</strong> (<em>Optional</em><em>[</em><em>str</em><em>]</em>) – A custom leveling method to use. Defaults to None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary containing the total stat changes after auto-leveling.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict (Dict[NID, int])</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.engine.unit_funcs.difficulty_auto_level">
+<span class="sig-prename descclassname"><span class="pre">app.engine.unit_funcs.</span></span><span class="sig-name descname"><span class="pre">difficulty_auto_level</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_levels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">NID</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="unit_funcs-reference.html#app.engine.unit_funcs.difficulty_auto_level" title="Link to this definition"></a></dt>
+<dd><p>Levels up a unit’s stats for a specified number of levels based on the growth points
+that the current difficulty adds to the unit.</p>
+<p>This does modify the stats and growth points of the unit. After this runs, it resets
+the unit’s current hp and current mana to their full value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>unit</strong> (<a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><em>UnitObject</em></a>) – The unit to level up.</p></li>
+<li><p><strong>base_level</strong> (<em>int</em>) – The base level of the unit.</p></li>
+<li><p><strong>num_levels</strong> (<em>int</em>) – The number of levels to increase or decrease.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary containing the total stat changes after auto-leveling.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict (Dict[NID, int])</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.engine.unit_funcs.apply_stat_changes">
+<span class="sig-prename descclassname"><span class="pre">app.engine.unit_funcs.</span></span><span class="sig-name descname"><span class="pre">apply_stat_changes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">stat_changes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">NID</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">increase_current_stats</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="unit_funcs-reference.html#app.engine.unit_funcs.apply_stat_changes" title="Link to this definition"></a></dt>
+<dd><p>Applies the given stat changes to the unit’s stats.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>unit</strong> (<a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><em>UnitObject</em></a>) – The unit to which the stat changes should be applied.</p></li>
+<li><p><strong>stat_changes</strong> (<em>Dict</em><em>[</em><em>NID</em><em>, </em><em>int</em><em>]</em>) – A dictionary containing the stat changes to apply.</p></li>
+<li><p><strong>increase_current_stats</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to adjusts the unit’s current HP and mana if their maximum values increase.
+Defaults to True.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>Assumes that the stat changes are valid. No checks are done for maximum stats, stat caps, etc.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.engine.unit_funcs.apply_growth_changes">
+<span class="sig-prename descclassname"><span class="pre">app.engine.unit_funcs.</span></span><span class="sig-name descname"><span class="pre">apply_growth_changes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">growth_changes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">NID</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="unit_funcs-reference.html#app.engine.unit_funcs.apply_growth_changes" title="Link to this definition"></a></dt>
+<dd><p>Applies the given changes to the unit’s growths.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>unit</strong> (<a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><em>UnitObject</em></a>) – The unit to which the stat changes should be applied.</p></li>
+<li><p><strong>growth_changes</strong> (<em>Dict</em><em>[</em><em>NID</em><em>, </em><em>int</em><em>]</em>) – A dictionary containing the stat changes to apply.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.engine.unit_funcs.get_starting_skills">
+<span class="sig-prename descclassname"><span class="pre">app.engine.unit_funcs.</span></span><span class="sig-name descname"><span class="pre">get_starting_skills</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">starting_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">SkillObject</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="unit_funcs-reference.html#app.engine.unit_funcs.get_starting_skills" title="Link to this definition"></a></dt>
+<dd><p>Retrieves the starting skills for a unit based on its class and level.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>unit</strong> (<a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><em>UnitObject</em></a>) – The unit for which to retrieve starting skills.</p></li>
+<li><p><strong>starting_level</strong> (<em>int</em><em>, </em><em>optional</em>) – The starting level of the unit. Defaults to 0.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The starting skills of the unit.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[SkillObject]</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>If <cite>promote_skill_inheritance</cite> constant is enabled, skills from lower-tier classes are also considered (up to 5 tiers back).</p></li>
+<li><p>If <cite>generic_feats</cite> constant is enabled and a learned skill is a ‘Feat’, a random feat skill is added.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.engine.unit_funcs.get_personal_skills">
+<span class="sig-prename descclassname"><span class="pre">app.engine.unit_funcs.</span></span><span class="sig-name descname"><span class="pre">get_personal_skills</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">prefab</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">UnitPrefab</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">starting_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">SkillObject</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="unit_funcs-reference.html#app.engine.unit_funcs.get_personal_skills" title="Link to this definition"></a></dt>
+<dd><p>Retrieves the personal skills for a unit based on its prefab and level.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>unit</strong> (<a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><em>UnitObject</em></a>) – The unit for which to retrieve personal skills.</p></li>
+<li><p><strong>prefab</strong> (<em>UnitPrefab</em>) – The unit’s prefab which contains information about the unit’s personal skills.</p></li>
+<li><p><strong>starting_level</strong> (<em>int</em><em>, </em><em>optional</em>) – The starting level of the unit. Defaults to 0.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of SkillObject instances representing the personal skills of the unit.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[SkillObject]</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>Only skills that the unit has learned at or below its current level are included.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.engine.unit_funcs.get_global_skills">
+<span class="sig-prename descclassname"><span class="pre">app.engine.unit_funcs.</span></span><span class="sig-name descname"><span class="pre">get_global_skills</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">SkillObject</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="unit_funcs-reference.html#app.engine.unit_funcs.get_global_skills" title="Link to this definition"></a></dt>
+<dd><p>Retrieves the global skills for the unit. These are the skills that every unit should have.
+They are used to change your game mechanics globally.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>unit</strong> (<a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><em>UnitObject</em></a>) – The unit for which to retrieve global skills.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of SkillObject instances representing the global skills.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[SkillObject]</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>The function retrieves global skills that the unit does not already possess.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.engine.unit_funcs.can_unlock">
+<span class="sig-prename descclassname"><span class="pre">app.engine.unit_funcs.</span></span><span class="sig-name descname"><span class="pre">can_unlock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">region</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="region-reference.html#app.engine.objects.region.RegionObject" title="app.engine.objects.region.RegionObject"><span class="pre">RegionObject</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="unit_funcs-reference.html#app.engine.unit_funcs.can_unlock" title="Link to this definition"></a></dt>
+<dd><p>Checks if a unit can unlock a region.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>unit</strong> (<a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><em>UnitObject</em></a>) – The unit attempting to unlock.</p></li>
+<li><p><strong>region</strong> (<a class="reference internal" href="region-reference.html#app.engine.objects.region.RegionObject" title="app.engine.objects.region.RegionObject"><em>RegionObject</em></a>) – The region to unlock.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the unit can unlock the region, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.engine.unit_funcs.can_pairup">
+<span class="sig-prename descclassname"><span class="pre">app.engine.unit_funcs.</span></span><span class="sig-name descname"><span class="pre">can_pairup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rescuer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">rescuee</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="unit_funcs-reference.html#app.engine.unit_funcs.can_pairup" title="Link to this definition"></a></dt>
+<dd><p>Determines whether a pair-up can occur between a rescuer unit and a rescuee unit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rescuer</strong> (<a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><em>UnitObject</em></a>) – The unit that is attempting to initiate the pair-up.</p></li>
+<li><p><strong>rescuee</strong> (<a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><em>UnitObject</em></a>) – The unit that is being considered as a potential partner for pair-up.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if a pair-up can occur between the rescuer and rescuee units; False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>A pair-up can occur if pair-up mechanics are enabled in the game and attack stance only is not enforced.</p></li>
+<li><p>If player pair-up is restricted, the function checks whether both the rescuer and rescuee units belong to the player’s team.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.engine.unit_funcs.check_focus">
+<span class="sig-prename descclassname"><span class="pre">app.engine.unit_funcs.</span></span><span class="sig-name descname"><span class="pre">check_focus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="unit_funcs-reference.html#app.engine.unit_funcs.check_focus" title="Link to this definition"></a></dt>
+<dd><p>Counts the number of allied units within a specified distance from a given unit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>unit</strong> (<a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><em>UnitObject</em></a>) – The unit whose surroundings are being checked for allied units.</p></li>
+<li><p><strong>limit</strong> (<em>int</em><em>, </em><em>optional</em>) – The maximum distance within which allied units are considered.
+Defaults to 3.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The count of allied units within the specified distance from the given unit.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>Does not count self as an ally.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.engine.unit_funcs.check_flanked">
+<span class="sig-prename descclassname"><span class="pre">app.engine.unit_funcs.</span></span><span class="sig-name descname"><span class="pre">check_flanked</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="unit_funcs-reference.html#app.engine.unit_funcs.check_flanked" title="Link to this definition"></a></dt>
+<dd><p>Checks if the given unit is flanked by enemy units.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>unit</strong> (<a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><em>UnitObject</em></a>) – The unit to check for flanking.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the unit is flanked by enemy units, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>If both the up and down adjacent units are enemies or the same is true for
+the left and right adjacent units, the unit is considered flanked.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.engine.unit_funcs.check_flanking">
+<span class="sig-prename descclassname"><span class="pre">app.engine.unit_funcs.</span></span><span class="sig-name descname"><span class="pre">check_flanking</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="unit_funcs-reference.html#app.engine.unit_funcs.check_flanking" title="Link to this definition"></a></dt>
+<dd><p>Checks if the given unit is flanked by enemy units.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>unit</strong> (<a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><em>UnitObject</em></a>) – The unit to check for flanking.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the unit is flanked by enemy units, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>If both the up and down adjacent units are enemies or the same is true for
+the left and right adjacent units, the unit is considered flanked.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.engine.unit_funcs.wait">
+<span class="sig-prename descclassname"><span class="pre">app.engine.unit_funcs.</span></span><span class="sig-name descname"><span class="pre">wait</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">actively_chosen</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="unit_funcs-reference.html#app.engine.unit_funcs.wait" title="Link to this definition"></a></dt>
+<dd><p>Makes the unit wait, ending its turn.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>unit</strong> (<a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><em>UnitObject</em></a>) – The unit that will wait.</p></li>
+<li><p><strong>actively_chosen</strong> (<em>bool</em><em>, </em><em>optional</em>) – Indicates whether the wait action was actively chosen by the player.
+Defaults to False, which means the unit just automatically waited when it ran out of actions to do (finished a combat, etc.)</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>the function triggers a UnitWait event, indicating that the unit is waiting.</p></li>
+<li><p>If the unit’s turn is already finished, the function does nothing.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.engine.unit_funcs.usable_wtypes">
+<span class="sig-prename descclassname"><span class="pre">app.engine.unit_funcs.</span></span><span class="sig-name descname"><span class="pre">usable_wtypes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">NID</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="unit_funcs-reference.html#app.engine.unit_funcs.usable_wtypes" title="Link to this definition"></a></dt>
+<dd><p>Retrieves the set of weapon types usable by the unit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>unit</strong> (<a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><em>UnitObject</em></a>) – The unit for which to determine usable weapon types.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A set containing the NIDs of weapon types that the unit can use.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Set[NID]</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>The unit’s class determines its base weapon proficiency.</p></li>
+<li><p>Usable weapon types include those defined by the unit’s class as well as any additional
+types granted by skills or other effects.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.engine.unit_funcs.get_weapon_cap">
+<span class="sig-prename descclassname"><span class="pre">app.engine.unit_funcs.</span></span><span class="sig-name descname"><span class="pre">get_weapon_cap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">weapon_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">NID</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="unit_funcs-reference.html#app.engine.unit_funcs.get_weapon_cap" title="Link to this definition"></a></dt>
+<dd><p>Retrieves the weapon proficiency cap for a specific weapon type and unit.
+For instance, if the unit can only get up to B rank in a weapon type, will return the WEXP value for B rank.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>unit</strong> (<a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><em>UnitObject</em></a>) – The unit for which to retrieve the weapon proficiency cap.</p></li>
+<li><p><strong>weapon_type</strong> (<em>NID</em>) – The NID of the weapon type for which to retrieve the cap.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The proficiency cap for the specified weapon type and unit.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>If no cap is specified for the weapon type, the highest weapon rank requirement from the
+database is used as the cap.</p></li>
+</ul>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="party-reference.html" class="btn btn-neutral float-left" title="Party Object" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="item_funcs-reference.html" class="btn btn-neutral float-right" title="Item Helper Functions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, rainlash.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Working with Fonts and Languages &mdash; lt-maker  documentation</title>
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/theme_overrides.css?v=5f1687b9" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/jquery.js?v=5d32c60e"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/doctools.js?v=9a2dae69"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="https://lt-maker.readthedocs.io/en/latest/_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Custom Components and Sprites" href="Custom-Components-And-Sprites.html" />
+    <link rel="prev" title="Shop Portraits" href="Shop-Portraits.html" /> 
+<script async type="text/javascript" src="https://lt-maker.readthedocs.io/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="lt-maker" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/source/guides/setup_tutorials/Fonts-And-Languages.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            lt-maker
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../home.html">Lex Talionis Wiki</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Editor Guides:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../editors/Editors-Overview.html">Editors Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../editors/index.html">Editors</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Events:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../events/index.html">Events</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Guides:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Guides-Overview.html">Guides Overview</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Guides</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Project Setup Tutorials</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="Title-Screen.html">Title Screen</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Shop-Portraits.html">Shop Portraits</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="Fonts-And-Languages.html#">Working with Fonts and Languages</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Fonts-And-Languages.html#where-to-find-fonts">Where to find fonts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Fonts-And-Languages.html#what-are-png-and-idx-files">What are PNG and IDX files?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Fonts-And-Languages.html#anatomy-of-a-png-file">Anatomy of a PNG file</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Fonts-And-Languages.html#anatomy-of-a-idx-file">Anatomy of a IDX file</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Fonts-And-Languages.html#a-worked-example">A worked example</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Fonts-And-Languages.html#modifying-existing-characters">Modifying existing characters</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Fonts-And-Languages.html#adding-new-characters">Adding new characters</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Fonts-And-Languages.html#adding-new-fonts">Adding new fonts</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Fonts-And-Languages.html#adding-language-support">Adding Language Support</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Fonts-And-Languages.html#special-notes">Special Notes</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Custom-Components-And-Sprites.html">Custom Components and Sprites</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../eventing_tutorials/index.html">Eventing Tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../skill_item_tutorials/index.html">Skill and Item Tutorials</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">appendix:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Text-Formatting-Commands.html">Text Formatting Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Item-Component-Reference.html">Item Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Skill-Component-Reference.html">Skill Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Special-Variables.html">Special Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Special-Tags.html">Special Tags</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/trigger-reference.html">Event Triggers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Random-Seed-Mechanics.html">Random Seed Mechanics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/FAQ.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Contributing_to_the_LTWiki.html">Contributing to the LTWiki</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/index.html">Code Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">lt-maker</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Guides</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Project Setup Tutorials</a></li>
+      <li class="breadcrumb-item active">Working with Fonts and Languages</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://gitlab.com/rainlash/lt-maker/blob/master/docs/source/guides/setup_tutorials/Fonts-And-Languages.md" class="fa fa-gitlab"> Edit on GitLab</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="working-with-fonts-and-languages">
+<span id="fonts-guide"></span><h1>Working with Fonts and Languages<a class="headerlink" href="Fonts-And-Languages.html#working-with-fonts-and-languages" title="Link to this heading"></a></h1>
+<p>If you wish to add a new font or modify existing fonts, you can do so by directly modifying the font files in your project. Adding language support for non-alphabetical systems works the same way.</p>
+<section id="where-to-find-fonts">
+<h2>Where to find fonts<a class="headerlink" href="Fonts-And-Languages.html#where-to-find-fonts" title="Link to this heading"></a></h2>
+<p>Under <code class="docutils literal notranslate"><span class="pre">&lt;your_project.ltproj&gt;/resources/fonts/</span></code> you will find two types of files: <code class="docutils literal notranslate"><span class="pre">.png</span></code> files and <code class="docutils literal notranslate"><span class="pre">.idx</span></code> files. These files are loaded into the engine at startup and are responsible for the text fonts that are available for you to use.</p>
+</section>
+<section id="what-are-png-and-idx-files">
+<h2>What are PNG and IDX files?<a class="headerlink" href="Fonts-And-Languages.html#what-are-png-and-idx-files" title="Link to this heading"></a></h2>
+<p>PNG files are font character maps. These are essentially files that contain the character images that will be directly drawn onto the game screen. The characters in the file are lined up in a grid. When you create text in your game, the engine will open this file and fetch the corresponding character image in the PNG based on its location in the grid, also called its index. The text that it fetches corresponds to the text you have put in your game. The engine knows where each character is by looking at the IDX file. The IDX file contains information on the pixel width and height of each box in the PNG grid, a mapping of each character available for use to a grid index, as well as the width of specific characters so you can adjust your kerning.</p>
+</section>
+<section id="anatomy-of-a-png-file">
+<h2>Anatomy of a PNG file<a class="headerlink" href="Fonts-And-Languages.html#anatomy-of-a-png-file" title="Link to this heading"></a></h2>
+<p><img alt="FontPng" src="../../../_images/FontPng.png" /></p>
+</section>
+<section id="anatomy-of-a-idx-file">
+<h2>Anatomy of a IDX file<a class="headerlink" href="Fonts-And-Languages.html#anatomy-of-a-idx-file" title="Link to this heading"></a></h2>
+<p><img alt="FontIdx" src="../../../_images/FontIdx.png" /></p>
+</section>
+<section id="a-worked-example">
+<h2>A worked example<a class="headerlink" href="Fonts-And-Languages.html#a-worked-example" title="Link to this heading"></a></h2>
+<p>In the default project, you will find convo as one of the available fonts. This font has its corresponding <code class="docutils literal notranslate"><span class="pre">convo.png</span></code> and <code class="docutils literal notranslate"><span class="pre">convo.idx</span></code> files, already shown in the above sections. When you have a line of text (called a string) such as “Hi” displayed in your game, the engine will look at each character in the string and then look in <code class="docutils literal notranslate"><span class="pre">convo.idx</span></code> to tell at which <code class="docutils literal notranslate"><span class="pre">x,</span> <span class="pre">y</span></code> indices it will find the character image in <code class="docutils literal notranslate"><span class="pre">convo.png</span></code>. It will then multiply these indices by the <code class="docutils literal notranslate"><span class="pre">width</span></code> and <code class="docutils literal notranslate"><span class="pre">height</span></code> found in <code class="docutils literal notranslate"><span class="pre">convo.idx</span></code> to get the exact top-left pixel location in <code class="docutils literal notranslate"><span class="pre">convo.png</span></code>. It will use the character image it finds at that location by directly drawing what it finds in a <code class="docutils literal notranslate"><span class="pre">height</span> <span class="pre">x</span> <span class="pre">cwidth</span></code> box.</p>
+<p><img alt="FontHIdxExample" src="../../../_images/FontHIdxExample.png" />
+<img alt="FontHPngExample" src="../../../_images/FontHPngExample.png" /></p>
+<p>For example, for the character “H” the exact pixel location of the character will can be found by taking the <code class="docutils literal notranslate"><span class="pre">x,</span> <span class="pre">y</span></code> index in <code class="docutils literal notranslate"><span class="pre">convo.idx</span></code> (<code class="docutils literal notranslate"><span class="pre">9,</span> <span class="pre">1</span></code>). The width and height of grid boxes in <code class="docutils literal notranslate"><span class="pre">convo.idx</span></code> is <code class="docutils literal notranslate"><span class="pre">16</span></code> and <code class="docutils literal notranslate"><span class="pre">10</span></code> respectively. By multiplying the <code class="docutils literal notranslate"><span class="pre">x,</span> <span class="pre">y</span></code> and the <code class="docutils literal notranslate"><span class="pre">width,</span> <span class="pre">height</span></code>, the exact top-left pixel location of “H” can be found at <code class="docutils literal notranslate"><span class="pre">144,</span> <span class="pre">10</span></code>. When the engine goes and draws the “H”, it will check <code class="docutils literal notranslate"><span class="pre">cwidth</span></code> and find it is <code class="docutils literal notranslate"><span class="pre">6</span></code>. It will then draw every pixel in a <code class="docutils literal notranslate"><span class="pre">height</span> <span class="pre">x</span> <span class="pre">cwidth</span></code> at the pixel location, which is a <code class="docutils literal notranslate"><span class="pre">16</span> <span class="pre">x</span> <span class="pre">6</span></code> box at <code class="docutils literal notranslate"><span class="pre">144,</span> <span class="pre">10</span></code>.</p>
+</section>
+<section id="modifying-existing-characters">
+<h2>Modifying existing characters<a class="headerlink" href="Fonts-And-Languages.html#modifying-existing-characters" title="Link to this heading"></a></h2>
+<p>You can modify existing characters by redrawing them in the PNG file in your favorite art software. You can also swap mappings of characters however you see fit in the IDX file.</p>
+</section>
+<section id="adding-new-characters">
+<h2>Adding new characters<a class="headerlink" href="Fonts-And-Languages.html#adding-new-characters" title="Link to this heading"></a></h2>
+<p>You can add new characters by adding them to an empty location the PNG file and then setting up the correct mapping in the IDX file.</p>
+</section>
+<section id="adding-new-fonts">
+<h2>Adding new fonts<a class="headerlink" href="Fonts-And-Languages.html#adding-new-fonts" title="Link to this heading"></a></h2>
+<p>You can add new fonts by creating new PNG and IDX files and then correctly setting them up based on the scheme described in previous sections.</p>
+</section>
+<section id="adding-language-support">
+<h2>Adding Language Support<a class="headerlink" href="Fonts-And-Languages.html#adding-language-support" title="Link to this heading"></a></h2>
+<p>Some LT games are made for languages using non-Latin alphabets. While LT does not have native support for these alphabets, it’s straightforward to add them.</p>
+<blockquote>
+<div><p>NOTA BENE: You <strong>must</strong> have your editor <strong>closed</strong> while doing this, otherwise there is risk of data corruption.</p>
+</div></blockquote>
+<p>First, download a font which supports the alphabet of your choice. Below are a few recommendations - some of the developers have personally tested these and confirmed them to be suitable for use in LT.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Language</p></th>
+<th class="head"><p>Font</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Mandarin Chinese</strong></p></td>
+<td><p><a class="reference external" href="https://github.com/rougier/freetype-gl/blob/master/fonts/fireflysung.ttf">Firefly Sung</a></p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Japanese</strong></p></td>
+<td><p><a class="reference external" href="https://itouhiro.hatenablog.com/entry/20130602/font">PixelMPlus</a></p></td>
+</tr>
+</tbody>
+</table>
+<p>Next, move the font into your project’s fonts folder, located at <code class="docutils literal notranslate"><span class="pre">MyProject.ltproj/resources/fonts</span></code>.</p>
+<p>Finally, open up the <code class="docutils literal notranslate"><span class="pre">fonts.json</span></code> file in that directory. You will see a list of entries like this:</p>
+<div class="highlight-json notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;nid&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;bconvo&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;fallback_ttf&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">null</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;fallback_size&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">16</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;default_color&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;black&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;outline_font&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;palettes&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="nt">&quot;black&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">                </span><span class="p">[</span>
+<span class="w">                    </span><span class="mi">40</span><span class="p">,</span>
+<span class="w">                    </span><span class="mi">40</span><span class="p">,</span>
+<span class="w">                    </span><span class="mi">40</span><span class="p">,</span>
+<span class="w">                    </span><span class="mi">255</span>
+<span class="w">                </span><span class="p">],</span>
+<span class="w">                </span><span class="p">[</span>
+<span class="w">                    </span><span class="mi">184</span><span class="p">,</span>
+<span class="w">                    </span><span class="mi">184</span><span class="p">,</span>
+<span class="w">                    </span><span class="mi">184</span><span class="p">,</span>
+<span class="w">                    </span><span class="mi">255</span>
+<span class="w">                </span><span class="p">]</span>
+<span class="w">            </span><span class="p">]</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>In order to add your new font (let’s say you decided to download <code class="docutils literal notranslate"><span class="pre">fireflysung.ttf</span></code>), you will change the <code class="docutils literal notranslate"><span class="pre">fallback_ttf</span></code> field to <code class="docutils literal notranslate"><span class="pre">fireflysung.ttf</span></code>. You may also need to play with the <code class="docutils literal notranslate"><span class="pre">fallback_size</span></code> field in order to ensure your font renders correctly: for example, the <code class="docutils literal notranslate"><span class="pre">PixelMPlus</span></code> font comes in a 10-pixel and 12-pixel version, and will render very badly if you do not set the size accordingly.</p>
+<p>Once you change those two fields, you’re done!</p>
+</section>
+<section id="special-notes">
+<h2>Special Notes<a class="headerlink" href="Fonts-And-Languages.html#special-notes" title="Link to this heading"></a></h2>
+<p>Some fonts in the game render with outlines. We support these as well! However, it requires additional work for certain font-styles. You must set the <code class="docutils literal notranslate"><span class="pre">outline_font</span></code> to <code class="docutils literal notranslate"><span class="pre">true</span></code> for these fonts (although this has already been set for the most common outlined fonts), and you must order each color in the palette such that the primary text color is the first RGBA value (in the example above, <code class="docutils literal notranslate"><span class="pre">black</span></code> has a primary color of <code class="docutils literal notranslate"><span class="pre">40,</span> <span class="pre">40,</span> <span class="pre">40,</span> <span class="pre">255</span></code>), and the secondary text color is the second RGBA value (again, in the example above, the secondary color is <code class="docutils literal notranslate"><span class="pre">184,</span> <span class="pre">184,</span> <span class="pre">184,</span> <span class="pre">255</span></code>). The primary will be used for the main text body, while the secondary will be used as the outline.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Shop-Portraits.html" class="btn btn-neutral float-left" title="Shop Portraits" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Custom-Components-And-Sprites.html" class="btn btn-neutral float-right" title="Custom Components and Sprites" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, rainlash.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

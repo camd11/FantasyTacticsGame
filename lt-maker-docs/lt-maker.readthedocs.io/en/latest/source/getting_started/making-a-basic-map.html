@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Basics &mdash; lt-maker  documentation</title>
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/theme_overrides.css?v=5f1687b9" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/jquery.js?v=5d32c60e"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/doctools.js?v=9a2dae69"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="https://lt-maker.readthedocs.io/en/latest/_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Build Engine" href="Build-Engine.html" />
+    <link rel="prev" title="Necessary Installs (for Windows)" href="Python-Installation.html" /> 
+<script async type="text/javascript" src="https://lt-maker.readthedocs.io/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="lt-maker" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/source/getting_started/making-a-basic-map.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            lt-maker
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../home.html">Lex Talionis Wiki</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Getting Started</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="Getting-Started.html">Getting Started</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Python-Installation.html">Necessary Installs (for Windows)</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="making-a-basic-map.html#">The Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Build-Engine.html">Build Engine</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Editor Guides:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../editors/Editors-Overview.html">Editors Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../editors/index.html">Editors</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Events:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../events/index.html">Events</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Guides:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guides/Guides-Overview.html">Guides Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/index.html">Guides</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">appendix:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/Text-Formatting-Commands.html">Text Formatting Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/Item-Component-Reference.html">Item Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/Skill-Component-Reference.html">Skill Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/Special-Variables.html">Special Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/Special-Tags.html">Special Tags</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/trigger-reference.html">Event Triggers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/Random-Seed-Mechanics.html">Random Seed Mechanics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/FAQ.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/Contributing_to_the_LTWiki.html">Contributing to the LTWiki</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/index.html">Code Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">lt-maker</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Getting Started</a></li>
+      <li class="breadcrumb-item active">The Basics</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://gitlab.com/rainlash/lt-maker/blob/master/docs/source/getting_started/making-a-basic-map.md" class="fa fa-gitlab"> Edit on GitLab</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="the-basics">
+<h1>The Basics<a class="headerlink" href="making-a-basic-map.html#the-basics" title="Link to this heading"></a></h1>
+<p>Due to the sheer amount of editors available in Lex Talionis it can be very easy to become overwhelmed when first starting out. This page will provide a short guide on how to learn some of the essentials of any LT game - interacting with level properties, editing the map, and making and placing units.</p>
+<p>First, go to “File” in the top left corner and select the sacred_stones.ltproj folder in the window that appears.</p>
+<p>Your window should now look like this:</p>
+<p><img alt="firstimage" src="../../_images/firstimage.png" /></p>
+<p>Double click on chapter 1 to open the level editor. The right side of the window should now look like this:</p>
+<p><img alt="secondimage" src="../../_images/secondimage.png" /></p>
+<p>We’ll go through each piece of information, starting from the top.</p>
+<ol class="arabic simple">
+<li><p>Level ID - The level’s number in the context of your game. It’s not that important, just make sure not to have two levels with the same ID.</p></li>
+<li><p>Level Title - This is the name the player sees when the chapter starts</p></li>
+<li><p>Party - If you were using split parties, like in Sacred Stones or Gaiden, this would be useful. Ignore it for now.</p></li>
+<li><p>Music - This button opens a new screen where the level’s music can be changed. You can open it if you want, but it isn’t immediately relevant.</p></li>
+<li><p>Objective Display, Win Condition, Loss Condition - All three of these have self-explanatory names, but it’s important to remember that these aren’t <em>actually</em> what determines the win and loss condition. They only determine what the player sees in the chapter. The win and loss condition are determined through the win_game and lose_game commands in events. See the events section for more details.</p></li>
+<li><p>Select Tilemap - This button would allow us to select and edit the map itself. We’ll click it in just a second.</p></li>
+<li><p>Free Roam? - This toggles the engine’s free roam feature in the context of this level. Free Roam works identically to Fates’ My Castle or Three Houses’ Monastery, but can be set at the start of the level as well as changed partway through it.</p></li>
+</ol>
+<p>Now that we’ve gone through these options, click “Select Tilemap”. That’ll open a window that looks like this:</p>
+<p><img alt="thirdimage" src="../../_images/thirdimage.png" /></p>
+<p>Select the image above Chapter 1 and choose “Edit Current Tilemap”. That will open the tilemap editor.</p>
+<p><img alt="fourthimage" src="../../_images/fourthimage.png" /></p>
+<p>The window on the left side is your map preview. The box in the top right, currently with base highlighted and checked, is your layer selection. The map in the bottom right is your tileset. Left click on a tile in the tileset and then left click on the map. Voila, the map has changed!</p>
+<p>Now we’ll add terrain to the map. Move your mouse to the top icons and click the icon that looks like a mountain. A new bar will appear on the left and the map will look quite colorful. Scroll through that bar and look at the options currently available. More options can be added in the terrain editor, but for now choose one and left click a few times on the map. You should see that the terrain has now changed.</p>
+<p>Let’s run a quick test. Hit “ok” in the Tilemap Editor, “ok” in the other pop-up screen, and then hit F5. That will run the currently selected chapter. Whatever changes you made should now appear on the map!</p>
+<p>Finally, we’ll look at making and placing units. In the top left of the main window, click “Edit” and “Units”. This will bring up the Unit editor.</p>
+<p><img alt="fifthimage" src="../../_images/fifthimage.png" /></p>
+<p>There’s a lot of information here, but most is self explanatory. Try messing around with Eirika’s stats or class, and maybe give her a few weapons. Remember, both the character and their class must be able to use a weapon type!</p>
+<p>Once you’re done hit “Apply” and go back to the level editor. Click the “Units” tab in the bottom right.</p>
+<p><img alt="sixthimage" src="../../_images/sixthimage.png" /></p>
+<p>You can see a list of unit icons, names, and items. Each unit has a word in parentheses next to their names, which corresponds to their AI typing. Player units always have None for AI, while units here have a mix of guard and defend. From Meinerieve:</p>
+<ol class="arabic simple">
+<li><p>Pursue: Hunt you down across the map.</p></li>
+<li><p>Attack: If I can move and attack this or next turn I will</p></li>
+<li><p>Defend: Only attack what comes into my range</p></li>
+<li><p>Guard: Don’t move but will attack if in my item range.</p></li>
+</ol>
+<p>Double clicking on one of these units will show information about them, which is especially helpful for red and green generic units. Once one is selected, right click to move them on the map.</p>
+<p>Finally, let’s create a unit. Click the “Create Generic Unit” button at the bottom.</p>
+<p><img alt="seventhimage" src="../../_images/seventhimage.png" /></p>
+<p>You can see a lot of information here, but it’s largely the same as the Unit editor. The key difference is that the unit will be able to use any weapon you give them so long as their class can, and that you can’t directly change these units’ stats. Instead, they take their class average values at their level, plus any difficulty modifiers given to them.</p>
+<p>If you click on “Team” you can see four options. Most are self explanatory, but it’s worthwhile to highlight enemy2, which are purple units that attack both red, green, and blue units. Anyway, go ahead and make a few, placing them down to block Eirika’s path. You’ll notice that it saves your last settings each time you go to make a new generic unit, making placing down a whole lot of enemies quite easy!</p>
+<p><img alt="eigthimage" src="../../_images/eigthimage.png" /></p>
+<p>Mwahaha!</p>
+<p>This is the end of our starter tutorial. You should now have all the tools you need to create basic maps in Lex Talionis, as well as create characters for them. As you dive deeper into the engine you’ll certainly encounter more challenges and have more questions. The Lex Talionis discord is the perfect place to ask them, and hopefully this wiki will be able to provide you with some answers as well.</p>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Python-Installation.html" class="btn btn-neutral float-left" title="Necessary Installs (for Windows)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Build-Engine.html" class="btn btn-neutral float-right" title="Build Engine" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, rainlash.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

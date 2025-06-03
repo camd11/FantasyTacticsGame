@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Event Triggers &mdash; lt-maker  documentation</title>
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/theme_overrides.css?v=5f1687b9" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/jquery.js?v=5d32c60e"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/doctools.js?v=9a2dae69"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="https://lt-maker.readthedocs.io/en/latest/_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Random Seed Mechanics" href="Random-Seed-Mechanics.html" />
+    <link rel="prev" title="Special Tags" href="Special-Tags.html" /> 
+<script async type="text/javascript" src="https://lt-maker.readthedocs.io/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="lt-maker" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/source/appendix/trigger-reference.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            lt-maker
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../home.html">Lex Talionis Wiki</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Editor Guides:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../editors/Editors-Overview.html">Editors Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../editors/index.html">Editors</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Events:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../events/index.html">Events</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Guides:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guides/Guides-Overview.html">Guides Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/index.html">Guides</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">appendix:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Text-Formatting-Commands.html">Text Formatting Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Item-Component-Reference.html">Item Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Skill-Component-Reference.html">Skill Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Special-Variables.html">Special Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Special-Tags.html">Special Tags</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="trigger-reference.html#">Event Triggers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="trigger-reference.html#app.events.triggers.LevelStart"><code class="docutils literal notranslate"><span class="pre">LevelStart</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="trigger-reference.html#app.events.triggers.LevelEnd"><code class="docutils literal notranslate"><span class="pre">LevelEnd</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="trigger-reference.html#app.events.triggers.OverworldStart"><code class="docutils literal notranslate"><span class="pre">OverworldStart</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="trigger-reference.html#app.events.triggers.LevelSelect"><code class="docutils literal notranslate"><span class="pre">LevelSelect</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="trigger-reference.html#app.events.triggers.PhaseChange"><code class="docutils literal notranslate"><span class="pre">PhaseChange</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.PhaseChange.team"><code class="docutils literal notranslate"><span class="pre">PhaseChange.team</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="trigger-reference.html#app.events.triggers.TurnChange"><code class="docutils literal notranslate"><span class="pre">TurnChange</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="trigger-reference.html#app.events.triggers.EnemyTurnChange"><code class="docutils literal notranslate"><span class="pre">EnemyTurnChange</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="trigger-reference.html#app.events.triggers.Enemy2TurnChange"><code class="docutils literal notranslate"><span class="pre">Enemy2TurnChange</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="trigger-reference.html#app.events.triggers.OtherTurnChange"><code class="docutils literal notranslate"><span class="pre">OtherTurnChange</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="trigger-reference.html#app.events.triggers.OnRegionInteract"><code class="docutils literal notranslate"><span class="pre">OnRegionInteract</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.OnRegionInteract.unit1"><code class="docutils literal notranslate"><span class="pre">OnRegionInteract.unit1</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.OnRegionInteract.position"><code class="docutils literal notranslate"><span class="pre">OnRegionInteract.position</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.OnRegionInteract.region"><code class="docutils literal notranslate"><span class="pre">OnRegionInteract.region</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="trigger-reference.html#app.events.triggers.OnRoamInteract"><code class="docutils literal notranslate"><span class="pre">OnRoamInteract</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.OnRoamInteract.unit1"><code class="docutils literal notranslate"><span class="pre">OnRoamInteract.unit1</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.OnRoamInteract.units"><code class="docutils literal notranslate"><span class="pre">OnRoamInteract.units</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="trigger-reference.html#app.events.triggers.CombatDeath"><code class="docutils literal notranslate"><span class="pre">CombatDeath</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.CombatDeath.unit1"><code class="docutils literal notranslate"><span class="pre">CombatDeath.unit1</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.CombatDeath.unit2"><code class="docutils literal notranslate"><span class="pre">CombatDeath.unit2</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.CombatDeath.position"><code class="docutils literal notranslate"><span class="pre">CombatDeath.position</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="trigger-reference.html#app.events.triggers.UnitDeath"><code class="docutils literal notranslate"><span class="pre">UnitDeath</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.UnitDeath.unit1"><code class="docutils literal notranslate"><span class="pre">UnitDeath.unit1</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.UnitDeath.unit2"><code class="docutils literal notranslate"><span class="pre">UnitDeath.unit2</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.UnitDeath.position"><code class="docutils literal notranslate"><span class="pre">UnitDeath.position</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="trigger-reference.html#app.events.triggers.UnitWait"><code class="docutils literal notranslate"><span class="pre">UnitWait</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.UnitWait.unit1"><code class="docutils literal notranslate"><span class="pre">UnitWait.unit1</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.UnitWait.position"><code class="docutils literal notranslate"><span class="pre">UnitWait.position</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.UnitWait.region"><code class="docutils literal notranslate"><span class="pre">UnitWait.region</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.UnitWait.actively_chosen"><code class="docutils literal notranslate"><span class="pre">UnitWait.actively_chosen</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="trigger-reference.html#app.events.triggers.UnitSelect"><code class="docutils literal notranslate"><span class="pre">UnitSelect</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.UnitSelect.position"><code class="docutils literal notranslate"><span class="pre">UnitSelect.position</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="trigger-reference.html#app.events.triggers.UnitDeselect"><code class="docutils literal notranslate"><span class="pre">UnitDeselect</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.UnitDeselect.position"><code class="docutils literal notranslate"><span class="pre">UnitDeselect.position</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="trigger-reference.html#app.events.triggers.UnitLevelUp"><code class="docutils literal notranslate"><span class="pre">UnitLevelUp</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.UnitLevelUp.unit1"><code class="docutils literal notranslate"><span class="pre">UnitLevelUp.unit1</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.UnitLevelUp.stat_changes"><code class="docutils literal notranslate"><span class="pre">UnitLevelUp.stat_changes</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.UnitLevelUp.source"><code class="docutils literal notranslate"><span class="pre">UnitLevelUp.source</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="trigger-reference.html#app.events.triggers.DuringUnitLevelUp"><code class="docutils literal notranslate"><span class="pre">DuringUnitLevelUp</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.DuringUnitLevelUp.unit1"><code class="docutils literal notranslate"><span class="pre">DuringUnitLevelUp.unit1</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.DuringUnitLevelUp.stat_changes"><code class="docutils literal notranslate"><span class="pre">DuringUnitLevelUp.stat_changes</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.DuringUnitLevelUp.source"><code class="docutils literal notranslate"><span class="pre">DuringUnitLevelUp.source</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="trigger-reference.html#app.events.triggers.UnitWeaponRankUp"><code class="docutils literal notranslate"><span class="pre">UnitWeaponRankUp</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.UnitWeaponRankUp.unit"><code class="docutils literal notranslate"><span class="pre">UnitWeaponRankUp.unit</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.UnitWeaponRankUp.weapon_type"><code class="docutils literal notranslate"><span class="pre">UnitWeaponRankUp.weapon_type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.UnitWeaponRankUp.old_wexp"><code class="docutils literal notranslate"><span class="pre">UnitWeaponRankUp.old_wexp</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.UnitWeaponRankUp.rank"><code class="docutils literal notranslate"><span class="pre">UnitWeaponRankUp.rank</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="trigger-reference.html#app.events.triggers.CombatStart"><code class="docutils literal notranslate"><span class="pre">CombatStart</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.CombatStart.unit1"><code class="docutils literal notranslate"><span class="pre">CombatStart.unit1</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.CombatStart.unit2"><code class="docutils literal notranslate"><span class="pre">CombatStart.unit2</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.CombatStart.position"><code class="docutils literal notranslate"><span class="pre">CombatStart.position</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.CombatStart.item"><code class="docutils literal notranslate"><span class="pre">CombatStart.item</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.CombatStart.is_animation_combat"><code class="docutils literal notranslate"><span class="pre">CombatStart.is_animation_combat</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="trigger-reference.html#app.events.triggers.CombatEnd"><code class="docutils literal notranslate"><span class="pre">CombatEnd</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.CombatEnd.unit1"><code class="docutils literal notranslate"><span class="pre">CombatEnd.unit1</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.CombatEnd.unit2"><code class="docutils literal notranslate"><span class="pre">CombatEnd.unit2</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.CombatEnd.position"><code class="docutils literal notranslate"><span class="pre">CombatEnd.position</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.CombatEnd.item"><code class="docutils literal notranslate"><span class="pre">CombatEnd.item</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.CombatEnd.playback"><code class="docutils literal notranslate"><span class="pre">CombatEnd.playback</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="trigger-reference.html#app.events.triggers.OnTalk"><code class="docutils literal notranslate"><span class="pre">OnTalk</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.OnTalk.unit1"><code class="docutils literal notranslate"><span class="pre">OnTalk.unit1</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.OnTalk.unit2"><code class="docutils literal notranslate"><span class="pre">OnTalk.unit2</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.OnTalk.position"><code class="docutils literal notranslate"><span class="pre">OnTalk.position</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="trigger-reference.html#app.events.triggers.OnSupport"><code class="docutils literal notranslate"><span class="pre">OnSupport</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.OnSupport.unit1"><code class="docutils literal notranslate"><span class="pre">OnSupport.unit1</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.OnSupport.unit2"><code class="docutils literal notranslate"><span class="pre">OnSupport.unit2</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.OnSupport.position"><code class="docutils literal notranslate"><span class="pre">OnSupport.position</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.OnSupport.support_rank_nid"><code class="docutils literal notranslate"><span class="pre">OnSupport.support_rank_nid</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.OnSupport.is_replay"><code class="docutils literal notranslate"><span class="pre">OnSupport.is_replay</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="trigger-reference.html#app.events.triggers.OnBaseConvo"><code class="docutils literal notranslate"><span class="pre">OnBaseConvo</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.OnBaseConvo.base_convo"><code class="docutils literal notranslate"><span class="pre">OnBaseConvo.base_convo</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="trigger-reference.html#app.events.triggers.OnPrepStart"><code class="docutils literal notranslate"><span class="pre">OnPrepStart</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="trigger-reference.html#app.events.triggers.OnBaseStart"><code class="docutils literal notranslate"><span class="pre">OnBaseStart</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="trigger-reference.html#app.events.triggers.OnTurnwheel"><code class="docutils literal notranslate"><span class="pre">OnTurnwheel</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="trigger-reference.html#app.events.triggers.OnTitleScreen"><code class="docutils literal notranslate"><span class="pre">OnTitleScreen</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="trigger-reference.html#app.events.triggers.OnStartup"><code class="docutils literal notranslate"><span class="pre">OnStartup</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="trigger-reference.html#app.events.triggers.TimeRegionComplete"><code class="docutils literal notranslate"><span class="pre">TimeRegionComplete</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.TimeRegionComplete.position"><code class="docutils literal notranslate"><span class="pre">TimeRegionComplete.position</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.TimeRegionComplete.region"><code class="docutils literal notranslate"><span class="pre">TimeRegionComplete.region</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="trigger-reference.html#app.events.triggers.OnOverworldNodeSelect"><code class="docutils literal notranslate"><span class="pre">OnOverworldNodeSelect</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.OnOverworldNodeSelect.entity_nid"><code class="docutils literal notranslate"><span class="pre">OnOverworldNodeSelect.entity_nid</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.OnOverworldNodeSelect.node_nid"><code class="docutils literal notranslate"><span class="pre">OnOverworldNodeSelect.node_nid</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="trigger-reference.html#app.events.triggers.RoamPressStart"><code class="docutils literal notranslate"><span class="pre">RoamPressStart</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.RoamPressStart.unit1"><code class="docutils literal notranslate"><span class="pre">RoamPressStart.unit1</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.RoamPressStart.unit2"><code class="docutils literal notranslate"><span class="pre">RoamPressStart.unit2</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="trigger-reference.html#app.events.triggers.RoamPressInfo"><code class="docutils literal notranslate"><span class="pre">RoamPressInfo</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.RoamPressInfo.unit1"><code class="docutils literal notranslate"><span class="pre">RoamPressInfo.unit1</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.RoamPressInfo.unit2"><code class="docutils literal notranslate"><span class="pre">RoamPressInfo.unit2</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="trigger-reference.html#app.events.triggers.RoamPressAux"><code class="docutils literal notranslate"><span class="pre">RoamPressAux</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.RoamPressAux.unit1"><code class="docutils literal notranslate"><span class="pre">RoamPressAux.unit1</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.RoamPressAux.unit2"><code class="docutils literal notranslate"><span class="pre">RoamPressAux.unit2</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="trigger-reference.html#app.events.triggers.RoamingInterrupt"><code class="docutils literal notranslate"><span class="pre">RoamingInterrupt</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.RoamingInterrupt.unit1"><code class="docutils literal notranslate"><span class="pre">RoamingInterrupt.unit1</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.RoamingInterrupt.position"><code class="docutils literal notranslate"><span class="pre">RoamingInterrupt.position</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.RoamingInterrupt.region"><code class="docutils literal notranslate"><span class="pre">RoamingInterrupt.region</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="trigger-reference.html#app.events.triggers.RegionTrigger"><code class="docutils literal notranslate"><span class="pre">RegionTrigger</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.RegionTrigger.nid"><code class="docutils literal notranslate"><span class="pre">RegionTrigger.nid</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.RegionTrigger.hidden"><code class="docutils literal notranslate"><span class="pre">RegionTrigger.hidden</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.RegionTrigger.unit1"><code class="docutils literal notranslate"><span class="pre">RegionTrigger.unit1</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.RegionTrigger.position"><code class="docutils literal notranslate"><span class="pre">RegionTrigger.position</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.RegionTrigger.region"><code class="docutils literal notranslate"><span class="pre">RegionTrigger.region</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.RegionTrigger.item"><code class="docutils literal notranslate"><span class="pre">RegionTrigger.item</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="trigger-reference.html#app.events.triggers.EventOnHit"><code class="docutils literal notranslate"><span class="pre">EventOnHit</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.EventOnHit.hidden"><code class="docutils literal notranslate"><span class="pre">EventOnHit.hidden</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.EventOnHit.unit1"><code class="docutils literal notranslate"><span class="pre">EventOnHit.unit1</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.EventOnHit.unit2"><code class="docutils literal notranslate"><span class="pre">EventOnHit.unit2</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.EventOnHit.position"><code class="docutils literal notranslate"><span class="pre">EventOnHit.position</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.EventOnHit.item"><code class="docutils literal notranslate"><span class="pre">EventOnHit.item</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.EventOnHit.target_pos"><code class="docutils literal notranslate"><span class="pre">EventOnHit.target_pos</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.EventOnHit.mode"><code class="docutils literal notranslate"><span class="pre">EventOnHit.mode</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.EventOnHit.attack_info"><code class="docutils literal notranslate"><span class="pre">EventOnHit.attack_info</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="trigger-reference.html#app.events.triggers.EventAfterCombat"><code class="docutils literal notranslate"><span class="pre">EventAfterCombat</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.EventAfterCombat.hidden"><code class="docutils literal notranslate"><span class="pre">EventAfterCombat.hidden</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.EventAfterCombat.unit1"><code class="docutils literal notranslate"><span class="pre">EventAfterCombat.unit1</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.EventAfterCombat.unit2"><code class="docutils literal notranslate"><span class="pre">EventAfterCombat.unit2</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.EventAfterCombat.position"><code class="docutils literal notranslate"><span class="pre">EventAfterCombat.position</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.EventAfterCombat.item"><code class="docutils literal notranslate"><span class="pre">EventAfterCombat.item</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.EventAfterCombat.target_pos"><code class="docutils literal notranslate"><span class="pre">EventAfterCombat.target_pos</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.EventAfterCombat.mode"><code class="docutils literal notranslate"><span class="pre">EventAfterCombat.mode</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="trigger-reference.html#app.events.triggers.EventAfterInitiatedCombat"><code class="docutils literal notranslate"><span class="pre">EventAfterInitiatedCombat</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.EventAfterInitiatedCombat.hidden"><code class="docutils literal notranslate"><span class="pre">EventAfterInitiatedCombat.hidden</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.EventAfterInitiatedCombat.unit1"><code class="docutils literal notranslate"><span class="pre">EventAfterInitiatedCombat.unit1</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.EventAfterInitiatedCombat.unit2"><code class="docutils literal notranslate"><span class="pre">EventAfterInitiatedCombat.unit2</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.EventAfterInitiatedCombat.position"><code class="docutils literal notranslate"><span class="pre">EventAfterInitiatedCombat.position</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.EventAfterInitiatedCombat.item"><code class="docutils literal notranslate"><span class="pre">EventAfterInitiatedCombat.item</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.EventAfterInitiatedCombat.mode"><code class="docutils literal notranslate"><span class="pre">EventAfterInitiatedCombat.mode</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="trigger-reference.html#app.events.triggers.EventOnRemove"><code class="docutils literal notranslate"><span class="pre">EventOnRemove</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.EventOnRemove.hidden"><code class="docutils literal notranslate"><span class="pre">EventOnRemove.hidden</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.EventOnRemove.unit1"><code class="docutils literal notranslate"><span class="pre">EventOnRemove.unit1</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="trigger-reference.html#app.events.triggers.UnlockStaff"><code class="docutils literal notranslate"><span class="pre">UnlockStaff</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.UnlockStaff.hidden"><code class="docutils literal notranslate"><span class="pre">UnlockStaff.hidden</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.UnlockStaff.unit1"><code class="docutils literal notranslate"><span class="pre">UnlockStaff.unit1</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.UnlockStaff.position"><code class="docutils literal notranslate"><span class="pre">UnlockStaff.position</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.UnlockStaff.item"><code class="docutils literal notranslate"><span class="pre">UnlockStaff.item</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="trigger-reference.html#app.events.triggers.UnlockStaff.region"><code class="docutils literal notranslate"><span class="pre">UnlockStaff.region</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Random-Seed-Mechanics.html">Random Seed Mechanics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Contributing_to_the_LTWiki.html">Contributing to the LTWiki</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">Code Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">lt-maker</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Event Triggers</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://gitlab.com/rainlash/lt-maker/blob/master/docs/source/appendix/trigger-reference.rst" class="fa fa-gitlab"> Edit on GitLab</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-app.events.triggers">
+<span id="event-triggers"></span><h1>Event Triggers<a class="headerlink" href="trigger-reference.html#module-app.events.triggers" title="Link to this heading"></a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="app.events.triggers.LevelStart">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.events.triggers.</span></span><span class="sig-name descname"><span class="pre">LevelStart</span></span><a class="headerlink" href="trigger-reference.html#app.events.triggers.LevelStart" title="Link to this definition"></a></dt>
+<dd><p>Occurs at the very beginning of a level. The chapter screen and title is usually
+displayed here, as well as introductory cinematics.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="app.events.triggers.LevelEnd">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.events.triggers.</span></span><span class="sig-name descname"><span class="pre">LevelEnd</span></span><a class="headerlink" href="trigger-reference.html#app.events.triggers.LevelEnd" title="Link to this definition"></a></dt>
+<dd><p>This occurs once <cite>win_game</cite> is set in another event. This is called at the
+end of gameplay, and usually handles end cinematics before going to
+the save screen or overworld.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="app.events.triggers.OverworldStart">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.events.triggers.</span></span><span class="sig-name descname"><span class="pre">OverworldStart</span></span><a class="headerlink" href="trigger-reference.html#app.events.triggers.OverworldStart" title="Link to this definition"></a></dt>
+<dd><p>Occurs upon entering the overworld.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="app.events.triggers.LevelSelect">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.events.triggers.</span></span><span class="sig-name descname"><span class="pre">LevelSelect</span></span><a class="headerlink" href="trigger-reference.html#app.events.triggers.LevelSelect" title="Link to this definition"></a></dt>
+<dd><p>Occurs when an overworld entity is about to issue a move to the node
+containing the next level. Because of implementation detail, when
+this event occurs, it supersedes any queued moves. Therefore, the
+entity will <em>not move</em> to the selected node. Any events that use
+this trigger should include a scripted move if movement is desired.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="app.events.triggers.PhaseChange">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.events.triggers.</span></span><span class="sig-name descname"><span class="pre">PhaseChange</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">team</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="trigger-reference.html#app.events.triggers.PhaseChange" title="Link to this definition"></a></dt>
+<dd><p>Occurs whenever the phase changes.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.PhaseChange.team">
+<span class="sig-name descname"><span class="pre">team</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.PhaseChange.team" title="Link to this definition"></a></dt>
+<dd><p>contains the NID of the team of the new phase</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="app.events.triggers.TurnChange">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.events.triggers.</span></span><span class="sig-name descname"><span class="pre">TurnChange</span></span><a class="headerlink" href="trigger-reference.html#app.events.triggers.TurnChange" title="Link to this definition"></a></dt>
+<dd><p>Occurs immediately before turn changes to Player Phase. Useful for dialogue or reinforcements.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="app.events.triggers.EnemyTurnChange">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.events.triggers.</span></span><span class="sig-name descname"><span class="pre">EnemyTurnChange</span></span><a class="headerlink" href="trigger-reference.html#app.events.triggers.EnemyTurnChange" title="Link to this definition"></a></dt>
+<dd><p>Occurs immediately before turn changes to Enemy Phase.
+Useful for “same turn reinforcements” and other evil deeds.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="app.events.triggers.Enemy2TurnChange">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.events.triggers.</span></span><span class="sig-name descname"><span class="pre">Enemy2TurnChange</span></span><a class="headerlink" href="trigger-reference.html#app.events.triggers.Enemy2TurnChange" title="Link to this definition"></a></dt>
+<dd><p>Occurs immediately before turn changes to Second Enemy’s Phase.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="app.events.triggers.OtherTurnChange">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.events.triggers.</span></span><span class="sig-name descname"><span class="pre">OtherTurnChange</span></span><a class="headerlink" href="trigger-reference.html#app.events.triggers.OtherTurnChange" title="Link to this definition"></a></dt>
+<dd><p>Occurs immediately before turn changes to Other Phase.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="app.events.triggers.OnRegionInteract">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.events.triggers.</span></span><span class="sig-name descname"><span class="pre">OnRegionInteract</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="region-reference.html#app.engine.objects.region.RegionObject" title="app.engine.objects.region.RegionObject"><span class="pre">RegionObject</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="trigger-reference.html#app.events.triggers.OnRegionInteract" title="Link to this definition"></a></dt>
+<dd><p>Occurs when a unit interacts with an event region.
+All event region type events (like Shop, Armory, Visit, etc.)
+follow this trigger’s format.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.OnRegionInteract.unit1">
+<span class="sig-name descname"><span class="pre">unit1</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.OnRegionInteract.unit1" title="Link to this definition"></a></dt>
+<dd><p>the unit that is interacting</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.OnRegionInteract.position">
+<span class="sig-name descname"><span class="pre">position</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.OnRegionInteract.position" title="Link to this definition"></a></dt>
+<dd><p>the position of the unit.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.OnRegionInteract.region">
+<span class="sig-name descname"><span class="pre">region</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="region-reference.html#app.engine.objects.region.RegionObject" title="app.engine.objects.region.RegionObject"><span class="pre">RegionObject</span></a></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.OnRegionInteract.region" title="Link to this definition"></a></dt>
+<dd><p>the event region.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="app.events.triggers.OnRoamInteract">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.events.triggers.</span></span><span class="sig-name descname"><span class="pre">OnRoamInteract</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">units</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="trigger-reference.html#app.events.triggers.OnRoamInteract" title="Link to this definition"></a></dt>
+<dd><p>Occurs when a unit interacts during free roam. If a Talk
+or Region event exists, they will trigger instead. This
+event will only trigger if Talk or Region events do not
+exist at the given location during Free Roam.
+Can be used for Generic NPC dialogue or for opening a menu
+when not interacting with other NPC’s or regions.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.OnRoamInteract.unit1">
+<span class="sig-name descname"><span class="pre">unit1</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.OnRoamInteract.unit1" title="Link to this definition"></a></dt>
+<dd><p>The current roam unit.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.OnRoamInteract.units">
+<span class="sig-name descname"><span class="pre">units</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.OnRoamInteract.units" title="Link to this definition"></a></dt>
+<dd><p>the closest nearby other units.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="app.events.triggers.CombatDeath">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.events.triggers.</span></span><span class="sig-name descname"><span class="pre">CombatDeath</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="trigger-reference.html#app.events.triggers.CombatDeath" title="Link to this definition"></a></dt>
+<dd><p>Occurs during combat when any unit dies, including generics.
+If triggered, will delay the death animation of unit1 until
+after the attack animation of unit2 finishes.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.CombatDeath.unit1">
+<span class="sig-name descname"><span class="pre">unit1</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.CombatDeath.unit1" title="Link to this definition"></a></dt>
+<dd><p>the unit that died.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.CombatDeath.unit2">
+<span class="sig-name descname"><span class="pre">unit2</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.CombatDeath.unit2" title="Link to this definition"></a></dt>
+<dd><p>the unit that killed them (can be None).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.CombatDeath.position">
+<span class="sig-name descname"><span class="pre">position</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.CombatDeath.position" title="Link to this definition"></a></dt>
+<dd><p>the position they died at.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="app.events.triggers.UnitDeath">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.events.triggers.</span></span><span class="sig-name descname"><span class="pre">UnitDeath</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="trigger-reference.html#app.events.triggers.UnitDeath" title="Link to this definition"></a></dt>
+<dd><p>Occurs after combat when any unit dies, including generics.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.UnitDeath.unit1">
+<span class="sig-name descname"><span class="pre">unit1</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.UnitDeath.unit1" title="Link to this definition"></a></dt>
+<dd><p>the unit that died.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.UnitDeath.unit2">
+<span class="sig-name descname"><span class="pre">unit2</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.UnitDeath.unit2" title="Link to this definition"></a></dt>
+<dd><p>the unit that killed them (can be None).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.UnitDeath.position">
+<span class="sig-name descname"><span class="pre">position</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.UnitDeath.position" title="Link to this definition"></a></dt>
+<dd><p>the position they died at.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="app.events.triggers.UnitWait">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.events.triggers.</span></span><span class="sig-name descname"><span class="pre">UnitWait</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="region-reference.html#app.engine.objects.region.RegionObject" title="app.engine.objects.region.RegionObject"><span class="pre">RegionObject</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">actively_chosen</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="trigger-reference.html#app.events.triggers.UnitWait" title="Link to this definition"></a></dt>
+<dd><p>Occurs when any unit waits.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.UnitWait.unit1">
+<span class="sig-name descname"><span class="pre">unit1</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.UnitWait.unit1" title="Link to this definition"></a></dt>
+<dd><p>the unit that waited.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.UnitWait.position">
+<span class="sig-name descname"><span class="pre">position</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.UnitWait.position" title="Link to this definition"></a></dt>
+<dd><p>the position they waited at.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.UnitWait.region">
+<span class="sig-name descname"><span class="pre">region</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="region-reference.html#app.engine.objects.region.RegionObject" title="app.engine.objects.region.RegionObject"><span class="pre">RegionObject</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.UnitWait.region" title="Link to this definition"></a></dt>
+<dd><p>region under the unit (can be None)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.UnitWait.actively_chosen">
+<span class="sig-name descname"><span class="pre">actively_chosen</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.UnitWait.actively_chosen" title="Link to this definition"></a></dt>
+<dd><p>boolean for whether the player actively selected Wait</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="app.events.triggers.UnitSelect">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.events.triggers.</span></span><span class="sig-name descname"><span class="pre">UnitSelect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="trigger-reference.html#app.events.triggers.UnitSelect" title="Link to this definition"></a></dt>
+<dd><p>Occurs when a unit is selected by the cursor.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.UnitSelect.position">
+<span class="sig-name descname"><span class="pre">position</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.UnitSelect.position" title="Link to this definition"></a></dt>
+<dd><p>the position they were selected at.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="app.events.triggers.UnitDeselect">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.events.triggers.</span></span><span class="sig-name descname"><span class="pre">UnitDeselect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="trigger-reference.html#app.events.triggers.UnitDeselect" title="Link to this definition"></a></dt>
+<dd><p>Occurs when a unit selected by the cursor is deselected.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.UnitDeselect.position">
+<span class="sig-name descname"><span class="pre">position</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.UnitDeselect.position" title="Link to this definition"></a></dt>
+<dd><p>the position they were deselected at.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="app.events.triggers.UnitLevelUp">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.events.triggers.</span></span><span class="sig-name descname"><span class="pre">UnitLevelUp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">stat_changes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">NID</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="trigger-reference.html#app.events.triggers.UnitLevelUp" title="Link to this definition"></a></dt>
+<dd><p>Occurs whenever a unit levels up.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.UnitLevelUp.unit1">
+<span class="sig-name descname"><span class="pre">unit1</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.UnitLevelUp.unit1" title="Link to this definition"></a></dt>
+<dd><p>the unit that changed their level.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.UnitLevelUp.stat_changes">
+<span class="sig-name descname"><span class="pre">stat_changes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">NID</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.UnitLevelUp.stat_changes" title="Link to this definition"></a></dt>
+<dd><p>a dict containing their stat changes.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.UnitLevelUp.source">
+<span class="sig-name descname"><span class="pre">source</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.UnitLevelUp.source" title="Link to this definition"></a></dt>
+<dd><p>One of (‘exp_gain’, ‘stat_change’, ‘class_change’, ‘promote’, ‘event’) describing how the unit got to this point.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="app.events.triggers.DuringUnitLevelUp">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.events.triggers.</span></span><span class="sig-name descname"><span class="pre">DuringUnitLevelUp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">stat_changes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">NID</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="trigger-reference.html#app.events.triggers.DuringUnitLevelUp" title="Link to this definition"></a></dt>
+<dd><p>Occurs during a unit’s level-up screen, immediately after stat changes are granted. This event is useful for implementing level-up quotes.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.DuringUnitLevelUp.unit1">
+<span class="sig-name descname"><span class="pre">unit1</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.DuringUnitLevelUp.unit1" title="Link to this definition"></a></dt>
+<dd><p>the unit that gained/lost stats.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.DuringUnitLevelUp.stat_changes">
+<span class="sig-name descname"><span class="pre">stat_changes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">NID</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.DuringUnitLevelUp.stat_changes" title="Link to this definition"></a></dt>
+<dd><p>a dict containing their stat changes.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.DuringUnitLevelUp.source">
+<span class="sig-name descname"><span class="pre">source</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.DuringUnitLevelUp.source" title="Link to this definition"></a></dt>
+<dd><p>One of (‘exp_gain’, ‘stat_change’, ‘class_change’, ‘promote’) describing how the unit got to this screen.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="app.events.triggers.UnitWeaponRankUp">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.events.triggers.</span></span><span class="sig-name descname"><span class="pre">UnitWeaponRankUp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">weapon_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">NID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">old_wexp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rank</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="trigger-reference.html#app.events.triggers.UnitWeaponRankUp" title="Link to this definition"></a></dt>
+<dd><p>Occurs whenever a unit gains a weapon rank.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.UnitWeaponRankUp.unit">
+<span class="sig-name descname"><span class="pre">unit</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.UnitWeaponRankUp.unit" title="Link to this definition"></a></dt>
+<dd><p>the unit that increased in weapon rank.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.UnitWeaponRankUp.weapon_type">
+<span class="sig-name descname"><span class="pre">weapon_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">NID</span></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.UnitWeaponRankUp.weapon_type" title="Link to this definition"></a></dt>
+<dd><p>nid of weapon type object</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.UnitWeaponRankUp.old_wexp">
+<span class="sig-name descname"><span class="pre">old_wexp</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.UnitWeaponRankUp.old_wexp" title="Link to this definition"></a></dt>
+<dd><p>old wexp before gaining wexp</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.UnitWeaponRankUp.rank">
+<span class="sig-name descname"><span class="pre">rank</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.UnitWeaponRankUp.rank" title="Link to this definition"></a></dt>
+<dd><p>new weapon rank by letter</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="app.events.triggers.CombatStart">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.events.triggers.</span></span><span class="sig-name descname"><span class="pre">CombatStart</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ItemObject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_animation_combat</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="trigger-reference.html#app.events.triggers.CombatStart" title="Link to this definition"></a></dt>
+<dd><p>Occurs when non-scripted combat is begun between any two units. Useful for boss quotes.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.CombatStart.unit1">
+<span class="sig-name descname"><span class="pre">unit1</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.CombatStart.unit1" title="Link to this definition"></a></dt>
+<dd><p>the unit who initiated combat.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.CombatStart.unit2">
+<span class="sig-name descname"><span class="pre">unit2</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.CombatStart.unit2" title="Link to this definition"></a></dt>
+<dd><p>the target of the combat (can be None).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.CombatStart.position">
+<span class="sig-name descname"><span class="pre">position</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.CombatStart.position" title="Link to this definition"></a></dt>
+<dd><p>contains the position of unit1.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.CombatStart.item">
+<span class="sig-name descname"><span class="pre">item</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ItemObject</span></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.CombatStart.item" title="Link to this definition"></a></dt>
+<dd><p>the item/ability used by unit1.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.CombatStart.is_animation_combat">
+<span class="sig-name descname"><span class="pre">is_animation_combat</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.CombatStart.is_animation_combat" title="Link to this definition"></a></dt>
+<dd><p>a boolean denoting whether or not we are in an actual animation or merely a map animation.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="app.events.triggers.CombatEnd">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.events.triggers.</span></span><span class="sig-name descname"><span class="pre">CombatEnd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ItemObject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">playback</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">PlaybackBrush</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="trigger-reference.html#app.events.triggers.CombatEnd" title="Link to this definition"></a></dt>
+<dd><p>This trigger fires at the end of combat. Useful for checking win or loss conditions.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.CombatEnd.unit1">
+<span class="sig-name descname"><span class="pre">unit1</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.CombatEnd.unit1" title="Link to this definition"></a></dt>
+<dd><p>the unit who initiated combat.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.CombatEnd.unit2">
+<span class="sig-name descname"><span class="pre">unit2</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.CombatEnd.unit2" title="Link to this definition"></a></dt>
+<dd><p>the target of the combat (can be None).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.CombatEnd.position">
+<span class="sig-name descname"><span class="pre">position</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.CombatEnd.position" title="Link to this definition"></a></dt>
+<dd><p>contains the position of unit1.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.CombatEnd.item">
+<span class="sig-name descname"><span class="pre">item</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ItemObject</span></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.CombatEnd.item" title="Link to this definition"></a></dt>
+<dd><p>the item/ability used by unit1.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.CombatEnd.playback">
+<span class="sig-name descname"><span class="pre">playback</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">PlaybackBrush</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.CombatEnd.playback" title="Link to this definition"></a></dt>
+<dd><p>a list of the playback brushes from the combat.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="app.events.triggers.OnTalk">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.events.triggers.</span></span><span class="sig-name descname"><span class="pre">OnTalk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="trigger-reference.html#app.events.triggers.OnTalk" title="Link to this definition"></a></dt>
+<dd><p>This trigger fires when two units “Talk” to one another.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.OnTalk.unit1">
+<span class="sig-name descname"><span class="pre">unit1</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.OnTalk.unit1" title="Link to this definition"></a></dt>
+<dd><p>the unit who is the talk initiator.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.OnTalk.unit2">
+<span class="sig-name descname"><span class="pre">unit2</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.OnTalk.unit2" title="Link to this definition"></a></dt>
+<dd><p>the unit who is the talk receiver.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.OnTalk.position">
+<span class="sig-name descname"><span class="pre">position</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.OnTalk.position" title="Link to this definition"></a></dt>
+<dd><p>the position of unit1 (is None if triggered during free roam)</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="app.events.triggers.OnSupport">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.events.triggers.</span></span><span class="sig-name descname"><span class="pre">OnSupport</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">support_rank_nid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">NID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_replay</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="trigger-reference.html#app.events.triggers.OnSupport" title="Link to this definition"></a></dt>
+<dd><p>This trigger fires when two units “Support” to one another.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.OnSupport.unit1">
+<span class="sig-name descname"><span class="pre">unit1</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.OnSupport.unit1" title="Link to this definition"></a></dt>
+<dd><p>the unit who is the support initiator.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.OnSupport.unit2">
+<span class="sig-name descname"><span class="pre">unit2</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.OnSupport.unit2" title="Link to this definition"></a></dt>
+<dd><p>the unit who is the support receiver.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.OnSupport.position">
+<span class="sig-name descname"><span class="pre">position</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.OnSupport.position" title="Link to this definition"></a></dt>
+<dd><p>the position of unit1 (could be None, for instance during Base).</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.OnSupport.support_rank_nid">
+<span class="sig-name descname"><span class="pre">support_rank_nid</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">NID</span></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.OnSupport.support_rank_nid" title="Link to this definition"></a></dt>
+<dd><p>contains the nid of the support rank (e.g. <cite>A</cite>, <cite>B</cite>, <cite>C</cite>, or <cite>S</cite>)</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.OnSupport.is_replay">
+<span class="sig-name descname"><span class="pre">is_replay</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.OnSupport.is_replay" title="Link to this definition"></a></dt>
+<dd><p>whether or not this is just a replay of the support convo from the base menu.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="app.events.triggers.OnBaseConvo">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.events.triggers.</span></span><span class="sig-name descname"><span class="pre">OnBaseConvo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_convo</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="trigger-reference.html#app.events.triggers.OnBaseConvo" title="Link to this definition"></a></dt>
+<dd><p>This trigger fires when the player selects a base conversation to view.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.OnBaseConvo.base_convo">
+<span class="sig-name descname"><span class="pre">base_convo</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.OnBaseConvo.base_convo" title="Link to this definition"></a></dt>
+<dd><p>contains the name of the base conversation.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="app.events.triggers.OnPrepStart">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.events.triggers.</span></span><span class="sig-name descname"><span class="pre">OnPrepStart</span></span><a class="headerlink" href="trigger-reference.html#app.events.triggers.OnPrepStart" title="Link to this definition"></a></dt>
+<dd><p>Occurs each time the player enters preps.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="app.events.triggers.OnBaseStart">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.events.triggers.</span></span><span class="sig-name descname"><span class="pre">OnBaseStart</span></span><a class="headerlink" href="trigger-reference.html#app.events.triggers.OnBaseStart" title="Link to this definition"></a></dt>
+<dd><p>Occurs each time the player enters base.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="app.events.triggers.OnTurnwheel">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.events.triggers.</span></span><span class="sig-name descname"><span class="pre">OnTurnwheel</span></span><a class="headerlink" href="trigger-reference.html#app.events.triggers.OnTurnwheel" title="Link to this definition"></a></dt>
+<dd><p>Occurs after the turnwheel is used. Events that happen within are
+not recorded within the turnwheel and therefore will not be reversed
+upon turnwheel activation.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="app.events.triggers.OnTitleScreen">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.events.triggers.</span></span><span class="sig-name descname"><span class="pre">OnTitleScreen</span></span><a class="headerlink" href="trigger-reference.html#app.events.triggers.OnTitleScreen" title="Link to this definition"></a></dt>
+<dd><p>Occurs before the title screen is shown.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="app.events.triggers.OnStartup">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.events.triggers.</span></span><span class="sig-name descname"><span class="pre">OnStartup</span></span><a class="headerlink" href="trigger-reference.html#app.events.triggers.OnStartup" title="Link to this definition"></a></dt>
+<dd><p>Occurs whenever the engine starts.</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="app.events.triggers.TimeRegionComplete">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.events.triggers.</span></span><span class="sig-name descname"><span class="pre">TimeRegionComplete</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="region-reference.html#app.engine.objects.region.RegionObject" title="app.engine.objects.region.RegionObject"><span class="pre">RegionObject</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="trigger-reference.html#app.events.triggers.TimeRegionComplete" title="Link to this definition"></a></dt>
+<dd><p>Occurs when a time region runs out of time and would be removed.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.TimeRegionComplete.position">
+<span class="sig-name descname"><span class="pre">position</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.TimeRegionComplete.position" title="Link to this definition"></a></dt>
+<dd><p>the position of the region that has run out of time.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.TimeRegionComplete.region">
+<span class="sig-name descname"><span class="pre">region</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="region-reference.html#app.engine.objects.region.RegionObject" title="app.engine.objects.region.RegionObject"><span class="pre">RegionObject</span></a></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.TimeRegionComplete.region" title="Link to this definition"></a></dt>
+<dd><p>the region that has run out of time.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="app.events.triggers.OnOverworldNodeSelect">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.events.triggers.</span></span><span class="sig-name descname"><span class="pre">OnOverworldNodeSelect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entity_nid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_nid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="trigger-reference.html#app.events.triggers.OnOverworldNodeSelect" title="Link to this definition"></a></dt>
+<dd><p>Occurs when an entity is about to issue a move to a node
+(which may or may not contain the next level, or
+any level at all). Because of implementation detail,
+when this event occurs, it supersedes any queued moves.
+Therefore, the entity will <em>not move</em> to the selected node.
+Any events that use this trigger should include a scripted move
+if movement is desired.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.OnOverworldNodeSelect.entity_nid">
+<span class="sig-name descname"><span class="pre">entity_nid</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.OnOverworldNodeSelect.entity_nid" title="Link to this definition"></a></dt>
+<dd><p>Contains the id of entity that will issue a move.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.OnOverworldNodeSelect.node_nid">
+<span class="sig-name descname"><span class="pre">node_nid</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.OnOverworldNodeSelect.node_nid" title="Link to this definition"></a></dt>
+<dd><p>Contains the id of the node.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="app.events.triggers.RoamPressStart">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.events.triggers.</span></span><span class="sig-name descname"><span class="pre">RoamPressStart</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="trigger-reference.html#app.events.triggers.RoamPressStart" title="Link to this definition"></a></dt>
+<dd><p>Occurs when the <cite>start</cite> key is pressed in Free Roam.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.RoamPressStart.unit1">
+<span class="sig-name descname"><span class="pre">unit1</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.RoamPressStart.unit1" title="Link to this definition"></a></dt>
+<dd><p>The current roam unit.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.RoamPressStart.unit2">
+<span class="sig-name descname"><span class="pre">unit2</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.RoamPressStart.unit2" title="Link to this definition"></a></dt>
+<dd><p>the closest nearby other unit.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="app.events.triggers.RoamPressInfo">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.events.triggers.</span></span><span class="sig-name descname"><span class="pre">RoamPressInfo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="trigger-reference.html#app.events.triggers.RoamPressInfo" title="Link to this definition"></a></dt>
+<dd><p>Occurs when the <cite>info</cite> key is pressed in Free Roam.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.RoamPressInfo.unit1">
+<span class="sig-name descname"><span class="pre">unit1</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.RoamPressInfo.unit1" title="Link to this definition"></a></dt>
+<dd><p>The current roam unit.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.RoamPressInfo.unit2">
+<span class="sig-name descname"><span class="pre">unit2</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.RoamPressInfo.unit2" title="Link to this definition"></a></dt>
+<dd><p>the closest nearby other unit.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="app.events.triggers.RoamPressAux">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.events.triggers.</span></span><span class="sig-name descname"><span class="pre">RoamPressAux</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="trigger-reference.html#app.events.triggers.RoamPressAux" title="Link to this definition"></a></dt>
+<dd><p>Occurs when the <cite>aux</cite> key is pressed in Free Roam.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.RoamPressAux.unit1">
+<span class="sig-name descname"><span class="pre">unit1</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.RoamPressAux.unit1" title="Link to this definition"></a></dt>
+<dd><p>The current roam unit.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.RoamPressAux.unit2">
+<span class="sig-name descname"><span class="pre">unit2</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.RoamPressAux.unit2" title="Link to this definition"></a></dt>
+<dd><p>the closest nearby other unit.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="app.events.triggers.RoamingInterrupt">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.events.triggers.</span></span><span class="sig-name descname"><span class="pre">RoamingInterrupt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="region-reference.html#app.engine.objects.region.RegionObject" title="app.engine.objects.region.RegionObject"><span class="pre">RegionObject</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="trigger-reference.html#app.events.triggers.RoamingInterrupt" title="Link to this definition"></a></dt>
+<dd><p>Occurs when the player enters an <cite>interrupt</cite> region on the map.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.RoamingInterrupt.unit1">
+<span class="sig-name descname"><span class="pre">unit1</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.RoamingInterrupt.unit1" title="Link to this definition"></a></dt>
+<dd><p>The current roam unit.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.RoamingInterrupt.position">
+<span class="sig-name descname"><span class="pre">position</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.RoamingInterrupt.position" title="Link to this definition"></a></dt>
+<dd><p>The position of the current roam unit</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.RoamingInterrupt.region">
+<span class="sig-name descname"><span class="pre">region</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="region-reference.html#app.engine.objects.region.RegionObject" title="app.engine.objects.region.RegionObject"><span class="pre">RegionObject</span></a></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.RoamingInterrupt.region" title="Link to this definition"></a></dt>
+<dd><p>The region that was triggered.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="app.events.triggers.RegionTrigger">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.events.triggers.</span></span><span class="sig-name descname"><span class="pre">RegionTrigger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">NID</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="region-reference.html#app.engine.objects.region.RegionObject" title="app.engine.objects.region.RegionObject"><span class="pre">RegionObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ItemObject</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="trigger-reference.html#app.events.triggers.RegionTrigger" title="Link to this definition"></a></dt>
+<dd><p>Special trigger. This trigger has a custom nid, and will be created whenever you make an interactable
+event region.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.RegionTrigger.nid">
+<span class="sig-name descname"><span class="pre">nid</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">NID</span></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.RegionTrigger.nid" title="Link to this definition"></a></dt>
+<dd><p>the nid of the region event</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.RegionTrigger.hidden">
+<span class="sig-name descname"><span class="pre">hidden</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.RegionTrigger.hidden" title="Link to this definition"></a></dt>
+<dd><p>Whether or not this trigger is selectable. True for deprecated and utility triggers.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.RegionTrigger.unit1">
+<span class="sig-name descname"><span class="pre">unit1</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.RegionTrigger.unit1" title="Link to this definition"></a></dt>
+<dd><p>The unit triggering the region</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.RegionTrigger.position">
+<span class="sig-name descname"><span class="pre">position</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.RegionTrigger.position" title="Link to this definition"></a></dt>
+<dd><p>The position of the unit triggering the region</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.RegionTrigger.region">
+<span class="sig-name descname"><span class="pre">region</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="region-reference.html#app.engine.objects.region.RegionObject" title="app.engine.objects.region.RegionObject"><span class="pre">RegionObject</span></a></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.RegionTrigger.region" title="Link to this definition"></a></dt>
+<dd><p>the name of the region that was triggered</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.RegionTrigger.item">
+<span class="sig-name descname"><span class="pre">item</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ItemObject</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.RegionTrigger.item" title="Link to this definition"></a></dt>
+<dd><p>the item used to trigger this region (used with unlock staves and keys)</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="app.events.triggers.EventOnHit">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.events.triggers.</span></span><span class="sig-name descname"><span class="pre">EventOnHit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ItemObject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">attack_info</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="trigger-reference.html#app.events.triggers.EventOnHit" title="Link to this definition"></a></dt>
+<dd><p>Plays before a hit, if the unit will hit with this item.</p>
+<p>Note: trigger is used nowhere in the engine, but is used in the EventOnHit component.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.EventOnHit.hidden">
+<span class="sig-name descname"><span class="pre">hidden</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.EventOnHit.hidden" title="Link to this definition"></a></dt>
+<dd><p>Whether or not this trigger is selectable. True for deprecated and utility triggers.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.EventOnHit.unit1">
+<span class="sig-name descname"><span class="pre">unit1</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.EventOnHit.unit1" title="Link to this definition"></a></dt>
+<dd><p>the unit bearing the item.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.EventOnHit.unit2">
+<span class="sig-name descname"><span class="pre">unit2</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.EventOnHit.unit2" title="Link to this definition"></a></dt>
+<dd><p>the other unit in combat.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.EventOnHit.position">
+<span class="sig-name descname"><span class="pre">position</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.EventOnHit.position" title="Link to this definition"></a></dt>
+<dd><p>the position of the unit bearing the item.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.EventOnHit.item">
+<span class="sig-name descname"><span class="pre">item</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ItemObject</span></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.EventOnHit.item" title="Link to this definition"></a></dt>
+<dd><p>the item/ability that the attacking unit is using.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.EventOnHit.target_pos">
+<span class="sig-name descname"><span class="pre">target_pos</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.EventOnHit.target_pos" title="Link to this definition"></a></dt>
+<dd><p>the position of the other unit.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.EventOnHit.mode">
+<span class="sig-name descname"><span class="pre">mode</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.EventOnHit.mode" title="Link to this definition"></a></dt>
+<dd><p>One of (<cite>attack</cite>, <cite>defense</cite>), depending on whether the bearer of the item is the one doing this attack, or the other unit is the one doing this attack.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.EventOnHit.attack_info">
+<span class="sig-name descname"><span class="pre">attack_info</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.EventOnHit.attack_info" title="Link to this definition"></a></dt>
+<dd><p>The first element is the number of attacks that have occurred before this one. The second element is the number of subattacks (think brave attacks) that have occurred within this main attack.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="app.events.triggers.EventAfterCombat">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.events.triggers.</span></span><span class="sig-name descname"><span class="pre">EventAfterCombat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ItemObject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_pos</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="trigger-reference.html#app.events.triggers.EventAfterCombat" title="Link to this definition"></a></dt>
+<dd><p>Plays after combat where unit is using this item.</p>
+<p>Note: trigger is used nowhere in the engine, but is used in the EventAfterCombatOnHit and EventAfterCombatEvenMiss component.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.EventAfterCombat.hidden">
+<span class="sig-name descname"><span class="pre">hidden</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.EventAfterCombat.hidden" title="Link to this definition"></a></dt>
+<dd><p>Whether or not this trigger is selectable. True for deprecated and utility triggers.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.EventAfterCombat.unit1">
+<span class="sig-name descname"><span class="pre">unit1</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.EventAfterCombat.unit1" title="Link to this definition"></a></dt>
+<dd><p>the unit bearing the item.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.EventAfterCombat.unit2">
+<span class="sig-name descname"><span class="pre">unit2</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.EventAfterCombat.unit2" title="Link to this definition"></a></dt>
+<dd><p>the other unit in combat.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.EventAfterCombat.position">
+<span class="sig-name descname"><span class="pre">position</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.EventAfterCombat.position" title="Link to this definition"></a></dt>
+<dd><p>the position of the unit bearing the item.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.EventAfterCombat.item">
+<span class="sig-name descname"><span class="pre">item</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ItemObject</span></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.EventAfterCombat.item" title="Link to this definition"></a></dt>
+<dd><p>the item/ability that the attacking unit is using.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.EventAfterCombat.target_pos">
+<span class="sig-name descname"><span class="pre">target_pos</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.EventAfterCombat.target_pos" title="Link to this definition"></a></dt>
+<dd><p>the position of the other unit.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.EventAfterCombat.mode">
+<span class="sig-name descname"><span class="pre">mode</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.EventAfterCombat.mode" title="Link to this definition"></a></dt>
+<dd><p>One of (<cite>attack</cite>, <cite>defense</cite>), depending on whether the bearer of the skill/item is the one doing this attack, or the other unit is the one doing this attack.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="app.events.triggers.EventAfterInitiatedCombat">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.events.triggers.</span></span><span class="sig-name descname"><span class="pre">EventAfterInitiatedCombat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ItemObject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="trigger-reference.html#app.events.triggers.EventAfterInitiatedCombat" title="Link to this definition"></a></dt>
+<dd><p>Plays after combat initiated by unit bearing this skill.</p>
+<p>Note: trigger is used nowhere in the engine, but is used in the EventAfterInitiatedCombat component.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.EventAfterInitiatedCombat.hidden">
+<span class="sig-name descname"><span class="pre">hidden</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.EventAfterInitiatedCombat.hidden" title="Link to this definition"></a></dt>
+<dd><p>Whether or not this trigger is selectable. True for deprecated and utility triggers.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.EventAfterInitiatedCombat.unit1">
+<span class="sig-name descname"><span class="pre">unit1</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.EventAfterInitiatedCombat.unit1" title="Link to this definition"></a></dt>
+<dd><p>the unit bearing the skill.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.EventAfterInitiatedCombat.unit2">
+<span class="sig-name descname"><span class="pre">unit2</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.EventAfterInitiatedCombat.unit2" title="Link to this definition"></a></dt>
+<dd><p>the other unit in combat.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.EventAfterInitiatedCombat.position">
+<span class="sig-name descname"><span class="pre">position</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.EventAfterInitiatedCombat.position" title="Link to this definition"></a></dt>
+<dd><p>the position of the unit bearing the skill.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.EventAfterInitiatedCombat.item">
+<span class="sig-name descname"><span class="pre">item</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ItemObject</span></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.EventAfterInitiatedCombat.item" title="Link to this definition"></a></dt>
+<dd><p>the item/ability that the attacking unit is using.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.EventAfterInitiatedCombat.mode">
+<span class="sig-name descname"><span class="pre">mode</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.EventAfterInitiatedCombat.mode" title="Link to this definition"></a></dt>
+<dd><p>One of (<cite>attack</cite>, <cite>defense</cite>), depending on whether the bearer of the skill is the one doing this attack, or the other unit is the one doing this attack.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="app.events.triggers.EventOnRemove">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.events.triggers.</span></span><span class="sig-name descname"><span class="pre">EventOnRemove</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="trigger-reference.html#app.events.triggers.EventOnRemove" title="Link to this definition"></a></dt>
+<dd><p>Plays after skill is removed from a unit.</p>
+<p>Note: trigger is used nowhere in the engine, but is used in the EventOnRemove component.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.EventOnRemove.hidden">
+<span class="sig-name descname"><span class="pre">hidden</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.EventOnRemove.hidden" title="Link to this definition"></a></dt>
+<dd><p>Whether or not this trigger is selectable. True for deprecated and utility triggers.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.EventOnRemove.unit1">
+<span class="sig-name descname"><span class="pre">unit1</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.EventOnRemove.unit1" title="Link to this definition"></a></dt>
+<dd><p>the unit bearing the skill to be removed.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="app.events.triggers.UnlockStaff">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.events.triggers.</span></span><span class="sig-name descname"><span class="pre">UnlockStaff</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">position</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ItemObject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="region-reference.html#app.engine.objects.region.RegionObject" title="app.engine.objects.region.RegionObject"><span class="pre">RegionObject</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="trigger-reference.html#app.events.triggers.UnlockStaff" title="Link to this definition"></a></dt>
+<dd><p>Plays when an unlock staff unlocks a region.</p>
+<p>Note: trigger is used nowhere in the engine, but is used in the UnlockStaff component.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.UnlockStaff.hidden">
+<span class="sig-name descname"><span class="pre">hidden</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><span class="pre">bool</span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.UnlockStaff.hidden" title="Link to this definition"></a></dt>
+<dd><p>Whether or not this trigger is selectable. True for deprecated and utility triggers.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.UnlockStaff.unit1">
+<span class="sig-name descname"><span class="pre">unit1</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.UnlockStaff.unit1" title="Link to this definition"></a></dt>
+<dd><p>the unit that is unlocking.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.UnlockStaff.position">
+<span class="sig-name descname"><span class="pre">position</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.UnlockStaff.position" title="Link to this definition"></a></dt>
+<dd><p>the position of the unlocking unit.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.UnlockStaff.item">
+<span class="sig-name descname"><span class="pre">item</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ItemObject</span></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.UnlockStaff.item" title="Link to this definition"></a></dt>
+<dd><p>the item/ability that the unlocking unit is using.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="app.events.triggers.UnlockStaff.region">
+<span class="sig-name descname"><span class="pre">region</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="region-reference.html#app.engine.objects.region.RegionObject" title="app.engine.objects.region.RegionObject"><span class="pre">RegionObject</span></a></em><a class="headerlink" href="trigger-reference.html#app.events.triggers.UnlockStaff.region" title="Link to this definition"></a></dt>
+<dd><p>the region being unlocked.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Special-Tags.html" class="btn btn-neutral float-left" title="Special Tags" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Random-Seed-Mechanics.html" class="btn btn-neutral float-right" title="Random Seed Mechanics" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, rainlash.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

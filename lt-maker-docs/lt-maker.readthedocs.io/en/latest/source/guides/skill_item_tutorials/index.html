@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Skill and Item Tutorials &mdash; lt-maker  documentation</title>
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/theme_overrides.css?v=5f1687b9" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/jquery.js?v=5d32c60e"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/doctools.js?v=9a2dae69"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="https://lt-maker.readthedocs.io/en/latest/_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="0. Creating Items" href="Creating-Items.html" />
+    <link rel="prev" title="Promotion Personal Skills Tutorial" href="../eventing_tutorials/Promotion-Personal-Skills.html" /> 
+<script async type="text/javascript" src="https://lt-maker.readthedocs.io/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="lt-maker" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/source/guides/skill_item_tutorials/index.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            lt-maker
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../home.html">Lex Talionis Wiki</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Editor Guides:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../editors/Editors-Overview.html">Editors Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../editors/index.html">Editors</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Events:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../events/index.html">Events</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Guides:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Guides-Overview.html">Guides Overview</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Guides</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../setup_tutorials/index.html">Project Setup Tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../eventing_tutorials/index.html">Eventing Tutorials</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="index.html#">Skill and Item Tutorials</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Creating-Items.html">0. Creating Items</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Direct-Passives.html">1. Direct Passives - Hit +20, MAG +2 and Gamble</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Conditional-Passives-I.html">2. Conditional Passives I - Lucky Seven, Odd Rhythm, Wrath and Quick Burn</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Conditional-Passives-II.html">4. Conditional Passives II - Warding Blow, Rainlashslayer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Conditional-Passives-III.html">3. Conditional Passives III - Tomefaire, Axe Breaker and Wyrmbane</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Tile-Passives.html">4. Tile Oriented Passives - Outdoor Fighter and Indoor Fighter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Auras.html">3. Auras - Hex, Bond and Focus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Skill-Swap.html">[System] Skill Swap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Creating-Capture.html">Capture skill</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Recruit-Skill.html">Recruit Skill</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Summoning.html">Summoning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Shelter-Skill.html">Shelter Skill</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Multi-Items.html">Multi Items</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Nihil.html">Nihil</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">appendix:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Text-Formatting-Commands.html">Text Formatting Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Item-Component-Reference.html">Item Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Skill-Component-Reference.html">Skill Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Special-Variables.html">Special Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Special-Tags.html">Special Tags</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/trigger-reference.html">Event Triggers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Random-Seed-Mechanics.html">Random Seed Mechanics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/FAQ.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Contributing_to_the_LTWiki.html">Contributing to the LTWiki</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/index.html">Code Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">lt-maker</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Guides</a></li>
+      <li class="breadcrumb-item active">Skill and Item Tutorials</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://gitlab.com/rainlash/lt-maker/blob/master/docs/source/guides/skill_item_tutorials/index.rst" class="fa fa-gitlab"> Edit on GitLab</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="skill-and-item-tutorials">
+<h1>Skill and Item Tutorials<a class="headerlink" href="index.html#skill-and-item-tutorials" title="Link to this heading"></a></h1>
+<p>These are guides on various useful skills and items.</p>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Basic</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Creating-Items.html">0. Creating Items</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Creating-Items.html#item-1-boss-killer-sword">Item 1 - Boss Killer Sword</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Creating-Items.html#item-2-multi-unit-healing-staff">Item 2 - Multi-unit Healing Staff</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Creating-Items.html#item-3-the-warp-staff">Item 3 - The Warp Staff</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Creating-Items.html#item-4-iron-shield">Item 4 - Iron Shield</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Creating-Items.html#item-5-three-houses-magic-system">Item 5 - Three Houses Magic System</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Creating-Items.html#item-6-devil-axe">Item 6 - Devil Axe</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Creating-Items.html#conclusion">Conclusion</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Direct-Passives.html">1. Direct Passives - Hit +20, MAG +2 and Gamble</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Direct-Passives.html#required-editors-and-components">Required editors and components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Direct-Passives.html#skill-descriptions">Skill descriptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Direct-Passives.html#step-1-create-a-skill">Step 1: Create a Skill</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Direct-Passives.html#step-2-assign-the-skill">Step 2: Assign the Skill</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Direct-Passives.html#step-3-add-combat-component">Step 3: Add combat component</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Direct-Passives.html#step-4-test-the-stat-alterations-in-game">Step 4: Test the stat alterations in-game</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Conditional-Passives-I.html">2. Conditional Passives I - Lucky Seven, Odd Rhythm, Wrath and Quick Burn</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Conditional-Passives-I.html#required-editors-and-components">Required editors and components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Conditional-Passives-I.html#skill-descriptions">Skill descriptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Conditional-Passives-I.html#step-1-create-a-class-skill">Step 1: Create a Class Skill</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Conditional-Passives-I.html#step-2-a-add-the-combat-components">Step 2.A: Add the combat components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Conditional-Passives-I.html#step-3-add-the-condition-component">Step 3: Add the Condition component</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Conditional-Passives-I.html#step-4-set-the-condition">Step 4: Set the condition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Conditional-Passives-I.html#step-2-b-4-d-quick-burn-add-the-dynamic-components">Step 2.B → 4.D: [Quick Burn] Add the Dynamic Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Conditional-Passives-I.html#step-5-test-the-stat-alterations-in-game">Step 5: Test the stat alterations in-game</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Conditional-Passives-II.html">4. Conditional Passives II - Warding Blow, Rainlashslayer</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Conditional-Passives-II.html#required-editors-and-components">Required editors and components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Conditional-Passives-II.html#skill-descriptions">Skill descriptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Conditional-Passives-II.html#combat-condition-overview">Combat Condition Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Conditional-Passives-II.html#warding-blow">Warding Blow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Conditional-Passives-II.html#rainlashslayer">Rainlashslayer</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Conditional-Passives-III.html">3. Conditional Passives III - Tomefaire, Axe Breaker and Wyrmbane</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Conditional-Passives-III.html#required-editors-and-components">Required editors and components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Conditional-Passives-III.html#skill-descriptions">Skill descriptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Conditional-Passives-III.html#step-1-check-and-adjust-the-weapon-types-in-your-project">Step 1: Check and adjust the Weapon Types in your project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Conditional-Passives-III.html#step-2-create-a-class-skill">Step 2: Create a Class Skill</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Conditional-Passives-III.html#step-3-add-the-combat-components">Step 3: Add the Combat Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Conditional-Passives-III.html#step-4-add-a-conditional-component">Step 4: Add a conditional component</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Conditional-Passives-III.html#step-5-test-the-stat-alterations-in-game">Step 5: Test the stat alterations in-game</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Tile-Passives.html">4. Tile Oriented Passives - Outdoor Fighter and Indoor Fighter</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Tile-Passives.html#required-editors-and-components">Required editors and components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tile-Passives.html#skill-descriptions">Skill descriptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tile-Passives.html#step-1-check-the-terrains-in-your-project">Step 1: Check the Terrains in your project</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tile-Passives.html#step-2-create-a-class-skill">Step 2: Create a Class Skill</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tile-Passives.html#step-3-add-the-combat-components">Step 3: Add the Combat Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tile-Passives.html#step-4-add-and-set-the-condition-component">Step 4: Add and set the Condition component</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Tile-Passives.html#step-5-test-the-stat-alterations-in-game">Step 5: Test the stat alterations in-game</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Auras.html">3. Auras - Hex, Bond and Focus</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Auras.html#required-editors-and-components">Required editors and components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Auras.html#skill-descriptions">Skill descriptions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Auras.html#step-1-create-a-class-skill-an-an-effect-skill">Step 1: Create a Class Skill an an ‘Effect Skill’</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Auras.html#step-2-a-add-the-aura-component-to-the-class-skill">Step 2.A: Add the Aura component to the Class Skill</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Auras.html#step-3-add-the-other-components-to-the-effect-skill">Step 3: Add the other components to the ‘Effect Skill’</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Auras.html#step-2-b-3-c-focus-add-the-condition-component-to-the-class-skill">Step 2.B → 3.C: [Focus] Add the Condition component to the Class Skill</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Auras.html#step-4-test-the-stat-alterations-and-effects-in-game">Step 4: Test the stat alterations and effects in-game</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Auras.html#optional-step-add-the-hidden-component-to-the-effect-skill">Optional Step: Add the Hidden component to the ‘Effect Skill’</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Skill-Swap.html">[System] Skill Swap</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Skill-Swap.html#required-editors-and-components">Required editors and components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Skill-Swap.html#understanding-the-problem">Understanding the problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Skill-Swap.html#events-and-variables">Events and Variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Skill-Swap.html#step-0-understanding-how-to-build-tuple-with-strings">Step 0: Understanding how to build tuple with strings</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Skill-Swap.html#step-1-remove-all-skills-from-classes-and-units">Step 1: Remove all skills from classes and units</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Skill-Swap.html#step-2-set-the-raw-data-table">Step 2: Set the Raw Data table</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Skill-Swap.html#step-3-build-an-initializer-event">Step 3: Build an Initializer event</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Skill-Swap.html#step-4-build-the-skill-unlock-event">Step 4: Build the skill unlock event</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Skill-Swap.html#step-5-create-the-skill-swap-base">Step 5: Create the Skill Swap base</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Skill-Swap.html#step-6-add-skill-swap-as-a-menu-option">Step 6: Add skill swap as a menu option</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Skill-Swap.html#step-7-build-the-skill-swap-operations-event">Step 7: Build the Skill Swap Operations event</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Skill-Swap.html#step-8-build-the-operations">Step 8: Build the operations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Skill-Swap.html#step-9-test-the-system">Step 9: Test the system</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Advanced</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Creating-Capture.html">Capture skill</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Recruit-Skill.html">Recruit Skill</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Recruit-Skill.html#description">Description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Recruit-Skill.html#tutorial">Tutorial</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Summoning.html">Summoning</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Summoning.html#summoning-a-generic-phantom">Summoning a generic phantom</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Summoning.html#summoning-multiple-generics-echoes-style">Summoning multiple generics (Echoes-style)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Summoning.html#summoning-as-an-ability">Summoning as an ability</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Shelter-Skill.html">Shelter Skill</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Shelter-Skill.html#description">Description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Shelter-Skill.html#tutorial">Tutorial</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Multi-Items.html">Multi Items</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Multi-Items.html#what-is-a-multi-item">What is a multi item?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Multi-Items.html#how-do-i-make-a-multi-item">How do I make a multi item?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Multi-Items.html#why-do-i-make-a-multi-item">Why do I make a multi item?</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Nihil.html">Nihil</a></li>
+</ul>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../eventing_tutorials/Promotion-Personal-Skills.html" class="btn btn-neutral float-left" title="Promotion Personal Skills Tutorial" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Creating-Items.html" class="btn btn-neutral float-right" title="0. Creating Items" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, rainlash.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

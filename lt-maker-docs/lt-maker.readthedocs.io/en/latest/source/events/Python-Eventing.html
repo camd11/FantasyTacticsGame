@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Python Eventing &mdash; lt-maker  documentation</title>
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/theme_overrides.css?v=5f1687b9" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/jquery.js?v=5d32c60e"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/doctools.js?v=9a2dae69"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="https://lt-maker.readthedocs.io/en/latest/_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Debugger" href="Event-Debugger.html" />
+    <link rel="prev" title="Test Events" href="Test-Events.html" /> 
+<script async type="text/javascript" src="https://lt-maker.readthedocs.io/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="lt-maker" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/source/events/Python-Eventing.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            lt-maker
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../home.html">Lex Talionis Wiki</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Editor Guides:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../editors/Editors-Overview.html">Editors Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../editors/index.html">Editors</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Events:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Events</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="Event-Overview.html">Event Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Conditionals.html">Conditionals</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Region-Events.html">Region Events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Miscellaneous-Events.html">Miscellaneous Events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Test-Events.html">Test Events</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="Python-Eventing.html#">Python Eventing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Python-Eventing.html#why-use-python-eventing">Why use Python Eventing?</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Python-Eventing.html#python-event-sample">Python Event Sample</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Python-Eventing.html#dialogue">Dialogue</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Python-Eventing.html#for-loop">For Loop</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Python-Eventing.html#variables">Variables</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Event-Debugger.html">Debugger</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Guides:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guides/Guides-Overview.html">Guides Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/index.html">Guides</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">appendix:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/Text-Formatting-Commands.html">Text Formatting Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/Item-Component-Reference.html">Item Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/Skill-Component-Reference.html">Skill Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/Special-Variables.html">Special Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/Special-Tags.html">Special Tags</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/trigger-reference.html">Event Triggers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/Random-Seed-Mechanics.html">Random Seed Mechanics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/FAQ.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/Contributing_to_the_LTWiki.html">Contributing to the LTWiki</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/index.html">Code Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">lt-maker</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Events</a></li>
+      <li class="breadcrumb-item active">Python Eventing</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://gitlab.com/rainlash/lt-maker/blob/master/docs/source/events/Python-Eventing.md" class="fa fa-gitlab"> Edit on GitLab</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="python-eventing">
+<span id="pythoneventing"></span><h1>Python Eventing<a class="headerlink" href="Python-Eventing.html#python-eventing" title="Link to this heading"></a></h1>
+<p><em>last updated v0.1</em></p>
+<p><em>If you haven’t read <a class="reference internal" href="Event-Overview.html#eventoverview"><span class="std std-ref">Event-Overview</span></a> yet, please do so before reading this article.</em></p>
+<p>While the event script can be written with the traditional Event Commands (as demonstrated in the <a class="reference internal" href="Event-Overview.html#eventcommands"><span class="std std-ref">Event Commands Section</span></a>), the intrepid scripter can take advantage of Python syntax to achieve more sophisticated functionality. Rather than using a simplified custom syntax, the Python Eventing engine allows you to write scripts in fully integrated Python.</p>
+<section id="why-use-python-eventing">
+<h2>Why use Python Eventing?<a class="headerlink" href="Python-Eventing.html#why-use-python-eventing" title="Link to this heading"></a></h2>
+<p>For the casual user, there is no real advantage (or disadvantage) in doing so.</p>
+<p>For users that use eventing to implement abilities, do calculations, and so on, the advantages are numerous.</p>
+<p>For example: working with variables and doing calculations in original command form is clumsy, as there are no intuitive semantics for assigning and accessing non-primitive variables. Moreover, Event Script does not distinguish well between string objects and non-string objects, leading to situations like these:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">game_var</span><span class="p">;</span><span class="n">seen_maps</span><span class="p">;</span><span class="n">v</span><span class="p">(</span><span class="s1">&#39;seen_maps&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="p">[</span><span class="n">v</span><span class="p">(</span><span class="s1">&#39;next&#39;</span><span class="p">)]</span>
+<span class="n">game_var</span><span class="p">;</span><span class="n">next_reward</span><span class="p">;</span><span class="s1">&#39;{v:the_reward}&#39;</span>
+</pre></div>
+</div>
+<p>Which are difficult to parse - <code class="docutils literal notranslate"><span class="pre">[v('next')]</span></code> is a variable name wrapped in a string wrapped inside a variable getter wrapped inside a list wrapper, placed as the argument of a variable setter. <code class="docutils literal notranslate"><span class="pre">'{v:the_reward}'</span></code> is a variable string getter wrapped inside a string. These are needless levels of indirection. In Python Eventing, this would be rendered as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">seen_maps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">next</span><span class="p">)</span>
+<span class="n">next_reward</span> <span class="o">=</span> <span class="n">the_reward</span>
+</pre></div>
+</div>
+<p>Ultimately, Python Eventing is a cleaner and more maintainable method of writing events.</p>
+<p>Python Eventing also gives you access to all standard Python functions, notably including list operations. You can sort lists, create lists, append to lists, and so forth, that are difficult to impossible to do in traditional event script.</p>
+</section>
+<section id="python-event-sample">
+<h2>Python Event Sample<a class="headerlink" href="Python-Eventing.html#python-event-sample" title="Link to this heading"></a></h2>
+<p>For the most part, there are only three things that one needs to know about Python Eventing.</p>
+<ol class="arabic simple">
+<li><p>To have a script use the Python Eventing engine, you must include the text <code class="docutils literal notranslate"><span class="pre">#pyev1</span></code> at the top.</p></li>
+<li><p>There are three important characters when writing an LT command. <code class="docutils literal notranslate"><span class="pre">$</span></code> at the beginning of a line indicates that you’re calling an event command. <code class="docutils literal notranslate"> </code> - a space - is the delimiter for event command arguments. Finally, <code class="docutils literal notranslate"><span class="pre">,</span></code> - the comma - ends the command and delimits the beginning of the section of flags. For example, to add a portrait, instead of the event script <code class="docutils literal notranslate"><span class="pre">add_portrait;Seth;left;no_block</span></code>, you might do <code class="docutils literal notranslate"><span class="pre">$add_portrait</span> <span class="pre">&quot;Seth&quot;</span> <span class="pre">&quot;left&quot;,</span> <span class="pre">no_block</span></code>. You can use parenthesis if you need to add spaces to an argument: <code class="docutils literal notranslate"><span class="pre">$add_portrait</span> <span class="pre">(&quot;Seth&quot;</span> <span class="pre">+</span> <span class="pre">&quot;_hurt&quot;)</span> <span class="pre">&quot;left&quot;,</span> <span class="pre">no_block</span></code>.</p></li>
+<li><p>All lines that do not begin with a <code class="docutils literal notranslate"><span class="pre">$</span></code> character will be parsed as normal Python.</p></li>
+</ol>
+<p>Here are some snippets that illustrate the appearance and syntax of Python Events.</p>
+<section id="dialogue">
+<h3>Dialogue<a class="headerlink" href="Python-Eventing.html#dialogue" title="Link to this heading"></a></h3>
+<p>The following event snippet creates a SpeakStyle - a collection of formatting hints for a speak command. In this case, it indicates that the <code class="docutils literal notranslate"><span class="pre">eirika</span></code> style refers to a style using <code class="docutils literal notranslate"><span class="pre">Eirika</span></code> as the speaker, and has a text box 3 lines tall.</p>
+<blockquote>
+<div><p><strong>N.B.</strong> The <code class="docutils literal notranslate"><span class="pre">say</span></code> command appears to spread out over five lines. You can format individual commands across multiple lines using line breaks - usually entered via the <code class="docutils literal notranslate"><span class="pre">Shift-Enter</span></code> key combination. You <strong>cannot</strong> use normal newlines (input via the <code class="docutils literal notranslate"><span class="pre">Enter</span></code> key) in the middle of event commands.</p>
+</div></blockquote>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#pyev1</span>
+
+<span class="n">eirika</span> <span class="o">=</span> <span class="n">SpeakStyle</span><span class="p">(</span><span class="s1">&#39;eirika_speak_style&#39;</span><span class="p">,</span> <span class="n">speaker</span><span class="o">=</span><span class="s2">&quot;Eirika&quot;</span><span class="p">,</span> <span class="n">num_lines</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="err">$</span><span class="n">add_portrait</span> <span class="n">eirika</span> <span class="s2">&quot;FarLeft&quot;</span> <span class="n">ExpressionList</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;Smile&quot;</span><span class="p">,</span> <span class="s2">&quot;CloseEyes&quot;</span><span class="p">]</span> <span class="n">Slide</span><span class="o">=</span><span class="s2">&quot;right&quot;</span>
+<span class="err">$</span><span class="n">say</span> <span class="n">eirika</span> <span class="s2">&quot;Four score and seven years ago&quot;</span>
+            <span class="s2">&quot;our fathers brought forth, upon this continent,&quot;</span>
+            <span class="s2">&quot;a new nation, conceived in liberty,&quot;</span>
+            <span class="s2">&quot;and dedicated to the proposition&quot;</span>
+            <span class="s2">&quot;that all men are created equal.&quot;</span> <span class="n">FontColor</span><span class="o">=</span><span class="s2">&quot;green&quot;</span>
+<span class="err">$</span><span class="n">remove_portrait</span> <span class="n">eirika</span>
+</pre></div>
+</div>
+</section>
+<section id="for-loop">
+<h3>For Loop<a class="headerlink" href="Python-Eventing.html#for-loop" title="Link to this heading"></a></h3>
+<p>The following event snippet spawns 5 civilians near the unit <code class="docutils literal notranslate"><span class="pre">Bone</span></code>. For those familiar with Python, this is an ordinary for loop. It’s important to note that you can put most normal event commands inside Python for loops as well.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#pyev1</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+    <span class="err">$</span><span class="n">make_generic</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="s2">&quot;Citizen&quot;</span> <span class="mi">1</span> <span class="s2">&quot;player&quot;</span>
+    <span class="err">$</span><span class="n">add_unit</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="s2">&quot;Bone&quot;</span> <span class="s2">&quot;immediate&quot;</span> <span class="s2">&quot;closest&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="variables">
+<h3>Variables<a class="headerlink" href="Python-Eventing.html#variables" title="Link to this heading"></a></h3>
+<p>The following event is an example of how you might use python variables to hold onto references to specific units and ease calculation. In normal event script, these would be crammed into single, dense, unreadable lines.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1">#pyev1</span>
+
+<span class="n">seth_unit</span> <span class="o">=</span> <span class="n">u</span><span class="p">(</span><span class="s2">&quot;Seth&quot;</span><span class="p">)</span>
+<span class="n">reduced_hp</span> <span class="o">=</span> <span class="n">seth_unit</span><span class="o">.</span><span class="n">get_current_hp</span><span class="p">()</span> <span class="o">-</span> <span class="mi">5</span>
+<span class="n">reduced_luck</span> <span class="o">=</span> <span class="n">seth_unit</span><span class="o">.</span><span class="n">stats</span><span class="p">[</span><span class="s1">&#39;LCK&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="mi">5</span>
+
+<span class="err">$</span><span class="n">set_stats</span> <span class="n">seth_unit</span> <span class="p">{</span><span class="s2">&quot;HP&quot;</span><span class="p">:</span> <span class="n">reduced_hp</span><span class="p">,</span> <span class="s2">&quot;LCK&quot;</span><span class="p">:</span> <span class="n">reduced_luck</span><span class="p">},</span> <span class="n">immediate</span>
+
+<span class="err">$</span><span class="n">add_portrait</span> <span class="n">seth_unit</span> <span class="s2">&quot;Right&quot;</span>
+<span class="err">$</span><span class="n">say</span> <span class="n">seth_unit</span> <span class="s2">&quot;What happened to my HP?&quot;</span> <span class="n">NumLines</span><span class="o">=</span><span class="mi">1</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Test-Events.html" class="btn btn-neutral float-left" title="Test Events" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Event-Debugger.html" class="btn btn-neutral float-right" title="Debugger" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, rainlash.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

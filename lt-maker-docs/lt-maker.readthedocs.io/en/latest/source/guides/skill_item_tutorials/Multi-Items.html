@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Multi Items &mdash; lt-maker  documentation</title>
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/theme_overrides.css?v=5f1687b9" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/jquery.js?v=5d32c60e"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/doctools.js?v=9a2dae69"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="https://lt-maker.readthedocs.io/en/latest/_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Nihil" href="Nihil.html" />
+    <link rel="prev" title="Shelter Skill" href="Shelter-Skill.html" /> 
+<script async type="text/javascript" src="https://lt-maker.readthedocs.io/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="lt-maker" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/source/guides/skill_item_tutorials/Multi-Items.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            lt-maker
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../home.html">Lex Talionis Wiki</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Editor Guides:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../editors/Editors-Overview.html">Editors Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../editors/index.html">Editors</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Events:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../events/index.html">Events</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Guides:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Guides-Overview.html">Guides Overview</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Guides</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../setup_tutorials/index.html">Project Setup Tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../eventing_tutorials/index.html">Eventing Tutorials</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Skill and Item Tutorials</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="Creating-Items.html">0. Creating Items</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Direct-Passives.html">1. Direct Passives - Hit +20, MAG +2 and Gamble</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Conditional-Passives-I.html">2. Conditional Passives I - Lucky Seven, Odd Rhythm, Wrath and Quick Burn</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Conditional-Passives-II.html">4. Conditional Passives II - Warding Blow, Rainlashslayer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Conditional-Passives-III.html">3. Conditional Passives III - Tomefaire, Axe Breaker and Wyrmbane</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Tile-Passives.html">4. Tile Oriented Passives - Outdoor Fighter and Indoor Fighter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Auras.html">3. Auras - Hex, Bond and Focus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Skill-Swap.html">[System] Skill Swap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Creating-Capture.html">Capture skill</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Recruit-Skill.html">Recruit Skill</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Summoning.html">Summoning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Shelter-Skill.html">Shelter Skill</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="Multi-Items.html#">Multi Items</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Multi-Items.html#what-is-a-multi-item">What is a multi item?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Multi-Items.html#how-do-i-make-a-multi-item">How do I make a multi item?</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Multi-Items.html#why-do-i-make-a-multi-item">Why do I make a multi item?</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Nihil.html">Nihil</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">appendix:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Text-Formatting-Commands.html">Text Formatting Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Item-Component-Reference.html">Item Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Skill-Component-Reference.html">Skill Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Special-Variables.html">Special Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Special-Tags.html">Special Tags</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/trigger-reference.html">Event Triggers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Random-Seed-Mechanics.html">Random Seed Mechanics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/FAQ.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Contributing_to_the_LTWiki.html">Contributing to the LTWiki</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/index.html">Code Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">lt-maker</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Guides</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Skill and Item Tutorials</a></li>
+      <li class="breadcrumb-item active">Multi Items</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://gitlab.com/rainlash/lt-maker/blob/master/docs/source/guides/skill_item_tutorials/Multi-Items.md" class="fa fa-gitlab"> Edit on GitLab</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="multi-items">
+<h1>Multi Items<a class="headerlink" href="Multi-Items.html#multi-items" title="Link to this heading"></a></h1>
+<p><em>Credit to Zelix for the Parallel Falchion icon used for this tutorial.</em></p>
+<section id="what-is-a-multi-item">
+<h2>What is a multi item?<a class="headerlink" href="Multi-Items.html#what-is-a-multi-item" title="Link to this heading"></a></h2>
+<p>Multi items are items which consist of one or more other items. These inner items, referred to here as sub items, are usable by the unit like any other item they possess, although multi items have some unique properties:</p>
+<ul class="simple">
+<li><p>When an item inside a multi item is used, a use is consumed from both the multi item and its sub item. If only the multi item or sub item has infinite uses, a use is still consumed from the other.</p></li>
+<li><p>A unit must fulfill restrictions set by both the multi item and a sub item to use that sub item. For example, if the multi item has a sword rank and the sub item has a lance rank, the user would need both sword and lance ranks.</p></li>
+<li><p>Multi items are stored in the convoy based on the weapon type of the multi item, rather than any of the sub items.</p></li>
+</ul>
+</section>
+<section id="how-do-i-make-a-multi-item">
+<h2>How do I make a multi item?<a class="headerlink" href="Multi-Items.html#how-do-i-make-a-multi-item" title="Link to this heading"></a></h2>
+<p><strong>Step 1: Create the multi item.</strong></p>
+<p>Open the item editor and create a new item. For this example, we will be creating the Parallel Falchion, a sword that can also be used as an item to heal the user.</p>
+<p><img alt="component" src="../../../_images/MultiItem1.png" /></p>
+<p>Once you add the Multi Item component, you should add other components that apply to the item as a whole. In this case, a weapon type, uses, and price are appropriate. Specific stats like hit rate and damage should be left to the sub items. The multi item itself is also intentionally not a weapon despite having a weapon type, as the weapons that are meant to be “equipped” are the sub items in this case. It is also perfectly valid to not include the weapon type at this stage and only have weapon types associated wtih the sub items.</p>
+<p><img alt="skeleton" src="../../../_images/MultiItem2.png" /></p>
+<p>When initially added, the multi item component will be blank. Once sub items are created, they can be added here.</p>
+<p><strong>Step 3: Create sub items.</strong></p>
+<p>Sub items can be created as normal. If the uses of the sub item are meant to be tied to the multi item, then no uses need to be specified. Other shared information can be omitted as well.</p>
+<p><img alt="sword1" src="../../../_images/MultiItem3.png" /></p>
+<p>As the below example illustrates, the two functions of a multi item do not necessarily need to be related to each other, as the healing portion of the Parallel Falchion would be treated as a usable item rather than a weapon.</p>
+<p><img alt="sword2" src="../../../_images/MultiItem4.png" /></p>
+<p>You may notice that there is a chapter uses component associated with the healing sub item. You can associate uses to the sub items to have certain options of a multi item be usable only a limited number of times. Any time a sub item is used, one use will be subtracted from the multi item as well (if the multi item has uses). However, using one sub item will not subtract a use from another sub item. Sub items also do not need to have their own uses; if a multi item has uses and a sub item does not, using that sub item will still subtract a use from the multi item.</p>
+<p><strong>Step 4: Add the sub items to the multi item.</strong></p>
+<p>Return to the multi item and use the + symbol above the multi item component to add the sub items, which will be displayed in a drop down list of all items. Theoretically any item can be added to multi item as a sub item, allowing this component great flexibility.</p>
+<p><img alt="swordfinal" src="../../../_images/MultiItem5.png" /></p>
+<p>After this, the Parallel Falchion can be used in-game as a multi item.</p>
+</section>
+<section id="why-do-i-make-a-multi-item">
+<h2>Why do I make a multi item?<a class="headerlink" href="Multi-Items.html#why-do-i-make-a-multi-item" title="Link to this heading"></a></h2>
+<p>The scenario given in this example is fairly simple: a sword that can harm and heal. However, multi items have many uses beyond that. They can represent a weapon with a limited-use finisher attack, by having a multi item consisting of one normal use sub item and one powerful sub item with only one use. They do not need to be limited to weaponry, either; a multi item could be a tome with no properties of its own that contains various spells for healing or status ailments, each having its own mana cost. Thus, if you have any item at all which has more than one function, the multi item component is likely to be of use.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Shelter-Skill.html" class="btn btn-neutral float-left" title="Shelter Skill" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Nihil.html" class="btn btn-neutral float-right" title="Nihil" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, rainlash.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

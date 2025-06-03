@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Eventing Tutorials &mdash; lt-maker  documentation</title>
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/theme_overrides.css?v=5f1687b9" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/jquery.js?v=5d32c60e"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/doctools.js?v=9a2dae69"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="https://lt-maker.readthedocs.io/en/latest/_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="GBA-style Arena" href="Arena.html" />
+    <link rel="prev" title="Custom Components and Sprites" href="../setup_tutorials/Custom-Components-And-Sprites.html" /> 
+<script async type="text/javascript" src="https://lt-maker.readthedocs.io/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="lt-maker" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/source/guides/eventing_tutorials/index.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            lt-maker
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../home.html">Lex Talionis Wiki</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Editor Guides:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../editors/Editors-Overview.html">Editors Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../editors/index.html">Editors</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Events:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../events/index.html">Events</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Guides:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Guides-Overview.html">Guides Overview</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Guides</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../setup_tutorials/index.html">Project Setup Tutorials</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="index.html#">Eventing Tutorials</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Arena.html">GBA-style Arena</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Breakable-Walls.html">Breakable Walls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Death-Quotes.html">Universal Death Quotes Tutorial</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Choices-and-Battle-Saves.html">Choices and Battle Saves</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Unit-Groups.html">Unit Groups</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Achievements.html">Achievements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="A-Simple-Mercenary-Shop.html">A Simple Mercenary Shop Tutorial</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Promotion-Personal-Skills.html">Promotion Personal Skills Tutorial</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../skill_item_tutorials/index.html">Skill and Item Tutorials</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">appendix:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Text-Formatting-Commands.html">Text Formatting Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Item-Component-Reference.html">Item Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Skill-Component-Reference.html">Skill Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Special-Variables.html">Special Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Special-Tags.html">Special Tags</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/trigger-reference.html">Event Triggers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Random-Seed-Mechanics.html">Random Seed Mechanics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/FAQ.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Contributing_to_the_LTWiki.html">Contributing to the LTWiki</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/index.html">Code Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">lt-maker</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Guides</a></li>
+      <li class="breadcrumb-item active">Eventing Tutorials</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://gitlab.com/rainlash/lt-maker/blob/master/docs/source/guides/eventing_tutorials/index.rst" class="fa fa-gitlab"> Edit on GitLab</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="eventing-tutorials">
+<h1>Eventing Tutorials<a class="headerlink" href="index.html#eventing-tutorials" title="Link to this heading"></a></h1>
+<p>These are guides on various useful applications of events.</p>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Contents</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Arena.html">GBA-style Arena</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Arena.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Arena.html#setting-up-the-event">Setting up the event</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Arena.html#reference">Reference</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Breakable-Walls.html">Breakable Walls</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Breakable-Walls.html#creating-a-breakable-wall">Creating a breakable wall</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Death-Quotes.html">Universal Death Quotes Tutorial</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Death-Quotes.html#problem-description">Problem Description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Death-Quotes.html#solution">Solution</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Choices-and-Battle-Saves.html">Choices and Battle Saves</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Choices-and-Battle-Saves.html#choices">Choices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Choices-and-Battle-Saves.html#battle-saves">Battle Saves</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Unit-Groups.html">Unit Groups</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Unit-Groups.html#unit-group-commands">Unit Group Commands</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Achievements.html">Achievements</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Achievements.html#basic-functionality">Basic Functionality</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Achievements.html#secret-achievements">Secret Achievements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Achievements.html#player-record-storage">Player record storage</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="A-Simple-Mercenary-Shop.html">A Simple Mercenary Shop Tutorial</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="A-Simple-Mercenary-Shop.html#problem-description">Problem Description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="A-Simple-Mercenary-Shop.html#solution">Solution</a></li>
+<li class="toctree-l2"><a class="reference internal" href="A-Simple-Mercenary-Shop.html#raw-data">Raw Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="A-Simple-Mercenary-Shop.html#choice-eventing">Choice Eventing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="A-Simple-Mercenary-Shop.html#textboxes-for-fun-and-profit">Textboxes for fun and profit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="A-Simple-Mercenary-Shop.html#events-from-choices">Events from Choices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="A-Simple-Mercenary-Shop.html#reference">Reference</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Promotion-Personal-Skills.html">Promotion Personal Skills Tutorial</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Promotion-Personal-Skills.html#problem-description">Problem Description</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Promotion-Personal-Skills.html#solution">Solution</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../setup_tutorials/Custom-Components-And-Sprites.html" class="btn btn-neutral float-left" title="Custom Components and Sprites" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Arena.html" class="btn btn-neutral float-right" title="GBA-style Arena" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, rainlash.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Constants Editor &mdash; lt-maker  documentation</title>
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/theme_overrides.css?v=5f1687b9" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/jquery.js?v=5d32c60e"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/doctools.js?v=9a2dae69"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="https://lt-maker.readthedocs.io/en/latest/_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Difficulty Modes Editor" href="Difficulty-Modes-Editor.html" />
+    <link rel="prev" title="Equations Editor" href="Equations-Editor.html" /> 
+<script async type="text/javascript" src="https://lt-maker.readthedocs.io/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="lt-maker" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/source/editors/database-editors/Constants-Editor.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            lt-maker
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../home.html">Lex Talionis Wiki</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Editor Guides:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Editors-Overview.html">Editors Overview</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Editors</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../Editors-Overview.html">Editors Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Level-Editor.html">Level Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Overworld-Editor.html">Overworld Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Event-Editor.html">Event Editor</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Database Editors</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="Units-Editor.html">Units Editor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Teams-Editor.html">Teams Editor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Factions-Editor.html">Factions Editor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Party-Editor.html">Party Editor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Classes-Editor.html">Classes Editor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Tags-Editor.html">Tags Editor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Game-Vars-Editor.html">Game Vars Editor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Weapon-Types-Editor.html">Weapon Types Editor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Items-And-Skills-Editors.html">Items And Skills Editors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="AI-Editor.html">AI Editor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Terrain-And-Movement-Costs-Editors.html">Terrain and Movement Costs Editors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Stats-Editor.html">Stats Editor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Equations-Editor.html">Equations Editor</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="Constants-Editor.html#">Constants Editor</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Constants-Editor.html#game-unique-identifier">Game Unique Identifier</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Constants-Editor.html#constants-dependent-on-game-variables">Constants Dependent On Game Variables</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Constants-Editor.html#leadership-stars">Leadership Stars</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Constants-Editor.html#constants-dictionary">Constants Dictionary</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Difficulty-Modes-Editor.html">Difficulty Modes Editor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Supports-Editor.html">Supports Editor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Lore-Editor.html">Lore Editor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Raw-Data-Editor.html">Raw Data Editor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Translations-Editor.html">Translations Editor</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../resource-editors/index.html">Resource Editors</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Events:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../events/index.html">Events</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Guides:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../guides/Guides-Overview.html">Guides Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guides/index.html">Guides</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">appendix:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Text-Formatting-Commands.html">Text Formatting Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Item-Component-Reference.html">Item Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Skill-Component-Reference.html">Skill Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Special-Variables.html">Special Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Special-Tags.html">Special Tags</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/trigger-reference.html">Event Triggers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Random-Seed-Mechanics.html">Random Seed Mechanics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/FAQ.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Contributing_to_the_LTWiki.html">Contributing to the LTWiki</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/index.html">Code Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">lt-maker</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Editors</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Database Editors</a></li>
+      <li class="breadcrumb-item active">Constants Editor</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://gitlab.com/rainlash/lt-maker/blob/master/docs/source/editors/database-editors/Constants-Editor.md" class="fa fa-gitlab"> Edit on GitLab</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="constants-editor">
+<h1>Constants Editor<a class="headerlink" href="Constants-Editor.html#constants-editor" title="Link to this heading"></a></h1>
+<section id="game-unique-identifier">
+<h2>Game Unique Identifier<a class="headerlink" href="Constants-Editor.html#game-unique-identifier" title="Link to this heading"></a></h2>
+<p>This ID is used to label the filenames of save files for LT games. As such, changing this will render existing saves inoperable unless all of their individual names are changed as well. Bear this in mind when determining your ID before a public release.</p>
+</section>
+<section id="constants-dependent-on-game-variables">
+<h2>Constants Dependent On Game Variables<a class="headerlink" href="Constants-Editor.html#constants-dependent-on-game-variables" title="Link to this heading"></a></h2>
+<p>While some constants have dedicated editors, such as Overworld and Supports, several constants require eventing to function, even when checked off in the Constants editor. These are:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Turnwheel</span></code>: requires the turnwheel to be enabled via the <code class="docutils literal notranslate"><span class="pre">enable_turnwheel</span></code> event command, as well as <code class="docutils literal notranslate"><span class="pre">_max_turnwheel_uses</span></code> to be set if the game is meant to impose a limit on usage.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Fatigue</span></code>: requires the <code class="docutils literal notranslate"><span class="pre">_fatigue</span></code> variable to be set to an applicable value.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Global</span> <span class="pre">Leadership</span> <span class="pre">Stars</span></code>: requires a few different steps (see below).</p></li>
+</ul>
+</div></blockquote>
+<p>For more information on variables used for these constants, please refer to <a class="reference internal" href="../../appendix/Special-Variables.html#special-variables"><span class="std std-ref">Special Variables</span></a>.</p>
+</section>
+<section id="leadership-stars">
+<h2>Leadership Stars<a class="headerlink" href="Constants-Editor.html#leadership-stars" title="Link to this heading"></a></h2>
+<p><em>Thracia 776</em> style leadership stars are available in the <strong>Lex Talionis</strong> engine. To implement:</p>
+<p><img alt="GlobalLeadershipStars" src="../../../_images/LeadershipStarsConstantsEditor.png" /></p>
+<ol class="arabic simple">
+<li><p>Check the “Global Leadership Stars” box in the Constants menu</p></li>
+</ol>
+<p><img alt="LEADStat" src="../../../_images/LEADStat.png" /></p>
+<ol class="arabic simple" start="2">
+<li><p>Create a “LEAD” stat in the Stats editor. This stat will be the number of leadership stars a unit has.</p></li>
+</ol>
+<p><img alt="LEADEquation" src="../../../_images/LEADEquation.png" /></p>
+<ol class="arabic simple" start="3">
+<li><p>Create a LEAD_HIT and LEAD_AVOID equation in the Equations editor. These equations will determine the bonus hit and avoid units will get from leadership stars</p></li>
+</ol>
+</section>
+<section id="constants-dictionary">
+<h2>Constants Dictionary<a class="headerlink" href="Constants-Editor.html#constants-dictionary" title="Link to this heading"></a></h2>
+<p>This section lists the functionality of each constant available in the Constants editor.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Constant</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Turnwheel</strong></p></td>
+<td><p>Allows the player to access time rewind mechanic to restore the game to an earlier state within the same chapter.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Per Unit Initiative Order</strong></p></td>
+<td><p>Causes each unit to have its own turn, removing the Player/Enemy Phase division.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Fatigue</strong></p></td>
+<td><p>Causes units to accumulate fatigue each time they are deployed on a map.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Pair Up</strong></p></td>
+<td><p>Allows units to merge into a duo where one unit is the main unit in combat and the other grants passive bonuses. Allows for pair up attacks and guard stance as well.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Limit Attack Stance to first attack only</strong></p></td>
+<td><p>Pair Up constant. Restricts the benefits of Attack Stance to only the first attack if the unit doubles.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Global Leadership Stars</strong></p></td>
+<td><p>Adds a leadership star stat, visible through the info menu, that grants passive bonuses to all other units in the same army.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Bonus Experience</strong></p></td>
+<td><p>Allows accumulation of bonus experience that can be distributed to any unit in base.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Always gain 3 stat-ups when using Bonus Exp.</strong></p></td>
+<td><p>Any level gained using bonus experience will have exactly three stat increses.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Supports</strong></p></td>
+<td><p>Allows units to accumulate support ranks, granting passive bonuses to each other which can be modified based on affinity.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Overworld</strong></p></td>
+<td><p>Enables a traversable overworld with nodes for shopping and other events.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Unit Notes</strong></p></td>
+<td><p>Makes unit notes visible in the info menu.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Allow Criticals</strong></p></td>
+<td><p>Enables critical hits.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Can trade items on map</strong></p></td>
+<td><p>Allows units to trade items during a chapter while adjacent to each other.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Can view unit growths in Info Menu</strong></p></td>
+<td><p>The player can press the Aux button when looking at a unit’s stats to view growth rates.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Apply difficulty bonus growths to past levels</strong></p></td>
+<td><p>Non-boss enemy units gain a bonus to their stats based on the bonus growths granted by the selected difficulty.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Force items and abilities to obey line of sight rules</strong></p></td>
+<td><p>Items cannot pass through walls and other terrain that break line of sight.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Force auras to obey line of sight rules</strong></p></td>
+<td><p>Skill auras cannot pass through walls and other terrain that break line of sight.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Fog of War will also be affected by line of sight</strong></p></td>
+<td><p>Areas blocked by walls and other similar terrain are not revealed under fog of war.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>AI will also be affected by Fog of War</strong></p></td>
+<td><p>Non player-controlled units follow the same rules players follow for Fog of War.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Defender can double counterattack</strong></p></td>
+<td><p>Allows doubling for a unit that did not initiate the attack.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Units will promote automatically upon reaching max level</strong></p></td>
+<td><p>Surely this one is self explanatory.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Promotion resets level back to 1</strong></p></td>
+<td><p>When enabled, unit does not retain their level/exp when changing class through promotion and is instead reset to 1.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Class Change resets level back to 1</strong></p></td>
+<td><p>When enabled, unit does not retain their level/exp after changing class in any way.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Generic units will be granted random feats when appropriate</strong></p></td>
+<td><p>If a generic unit would have gained a feat at its current level, it gains one of any random skill marked as a feat.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Final blow on boss will use critical animation</strong></p></td>
+<td><p>Works even if the critical rate is 0 for that attack.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Use battle platforms when battle backgrounds are on</strong></p></td>
+<td><p>Enables display of battle platforms when using battle backgrounds.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Items held by dead player units are sent to convoy</strong></p></td>
+<td><p>Also self explanatory.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Access the Repair Shop in prep and base</strong></p></td>
+<td><p>Allows units to repair held items in the Manage section of preps and base menus.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Unit can give a unit after taking a unit</strong></p></td>
+<td><p>Refers to the rescue mechanic.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Mana resets to full for units upon completion of the chapter</strong></p></td>
+<td><p>When disabled, mana is unchanged between chapters.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>When doubling, splash/aoe is applied on the second attack</strong></p></td>
+<td><p>When disabled, AoE effects only apply to the first attack when doubling.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Enemy AI attacks even if Hit is 0</strong></p></td>
+<td><p>Used to make the AI dumber.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Enemy AI attacks even if damage is 0</strong></p></td>
+<td><p>Allows the AI to choose to attack even if no damage or status would be dealt.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Show Movement as 0 if AI does not move</strong></p></td>
+<td><p>Applies when displaying NPC movement range/threat. Changing to a different AI will update the display.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Display particle effect on title screen</strong></p></td>
+<td><p>Used for the little glimmery things that float by in the title screen.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Restart phase music at beginning of new phase</strong></p></td>
+<td><p>Phase music plays from beginning each time phase changes.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Restart battle music at beginning of each combat</strong></p></td>
+<td><p>Battle music plays from the beginning for each battle.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Kills give double weapon exp</strong></p></td>
+<td><p>Very self explanatory.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Each hit when doubling grants weapon exp</strong></p></td>
+<td><p>If disabled, only one hit per combat grants weapon exp.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Gain weapon exp even on miss</strong></p></td>
+<td><p>Still self explanatory.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Equations-Editor.html" class="btn btn-neutral float-left" title="Equations Editor" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Difficulty-Modes-Editor.html" class="btn btn-neutral float-right" title="Difficulty Modes Editor" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, rainlash.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

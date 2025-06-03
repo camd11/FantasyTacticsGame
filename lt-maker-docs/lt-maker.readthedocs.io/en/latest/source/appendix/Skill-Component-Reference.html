@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Skill Component Dictionary &mdash; lt-maker  documentation</title>
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/theme_overrides.css?v=5f1687b9" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/jquery.js?v=5d32c60e"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/doctools.js?v=9a2dae69"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="https://lt-maker.readthedocs.io/en/latest/_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Special Variables" href="Special-Variables.html" />
+    <link rel="prev" title="Item Component Dictionary" href="Item-Component-Reference.html" /> 
+<script async type="text/javascript" src="https://lt-maker.readthedocs.io/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="lt-maker" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/source/appendix/Skill-Component-Reference.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            lt-maker
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../home.html">Lex Talionis Wiki</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Editor Guides:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../editors/Editors-Overview.html">Editors Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../editors/index.html">Editors</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Events:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../events/index.html">Events</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Guides:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guides/Guides-Overview.html">Guides Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/index.html">Guides</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">appendix:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Text-Formatting-Commands.html">Text Formatting Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Item-Component-Reference.html">Item Component Dictionary</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="Skill-Component-Reference.html#">Skill Component Dictionary</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Skill-Component-Reference.html#attribute-components">Attribute Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Skill-Component-Reference.html#base-components">Base Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Skill-Component-Reference.html#movement-components">Movement Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Skill-Component-Reference.html#combat-components">Combat Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Skill-Component-Reference.html#advanced-combat-components">Advanced Combat Components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Skill-Component-Reference.html#status-components">Status Components</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Special-Variables.html">Special Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Special-Tags.html">Special Tags</a></li>
+<li class="toctree-l1"><a class="reference internal" href="trigger-reference.html">Event Triggers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Random-Seed-Mechanics.html">Random Seed Mechanics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Contributing_to_the_LTWiki.html">Contributing to the LTWiki</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">Code Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">lt-maker</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Skill Component Dictionary</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://gitlab.com/rainlash/lt-maker/blob/master/docs/source/appendix/Skill-Component-Reference.md" class="fa fa-gitlab"> Edit on GitLab</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="skill-component-dictionary">
+<span id="id1"></span><h1>Skill Component Dictionary<a class="headerlink" href="Skill-Component-Reference.html#skill-component-dictionary" title="Link to this heading"></a></h1>
+<p>The item components in this dictionary are broken down by icon going from left to right, with each icon’s aspects being explained top to bottom.</p>
+<section id="attribute-components">
+<h2>Attribute Components<a class="headerlink" href="Skill-Component-Reference.html#attribute-components" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Component</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Hidden</strong></p></td>
+<td><p>The skill/status will not appear anywhere in the unit’s info menu.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Class Skill</strong></p></td>
+<td><p>The skill/status will appear in the unit’s ‘personal data’ page in their info menu, rather than on the ‘weapon and support level’ page.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Stack</strong></p></td>
+<td><p>The skill/status can be applied multiple times. Useful when creating skills such as “+1 Strength every time an enemy is defeated”.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Feat</strong></p></td>
+<td><p>The skill/status can be selected as a <em>Feat</em>.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Negative</strong></p></td>
+<td><p>Skill/status is considered <em>Detrimental</em>. This status cannot be applied to a unit with any skill using the “ImmuneStatus” skill component. This status can be cleared by an item using the “Restore” item component.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Global</strong></p></td>
+<td><p>All units will be affected by this skill/status.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Negate</strong></p></td>
+<td><p>Negates all effective damage.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Negate Tags</strong></p></td>
+<td><p>Negates effective damage against the specified tags. For example, to recreate Iote’s shield, we would select the “Flying” tag.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="base-components">
+<h2>Base Components<a class="headerlink" href="Skill-Component-Reference.html#base-components" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Component</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Unselectable</strong></p></td>
+<td><p>Unit cannot be selected by the player. A use case would be for a berserked ally.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Cannot Use Items</strong></p></td>
+<td><p>The unit cannot use nor equip any items.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Cannot Use Magic Items</strong></p></td>
+<td><p>The unit cannot use nor equip any items that have the “Magic” item component. Also prevents using items with the “Magic At Range” component from greater than range 1.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Additional Accessories</strong></p></td>
+<td><p>Trades item slots for accessory slots.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Ignore Alliances</strong></p></td>
+<td><p>The affected unit can attack any team. Useful for stuff like Thracia Green units that could attack the player.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Change AI</strong></p></td>
+<td><p>Changes the unit’s AI to the one specified. Can accept any AI setting, including those made with the AI editor.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Change Buy Price</strong></p></td>
+<td><p>Multiplies shop prices by the value given for the affected unit. For a Silver Card, one would use a value of .50 (i.e., 50% of the normal price).</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Exp Multiplier</strong></p></td>
+<td><p>Multiplies the amount of EXP the affected unit receives by the specified value. For Paragon, one would enter a value of 2.00 (i.e., 200% of the normal amount).</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Enemy Exp Multiplier</strong></p></td>
+<td><p>Alters the amount of EXP this unit gives. For Void Curse, one would give this a value of 0.00 and assign it to enemies. These enemies now give no EXP when fought.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Wexp Multiplier</strong></p></td>
+<td><p>Multiplies the amount of WEXP the affected unit receives by the specified value.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Can Use Weapon Type</strong></p></td>
+<td><p>Allows usage of the specified weapon type. Do note that the unit will still need a WEXP value above 0 for this to work. This component exists to allow a class to wield a weapon they normally could not use. For example, if Franz had 1 Axe WEXP and did not have this component, he would still not be able to use an Iron Axe. Once this component is applied, he will be able to use the Iron Axe.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Enemy Wexp Multiplier</strong></p></td>
+<td><p>Alters the amount of WEXP that units besides the affected unit receives, by the specified value.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Locktouch</strong></p></td>
+<td><p>Gives the affected unit the ability to unlock. <code class="docutils literal notranslate"><span class="pre">can_unlock</span></code> will return True for this unit, allowing them to interact with regions that use <code class="docutils literal notranslate"><span class="pre">can_unlock</span></code> as a condition. Refer to the eventing tutorials for more details.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Sight Range Bonus</strong></p></td>
+<td><p>Unit can illuminate additional spaces when Fog of War is active.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Decreasing Sight Range Bonus</strong></p></td>
+<td><p>Unit can illuminate additional spaces when Fog of War is active. This bonus lowers by 1 every turn.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Ignore Fatigue</strong></p></td>
+<td><p>The affected unit will not accumulate Fatigue.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="movement-components">
+<h2>Movement Components<a class="headerlink" href="Skill-Component-Reference.html#movement-components" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Component</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Canto</strong></p></td>
+<td><p>Unit can move again after certain actions, excluding actions such as attacking or healing.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Canto Plus</strong></p></td>
+<td><p>Unit can move again after any action, including attacks.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Canto Sharp</strong></p></td>
+<td><p>Unit can move and attack in either order. Prevents units from moving, attacking, and then using canto.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Movement Type</strong></p></td>
+<td><p>Unit will have a non-default movement type. Commonly used for flying or pirates.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Pass</strong></p></td>
+<td><p>Unit can move through enemies.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Ignore Terrain</strong></p></td>
+<td><p>Unit will not be affected by terrain in any way.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Ignore Rescue Penalty</strong></p></td>
+<td><p>Unit will ignore the rescue penalty.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Grounded</strong></p></td>
+<td><p>Unit cannot be forcibly moved such as through shove or reposition.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>No Attack After Move</strong></p></td>
+<td><p>Unit can either move or attack, but not both.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="combat-components">
+<h2>Combat Components<a class="headerlink" href="Skill-Component-Reference.html#combat-components" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Component</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Stat Change</strong></p></td>
+<td><p>Gives integer increases to the specified stats. Used by tiles to give defense bonuses.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Stat Multiplier</strong></p></td>
+<td><p>Multiplies the specified stat by a given value.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Growth Change</strong></p></td>
+<td><p>Gives integer increases to the growth rates of specified stats.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Equation Growth Change</strong></p></td>
+<td><p>Increases the growth of all of a units stats by the specified equation. Must evaluate to an integer.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Damage</strong></p></td>
+<td><p>Unit deals X more damage on attacks, where X is the specified integer value.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Eval Damage</strong></p></td>
+<td><p>Unit deals X more damage on attacks, where X is the result of the given equation. The equation must evaluate to an integer.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Resist</strong></p></td>
+<td><p>Unit gains X more resist, where X is the specified integer value. Resist includes both defense and resistance since it modifies the DEFENSE and MAGIC_DEFENSE equations.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Hit</strong></p></td>
+<td><p>Unit gains X more hit, where X is the specified integer.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Avoid</strong></p></td>
+<td><p>Unit gains X more avoid, where X is the specified integer.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Crit</strong></p></td>
+<td><p>Unit gains X more critical chance, where X is the specified integer.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Crit Avoid</strong></p></td>
+<td><p>Unit gains X more critical avoid, where X is the specified integer. Critical avoid is subtracted from the opponent’s critical chance.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Attack Speed</strong></p></td>
+<td><p>Unit gains X more attack speed, where X is the specified integer. A unit’s attack speed is their speed for the purpose of determining whether they are able to double an opponent.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Defense Speed</strong></p></td>
+<td><p>Unit gains X more defense speed, where X is the specified integer.  A unit’s defense speed is their speed for the purpose of determining whether they are doubled by an opponent.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Damage Multiplier</strong></p></td>
+<td><p>Multiplies damage dealt by the specified decimal number.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Dynamic Damage Multiplier</strong></p></td>
+<td><p>Multiplies damage dealt by the result of the given equation. Equation must evaluate to either an integer or floating point number.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Resist Multiplier</strong></p></td>
+<td><p>Multiplies damage taken by the specified decimal number.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>PCC</strong></p></td>
+<td><p>Multiplies critical chance by the chosen stat on any strike after the first.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="advanced-combat-components">
+<h2>Advanced Combat Components<a class="headerlink" href="Skill-Component-Reference.html#advanced-combat-components" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Component</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Miracle</strong></p></td>
+<td><p>Unit cannot be reduced below 1 HP. Often used with the charges system or Proc Rate component.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Ignore Damage</strong></p></td>
+<td><p>Unit cannot take damage. HP can still be set via event.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Live to Serve</strong></p></td>
+<td><p>Unit heals self X% of healing given to others.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Lifetaker</strong></p></td>
+<td><p>Unit heals self X% of max HP after a kill.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Lifelink</strong></p></td>
+<td><p>Unit heals self X% of damage dealt to others, such as with Nosferatu or Sol.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Ally Lifelink</strong></p></td>
+<td><p>Unit heals adjacent allies X% of damage dealt to others.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Armsthrift</strong></p></td>
+<td><p>Attacking with a weapon restores X uses on hit. Uses will not be restored above max.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Limit Maximum Range</strong></p></td>
+<td><p>Caps the unit’s maximum range with any item to X.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Modify Maximum Range</strong></p></td>
+<td><p>Adjusts the maximum range of any item wielded by the unit by X.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Eval Maximum Range</strong></p></td>
+<td><p>Functions as Modify Maximum Range, but by providing an equation.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Cannot Double</strong></p></td>
+<td><p>Cmon bruh.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Can Double on Defense</strong></p></td>
+<td><p>Only meant to be used when units are prevented from doubling on defense through the Constants editor.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Vantage</strong></p></td>
+<td><p>Unit attacks first when defending. If two units with Vantage fight, the defender always attacks first.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Guaranteed Crit</strong></p></td>
+<td><p>Unit will always crit even if critical hits are turned off in Constants.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Distant Counter</strong></p></td>
+<td><p>Unit can counter an attack from any range regardless of weapon effective range.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Cleave</strong></p></td>
+<td><p>Unit’s attacks will hit all enemies within 1 tile (diagonals included). Functions identically to the Enemy Cleave AoE item component.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Give Status After Combat</strong></p></td>
+<td><p>The target is granted the skill after combat, even if the unit did not hit or even attack at all.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Give Status After Attack</strong></p></td>
+<td><p>The target is granted the skill after combat if the unit was the attacker, even if the unit does not hit.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Give Status On Hit</strong></p></td>
+<td><p>The target is granted the skill after being hit, even if combat has not yet ended.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Gain Skill After Kill</strong></p></td>
+<td><p>The unit is granted the skill after killing a target in combat.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Gain Skill After Attacking</strong></p></td>
+<td><p>The unit is granted the skill after combat if the unit was the attacker, even if the unit does not hit.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Gain Skill After Active Kill</strong></p></td>
+<td><p>The unit is granted the skill after killing a target in combat that the unit initiated.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Delay Initiative Order</strong></p></td>
+<td><p>Delays the target’s turn by X. Only applies when attacking.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Recoil</strong></p></td>
+<td><p>Unit takes X nonlethal damage after combat.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Post Combat Damage</strong></p></td>
+<td><p>Target takes X nonlethal damage after combat.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Post Combat Damage Percent</strong></p></td>
+<td><p>Target takes X% of max HP nonlethal damage after combat.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Post Combat Splash</strong></p></td>
+<td><p>Enemies within AoE range of target take X nonlethal damage after combat. AoE range is defined by the Post Combat Splash AOE component.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Post Combat Splash AOE</strong></p></td>
+<td><p>Enemies within X range of target take nonlethal damage after combat as defined by the Post Combat Splash component.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="status-components">
+<h2>Status Components<a class="headerlink" href="Skill-Component-Reference.html#status-components" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Component</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Aura</strong></p></td>
+<td><p>Grants skill to qualifying units within aura range.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Aura Range</strong></p></td>
+<td><p>Associated aura spreads out to targets within X tiles of unit.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Aura Target</strong></p></td>
+<td><p>Must be ally, enemy, or unit. Enemy encompasses both enemy types (enemy, enemy2), while unit encompasses all units.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Pair Up Bonus</strong></p></td>
+<td><p>While this unit is the sub unit in guard stance, grants skill to the main unit.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Regeneration</strong></p></td>
+<td><p>Unit restores X% of max HP at the beginning of its phase/turn.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Mana Regeneration</strong></p></td>
+<td><p>Unit restores X mana at the beginning of its phase/turn.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Upkeep Damage</strong></p></td>
+<td><p>Unit takes X damage at the beginning of its phase/turn. Can be lethal.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Endstep Damage</strong></p></td>
+<td><p>Unit takes X damage at the end of its phase/turn. Can be lethal.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>GBAPoison</strong></p></td>
+<td><p>Unit randomly takes 1 to X damage at the beginning of its phase/turn. Can be lethal.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Resist Status</strong></p></td>
+<td><p>Other skills gained with a time component of duration 2 or greater have that duration decreased to 1 turn.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Immune Status</strong></p></td>
+<td><p>Unit cannot acquire skills with the Negative component.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Reflect Status</strong></p></td>
+<td><p>When the unit acquires a skill with a Negative component, causes the granter of that skill to also receive it. Does <em>not</em> prevent acquisition of the Negative skill.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Item-Component-Reference.html" class="btn btn-neutral float-left" title="Item Component Dictionary" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Special-Variables.html" class="btn btn-neutral float-right" title="Special Variables" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, rainlash.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

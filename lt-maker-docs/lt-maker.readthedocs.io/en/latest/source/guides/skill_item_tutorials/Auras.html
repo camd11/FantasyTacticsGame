@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3. Auras - Hex, Bond and Focus &mdash; lt-maker  documentation</title>
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/theme_overrides.css?v=5f1687b9" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/jquery.js?v=5d32c60e"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/doctools.js?v=9a2dae69"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="https://lt-maker.readthedocs.io/en/latest/_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="[System] Skill Swap" href="Skill-Swap.html" />
+    <link rel="prev" title="4. Tile Oriented Passives - Outdoor Fighter and Indoor Fighter" href="Tile-Passives.html" /> 
+<script async type="text/javascript" src="https://lt-maker.readthedocs.io/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="lt-maker" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/source/guides/skill_item_tutorials/Auras.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            lt-maker
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../home.html">Lex Talionis Wiki</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Editor Guides:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../editors/Editors-Overview.html">Editors Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../editors/index.html">Editors</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Events:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../events/index.html">Events</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Guides:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Guides-Overview.html">Guides Overview</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Guides</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../setup_tutorials/index.html">Project Setup Tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../eventing_tutorials/index.html">Eventing Tutorials</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Skill and Item Tutorials</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="Creating-Items.html">0. Creating Items</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Direct-Passives.html">1. Direct Passives - Hit +20, MAG +2 and Gamble</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Conditional-Passives-I.html">2. Conditional Passives I - Lucky Seven, Odd Rhythm, Wrath and Quick Burn</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Conditional-Passives-II.html">4. Conditional Passives II - Warding Blow, Rainlashslayer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Conditional-Passives-III.html">3. Conditional Passives III - Tomefaire, Axe Breaker and Wyrmbane</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Tile-Passives.html">4. Tile Oriented Passives - Outdoor Fighter and Indoor Fighter</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="Auras.html#">3. Auras - Hex, Bond and Focus</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Auras.html#required-editors-and-components">Required editors and components</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Auras.html#skill-descriptions">Skill descriptions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Auras.html#step-1-create-a-class-skill-an-an-effect-skill">Step 1: Create a Class Skill an an ‘Effect Skill’</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Auras.html#step-2-a-add-the-aura-component-to-the-class-skill">Step 2.A: Add the Aura component to the Class Skill</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Auras.html#step-3-add-the-other-components-to-the-effect-skill">Step 3: Add the other components to the ‘Effect Skill’</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Auras.html#step-2-b-3-c-focus-add-the-condition-component-to-the-class-skill">Step 2.B → 3.C: [Focus] Add the Condition component to the Class Skill</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Auras.html#step-4-test-the-stat-alterations-and-effects-in-game">Step 4: Test the stat alterations and effects in-game</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Auras.html#optional-step-add-the-hidden-component-to-the-effect-skill">Optional Step: Add the Hidden component to the ‘Effect Skill’</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Skill-Swap.html">[System] Skill Swap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Creating-Capture.html">Capture skill</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Recruit-Skill.html">Recruit Skill</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Summoning.html">Summoning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Shelter-Skill.html">Shelter Skill</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Multi-Items.html">Multi Items</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Nihil.html">Nihil</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">appendix:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Text-Formatting-Commands.html">Text Formatting Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Item-Component-Reference.html">Item Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Skill-Component-Reference.html">Skill Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Special-Variables.html">Special Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Special-Tags.html">Special Tags</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/trigger-reference.html">Event Triggers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Random-Seed-Mechanics.html">Random Seed Mechanics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/FAQ.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Contributing_to_the_LTWiki.html">Contributing to the LTWiki</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/index.html">Code Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">lt-maker</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Guides</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Skill and Item Tutorials</a></li>
+      <li class="breadcrumb-item active">3. Auras - Hex, Bond and Focus</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://gitlab.com/rainlash/lt-maker/blob/master/docs/source/guides/skill_item_tutorials/Auras.md" class="fa fa-gitlab"> Edit on GitLab</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <p><small><code class="docutils literal notranslate"><span class="pre">Originally</span> <span class="pre">written</span> <span class="pre">by</span> <span class="pre">Hillgarm.</span> <span class="pre">Last</span> <span class="pre">Updated</span> <span class="pre">2022-09-01</span></code></small></p>
+<section id="auras-hex-bond-and-focus">
+<h1>3. Auras - Hex, Bond and Focus<a class="headerlink" href="Auras.html#auras-hex-bond-and-focus" title="Link to this heading"></a></h1>
+<p>Auras are passive effects that apply to all units of a given type within a radius, targeting either allies or enemies. Once the unit leaves the radius, they no longer get the effects from the aura.</p>
+<p>In this guide we will make an an ally based aura, an enemy based aura, and a passive that checks how many enemies are within a radius.</p>
+<p><strong>INDEX</strong></p>
+<ul class="simple">
+<li><p><strong>Required editors and components</strong></p></li>
+<li><p><strong>Skill descriptions</strong></p></li>
+<li><p><strong>Step 1: Create a Class Skill an an ‘Effect Skill’</strong></p></li>
+<li><p><strong>Step 2.A: Add the an Aura component to the Class Skill</strong></p></li>
+<li><p><strong>Step 3: Add the other components to the ‘Effect Skill’</strong></p>
+<ul>
+<li><p>Step 3.A: <strong>[Hex]</strong> Add the Hit component</p></li>
+<li><p>Step 3.B: <strong>[Bond]</strong> Add the Upkeep Damage component</p></li>
+</ul>
+</li>
+<li><p><strong>Step 2.B → 3.C: [Focus] Add the Condition component to Class Skill</strong></p></li>
+<li><p><strong>Step 4: Test the stat alterations and effects in-game</strong></p></li>
+<li><p><strong>Optional Step: Add the Hidden component to the ‘Effect Skill’</strong></p></li>
+</ul>
+<section id="required-editors-and-components">
+<h2>Required editors and components<a class="headerlink" href="Auras.html#required-editors-and-components" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Skills:</p>
+<ul>
+<li><p>Attribute components - Class Skills, <strong>Hidden (optional)</strong></p></li>
+<li><p>Combat components - Hit</p></li>
+<li><p>Advanced components - Condition</p></li>
+<li><p><strong>Status components - Aura, Aura Radius, Aura Target, and Upkeep Damage</strong></p></li>
+</ul>
+</li>
+<li><p>Objects, Attributes and Properties:</p>
+<ul>
+<li><p><strong>unit_funcs - check_focus(unit, {integer})</strong></p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="skill-descriptions">
+<h2>Skill descriptions<a class="headerlink" href="Auras.html#skill-descriptions" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>Hex</strong> - Adjacent enemies have -15 Hit.</p></li>
+<li><p><strong>Bond</strong> - At the start of your phase, restore 10 HP of all allies within 3 spaces.</p></li>
+<li><p><strong>Focus</strong> - Critical +10 while no ally is within 3 spaces.</p></li>
+</ul>
+</section>
+<section id="step-1-create-a-class-skill-an-an-effect-skill">
+<h2>Step 1: Create a Class Skill an an ‘Effect Skill’<a class="headerlink" href="Auras.html#step-1-create-a-class-skill-an-an-effect-skill" title="Link to this heading"></a></h2>
+<p>This time we will need two different skill entries to create a single skill effect. Only one of them will have the <strong>Class Skill component</strong>.</p>
+<p>As usual, we need different <strong>Unique IDs</strong> for both. The naming convention is up to your personal preference. In this tutorial, I will be using <em>SKILLNAME</em> for the <strong>Class Skill</strong> and <em>SKILLNAME_EFFECT</em> for the <em>‘Effect Skill’</em>.</p>
+<p>We also want our skills to have the same <strong>Display Name</strong> and <strong>Icon</strong>.</p>
+<p><img alt="3_1" src="../../../_images/3_1.png" /></p>
+<p>The <strong>Description</strong> can also be the same, but you may remove the distance from it.</p>
+<p><img alt="3_2" src="../../../_images/3_2.png" /></p>
+</section>
+<section id="step-2-a-add-the-aura-component-to-the-class-skill">
+<h2>Step 2.A: Add the Aura component to the Class Skill<a class="headerlink" href="Auras.html#step-2-a-add-the-aura-component-to-the-class-skill" title="Link to this heading"></a></h2>
+<p>Auras are composed of three components - <strong>Aura component</strong>, <strong>Aura Range component</strong> and <strong>Aura Target component</strong>. All of them can be found within the <strong>Status Components</strong> menu, represented by the <strong>Sharp Sound Wave icon</strong>.</p>
+<p><img alt="3_3" src="../../../_images/3_3.png" /></p>
+<p>Once you add one of them, the other two will be added as well, and the same applies to removal.</p>
+<p><img alt="3_4" src="../../../_images/3_4.png" /></p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Component Name</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Aura</strong></p></td>
+<td><p>Defines the effect (<strong>Skill</strong>) that will be applied.</p></td>
+<td><p>Skill</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Aura Range</strong></p></td>
+<td><p>Defines the radius of the aura, in a rhombus shape.</p></td>
+<td><p>Integer</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Aura Target</strong></p></td>
+<td><p>Defines if the aura will target allies or enemies.</p></td>
+<td><p>Object - <strong>ally</strong>, <strong>enemy</strong> or <strong>unit</strong> (both ally and enemy)</p></td>
+</tr>
+</tbody>
+</table>
+<p>For the <strong>Aura component</strong>, we want to set it to the ID of the other skill we created. We also need to set the <strong>Aura Range component</strong> to the corresponding distance - 1 for <em>Hex</em> and 3 for <em>Bond</em> and <em>Focus</em>. At last, the Aura Target should take <em>enemy</em> for <em>Hex</em> and <em>ally</em> for <em>Bond</em>. Focus will be assigned once we get into its dedicated step.</p>
+<p><img alt="3_5" src="../../../_images/3_5.png" /></p>
+<p>The SKILL will be displayed as any other skill in the <strong>unit information window</strong>, meanwhile the effect will be displayed in the status section for every unit that is affected.</p>
+<p><img alt="3_6" src="../../../_images/3_6.png" /></p>
+</section>
+<section id="step-3-add-the-other-components-to-the-effect-skill">
+<h2>Step 3: Add the other components to the ‘Effect Skill’<a class="headerlink" href="Auras.html#step-3-add-the-other-components-to-the-effect-skill" title="Link to this heading"></a></h2>
+<section id="step-3-a-hex-add-the-hit-component">
+<h3>Step 3.A: [Hex] Add the Hit component<a class="headerlink" href="Auras.html#step-3-a-hex-add-the-hit-component" title="Link to this heading"></a></h3>
+<p>The end result should look like this:</p>
+<p><img alt="3_7" src="../../../_images/3_7.png" /></p>
+</section>
+<section id="step-3-b-bond-add-the-upkeep-damage-component">
+<h3>Step 3.B: [Bond] Add the Upkeep Damage component<a class="headerlink" href="Auras.html#step-3-b-bond-add-the-upkeep-damage-component" title="Link to this heading"></a></h3>
+<p>The <strong>Upkeep Damage component</strong> can also be found within the <strong>Status Component</strong> menu.</p>
+<p><img alt="3_8" src="../../../_images/3_8.png" /></p>
+<p><strong>Upkeep</strong> is the term used to refer to the beginning of the phase. For instance, a player unit’s upkeep is the beginning of the player phase, and an enemy unit’s upkeep is the beginning of the enemy phase.</p>
+<p>We can convert this component into a healing effect by assigning a negative value. The end result should look like this:</p>
+<p><img alt="3_9" src="../../../_images/3_9.png" /></p>
+</section>
+</section>
+<section id="step-2-b-3-c-focus-add-the-condition-component-to-the-class-skill">
+<h2>Step 2.B → 3.C: [Focus] Add the Condition component to the Class Skill<a class="headerlink" href="Auras.html#step-2-b-3-c-focus-add-the-condition-component-to-the-class-skill" title="Link to this heading"></a></h2>
+<p>Focus will be significantly different from the other two. We don’t actually need the <strong>Aura component</strong> for this skill, since this skill does not affect other units. Its only role here will be aesthetic, to show the range of the at which focus is gained.</p>
+<p>The only requirement to make it into a tracker is to set the <strong>Aura Target component</strong> value to <em>None</em>.</p>
+<p><img alt="3_10" src="../../../_images/3_10.png" /></p>
+<p>Ideally, we should also set the <strong>Aura component</strong> value to a ‘<em>generic empty skill</em>’ instead of a dedicated <em>‘Effect Skill’</em>, as it can be reused for any other range tracker.</p>
+<p><img alt="3_11" src="../../../_images/3_11.png" /></p>
+<p>For our condition, we need to use a method that comes with the <strong>Lex Talionis</strong> engine. The file <strong>unit_funcs</strong> (<em>Unit Functions</em>) contains some methods that expand on the <strong>unit</strong> object scope and/or interact with other objects outside it.</p>
+<p>To check how many enemy units are within the user radius, we can use the method <strong>unit_funcs.check_focus(unit, {integer})</strong>. This method can take two values, the first is a <strong>unit</strong> and the second should be an integer number greater than 0. The {integer} value is set to 3 by default if no value is assigned. Our line should be:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>unit_funcs.check_focus(unit, 3)
+</pre></div>
+</div>
+<p><strong>or</strong></p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>unit_funcs.check_focus(unit)
+</pre></div>
+</div>
+<p>Now we add our conditional operator to check whether there are exactly 0 ally units within a range of 3:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>unit_funcs.check_focus(unit, 3) == 0
+</pre></div>
+</div>
+<p>The end result should look like this:</p>
+<p><img alt="3_12" src="../../../_images/3_12.png" /></p>
+</section>
+<section id="step-4-test-the-stat-alterations-and-effects-in-game">
+<h2>Step 4: Test the stat alterations and effects in-game<a class="headerlink" href="Auras.html#step-4-test-the-stat-alterations-and-effects-in-game" title="Link to this heading"></a></h2>
+<p>For auras in particular, we need more units to be on our testing map. Set at least one ally and one enemy unit, then move the unit with the aura skill to check if the effects are applied when the ally or enemy is inside the aura radius.</p>
+<p><img alt="3_13" src="../../../_images/3_13.png" /></p>
+<p>The aura radius will also be displayed whenever you hover over any unit that carries an aura, even enemy units.</p>
+<p><img alt="3_14" src="../../../_images/3_14.png" /></p>
+</section>
+<section id="optional-step-add-the-hidden-component-to-the-effect-skill">
+<h2>Optional Step: Add the Hidden component to the ‘Effect Skill’<a class="headerlink" href="Auras.html#optional-step-add-the-hidden-component-to-the-effect-skill" title="Link to this heading"></a></h2>
+<p>By default, every skill added to an unit will be displayed as an inspectable element, either as a class skill or as a status, in the <strong>unit information window</strong>. We can disable that property by adding the <strong>Hidden component</strong>, found within the <strong>Attribute Components</strong> menu.</p>
+<p><img alt="3_15" src="../../../_images/3_15.png" /></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Tile-Passives.html" class="btn btn-neutral float-left" title="4. Tile Oriented Passives - Outdoor Fighter and Indoor Fighter" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Skill-Swap.html" class="btn btn-neutral float-right" title="[System] Skill Swap" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, rainlash.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

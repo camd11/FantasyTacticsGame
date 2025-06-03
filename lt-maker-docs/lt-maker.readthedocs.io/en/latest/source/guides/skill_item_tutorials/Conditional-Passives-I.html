@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>2. Conditional Passives I - Lucky Seven, Odd Rhythm, Wrath and Quick Burn &mdash; lt-maker  documentation</title>
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/theme_overrides.css?v=5f1687b9" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/jquery.js?v=5d32c60e"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/doctools.js?v=9a2dae69"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="https://lt-maker.readthedocs.io/en/latest/_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="4. Conditional Passives II - Warding Blow, Rainlashslayer" href="Conditional-Passives-II.html" />
+    <link rel="prev" title="1. Direct Passives - Hit +20, MAG +2 and Gamble" href="Direct-Passives.html" /> 
+<script async type="text/javascript" src="https://lt-maker.readthedocs.io/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="lt-maker" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/source/guides/skill_item_tutorials/Conditional-Passives-I.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            lt-maker
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../home.html">Lex Talionis Wiki</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Editor Guides:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../editors/Editors-Overview.html">Editors Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../editors/index.html">Editors</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Events:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../events/index.html">Events</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Guides:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Guides-Overview.html">Guides Overview</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Guides</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../setup_tutorials/index.html">Project Setup Tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../eventing_tutorials/index.html">Eventing Tutorials</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Skill and Item Tutorials</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="Creating-Items.html">0. Creating Items</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Direct-Passives.html">1. Direct Passives - Hit +20, MAG +2 and Gamble</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="Conditional-Passives-I.html#">2. Conditional Passives I - Lucky Seven, Odd Rhythm, Wrath and Quick Burn</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Conditional-Passives-I.html#required-editors-and-components">Required editors and components</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Conditional-Passives-I.html#skill-descriptions">Skill descriptions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Conditional-Passives-I.html#step-1-create-a-class-skill">Step 1: Create a Class Skill</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Conditional-Passives-I.html#step-2-a-add-the-combat-components">Step 2.A: Add the combat components</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Conditional-Passives-I.html#step-3-add-the-condition-component">Step 3: Add the Condition component</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Conditional-Passives-I.html#step-4-set-the-condition">Step 4: Set the condition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Conditional-Passives-I.html#step-2-b-4-d-quick-burn-add-the-dynamic-components">Step 2.B → 4.D: [Quick Burn] Add the Dynamic Components</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Conditional-Passives-I.html#step-5-test-the-stat-alterations-in-game">Step 5: Test the stat alterations in-game</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Conditional-Passives-II.html">4. Conditional Passives II - Warding Blow, Rainlashslayer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Conditional-Passives-III.html">3. Conditional Passives III - Tomefaire, Axe Breaker and Wyrmbane</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Tile-Passives.html">4. Tile Oriented Passives - Outdoor Fighter and Indoor Fighter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Auras.html">3. Auras - Hex, Bond and Focus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Skill-Swap.html">[System] Skill Swap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Creating-Capture.html">Capture skill</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Recruit-Skill.html">Recruit Skill</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Summoning.html">Summoning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Shelter-Skill.html">Shelter Skill</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Multi-Items.html">Multi Items</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Nihil.html">Nihil</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">appendix:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Text-Formatting-Commands.html">Text Formatting Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Item-Component-Reference.html">Item Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Skill-Component-Reference.html">Skill Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Special-Variables.html">Special Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Special-Tags.html">Special Tags</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/trigger-reference.html">Event Triggers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Random-Seed-Mechanics.html">Random Seed Mechanics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/FAQ.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Contributing_to_the_LTWiki.html">Contributing to the LTWiki</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/index.html">Code Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">lt-maker</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Guides</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Skill and Item Tutorials</a></li>
+      <li class="breadcrumb-item active">2. Conditional Passives I - Lucky Seven, Odd Rhythm, Wrath and Quick Burn</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://gitlab.com/rainlash/lt-maker/blob/master/docs/source/guides/skill_item_tutorials/Conditional-Passives-I.md" class="fa fa-gitlab"> Edit on GitLab</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <p><small><code class="docutils literal notranslate"><span class="pre">Originally</span> <span class="pre">written</span> <span class="pre">by</span> <span class="pre">Hillgarm.</span> <span class="pre">Last</span> <span class="pre">Updated</span> <span class="pre">2022-09-01</span></code></small></p>
+<section id="conditional-passives-i-lucky-seven-odd-rhythm-wrath-and-quick-burn">
+<h1>2. Conditional Passives I - Lucky Seven, Odd Rhythm, Wrath and Quick Burn<a class="headerlink" href="Conditional-Passives-I.html#conditional-passives-i-lucky-seven-odd-rhythm-wrath-and-quick-burn" title="Link to this heading"></a></h1>
+<p>Many skills have conditions to be activated, even the ones that have passive effects. In this guide we will take a look at the basic conditions for passive skills.</p>
+<p>As a reminder, <strong>Lex Talionis</strong> is developed in <strong>Python</strong>, so the conditions set by the user will also be subject to the same syntax.</p>
+<p><strong>INDEX</strong></p>
+<ul class="simple">
+<li><p><strong>Required editors and components</strong></p></li>
+<li><p><strong>Skill descriptions</strong></p></li>
+<li><p><strong>Step 1: Create a Class Skill</strong></p></li>
+<li><p><strong>Step 2.A: Add the combat components</strong></p></li>
+<li><p><strong>Step 3: Add the Condition component</strong></p></li>
+<li><p><strong>Step 4: Set the condition</strong></p>
+<ul>
+<li><p>Step 4.A: <strong>[Lucky Seven]</strong> Set a simple condition</p></li>
+<li><p>Step 4.B: <strong>[Odd Rhythm]</strong> Set a condition with an expression</p></li>
+<li><p>Step 4.C: <strong>[Wrath]</strong> Set a condition with an expression using properties</p></li>
+</ul>
+</li>
+<li><p><strong>Step 2.B → 4.D: [Quick Burn] Add the dynamic components</strong></p></li>
+<li><p><strong>Step 5: Test the stat alterations in-game</strong></p></li>
+</ul>
+<section id="required-editors-and-components">
+<h2>Required editors and components<a class="headerlink" href="Conditional-Passives-I.html#required-editors-and-components" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Skills:</p>
+<ul>
+<li><p>Attribute components - Class Skills</p></li>
+<li><p>Combat components - Avoid, Hit and Crit</p></li>
+<li><p><strong>Advanced components - Condition</strong></p></li>
+<li><p><strong>Dynamic components - Avoid and Accuracy</strong></p></li>
+</ul>
+</li>
+<li><p><strong>Objects, Attributes and Properties:</strong></p>
+<ul>
+<li><p><strong>game - turncounter</strong></p></li>
+<li><p><strong>unit - get_HP() and get_max_HP()</strong></p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="skill-descriptions">
+<h2>Skill descriptions<a class="headerlink" href="Conditional-Passives-I.html#skill-descriptions" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>Lucky Seven</strong> - Hit/Avoid +20 for the first 7 turns.</p></li>
+<li><p><strong>Odd Rhythm</strong> - Hit/Avoid +15 on odd numbered turns.</p></li>
+<li><p><strong>Wrath</strong> - Crit +20 while under half HP.</p></li>
+<li><p><strong>Quick Burn</strong> - Hit/Avoid +15, reduced by 1 at the end of every turn. Effect is disabled past turn 15.</p></li>
+</ul>
+</section>
+<section id="step-1-create-a-class-skill">
+<h2>Step 1: Create a Class Skill<a class="headerlink" href="Conditional-Passives-I.html#step-1-create-a-class-skill" title="Link to this heading"></a></h2>
+</section>
+<section id="step-2-a-add-the-combat-components">
+<h2>Step 2.A: Add the combat components<a class="headerlink" href="Conditional-Passives-I.html#step-2-a-add-the-combat-components" title="Link to this heading"></a></h2>
+</section>
+<section id="step-3-add-the-condition-component">
+<h2>Step 3: Add the Condition component<a class="headerlink" href="Conditional-Passives-I.html#step-3-add-the-condition-component" title="Link to this heading"></a></h2>
+<p>There are many conditional and trigger components, for this tutorial we will use the <strong>Condition component</strong> that can be found within the <strong>Advanced Components</strong> menu, represented by the <strong>Gear icon</strong>.</p>
+<p><img alt="2_1" src="../../../_images/2_1.png" /></p>
+<p>The <strong>Condition component</strong> requires a statement. If the condition is true, then the rest of the skill takes effect. If the condition is false, then the rest of the skill is disabled.</p>
+<p><img alt="2_2" src="../../../_images/2_2.png" /></p>
+<p>Here are some few illustrative examples:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Statement</p></th>
+<th class="head"><p>Output</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Orange is Fruit</p></td>
+<td><p>True</p></td>
+</tr>
+<tr class="row-odd"><td><p>Orange is not Fruit</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-even"><td><p>Orange is not Vegetable</p></td>
+<td><p>True</p></td>
+</tr>
+<tr class="row-odd"><td><p>4 + 2 == 6</p></td>
+<td><p>True</p></td>
+</tr>
+<tr class="row-even"><td><p>6 == 4 - 2</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-odd"><td><p>3 + 0 &gt; 1</p></td>
+<td><p>True</p></td>
+</tr>
+<tr class="row-even"><td><p>Orange is Angry</p></td>
+<td><p>Invalid, return</p></td>
+</tr>
+<tr class="row-odd"><td><p>Orange == Apple</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-even"><td><p>Orange &gt; Apple</p></td>
+<td><p>Invalid, return</p></td>
+</tr>
+</tbody>
+</table>
+<p>Very basic components like <strong>Class Skill</strong>, <strong>Negative</strong>, and <strong>Hidden</strong> won’t be affected by it. It is highly recommended to test if the <strong>Condition component</strong> is interacting with whichever other component you may use.</p>
+</section>
+<section id="step-4-set-the-condition">
+<h2>Step 4: Set the condition<a class="headerlink" href="Conditional-Passives-I.html#step-4-set-the-condition" title="Link to this heading"></a></h2>
+<p>Conditions can be done by doing a direct comparison or adding expressions to either, or even both, of the sides. The required elements will be dependent on the type of <em>variables</em> you need to access and which operations can be performed with them.</p>
+<p>Both <em>Lucky Seven</em> and <em>Odd Rhythm</em> will need the information regarding the current turn. This value is stored in the attribute <strong>turncount</strong>, found in the class <strong>game</strong>, and is updated automatically after the enemy phase.</p>
+<p>We can reference it with the following syntax:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>game.turncount
+</pre></div>
+</div>
+<section id="step-4-a-lucky-seven-set-a-simple-condition">
+<h3>Step 4.A: [Lucky Seven] Set a simple condition<a class="headerlink" href="Conditional-Passives-I.html#step-4-a-lucky-seven-set-a-simple-condition" title="Link to this heading"></a></h3>
+<p>Simple conditions only take the bare minimum for it to work, two elements and one operator. Some of these conditions may have multiple syntaxes.</p>
+<p>The syntax for <strong>conditions</strong> is:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{A} &lt;operator&gt; {B}
+</pre></div>
+</div>
+<p>Here’s the list of all <strong>operators</strong>:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Operator</p></th>
+<th class="head"><p>Explanation</p></th>
+<th class="head"><p>Notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>==</p></td>
+<td><p>A is equal to B</p></td>
+<td><p>-</p></td>
+</tr>
+<tr class="row-odd"><td><p>!=</p></td>
+<td><p>A is different from B</p></td>
+<td><p>-</p></td>
+</tr>
+<tr class="row-even"><td><p>&gt;</p></td>
+<td><p>A is greater than B</p></td>
+<td><p>Numeric only</p></td>
+</tr>
+<tr class="row-odd"><td><p>&lt;</p></td>
+<td><p>A is smaller than B</p></td>
+<td><p>Numeric only</p></td>
+</tr>
+<tr class="row-even"><td><p>&gt;=</p></td>
+<td><p>A is greater or equal to B</p></td>
+<td><p>Numeric only</p></td>
+</tr>
+<tr class="row-odd"><td><p>&lt;=</p></td>
+<td><p>A is smaller or equal to B</p></td>
+<td><p>Numeric only</p></td>
+</tr>
+<tr class="row-even"><td><p>is</p></td>
+<td><p>A is equal to B</p></td>
+<td><p>Object only</p></td>
+</tr>
+<tr class="row-odd"><td><p>is not</p></td>
+<td><p>A is different from B</p></td>
+<td><p>Object only</p></td>
+</tr>
+<tr class="row-even"><td><p>in</p></td>
+<td><p>A exist in B</p></td>
+<td><p>B must be an iterable</p></td>
+</tr>
+<tr class="row-odd"><td><p>not in</p></td>
+<td><p>A doesn’t exist in B</p></td>
+<td><p>B must be an iterable</p></td>
+</tr>
+</tbody>
+</table>
+<p>Now that we know all the syntaxes, it’s time to list all our pieces.</p>
+<ul class="simple">
+<li><p>The <strong>turn counter</strong> variable stores the number corresponding to the current turn.</p></li>
+<li><p><em>Lucky Seven</em> effect only applies for the <strong>first 7 turns</strong></p></li>
+<li><p>We need <strong>two elements</strong> to settle a condition</p></li>
+</ul>
+<p>These will converge in the following <strong>condition</strong>, where the skill will be active for the first 7 turns, and then disable afterwards:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>game.turncount &lt;= 7
+</pre></div>
+</div>
+<p>Our skill should end up like this:</p>
+<p><img alt="2_3" src="../../../_images/2_3.png" /></p>
+</section>
+<section id="step-4-b-odd-rhythm-set-a-condition-with-an-expression">
+<h3>Step 4.B: [Odd Rhythm] Set a condition with an expression<a class="headerlink" href="Conditional-Passives-I.html#step-4-b-odd-rhythm-set-a-condition-with-an-expression" title="Link to this heading"></a></h3>
+<p>We’ll expand from where we left at the previous step. The major change will be the <strong>expression</strong> used as a replacement for one of our elements, along a different <strong>operator</strong> that fits our requirements.</p>
+<p><strong>Expressions</strong> use operators similar to regular mathematics operators, with some few distinctions.</p>
+<p>The syntax for <strong>expressions</strong> is:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{A} &lt;operator&gt; {B}
+</pre></div>
+</div>
+<p>Here’s the list of all <strong>operators</strong>:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Operator</p></th>
+<th class="head"><p>Explanation</p></th>
+<th class="head"><p>Notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>+</p></td>
+<td><p>Addition</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>-</p></td>
+<td><p>Subtraction</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>*</p></td>
+<td><p>Multiplication</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>**</p></td>
+<td><p>Exponentiation</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p>/</p></td>
+<td><p>Division</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p>//</p></td>
+<td><p>Floor division</p></td>
+<td><p>Will return an integer, rounded down</p></td>
+</tr>
+<tr class="row-even"><td><p>%</p></td>
+<td><p>Modulus</p></td>
+<td><p>Returns the remainder of a division</p></td>
+</tr>
+</tbody>
+</table>
+<p>By definition, and odd number is a number that has a remainder when divided by 2. So our <strong>expression</strong>, and <strong>condition</strong>, should be:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>game.turncount % 2 == 1
+</pre></div>
+</div>
+<p>Our skill should end up like this:</p>
+<p><img alt="2_4" src="../../../_images/2_4.png" /></p>
+</section>
+<section id="step-4-c-wrath-set-a-condition-with-an-expression-using-properties">
+<h3>Step 4.C: [Wrath] Set a condition with an expression using properties<a class="headerlink" href="Conditional-Passives-I.html#step-4-c-wrath-set-a-condition-with-an-expression-using-properties" title="Link to this heading"></a></h3>
+<p>Again, we will expand from where we left at previous side step. This time, we’ll use expressions in both sides of our condition, and they will use two new variables.</p>
+<p>For <em>Wrath</em>, we’ll need to retrieve information regarding the skill holder. To do so, we need to call the <strong>unit</strong> object. This object is used to reference the holder/wielder/user of a <strong>skill</strong> or <strong>item</strong>. It takes the direct unit using it which may or not be the actual target of the <strong>skill</strong> or <strong>item</strong>.</p>
+<p>For <strong>current HP</strong> and <strong>maximum HP</strong> values, we need to call the respective methods from the <strong>unit</strong> object:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>get_hp()
+</pre></div>
+</div>
+<p>and</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>get_max_hp()
+</pre></div>
+</div>
+<p>With these in hand, we can finally set our <strong>condition</strong> as:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>unit.get_hp() &lt;= unit.get_max_hp() / 2
+</pre></div>
+</div>
+<p>Our skill should end up like this:</p>
+<p><img alt="2_5" src="../../../_images/2_5.png" /></p>
+</section>
+</section>
+<section id="step-2-b-4-d-quick-burn-add-the-dynamic-components">
+<h2>Step 2.B → 4.D: [Quick Burn] Add the Dynamic Components<a class="headerlink" href="Conditional-Passives-I.html#step-2-b-4-d-quick-burn-add-the-dynamic-components" title="Link to this heading"></a></h2>
+<p>At last, we will get into a new type of component that can handle a non-fixed value. Instead of a static number, it can take formulas or other attributes as its value, such as the user level, the number of allies within a given range or even an unrelated different stat. <strong>Dynamic Components</strong> can also carry <strong>condition</strong>, including <strong>expressions</strong>, within them, which allows it to provide two different outputs depending on the result.</p>
+<p>Dynamic battle components are represented by the <strong>Crossed Swords icon</strong>. The only exception is the <strong>Dynamic Damage Multiplier component</strong>, found within the <strong>Combat Components</strong>.</p>
+<p><img alt="2_6" src="../../../_images/2_6.png" /></p>
+<p>For <em>Quick Burn</em>, we will need to use the closest approximation available. These will be <strong>Dynamic Accuracy component</strong> as the <strong>Hit component</strong> replacement and <strong>Dynamic Avoid component</strong> as the <strong>Avoid component</strong> replacement.</p>
+<p><img alt="2_7" src="../../../_images/2_7.png" /></p>
+<p>We can then add our formula using the elements from steps 3 and 4.</p>
+<p>Since it should only matter for the first 15 turns, it will end up as something like:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>game.turncount &lt;= 15
+</pre></div>
+</div>
+<p>Since we are using <strong>Dynamic components</strong>, we can chose between using the <strong>Condition component</strong> or adding the condition to the <strong>Dynamic component</strong> itself.</p>
+<p>In this particular case, it can be a matter of preference but we will add it to the <strong>Dynamic component</strong> to expand our reach of possibilities.</p>
+<p>The syntax will be different from what we did so far as it needs the whole If-Else statement to work.</p>
+<p>It uses the following structure:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>{True value} if {condition} else {False value}
+</pre></div>
+</div>
+<p>Now we add our values and condition to get:</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>16 - game.turncount if game.turncount &lt;= 15 else 0
+</pre></div>
+</div>
+<p>or</p>
+<div class="highlight-none notranslate"><div class="highlight"><pre><span></span>max(0, 16 - game.turncount)
+</pre></div>
+</div>
+<p>Either one will work. Our skill should end up like this:</p>
+<p><img alt="2_8" src="../../../_images/2_8.png" /></p>
+<p>One important thing to know about <strong>Dynamic Components</strong> is that they won’t be displayed in on the <strong>unit information window</strong> when inspected. They are only added once the game calculates the attack. You need to declare an attack in order to see the stats change. There’s no need to execute it however.</p>
+<p><img alt="2_9" src="../../../_images/2_9.png" /></p>
+</section>
+<section id="step-5-test-the-stat-alterations-in-game">
+<h2>Step 5: Test the stat alterations in-game<a class="headerlink" href="Conditional-Passives-I.html#step-5-test-the-stat-alterations-in-game" title="Link to this heading"></a></h2>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Direct-Passives.html" class="btn btn-neutral float-left" title="1. Direct Passives - Hit +20, MAG +2 and Gamble" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Conditional-Passives-II.html" class="btn btn-neutral float-right" title="4. Conditional Passives II - Warding Blow, Rainlashslayer" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, rainlash.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

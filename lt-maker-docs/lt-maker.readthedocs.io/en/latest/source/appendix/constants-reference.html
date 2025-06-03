@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Constants &mdash; lt-maker  documentation</title>
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/theme_overrides.css?v=5f1687b9" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/jquery.js?v=5d32c60e"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/doctools.js?v=9a2dae69"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="https://lt-maker.readthedocs.io/en/latest/_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="prev" title="Useful Functions" href="query_funcs-reference.html" /> 
+<script async type="text/javascript" src="https://lt-maker.readthedocs.io/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="lt-maker" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/source/appendix/constants-reference.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            lt-maker
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../home.html">Lex Talionis Wiki</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Editor Guides:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../editors/Editors-Overview.html">Editors Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../editors/index.html">Editors</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Events:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../events/index.html">Events</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Guides:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guides/Guides-Overview.html">Guides Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/index.html">Guides</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">appendix:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Text-Formatting-Commands.html">Text Formatting Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Item-Component-Reference.html">Item Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Skill-Component-Reference.html">Skill Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Special-Variables.html">Special Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Special-Tags.html">Special Tags</a></li>
+<li class="toctree-l1"><a class="reference internal" href="trigger-reference.html">Event Triggers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Random-Seed-Mechanics.html">Random Seed Mechanics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Contributing_to_the_LTWiki.html">Contributing to the LTWiki</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Code Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="game-state-reference.html">GameState class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="level-reference.html">Level Object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit-reference.html">UnitObject class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="region-reference.html">RegionObject class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="region-reference.html#regionprefab-class">RegionPrefab class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="party-reference.html">Party Object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_funcs-reference.html">Unit Helper Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="item_funcs-reference.html">Item Helper Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="query_funcs-reference.html">Useful Functions</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="constants-reference.html#">Constants</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">lt-maker</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Code Documentation</a></li>
+      <li class="breadcrumb-item active">Constants</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://gitlab.com/rainlash/lt-maker/blob/master/docs/source/appendix/constants-reference.rst" class="fa fa-gitlab"> Edit on GitLab</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="constants">
+<h1>Constants<a class="headerlink" href="constants-reference.html#constants" title="Link to this heading"></a></h1>
+<div class="docutils container">
+<p><strong>Inventory</strong></p>
+<table class="docutils align-default">
+<thead>
+</thead>
+<tbody>
+<tr class="row-odd"><td><p><strong>Name</strong></p></td>
+<td><p><strong>Description</strong></p></td>
+<td><p><strong>Type</strong></p></td>
+<td><p><strong>Default Value</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>Num Items</p></td>
+<td><p>Max number of Items in inventory</p></td>
+<td><p>Int</p></td>
+<td><p>5</p></td>
+</tr>
+<tr class="row-odd"><td><p>Num Accessories</p></td>
+<td><p>Max number of Accessories in inventory</p></td>
+<td><p>Int</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-even"><td><p>Sell Modifier</p></td>
+<td><p>Value multiplier when selling an item</p></td>
+<td><p>Float</p></td>
+<td><p>0.5</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Major Features</strong></p>
+<table class="docutils align-default">
+<thead>
+</thead>
+<tbody>
+<tr class="row-odd"><td><p><strong>Name</strong></p></td>
+<td><p><strong>Description</strong></p></td>
+<td><p><strong>Type</strong></p></td>
+<td><p><strong>Default Value</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>Turnwheel</p></td>
+<td><p>Turnwheel</p></td>
+<td><p>Bool</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-odd"><td><p>Initiative</p></td>
+<td><p>Per Unit Initiative Order</p></td>
+<td><p>Bool</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-even"><td><p>Fatigue</p></td>
+<td><p>Fatigue</p></td>
+<td><p>Bool</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-odd"><td><p>Reset Fatigue</p></td>
+<td><p>Automatically reset fatigue to 0 for benched units</p></td>
+<td><p>Bool</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-even"><td><p>Minimap</p></td>
+<td><p>Enable Minimap</p></td>
+<td><p>Bool</p></td>
+<td><p>True</p></td>
+</tr>
+<tr class="row-odd"><td><p>Lead</p></td>
+<td><p>Global Leadership Stars</p></td>
+<td><p>Bool</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-even"><td><p>Bexp</p></td>
+<td><p>Bonus Experience</p></td>
+<td><p>Bool</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-odd"><td><p>Rd Bexp Lvl</p></td>
+<td><p>Always gain 3 stat-ups when using Bonus Exp.</p></td>
+<td><p>Bool</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-even"><td><p>Support</p></td>
+<td><p>Supports</p></td>
+<td><p>Bool</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-odd"><td><p>Overworld</p></td>
+<td><p>Overworld</p></td>
+<td><p>Bool</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-even"><td><p>Overworld Start</p></td>
+<td><p>Start in Overworld</p></td>
+<td><p>Bool</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-odd"><td><p>Unit Notes</p></td>
+<td><p>Unit Notes</p></td>
+<td><p>Bool</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-even"><td><p>Crit</p></td>
+<td><p>Allow Criticals</p></td>
+<td><p>Bool</p></td>
+<td><p>True</p></td>
+</tr>
+<tr class="row-odd"><td><p>Glancing Hit</p></td>
+<td><p>Chance (%) to score a glancing hit</p></td>
+<td><p>Int</p></td>
+<td><p>0</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Pair Up</strong></p>
+<table class="docutils align-default">
+<thead>
+</thead>
+<tbody>
+<tr class="row-odd"><td><p><strong>Name</strong></p></td>
+<td><p><strong>Description</strong></p></td>
+<td><p><strong>Type</strong></p></td>
+<td><p><strong>Default Value</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>Pairup</p></td>
+<td><p>Pair Up</p></td>
+<td><p>Bool</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-odd"><td><p>Limit Attack Stance</p></td>
+<td><p>Limit Attack Stance to first attack only</p></td>
+<td><p>Bool</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-even"><td><p>Attack Stance Only</p></td>
+<td><p>Only attack stance allowed</p></td>
+<td><p>Bool</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-odd"><td><p>Player Pairup Only</p></td>
+<td><p>Only player units can pairup</p></td>
+<td><p>Bool</p></td>
+<td><p>False</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Other</strong></p>
+<table class="docutils align-default">
+<thead>
+</thead>
+<tbody>
+<tr class="row-odd"><td><p><strong>Name</strong></p></td>
+<td><p><strong>Description</strong></p></td>
+<td><p><strong>Type</strong></p></td>
+<td><p><strong>Default Value</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>Reset Uses</p></td>
+<td><p>Reset uses on droppable items when acquired</p></td>
+<td><p>Bool</p></td>
+<td><p>True</p></td>
+</tr>
+<tr class="row-odd"><td><p>Long Range Storage</p></td>
+<td><p>Allow use of storage even when not near convoy</p></td>
+<td><p>Bool</p></td>
+<td><p>True</p></td>
+</tr>
+<tr class="row-even"><td><p>Allow Negative As</p></td>
+<td><p>Allow Attack Speed to be negative</p></td>
+<td><p>Bool</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-odd"><td><p>Trade</p></td>
+<td><p>Can trade items on map</p></td>
+<td><p>Bool</p></td>
+<td><p>True</p></td>
+</tr>
+<tr class="row-even"><td><p>Growth Info</p></td>
+<td><p>Can view unit growths in Info Menu</p></td>
+<td><p>Bool</p></td>
+<td><p>True</p></td>
+</tr>
+<tr class="row-odd"><td><p>Alt Growth Format</p></td>
+<td><p>Base growths include class growths in Info Menu</p></td>
+<td><p>Bool</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-even"><td><p>Backpropagate Difficulty Growths</p></td>
+<td><p>Apply difficulty bonus growths to past levels</p></td>
+<td><p>Bool</p></td>
+<td><p>True</p></td>
+</tr>
+<tr class="row-odd"><td><p>Traveler Time Decrement</p></td>
+<td><p>Timed skills applied to traveler units will decrease.</p></td>
+<td><p>Bool</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-even"><td><p>Def Double</p></td>
+<td><p>Defender can double counterattack</p></td>
+<td><p>Bool</p></td>
+<td><p>True</p></td>
+</tr>
+<tr class="row-odd"><td><p>Min Damage</p></td>
+<td><p>Min damage dealt by an attack</p></td>
+<td><p>Int</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-even"><td><p>Convoy On Death</p></td>
+<td><p>Items held by dead player units are sent to convoy</p></td>
+<td><p>Bool</p></td>
+<td><p>ConstantTag.OTHER</p></td>
+</tr>
+<tr class="row-odd"><td><p>Repair Shop</p></td>
+<td><p>Access the Repair Shop in prep and base</p></td>
+<td><p>Bool</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-even"><td><p>Sound Room In Codex</p></td>
+<td><p>Can access sound room from Codex menu in base</p></td>
+<td><p>Bool</p></td>
+<td><p>True</p></td>
+</tr>
+<tr class="row-odd"><td><p>Give And Take</p></td>
+<td><p>Units can give a unit after taking a unit</p></td>
+<td><p>Bool</p></td>
+<td><p>ConstantTag.OTHER</p></td>
+</tr>
+<tr class="row-even"><td><p>Combat Art Category</p></td>
+<td><p>Combat Arts get put in their own category in the menu</p></td>
+<td><p>Bool</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-odd"><td><p>Reset Mana</p></td>
+<td><p>Mana resets to full for units upon completion of the chapter</p></td>
+<td><p>Bool</p></td>
+<td><p>ConstantTag.OTHER</p></td>
+</tr>
+<tr class="row-even"><td><p>Double Splash</p></td>
+<td><p>When doubling, splash/aoe applied on second strike</p></td>
+<td><p>Bool</p></td>
+<td><p>ConstantTag.OTHER</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Line Of Sight</strong></p>
+<table class="docutils align-default">
+<thead>
+</thead>
+<tbody>
+<tr class="row-odd"><td><p><strong>Name</strong></p></td>
+<td><p><strong>Description</strong></p></td>
+<td><p><strong>Type</strong></p></td>
+<td><p><strong>Default Value</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>Line Of Sight</p></td>
+<td><p>Force items and abilities to obey line of sight rules</p></td>
+<td><p>Bool</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-odd"><td><p>Aura Los</p></td>
+<td><p>Force auras to obey line of sight rules</p></td>
+<td><p>Bool</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-even"><td><p>Fog Los</p></td>
+<td><p>Fog of War will also be affected by line of sight</p></td>
+<td><p>Bool</p></td>
+<td><p>False</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Ai</strong></p>
+<table class="docutils align-default">
+<thead>
+</thead>
+<tbody>
+<tr class="row-odd"><td><p><strong>Name</strong></p></td>
+<td><p><strong>Description</strong></p></td>
+<td><p><strong>Type</strong></p></td>
+<td><p><strong>Default Value</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>Ai Fog Of War</p></td>
+<td><p>AI will also be affected by Fog of War</p></td>
+<td><p>Bool</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-odd"><td><p>Attack Zero Hit</p></td>
+<td><p>Enemy AI attacks even if Hit is 0</p></td>
+<td><p>Bool</p></td>
+<td><p>True</p></td>
+</tr>
+<tr class="row-even"><td><p>Attack Zero Dam</p></td>
+<td><p>Enemy AI attacks even if Damage is 0</p></td>
+<td><p>Bool</p></td>
+<td><p>True</p></td>
+</tr>
+<tr class="row-odd"><td><p>Zero Move</p></td>
+<td><p>Show Movement as 0 if AI does not move</p></td>
+<td><p>Bool</p></td>
+<td><p>False</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Leveling</strong></p>
+<table class="docutils align-default">
+<thead>
+</thead>
+<tbody>
+<tr class="row-odd"><td><p><strong>Name</strong></p></td>
+<td><p><strong>Description</strong></p></td>
+<td><p><strong>Type</strong></p></td>
+<td><p><strong>Default Value</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>Unit Stats As Bonus</p></td>
+<td><p>Add class stats to non-generic base stats</p></td>
+<td><p>Bool</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-odd"><td><p>Enemy Leveling</p></td>
+<td><p>Method for autoleveling generic units</p></td>
+<td><p>Random, Fixed, Dynamic, Match</p></td>
+<td><p>Match</p></td>
+</tr>
+<tr class="row-even"><td><p>Auto Promote</p></td>
+<td><p>Units will promote automatically upon reaching max level</p></td>
+<td><p>Bool</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-odd"><td><p>Promote Skill Inheritance</p></td>
+<td><p>Promoted units will have the skills of their previous classes</p></td>
+<td><p>Bool</p></td>
+<td><p>True</p></td>
+</tr>
+<tr class="row-even"><td><p>Promote Level Reset</p></td>
+<td><p>Promotion resets level back to 1</p></td>
+<td><p>Bool</p></td>
+<td><p>True</p></td>
+</tr>
+<tr class="row-odd"><td><p>Class Change Level Reset</p></td>
+<td><p>Class Change resets level back to 1</p></td>
+<td><p>Bool</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-even"><td><p>Learn Skills On Reclass</p></td>
+<td><p>Learn the skills of your new class when you reclass</p></td>
+<td><p>Bool</p></td>
+<td><p>True</p></td>
+</tr>
+<tr class="row-odd"><td><p>Learn Skills On Promote</p></td>
+<td><p>Learn the skills of your new class when you promote</p></td>
+<td><p>Bool</p></td>
+<td><p>True</p></td>
+</tr>
+<tr class="row-even"><td><p>Negative Growths</p></td>
+<td><p>Negative growth rates will reduce stats</p></td>
+<td><p>Bool</p></td>
+<td><p>True</p></td>
+</tr>
+<tr class="row-odd"><td><p>Class Change Same Tier</p></td>
+<td><p>Class Change only between classes of the same tier</p></td>
+<td><p>Bool</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-even"><td><p>Generic Feats</p></td>
+<td><p>Generic units will be given random feats when appropriate</p></td>
+<td><p>Bool</p></td>
+<td><p>False</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Aesthetic</strong></p>
+<table class="docutils align-default">
+<thead>
+</thead>
+<tbody>
+<tr class="row-odd"><td><p><strong>Name</strong></p></td>
+<td><p><strong>Description</strong></p></td>
+<td><p><strong>Type</strong></p></td>
+<td><p><strong>Default Value</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>Boss Crit</p></td>
+<td><p>Final blow on boss will use critical animation</p></td>
+<td><p>Bool</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-odd"><td><p>Battle Platforms</p></td>
+<td><p>Use battle platforms when battle backgrounds are on</p></td>
+<td><p>Bool</p></td>
+<td><p>True</p></td>
+</tr>
+<tr class="row-even"><td><p>Roam Hide Hp</p></td>
+<td><p>Hide hp bars during free roam</p></td>
+<td><p>Bool</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-odd"><td><p>Roam Dir Pose</p></td>
+<td><p>Keep direction after moving in free roam.</p></td>
+<td><p>Bool</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-even"><td><p>Roam Dir Anim</p></td>
+<td><p>If “Keep Direction” enabled, stop pose will animate.</p></td>
+<td><p>Bool</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-odd"><td><p>Autogenerate Grey Map Sprites</p></td>
+<td><p>Automatically generate grey “wait” map sprites</p></td>
+<td><p>Bool</p></td>
+<td><p>True</p></td>
+</tr>
+<tr class="row-even"><td><p>Translucent Unit Sprite</p></td>
+<td><p>A phantom of current unit will appear at cursor’s position</p></td>
+<td><p>Bool</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-odd"><td><p>Talk Display</p></td>
+<td><p>If enough room, display who a unit can talk to in info menu</p></td>
+<td><p>Bool</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-even"><td><p>Show Abilities</p></td>
+<td><p>Display range of extra abilities</p></td>
+<td><p>Bool</p></td>
+<td><p>False</p></td>
+</tr>
+<tr class="row-odd"><td><p>Info Menu Blink</p></td>
+<td><p>Portraits will blink in info menu</p></td>
+<td><p>Bool</p></td>
+<td><p>False</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Title</strong></p>
+<table class="docutils align-default">
+<thead>
+</thead>
+<tbody>
+<tr class="row-odd"><td><p><strong>Name</strong></p></td>
+<td><p><strong>Description</strong></p></td>
+<td><p><strong>Type</strong></p></td>
+<td><p><strong>Default Value</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>Num Save Slots</p></td>
+<td><p>Number of save slots</p></td>
+<td><p>Positive Int</p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-odd"><td><p>Game Nid</p></td>
+<td><p>Game Unique Identifier</p></td>
+<td><p>Nid</p></td>
+<td><p>LT</p></td>
+</tr>
+<tr class="row-even"><td><p>Title</p></td>
+<td><p>Game Title</p></td>
+<td><p>Str</p></td>
+<td><p>Lex Talionis Game</p></td>
+</tr>
+<tr class="row-odd"><td><p>Title Particles</p></td>
+<td><p>Display particle effect on title screen</p></td>
+<td><p>Bool</p></td>
+<td><p>True</p></td>
+</tr>
+<tr class="row-even"><td><p>Title Sound</p></td>
+<td><p>Access sound room in Extras on title screen</p></td>
+<td><p>Bool</p></td>
+<td><p>True</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Music</strong></p>
+<table class="docutils align-default">
+<thead>
+</thead>
+<tbody>
+<tr class="row-odd"><td><p><strong>Name</strong></p></td>
+<td><p><strong>Description</strong></p></td>
+<td><p><strong>Type</strong></p></td>
+<td><p><strong>Default Value</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>Music Main</p></td>
+<td><p>Music to play on title screen</p></td>
+<td><p>Music</p></td>
+<td><p>None</p></td>
+</tr>
+<tr class="row-odd"><td><p>Music Promotion</p></td>
+<td><p>Music to play on promotion</p></td>
+<td><p>Music</p></td>
+<td><p>None</p></td>
+</tr>
+<tr class="row-even"><td><p>Music Class Change</p></td>
+<td><p>Music to play on class change</p></td>
+<td><p>Music</p></td>
+<td><p>None</p></td>
+</tr>
+<tr class="row-odd"><td><p>Music Game Over</p></td>
+<td><p>Music to play on game over</p></td>
+<td><p>Music</p></td>
+<td><p>Game Over</p></td>
+</tr>
+<tr class="row-even"><td><p>Restart Phase Music</p></td>
+<td><p>Restart phase music at beginning of new phase</p></td>
+<td><p>Bool</p></td>
+<td><p>True</p></td>
+</tr>
+<tr class="row-odd"><td><p>Restart Battle Music</p></td>
+<td><p>Restart battle music at beginning of each combat</p></td>
+<td><p>Bool</p></td>
+<td><p>True</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Wexp</strong></p>
+<table class="docutils align-default">
+<thead>
+</thead>
+<tbody>
+<tr class="row-odd"><td><p><strong>Name</strong></p></td>
+<td><p><strong>Description</strong></p></td>
+<td><p><strong>Type</strong></p></td>
+<td><p><strong>Default Value</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>Kill Wexp</p></td>
+<td><p>Kills give double weapon exp</p></td>
+<td><p>Bool</p></td>
+<td><p>True</p></td>
+</tr>
+<tr class="row-odd"><td><p>Double Wexp</p></td>
+<td><p>Each hit when doubling grants weapon exp</p></td>
+<td><p>Bool</p></td>
+<td><p>True</p></td>
+</tr>
+<tr class="row-even"><td><p>Miss Wexp</p></td>
+<td><p>Gain weapon exp even on miss</p></td>
+<td><p>Bool</p></td>
+<td><p>True</p></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Exp</strong></p>
+<table class="docutils align-default">
+<thead>
+</thead>
+<tbody>
+<tr class="row-odd"><td><p><strong>Name</strong></p></td>
+<td><p><strong>Description</strong></p></td>
+<td><p><strong>Type</strong></p></td>
+<td><p><strong>Default Value</strong></p></td>
+</tr>
+<tr class="row-even"><td><p>Exp Curve</p></td>
+<td><p>How linear the exp curve is; Higher = less linear</p></td>
+<td><p>Float</p></td>
+<td><p>0.035</p></td>
+</tr>
+<tr class="row-odd"><td><p>Exp Magnitude</p></td>
+<td><p>How much base exp is received for each interaction</p></td>
+<td><p>Float</p></td>
+<td><p>10</p></td>
+</tr>
+<tr class="row-even"><td><p>Exp Offset</p></td>
+<td><p>Tries to keep player character this many levels above enemies</p></td>
+<td><p>Int</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Gexp Max</p></td>
+<td><p>Maximum exp that can be earned from a hit</p></td>
+<td><p>Float</p></td>
+<td><p>30</p></td>
+</tr>
+<tr class="row-even"><td><p>Gexp Min</p></td>
+<td><p>Minimum exp that can be earned from a hit</p></td>
+<td><p>Float</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>Gexp Slope</p></td>
+<td><p>How sharply exp drops off</p></td>
+<td><p>Float</p></td>
+<td><p>0.25</p></td>
+</tr>
+<tr class="row-even"><td><p>Gexp Intercept</p></td>
+<td><p>Exp earned by two equal-level units fighting</p></td>
+<td><p>Float</p></td>
+<td><p>10</p></td>
+</tr>
+<tr class="row-odd"><td><p>Exp Formula</p></td>
+<td><p>Which exp formula to use</p></td>
+<td><p>standard, gompertz</p></td>
+<td><p>standard</p></td>
+</tr>
+<tr class="row-even"><td><p>Kill Multiplier</p></td>
+<td><p>Exp multiplier on kill</p></td>
+<td><p>Float</p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-odd"><td><p>Boss Bonus</p></td>
+<td><p>Extra exp for killing a boss</p></td>
+<td><p>Int</p></td>
+<td><p>40</p></td>
+</tr>
+<tr class="row-even"><td><p>Min Exp</p></td>
+<td><p>Min exp gained in combat</p></td>
+<td><p>Int</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-odd"><td><p>Default Exp</p></td>
+<td><p>Default exp gain</p></td>
+<td><p>Int</p></td>
+<td><p>11</p></td>
+</tr>
+<tr class="row-even"><td><p>Heal Curve</p></td>
+<td><p>How much to multiply the amount healed by to determine experience gain</p></td>
+<td><p>Float</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td><p>Heal Magnitude</p></td>
+<td><p>Added to total exp for healing</p></td>
+<td><p>Int</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-even"><td><p>Heal Offset</p></td>
+<td><p>Modifies expected healing</p></td>
+<td><p>Int</p></td>
+<td><p>11</p></td>
+</tr>
+<tr class="row-odd"><td><p>Heal Min</p></td>
+<td><p>Min exp gained for healing</p></td>
+<td><p>Int</p></td>
+<td><p>11</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="query_funcs-reference.html" class="btn btn-neutral float-left" title="Useful Functions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, rainlash.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

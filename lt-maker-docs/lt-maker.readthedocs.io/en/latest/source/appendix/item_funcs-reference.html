@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Item Helper Functions &mdash; lt-maker  documentation</title>
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/theme_overrides.css?v=5f1687b9" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/jquery.js?v=5d32c60e"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/doctools.js?v=9a2dae69"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="https://lt-maker.readthedocs.io/en/latest/_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Useful Functions" href="query_funcs-reference.html" />
+    <link rel="prev" title="Unit Helper Functions" href="unit_funcs-reference.html" /> 
+<script async type="text/javascript" src="https://lt-maker.readthedocs.io/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="lt-maker" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/source/appendix/item_funcs-reference.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            lt-maker
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../home.html">Lex Talionis Wiki</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Editor Guides:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../editors/Editors-Overview.html">Editors Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../editors/index.html">Editors</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Events:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../events/index.html">Events</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Guides:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guides/Guides-Overview.html">Guides Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/index.html">Guides</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">appendix:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Text-Formatting-Commands.html">Text Formatting Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Item-Component-Reference.html">Item Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Skill-Component-Reference.html">Skill Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Special-Variables.html">Special Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Special-Tags.html">Special Tags</a></li>
+<li class="toctree-l1"><a class="reference internal" href="trigger-reference.html">Event Triggers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Random-Seed-Mechanics.html">Random Seed Mechanics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Contributing_to_the_LTWiki.html">Contributing to the LTWiki</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Code Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="game-state-reference.html">GameState class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="level-reference.html">Level Object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit-reference.html">UnitObject class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="region-reference.html">RegionObject class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="region-reference.html#regionprefab-class">RegionPrefab class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="party-reference.html">Party Object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_funcs-reference.html">Unit Helper Functions</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="item_funcs-reference.html#">Item Helper Functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="item_funcs-reference.html#app.engine.item_funcs.is_magic"><code class="docutils literal notranslate"><span class="pre">is_magic()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="item_funcs-reference.html#app.engine.item_funcs.is_ranged"><code class="docutils literal notranslate"><span class="pre">is_ranged()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="item_funcs-reference.html#app.engine.item_funcs.is_heal"><code class="docutils literal notranslate"><span class="pre">is_heal()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="item_funcs-reference.html#app.engine.item_funcs.available"><code class="docutils literal notranslate"><span class="pre">available()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="item_funcs-reference.html#app.engine.item_funcs.has_magic"><code class="docutils literal notranslate"><span class="pre">has_magic()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="item_funcs-reference.html#app.engine.item_funcs.can_use"><code class="docutils literal notranslate"><span class="pre">can_use()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="item_funcs-reference.html#app.engine.item_funcs.can_repair"><code class="docutils literal notranslate"><span class="pre">can_repair()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="item_funcs-reference.html#app.engine.item_funcs.has_repair"><code class="docutils literal notranslate"><span class="pre">has_repair()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="item_funcs-reference.html#app.engine.item_funcs.buy_price"><code class="docutils literal notranslate"><span class="pre">buy_price()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="item_funcs-reference.html#app.engine.item_funcs.sell_price"><code class="docutils literal notranslate"><span class="pre">sell_price()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="item_funcs-reference.html#app.engine.item_funcs.repair_price"><code class="docutils literal notranslate"><span class="pre">repair_price()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="item_funcs-reference.html#app.engine.item_funcs.create_item"><code class="docutils literal notranslate"><span class="pre">create_item()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="item_funcs-reference.html#app.engine.item_funcs.get_all_items"><code class="docutils literal notranslate"><span class="pre">get_all_items()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="item_funcs-reference.html#app.engine.item_funcs.get_all_items_with_multiitems"><code class="docutils literal notranslate"><span class="pre">get_all_items_with_multiitems()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="item_funcs-reference.html#app.engine.item_funcs.get_all_items_and_abilities"><code class="docutils literal notranslate"><span class="pre">get_all_items_and_abilities()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="item_funcs-reference.html#app.engine.item_funcs.is_weapon_recursive"><code class="docutils literal notranslate"><span class="pre">is_weapon_recursive()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="item_funcs-reference.html#app.engine.item_funcs.is_spell_recursive"><code class="docutils literal notranslate"><span class="pre">is_spell_recursive()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="item_funcs-reference.html#app.engine.item_funcs.get_all_items_from_multi_item"><code class="docutils literal notranslate"><span class="pre">get_all_items_from_multi_item()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="item_funcs-reference.html#app.engine.item_funcs.get_all_tradeable_items"><code class="docutils literal notranslate"><span class="pre">get_all_tradeable_items()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="item_funcs-reference.html#app.engine.item_funcs.get_all_storeable_items"><code class="docutils literal notranslate"><span class="pre">get_all_storeable_items()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="item_funcs-reference.html#app.engine.item_funcs.get_num_items"><code class="docutils literal notranslate"><span class="pre">get_num_items()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="item_funcs-reference.html#app.engine.item_funcs.get_num_accessories"><code class="docutils literal notranslate"><span class="pre">get_num_accessories()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="item_funcs-reference.html#app.engine.item_funcs.too_much_in_inventory"><code class="docutils literal notranslate"><span class="pre">too_much_in_inventory()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="item_funcs-reference.html#app.engine.item_funcs.inventory_full"><code class="docutils literal notranslate"><span class="pre">inventory_full()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="item_funcs-reference.html#app.engine.item_funcs.get_range"><code class="docutils literal notranslate"><span class="pre">get_range()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="item_funcs-reference.html#app.engine.item_funcs.get_range_string"><code class="docutils literal notranslate"><span class="pre">get_range_string()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="item_funcs-reference.html#app.engine.item_funcs.get_max_range"><code class="docutils literal notranslate"><span class="pre">get_max_range()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="item_funcs-reference.html#app.engine.item_funcs.num_stacks"><code class="docutils literal notranslate"><span class="pre">num_stacks()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="item_funcs-reference.html#app.engine.item_funcs.can_be_used_in_base"><code class="docutils literal notranslate"><span class="pre">can_be_used_in_base()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="query_funcs-reference.html">Useful Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="constants-reference.html">Constants</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">lt-maker</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Code Documentation</a></li>
+      <li class="breadcrumb-item active">Item Helper Functions</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://gitlab.com/rainlash/lt-maker/blob/master/docs/source/appendix/item_funcs-reference.rst" class="fa fa-gitlab"> Edit on GitLab</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="item-helper-functions">
+<h1>Item Helper Functions<a class="headerlink" href="item_funcs-reference.html#item-helper-functions" title="Link to this heading"></a></h1>
+<p>You can access any of these functions from within an evaluable in an event with <cite>item_funcs.name_of_func(args)</cite></p>
+<dl class="py function" id="module-app.engine.item_funcs">
+<dt class="sig sig-object py" id="app.engine.item_funcs.is_magic">
+<span class="sig-prename descclassname"><span class="pre">app.engine.item_funcs.</span></span><span class="sig-name descname"><span class="pre">is_magic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ItemObject</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="item_funcs-reference.html#app.engine.item_funcs.is_magic" title="Link to this definition"></a></dt>
+<dd><p>Determines if an item is a magic item.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>unit</strong> (<a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><em>UnitObject</em></a>) – The unit attempting to use the item.</p></li>
+<li><p><strong>item</strong> (<em>ItemObject</em>) – The item to check.</p></li>
+<li><p><strong>distance</strong> (<em>int</em><em>, </em><em>optional</em>) – The distance at which the item is used. Defaults to 0.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Distance matters if the item is a magic_at_range type item, since it will only be magical while used at a range &gt; 1.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if the item is a magic item, False otherwise.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.engine.item_funcs.is_ranged">
+<span class="sig-prename descclassname"><span class="pre">app.engine.item_funcs.</span></span><span class="sig-name descname"><span class="pre">is_ranged</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ItemObject</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="item_funcs-reference.html#app.engine.item_funcs.is_ranged" title="Link to this definition"></a></dt>
+<dd><p>Determines if the item’s max range is greater than 1.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>unit</strong> (<a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><em>UnitObject</em></a>) – The unit attempting to use the item.</p></li>
+<li><p><strong>item</strong> (<em>ItemObject</em>) – The item to check.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the item is ranged, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.engine.item_funcs.is_heal">
+<span class="sig-prename descclassname"><span class="pre">app.engine.item_funcs.</span></span><span class="sig-name descname"><span class="pre">is_heal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ItemObject</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="item_funcs-reference.html#app.engine.item_funcs.is_heal" title="Link to this definition"></a></dt>
+<dd><p>Determines if an item is a healing item.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>unit</strong> (<a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><em>UnitObject</em></a>) – The unit attempting to use the item.</p></li>
+<li><p><strong>item</strong> (<em>ItemObject</em>) – The item to check.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the item is a healing item, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.engine.item_funcs.available">
+<span class="sig-prename descclassname"><span class="pre">app.engine.item_funcs.</span></span><span class="sig-name descname"><span class="pre">available</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ItemObject</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="item_funcs-reference.html#app.engine.item_funcs.available" title="Link to this definition"></a></dt>
+<dd><p>Checks if an item can be used by the unit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>unit</strong> (<a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><em>UnitObject</em></a>) – The unit attempting to use the item.</p></li>
+<li><p><strong>item</strong> (<em>ItemObject</em>) – The item to check.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the item can be used, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.engine.item_funcs.has_magic">
+<span class="sig-prename descclassname"><span class="pre">app.engine.item_funcs.</span></span><span class="sig-name descname"><span class="pre">has_magic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="item_funcs-reference.html#app.engine.item_funcs.has_magic" title="Link to this definition"></a></dt>
+<dd><p>Checks if the unit has any magic items.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>unit</strong> (<a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><em>UnitObject</em></a>) – The unit to check.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the unit has any magic items, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.engine.item_funcs.can_use">
+<span class="sig-prename descclassname"><span class="pre">app.engine.item_funcs.</span></span><span class="sig-name descname"><span class="pre">can_use</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ItemObject</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="item_funcs-reference.html#app.engine.item_funcs.can_use" title="Link to this definition"></a></dt>
+<dd><p>Checks if the unit can “use” a specific item, i.e., can the unit actually click Use in the item menu.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>unit</strong> (<a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><em>UnitObject</em></a>) – The unit attempting to use the item.</p></li>
+<li><p><strong>item</strong> (<em>ItemObject</em>) – The item to check.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the unit can “use” the item, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.engine.item_funcs.can_repair">
+<span class="sig-prename descclassname"><span class="pre">app.engine.item_funcs.</span></span><span class="sig-name descname"><span class="pre">can_repair</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ItemObject</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="item_funcs-reference.html#app.engine.item_funcs.can_repair" title="Link to this definition"></a></dt>
+<dd><p>Checks if the item can be repaired</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>unit</strong> (<a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><em>UnitObject</em></a>) – The unit holding the item.</p></li>
+<li><p><strong>item</strong> (<em>ItemObject</em>) – The item to repair.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the item can be repaired, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.engine.item_funcs.has_repair">
+<span class="sig-prename descclassname"><span class="pre">app.engine.item_funcs.</span></span><span class="sig-name descname"><span class="pre">has_repair</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="item_funcs-reference.html#app.engine.item_funcs.has_repair" title="Link to this definition"></a></dt>
+<dd><p>Checks if the unit has any items that can be repaired.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>unit</strong> (<a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><em>UnitObject</em></a>) – The unit to check.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the unit has items that can be repaired, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.engine.item_funcs.buy_price">
+<span class="sig-prename descclassname"><span class="pre">app.engine.item_funcs.</span></span><span class="sig-name descname"><span class="pre">buy_price</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ItemObject</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="item_funcs-reference.html#app.engine.item_funcs.buy_price" title="Link to this definition"></a></dt>
+<dd><p>Calculates how much an item costs to buy from a shop for the unit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>unit</strong> (<a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><em>UnitObject</em></a>) – The unit attempting to buy the item.</p></li>
+<li><p><strong>item</strong> (<em>ItemObject</em>) – The item to buy.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The buy price of the item.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.engine.item_funcs.sell_price">
+<span class="sig-prename descclassname"><span class="pre">app.engine.item_funcs.</span></span><span class="sig-name descname"><span class="pre">sell_price</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ItemObject</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="item_funcs-reference.html#app.engine.item_funcs.sell_price" title="Link to this definition"></a></dt>
+<dd><p>Calculates how much an item costs to sell to a shop for the unit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>unit</strong> (<a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><em>UnitObject</em></a>) – The unit attempting to sell the item.</p></li>
+<li><p><strong>item</strong> (<em>ItemObject</em>) – The item to sell.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The sell price of the item.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.engine.item_funcs.repair_price">
+<span class="sig-prename descclassname"><span class="pre">app.engine.item_funcs.</span></span><span class="sig-name descname"><span class="pre">repair_price</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ItemObject</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="item_funcs-reference.html#app.engine.item_funcs.repair_price" title="Link to this definition"></a></dt>
+<dd><p>Calculates how much an item costs to repair for the unit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>unit</strong> (<a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><em>UnitObject</em></a>) – The unit holding the item.</p></li>
+<li><p><strong>item</strong> (<em>ItemObject</em>) – The item to repair.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The repair price of the item.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.engine.item_funcs.create_item">
+<span class="sig-prename descclassname"><span class="pre">app.engine.item_funcs.</span></span><span class="sig-name descname"><span class="pre">create_item</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item_nid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">droppable</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ItemObject</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">assign_ownership</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ItemObject</span></span></span><a class="headerlink" href="item_funcs-reference.html#app.engine.item_funcs.create_item" title="Link to this definition"></a></dt>
+<dd><p>Creates an item and all of it’s subitems give the item’s nid
+If assign_ownership is True, informs the item which unit and which parent_item
+owns it. Sometimes set to False so that you can use an action like
+AddItemToMultiItem to set these properties instead.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.engine.item_funcs.get_all_items">
+<span class="sig-prename descclassname"><span class="pre">app.engine.item_funcs.</span></span><span class="sig-name descname"><span class="pre">get_all_items</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">ItemObject</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="item_funcs-reference.html#app.engine.item_funcs.get_all_items" title="Link to this definition"></a></dt>
+<dd><p>Retrieves all items possessed by a unit, including multi-items.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>unit</strong> (<a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><em>UnitObject</em></a>) – The unit whose items to retrieve.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of all items possessed by the unit, including multi-items.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[ItemObject]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.engine.item_funcs.get_all_items_with_multiitems">
+<span class="sig-prename descclassname"><span class="pre">app.engine.item_funcs.</span></span><span class="sig-name descname"><span class="pre">get_all_items_with_multiitems</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item_list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">ItemObject</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">ItemObject</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="item_funcs-reference.html#app.engine.item_funcs.get_all_items_with_multiitems" title="Link to this definition"></a></dt>
+<dd><p>Retrieves all items and their subitems, including multi-items, from a list of items.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>item_list</strong> (<em>List</em><em>[</em><em>ItemObject</em><em>]</em>) – The list of items to process.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of all items and their subitems, including multi-items.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[ItemObject]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.engine.item_funcs.get_all_items_and_abilities">
+<span class="sig-prename descclassname"><span class="pre">app.engine.item_funcs.</span></span><span class="sig-name descname"><span class="pre">get_all_items_and_abilities</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">ItemObject</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="item_funcs-reference.html#app.engine.item_funcs.get_all_items_and_abilities" title="Link to this definition"></a></dt>
+<dd><p>Retrieves all items and extra abilities possessed by a unit, including multi-items.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>unit</strong> (<a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><em>UnitObject</em></a>) – The unit whose items and abilities to retrieve.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of all items and extra abilities possessed by the unit, including multi-items.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[ItemObject]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.engine.item_funcs.is_weapon_recursive">
+<span class="sig-prename descclassname"><span class="pre">app.engine.item_funcs.</span></span><span class="sig-name descname"><span class="pre">is_weapon_recursive</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ItemObject</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="item_funcs-reference.html#app.engine.item_funcs.is_weapon_recursive" title="Link to this definition"></a></dt>
+<dd><p>Recursively checks if an item or any of its subitems is a weapon.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>unit</strong> (<a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><em>UnitObject</em></a>) – The unit holding the item.</p></li>
+<li><p><strong>item</strong> (<em>ItemObject</em>) – The item to check.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the item or any of its subitems is a weapon, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.engine.item_funcs.is_spell_recursive">
+<span class="sig-prename descclassname"><span class="pre">app.engine.item_funcs.</span></span><span class="sig-name descname"><span class="pre">is_spell_recursive</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ItemObject</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="item_funcs-reference.html#app.engine.item_funcs.is_spell_recursive" title="Link to this definition"></a></dt>
+<dd><p>Recursively checks if an item or any of its subitems is a spell.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>unit</strong> (<a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><em>UnitObject</em></a>) – The unit holding the item.</p></li>
+<li><p><strong>item</strong> (<em>ItemObject</em>) – The item to check.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the item or any of its subitems is a spell, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.engine.item_funcs.get_all_items_from_multi_item">
+<span class="sig-prename descclassname"><span class="pre">app.engine.item_funcs.</span></span><span class="sig-name descname"><span class="pre">get_all_items_from_multi_item</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ItemObject</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">ItemObject</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="item_funcs-reference.html#app.engine.item_funcs.get_all_items_from_multi_item" title="Link to this definition"></a></dt>
+<dd><p>Retrieves all items from a multi-item.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>unit</strong> (<a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><em>UnitObject</em></a>) – The unit to which the multi-item belongs.</p></li>
+<li><p><strong>item</strong> (<em>ItemObject</em>) – The multi-item to process.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of all items contained within the multi-item.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[ItemObject]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.engine.item_funcs.get_all_tradeable_items">
+<span class="sig-prename descclassname"><span class="pre">app.engine.item_funcs.</span></span><span class="sig-name descname"><span class="pre">get_all_tradeable_items</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">ItemObject</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="item_funcs-reference.html#app.engine.item_funcs.get_all_tradeable_items" title="Link to this definition"></a></dt>
+<dd><p>Retrieves all tradeable items possessed by a unit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>unit</strong> (<a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><em>UnitObject</em></a>) – The unit whose tradeable items to retrieve.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of all tradeable items possessed by the unit.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[ItemObject]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.engine.item_funcs.get_all_storeable_items">
+<span class="sig-prename descclassname"><span class="pre">app.engine.item_funcs.</span></span><span class="sig-name descname"><span class="pre">get_all_storeable_items</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">ItemObject</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="item_funcs-reference.html#app.engine.item_funcs.get_all_storeable_items" title="Link to this definition"></a></dt>
+<dd><p>Retrieves all storeable items possessed by a unit. Storeable items can be placed into the convoy</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>unit</strong> (<a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><em>UnitObject</em></a>) – The unit whose storeable items to retrieve.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of all storeable items possessed by the unit.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[ItemObject]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.engine.item_funcs.get_num_items">
+<span class="sig-prename descclassname"><span class="pre">app.engine.item_funcs.</span></span><span class="sig-name descname"><span class="pre">get_num_items</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="item_funcs-reference.html#app.engine.item_funcs.get_num_items" title="Link to this definition"></a></dt>
+<dd><p>Retrieves the maximum number of non-accessories a unit can carry.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>unit</strong> (<a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><em>UnitObject</em></a>) – The unit to query.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The maximum number of non-accessories the unit can carry.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.engine.item_funcs.get_num_accessories">
+<span class="sig-prename descclassname"><span class="pre">app.engine.item_funcs.</span></span><span class="sig-name descname"><span class="pre">get_num_accessories</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="item_funcs-reference.html#app.engine.item_funcs.get_num_accessories" title="Link to this definition"></a></dt>
+<dd><p>Retrieves the maximum number of accessories a unit can carry.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>unit</strong> (<a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><em>UnitObject</em></a>) – The unit to query.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The maximum number of accessories the unit can carry.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.engine.item_funcs.too_much_in_inventory">
+<span class="sig-prename descclassname"><span class="pre">app.engine.item_funcs.</span></span><span class="sig-name descname"><span class="pre">too_much_in_inventory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="item_funcs-reference.html#app.engine.item_funcs.too_much_in_inventory" title="Link to this definition"></a></dt>
+<dd><p>Checks if a unit is carrying too many items.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>unit</strong> (<a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><em>UnitObject</em></a>) – The unit to check.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the unit is carrying too many items, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.engine.item_funcs.inventory_full">
+<span class="sig-prename descclassname"><span class="pre">app.engine.item_funcs.</span></span><span class="sig-name descname"><span class="pre">inventory_full</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ItemObject</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="item_funcs-reference.html#app.engine.item_funcs.inventory_full" title="Link to this definition"></a></dt>
+<dd><p>Checks if a unit’s inventory is full.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>unit</strong> (<a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><em>UnitObject</em></a>) – The unit to check.</p></li>
+<li><p><strong>item</strong> (<em>ItemObject</em>) – The item to potentially add to the unit’s inventory.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the unit’s inventory is full, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.engine.item_funcs.get_range">
+<span class="sig-prename descclassname"><span class="pre">app.engine.item_funcs.</span></span><span class="sig-name descname"><span class="pre">get_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ItemObject</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="item_funcs-reference.html#app.engine.item_funcs.get_range" title="Link to this definition"></a></dt>
+<dd><p>Retrieves the range of an item for a unit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>unit</strong> (<a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><em>UnitObject</em></a>) – The unit attempting to use the item.</p></li>
+<li><p><strong>item</strong> (<em>ItemObject</em>) – The item whose range to retrieve.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A set containing the valid ranges of the item.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Set[int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.engine.item_funcs.get_range_string">
+<span class="sig-prename descclassname"><span class="pre">app.engine.item_funcs.</span></span><span class="sig-name descname"><span class="pre">get_range_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ItemObject</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="item_funcs-reference.html#app.engine.item_funcs.get_range_string" title="Link to this definition"></a></dt>
+<dd><p>Retrieves the range of an item as a string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>unit</strong> (<a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><em>UnitObject</em></a>) – The unit holding the item.</p></li>
+<li><p><strong>item</strong> (<em>ItemObject</em>) – The item whose range to retrieve.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A string representation of the item’s range.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.engine.item_funcs.get_max_range">
+<span class="sig-prename descclassname"><span class="pre">app.engine.item_funcs.</span></span><span class="sig-name descname"><span class="pre">get_max_range</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="item_funcs-reference.html#app.engine.item_funcs.get_max_range" title="Link to this definition"></a></dt>
+<dd><p>Retrieves the maximum range of all available items for a unit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>unit</strong> (<a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><em>UnitObject</em></a>) – The unit to query.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The maximum range of all available items for the unit.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.engine.item_funcs.num_stacks">
+<span class="sig-prename descclassname"><span class="pre">app.engine.item_funcs.</span></span><span class="sig-name descname"><span class="pre">num_stacks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">skill_nid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">NID</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="item_funcs-reference.html#app.engine.item_funcs.num_stacks" title="Link to this definition"></a></dt>
+<dd><p>Calculates the number of stacks of a specific skill possessed by a unit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>unit</strong> (<a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><em>UnitObject</em></a>) – The unit whose skills to count.</p></li>
+<li><p><strong>skill_nid</strong> (<em>NID</em>) – The NID of the skill to count.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The number of stacks of the specified skill possessed by the unit.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="app.engine.item_funcs.can_be_used_in_base">
+<span class="sig-prename descclassname"><span class="pre">app.engine.item_funcs.</span></span><span class="sig-name descname"><span class="pre">can_be_used_in_base</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">item</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ItemObject</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="item_funcs-reference.html#app.engine.item_funcs.can_be_used_in_base" title="Link to this definition"></a></dt>
+<dd><p>Checks if an item can be used by a unit in the base/prep.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>unit</strong> (<a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><em>UnitObject</em></a>) – The unit attempting to use the item.</p></li>
+<li><p><strong>item</strong> (<em>ItemObject</em>) – The item to check.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the item can be used by the unit in the base, False otherwise.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="unit_funcs-reference.html" class="btn btn-neutral float-left" title="Unit Helper Functions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="query_funcs-reference.html" class="btn btn-neutral float-right" title="Useful Functions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, rainlash.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

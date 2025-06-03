@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>A Simple Mercenary Shop Tutorial &mdash; lt-maker  documentation</title>
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/theme_overrides.css?v=5f1687b9" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/jquery.js?v=5d32c60e"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/doctools.js?v=9a2dae69"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="https://lt-maker.readthedocs.io/en/latest/_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Promotion Personal Skills Tutorial" href="Promotion-Personal-Skills.html" />
+    <link rel="prev" title="Achievements" href="Achievements.html" /> 
+<script async type="text/javascript" src="https://lt-maker.readthedocs.io/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="lt-maker" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/source/guides/eventing_tutorials/A-Simple-Mercenary-Shop.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            lt-maker
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../home.html">Lex Talionis Wiki</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Editor Guides:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../editors/Editors-Overview.html">Editors Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../editors/index.html">Editors</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Events:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../events/index.html">Events</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Guides:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Guides-Overview.html">Guides Overview</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Guides</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../setup_tutorials/index.html">Project Setup Tutorials</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Eventing Tutorials</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="Arena.html">GBA-style Arena</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Breakable-Walls.html">Breakable Walls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Death-Quotes.html">Universal Death Quotes Tutorial</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Choices-and-Battle-Saves.html">Choices and Battle Saves</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Unit-Groups.html">Unit Groups</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Achievements.html">Achievements</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="A-Simple-Mercenary-Shop.html#">A Simple Mercenary Shop Tutorial</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="A-Simple-Mercenary-Shop.html#problem-description">Problem Description</a></li>
+<li class="toctree-l4"><a class="reference internal" href="A-Simple-Mercenary-Shop.html#solution">Solution</a></li>
+<li class="toctree-l4"><a class="reference internal" href="A-Simple-Mercenary-Shop.html#raw-data">Raw Data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="A-Simple-Mercenary-Shop.html#choice-eventing">Choice Eventing</a></li>
+<li class="toctree-l4"><a class="reference internal" href="A-Simple-Mercenary-Shop.html#textboxes-for-fun-and-profit">Textboxes for fun and profit</a></li>
+<li class="toctree-l4"><a class="reference internal" href="A-Simple-Mercenary-Shop.html#events-from-choices">Events from Choices</a></li>
+<li class="toctree-l4"><a class="reference internal" href="A-Simple-Mercenary-Shop.html#reference">Reference</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Promotion-Personal-Skills.html">Promotion Personal Skills Tutorial</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../skill_item_tutorials/index.html">Skill and Item Tutorials</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">appendix:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Text-Formatting-Commands.html">Text Formatting Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Item-Component-Reference.html">Item Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Skill-Component-Reference.html">Skill Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Special-Variables.html">Special Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Special-Tags.html">Special Tags</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/trigger-reference.html">Event Triggers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Random-Seed-Mechanics.html">Random Seed Mechanics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/FAQ.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Contributing_to_the_LTWiki.html">Contributing to the LTWiki</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/index.html">Code Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">lt-maker</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Guides</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Eventing Tutorials</a></li>
+      <li class="breadcrumb-item active">A Simple Mercenary Shop Tutorial</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://gitlab.com/rainlash/lt-maker/blob/master/docs/source/guides/eventing_tutorials/A-Simple-Mercenary-Shop.md" class="fa fa-gitlab"> Edit on GitLab</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="a-simple-mercenary-shop-tutorial">
+<span id="mercenary-shop"></span><h1>A Simple Mercenary Shop Tutorial<a class="headerlink" href="A-Simple-Mercenary-Shop.html#a-simple-mercenary-shop-tutorial" title="Link to this heading"></a></h1>
+<section id="problem-description">
+<h2>Problem Description<a class="headerlink" href="A-Simple-Mercenary-Shop.html#problem-description" title="Link to this heading"></a></h2>
+<p>I’d like to make a <a class="reference internal" href="Choices-and-Battle-Saves.html"><span class="doc std std-doc">choice menu</span></a> shop that, say, hires mercenaries for the map to make it easier.</p>
+</section>
+<section id="solution">
+<h2>Solution<a class="headerlink" href="A-Simple-Mercenary-Shop.html#solution" title="Link to this heading"></a></h2>
+<p>First, please read the choice menu documentation linked above for a basic intro to choices. Having done that, this should be more or less straightforward.</p>
+</section>
+<section id="raw-data">
+<h2>Raw Data<a class="headerlink" href="A-Simple-Mercenary-Shop.html#raw-data" title="Link to this heading"></a></h2>
+<p>First, let’s do some preparatory work. We need some data first; what classes should we use? What will their names be? How much will they cost? Do we want flavor text? How about all of the above?</p>
+<p>In the <strong>Raw Data Editor</strong>, you can write all of these down:</p>
+<p><img alt="image" src="../../../_images/MercShopRawData.png" /></p>
+<p>This is just data; it doesn’t do anything, but we can access it elsewhere.</p>
+</section>
+<section id="choice-eventing">
+<h2>Choice Eventing<a class="headerlink" href="A-Simple-Mercenary-Shop.html#choice-eventing" title="Link to this heading"></a></h2>
+<p>Such as in a choice command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">choice</span><span class="p">;</span><span class="n">MercenaryHireChoice</span><span class="p">;</span><span class="n">Hire</span> <span class="n">a</span> <span class="n">merc</span><span class="p">;{</span><span class="nb">eval</span><span class="p">:</span><span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">merc</span><span class="o">.</span><span class="n">nid</span> <span class="o">+</span> <span class="s1">&#39;|&#39;</span> <span class="o">+</span> <span class="n">merc</span><span class="o">.</span><span class="n">Name</span> <span class="k">for</span> <span class="n">merc</span> <span class="ow">in</span> <span class="n">game</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="s1">&#39;MercenaryHiringList&#39;</span><span class="p">)])};;</span><span class="n">vert</span><span class="p">;</span><span class="n">top_left</span><span class="p">;;;</span><span class="n">persist</span>
+</pre></div>
+</div>
+<p>Let’s break this command down.</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">choice</span></code> - this is a <code class="docutils literal notranslate"><span class="pre">choice</span></code> command. You know what those are, right?</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MercenaryHireChoice</span></code> - this is the nid we’re going to save our choice in.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">Hire</span> <span class="pre">a</span> <span class="pre">merc</span></code> - this is the flavor text for the choice.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">{eval:','.join([merc.nid</span> <span class="pre">+</span> <span class="pre">'|'</span> <span class="pre">+</span> <span class="pre">merc.Name</span> <span class="pre">for</span> <span class="pre">merc</span> <span class="pre">in</span> <span class="pre">game.get_data('MercenaryHiringList')])}</span></code> - now we’re getting somewhere. This is an eval that</p>
+<ol class="arabic simple">
+<li><p>Gets all of the data we write in the raw data editor ( <code class="docutils literal notranslate"><span class="pre">game.get_data('MercenaryHiringList')</span></code>)</p></li>
+<li><p>Iterates through it, and makes a list that looks like this: <code class="docutils literal notranslate"><span class="pre">['merc1|Sellsword',</span> <span class="pre">'merc2|Traveller']</span></code></p>
+<ol class="arabic simple">
+<li><p>Note the bar notation - that means that the first thing ( <code class="docutils literal notranslate"><span class="pre">merc1,</span> <span class="pre">merc2</span></code> ) is going to be what’s saved in the choice, while the second ( <code class="docutils literal notranslate"><span class="pre">Sellsword,</span> <span class="pre">Traveller</span></code>) is what’s going to be displayed.</p></li>
+</ol>
+</li>
+<li><p>Turns the list into a string ( <code class="docutils literal notranslate"><span class="pre">','.join()</span></code>) that the choice command understands: <code class="docutils literal notranslate"><span class="pre">merc1|Sellsword,merc2|Traveller</span></code></p></li>
+</ol>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">vert;top_left</span></code> - puts makes the menu vertical and puts in the top-left, since having all choices in the center doesn’t look that great, and</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">persist</span></code> - makes sure that we can make multiple choices on this menu, like a true shop.</p></li>
+</ol>
+<p>Let’s add a command to make sure we’ve written it all correctly (remember, press ‘B’ to end the choice, since otherwise it won’t, because it’s persistent):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">choice</span><span class="p">;</span><span class="n">MercenaryHireChoice</span><span class="p">;</span><span class="n">Hire</span> <span class="n">a</span> <span class="n">merc</span><span class="p">;{</span><span class="nb">eval</span><span class="p">:</span><span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">merc</span><span class="o">.</span><span class="n">nid</span> <span class="o">+</span> <span class="s1">&#39;|&#39;</span> <span class="o">+</span> <span class="n">merc</span><span class="o">.</span><span class="n">Name</span> <span class="k">for</span> <span class="n">merc</span> <span class="ow">in</span> <span class="n">game</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="s1">&#39;MercenaryHiringList&#39;</span><span class="p">)])};;</span><span class="n">vert</span><span class="p">;</span><span class="n">top_left</span><span class="p">;;;</span><span class="n">persist</span>
+<span class="n">speak</span><span class="p">;</span><span class="n">Eirika</span><span class="p">;</span><span class="n">you</span> <span class="n">chose</span> <span class="p">{</span><span class="n">var</span><span class="p">:</span><span class="n">MercenaryHireChoice</span><span class="p">}</span>
+</pre></div>
+</div>
+<p><img alt="merc1" src="../../../_images/merc1.gif" /></p>
+<p>Looking good. But wait; don’t we want to know the price and our current money, to see if we can afford it?</p>
+</section>
+<section id="textboxes-for-fun-and-profit">
+<h2>Textboxes for fun and profit<a class="headerlink" href="A-Simple-Mercenary-Shop.html#textboxes-for-fun-and-profit" title="Link to this heading"></a></h2>
+<p>We can use textboxes, in concert with <code class="docutils literal notranslate"><span class="pre">expression</span></code> data types and the data we wrote earlier, to display these things. Be warned: this one’s a doozy.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">textbox</span><span class="p">;</span><span class="n">MercDescription</span><span class="p">;</span><span class="s2">&quot;{d:MercenaryHiringList.{v:MercenaryHireChoice_choice_hover}.Description}|Cost: {d:MercenaryHiringList.{v:MercenaryHireChoice_choice_hover}.Cost}&quot;</span><span class="p">;</span><span class="n">bottom</span><span class="p">;;</span><span class="mi">3</span><span class="p">;;</span><span class="mf">0.25</span><span class="p">;;;</span><span class="n">menu_bg_parchment</span><span class="p">;</span><span class="n">expression</span>
+</pre></div>
+</div>
+<p>You probably want to copy that into a different text editor to look at while reading this tutorial, since it’s <em>long</em>.</p>
+<p>Let’s break it down:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">textbox</span></code> - this is just the command.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">MercDescription</span></code> - this is the nid of our table. We’ll need to use it to delete the table after we’re done with it.</p></li>
+<li><p>And, the star of the show, the expression. Don’t be afraid; it’s long, but it’s simple.</p></li>
+</ol>
+<p><code class="docutils literal notranslate"><span class="pre">&quot;{d:MercenaryHiringList.{v:MercenaryHireChoice_choice_hover}.Description}|Cost:</span> <span class="pre">{d:MercenaryHiringList.{v:MercenaryHireChoice_choice_hover}.Cost}&quot;</span></code></p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;{d:MercenaryHiringList.{v:MercenaryHireChoice_choice_hover}.Description}&quot;</span></code> - This is a method of querying raw data. Using the <code class="docutils literal notranslate"><span class="pre">{d:}</span></code> command (which is shorthand for <code class="docutils literal notranslate"><span class="pre">{data:}</span></code>), you can fetch the MercenaryHiringList directly.</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">{v:MercenaryHireChoice_choice_hover}</span></code> - We can actually access the currently-hovered choice in the choice with nid <code class="docutils literal notranslate"><span class="pre">MercenaryHireChoice</span></code> by attaching <code class="docutils literal notranslate"><span class="pre">_choice_hover</span></code> to it. Therefore, this resolves to either <code class="docutils literal notranslate"><span class="pre">merc1</span></code>, or <code class="docutils literal notranslate"><span class="pre">merc2</span></code>, depending on what’ being hovered at the moment.</p></li>
+<li><p>Once you know that, it’s simple to see what this code block is doing. It resolves to something like, <code class="docutils literal notranslate"><span class="pre">MercenaryHiringList.merc1.Description</span></code>, which is a way to get the <code class="docutils literal notranslate"><span class="pre">merc1</span></code> row in our raw data, and getting their Description and Cost fields.</p></li>
+<li><p>Finally, we wrap the whole thing in quotations <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code>, since this is meant to be a Python string. We use a newline separator, <code class="docutils literal notranslate"><span class="pre">|</span></code>, to separate the cost and description lines. This should be familiar - you use this for <code class="docutils literal notranslate"><span class="pre">speak</span></code> commands, as well.</p></li>
+</ol>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bottom</span></code> - puts the textbox in the bottom. Don’t want the screen to get too busy, right?</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">3</span></code> - this indicates the number of lines of the textbox.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">0.25</span></code> - this is the TextSpeed. We want the text to display much faster, so we use a low value.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">menu_bg_parchment</span></code> - let’s use a different menu bg for this one for aesthetics. (This actually looks uglier, but I needed to work bgs into a tutorial somehow).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">expression</span></code>. This is the other star of the show. This tells the engine to constantly eval the expression that we wrote above, and update the table with it.</p></li>
+</ol>
+<p>Let’s look at our work:</p>
+<p><img alt="merc2" src="../../../_images/merc2.gif" /></p>
+<p>Great success!</p>
+<p>We also need a gold display. This one is easy in comparison:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">textbox</span><span class="p">;</span><span class="n">GoldDisplay</span><span class="p">;</span><span class="n">game</span><span class="o">.</span><span class="n">get_money</span><span class="p">();</span><span class="n">top_right</span><span class="p">;</span><span class="mi">60</span><span class="p">;;;;;;</span><span class="n">funds_display</span><span class="p">;</span><span class="n">expression</span>
+</pre></div>
+</div>
+<p>Another breakdown:</p>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">GoldDisplay</span></code> is the NID of the table.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">game.get_money()</span></code> is yet another <code class="docutils literal notranslate"><span class="pre">expression</span></code> that returns the current gold.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">60</span></code> is a field we haven’t used before, the <code class="docutils literal notranslate"><span class="pre">Width</span></code> field - this determines the width of the field. I use this here mostly for aesthetics; otherwise, the gold number won’t be aligned with the left side of the bg.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">funds_display</span></code> is the name of the stunning BG you’re about to see. Unlike the others, this one is a sprite, not a menu_bg, and therefore doesn’t automatically resize itself. Choices and textboxes support both bgs. You may find that your bg is off-center. You’ll simply have to make new sprites that are offset correctly.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">expression</span></code> - what would we do without you?</p></li>
+</ol>
+<p><img alt="image" src="../../../_images/MercShopMenu.png" /></p>
+<p>Lookin’ good!</p>
+<p>Finally, let’s tie it all together.</p>
+</section>
+<section id="events-from-choices">
+<h2>Events from Choices<a class="headerlink" href="A-Simple-Mercenary-Shop.html#events-from-choices" title="Link to this heading"></a></h2>
+<p>Let’s write a confirmation dialogue event, similar to the one in the existing choice tutorial. Let’s name this <strong>ConfirmMercHire.</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>choice;Confirmation;You sure?;Yes,No
+if;&#39;{v:Confirmation}&#39; == &#39;Yes&#39;
+    alert;You hired {d:MercenaryHiringList.{v:MercenaryHireChoice}.Name}.
+    give_money;{eval: -1 * int({d:MercenaryHiringList.{v:MercenaryHireChoice}.Cost})};no_banner
+    make_generic;;{d:MercenaryHiringList.{v:MercenaryHireChoice}.Class};{e:game.get_unit(&#39;Eirika&#39;).level};player;;Soldier (Soldier);;Iron Sword (Iron Sword)
+    add_unit;{created_unit};(3, 4);immediate;closest
+    speak;;{d:MercenaryHiringList.{v:MercenaryHireChoice}.Class}
+end
+
+</pre></div>
+</div>
+<p>All of this should be straightforward; display an alert, remove gold via the same expression that we’ve been using this entire time to read from our raw data; make a generic unit with the klass from that same raw data, and then add the newly <code class="docutils literal notranslate"><span class="pre">{created_unit}</span></code> (the output of <code class="docutils literal notranslate"><span class="pre">make_generic</span></code>) to the map.</p>
+<p>Let’s add this to the main command:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">choice</span><span class="p">;</span><span class="n">MercenaryHireChoice</span><span class="p">;</span><span class="n">Hire</span> <span class="n">a</span> <span class="n">merc</span><span class="p">;{</span><span class="nb">eval</span><span class="p">:</span><span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">merc</span><span class="o">.</span><span class="n">nid</span> <span class="o">+</span> <span class="s1">&#39;|&#39;</span> <span class="o">+</span> <span class="n">merc</span><span class="o">.</span><span class="n">Name</span> <span class="k">for</span> <span class="n">merc</span> <span class="ow">in</span> <span class="n">game</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="s1">&#39;MercenaryHiringList&#39;</span><span class="p">)])};;</span><span class="n">vert</span><span class="p">;</span><span class="n">top_left</span><span class="p">;;</span><span class="n">ConfirmMercHire</span><span class="p">;</span><span class="n">persist</span>
+</pre></div>
+</div>
+<p>Let’s see what happens now:</p>
+<p><img alt="merc5" src="../../../_images/merc5.gif" /></p>
+<p>And we’re done.</p>
+</section>
+<section id="reference">
+<h2>Reference<a class="headerlink" href="A-Simple-Mercenary-Shop.html#reference" title="Link to this heading"></a></h2>
+<p>Here is the code used in this tutorial:</p>
+<p><strong>Main code:</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">textbox</span><span class="p">;</span><span class="n">MercDescription</span><span class="p">;</span><span class="s2">&quot;{d:MercenaryHiringList.{v:MercenaryHireChoice_choice_hover}.Description}|Cost: {d:MercenaryHiringList.{v:MercenaryHireChoice_choice_hover}.Cost}&quot;</span><span class="p">;</span><span class="n">bottom</span><span class="p">;;</span><span class="mi">3</span><span class="p">;;</span><span class="mf">0.25</span><span class="p">;;;</span><span class="n">menu_bg_parchment</span> <span class="p">(</span><span class="n">menu_bg_parchment</span><span class="p">);</span><span class="n">expression</span>
+<span class="n">textbox</span><span class="p">;</span><span class="n">GoldDisplay</span><span class="p">;</span><span class="n">game</span><span class="o">.</span><span class="n">get_money</span><span class="p">();</span><span class="n">top_right</span><span class="p">;</span><span class="mi">60</span><span class="p">;;;;;;</span><span class="n">funds_display</span> <span class="p">(</span><span class="n">funds_display</span><span class="p">);</span><span class="n">expression</span>
+<span class="n">choice</span><span class="p">;</span><span class="n">MercenaryHireChoice</span><span class="p">;</span><span class="n">Hire</span> <span class="n">a</span> <span class="n">merc</span><span class="p">;{</span><span class="nb">eval</span><span class="p">:</span><span class="s1">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">merc</span><span class="o">.</span><span class="n">nid</span> <span class="o">+</span> <span class="s1">&#39;|&#39;</span> <span class="o">+</span> <span class="n">merc</span><span class="o">.</span><span class="n">Name</span> <span class="k">for</span> <span class="n">merc</span> <span class="ow">in</span> <span class="n">game</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="s1">&#39;MercenaryHiringList&#39;</span><span class="p">)])};;</span><span class="n">vert</span><span class="p">;</span><span class="n">top_left</span><span class="p">;;</span><span class="n">ConfirmMercHire</span><span class="p">;</span><span class="n">persist</span>
+<span class="n">remove_table</span><span class="p">;</span><span class="n">MercDescription</span>
+<span class="n">remove_table</span><span class="p">;</span><span class="n">GoldDisplay</span>
+</pre></div>
+</div>
+<p><strong>Confirmation dialogue code (ConfirmMercHire):</strong></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>choice;Confirmation;You sure?;Yes,No
+if;&#39;{v:Confirmation}&#39; == &#39;Yes&#39;
+    alert;You hired {d:MercenaryHiringList.{v:MercenaryHireChoice}.Name}.
+    give_money;{eval: -1 * int({d:MercenaryHiringList.{v:MercenaryHireChoice}.Cost})};no_banner
+    make_generic;;{d:MercenaryHiringList.{v:MercenaryHireChoice}.Class};{e:game.get_unit(&#39;Eirika&#39;).level};player;;Soldier (Soldier);;Iron Sword
+    add_unit;{created_unit};(3, 4);immediate;closest
+end
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Achievements.html" class="btn btn-neutral float-left" title="Achievements" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Promotion-Personal-Skills.html" class="btn btn-neutral float-right" title="Promotion Personal Skills Tutorial" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, rainlash.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

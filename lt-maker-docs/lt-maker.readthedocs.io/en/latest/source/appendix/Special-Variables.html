@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Special Variables &mdash; lt-maker  documentation</title>
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/theme_overrides.css?v=5f1687b9" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/jquery.js?v=5d32c60e"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/doctools.js?v=9a2dae69"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="https://lt-maker.readthedocs.io/en/latest/_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Special Tags" href="Special-Tags.html" />
+    <link rel="prev" title="Skill Component Dictionary" href="Skill-Component-Reference.html" /> 
+<script async type="text/javascript" src="https://lt-maker.readthedocs.io/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="lt-maker" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/source/appendix/Special-Variables.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            lt-maker
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../home.html">Lex Talionis Wiki</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Editor Guides:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../editors/Editors-Overview.html">Editors Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../editors/index.html">Editors</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Events:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../events/index.html">Events</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Guides:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guides/Guides-Overview.html">Guides Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/index.html">Guides</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">appendix:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Text-Formatting-Commands.html">Text Formatting Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Item-Component-Reference.html">Item Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Skill-Component-Reference.html">Skill Component Dictionary</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="Special-Variables.html#">Special Variables</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Special-Variables.html#format">Format:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Special-Variables.html#game-variables">Game Variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Special-Variables.html#level-variables">Level Variables</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Special-Tags.html">Special Tags</a></li>
+<li class="toctree-l1"><a class="reference internal" href="trigger-reference.html">Event Triggers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Random-Seed-Mechanics.html">Random Seed Mechanics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Contributing_to_the_LTWiki.html">Contributing to the LTWiki</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">Code Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">lt-maker</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Special Variables</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://gitlab.com/rainlash/lt-maker/blob/master/docs/source/appendix/Special-Variables.md" class="fa fa-gitlab"> Edit on GitLab</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="special-variables">
+<span id="id1"></span><h1>Special Variables<a class="headerlink" href="Special-Variables.html#special-variables" title="Link to this heading"></a></h1>
+<p><em>Last updated v0.1</em></p>
+<p>This appendix details every special game or level variable used by the <strong>Lex Talionis</strong> engine. Normally, game and level variables are utilized by the game designer in events, but a special set of names are reserved by the engine for specific uses.</p>
+<section id="format">
+<h2>Format:<a class="headerlink" href="Special-Variables.html#format" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">command</span></code> <strong>type</strong> description</p>
+</section>
+<section id="game-variables">
+<h2>Game Variables<a class="headerlink" href="Special-Variables.html#game-variables" title="Link to this heading"></a></h2>
+<p>These variables are saved for the entirety of a given game.</p>
+<p><code class="docutils literal notranslate"><span class="pre">_random_seed</span></code> <strong>int</strong> The random seed used by the engine for combat RNG and random level ups. Automatically set to a number between 0 and 1023 upon creation of a “New Game”.</p>
+<p><code class="docutils literal notranslate"><span class="pre">_next_level_nid</span></code> <strong>Level (str)</strong> Internal to the engine; Do not modify yourself.</p>
+<p><code class="docutils literal notranslate"><span class="pre">_goto_level</span></code> <strong>Level (str)</strong> Set to the nid of the level you want to go to next. If not set, the engine will just move to the following level like normal. Reset upon the start of the next level. If set to <code class="docutils literal notranslate"><span class="pre">_force_quit</span></code>, game will end (and return to title screen) instead of moving to the following level.</p>
+<p><code class="docutils literal notranslate"><span class="pre">_go_to_overworld_nid</span></code> <strong>Overworld (str)</strong> Set to the nid of the overworld to go to next.</p>
+<p><code class="docutils literal notranslate"><span class="pre">_current_turnwheel_uses</span></code> <strong>int</strong> The number of uses of the turnwheel left in this level. Defaults to -1, which represents infinite uses. Automatically reset to <code class="docutils literal notranslate"><span class="pre">_max_turnwheel_uses</span></code> upon winning the a level.</p>
+<p><code class="docutils literal notranslate"><span class="pre">_max_turnwheel_uses</span></code> <strong>int</strong> The maximum number of uses of the turnwheel the player has access to. Defaults to -1, which represents infinite uses.</p>
+<p><code class="docutils literal notranslate"><span class="pre">_convoy</span></code> <strong>bool</strong> Set to True to give the player access to the convoy.</p>
+<p><code class="docutils literal notranslate"><span class="pre">_turnwheel</span></code> <strong>bool</strong> Set to True to give the player access to the turnwheel.</p>
+<p><code class="docutils literal notranslate"><span class="pre">_supports</span></code> <strong>bool</strong> Set to True to give the player access to support conversations and have characters gain support points.</p>
+<p><code class="docutils literal notranslate"><span class="pre">_minimap</span></code> <strong>bool</strong> Set to True to give the player access to the minimap. Set to False to remove player access of the minimap. Defaults to True.</p>
+<p><code class="docutils literal notranslate"><span class="pre">_fatigue</span></code> <strong>int</strong> Set to 0 to turn off fatigue. Set to 1 to have fatigue prevent unit from participating in a chapter. Set to 2 to have fatigue apply a Fatigued status when fatigue &gt;= max fatigue and Rested when fatigue &lt; max fatigue. Set to 3 to have the engine track fatigue but not do anything with it by default.</p>
+<p><code class="docutils literal notranslate"><span class="pre">_repair_shop</span></code> <strong>bool</strong> Set to True to give the player access to the repair shop in the prep and base menus.</p>
+<p><code class="docutils literal notranslate"><span class="pre">_prep_market</span></code> <strong>bool</strong> Set to True to give the player access to the market in the prep screen.</p>
+<p><code class="docutils literal notranslate"><span class="pre">_prep_music</span></code> <strong>Music (str)</strong> Set this music as the background music in the prep screen. You don’t normally need to set this manually, since it is set by the <code class="docutils literal notranslate"><span class="pre">prep</span></code> event command.</p>
+<p><code class="docutils literal notranslate"><span class="pre">_base_market</span></code> <strong>bool</strong> Set to True to give the player access to the market in the base screen.</p>
+<p><code class="docutils literal notranslate"><span class="pre">_base_bg_name</span></code> <strong>Panorama (str)</strong> Load this panorama as the background in the base screen. You don’t normally need to set this
+manually, since it is set by the <code class="docutils literal notranslate"><span class="pre">base</span></code> event command.</p>
+<p><code class="docutils literal notranslate"><span class="pre">_base_music</span></code> <strong>Music (str)</strong> Set this music as the background music in the base screen. You don’t normally need to set this manually, since it is set by the <code class="docutils literal notranslate"><span class="pre">base</span></code> event command.</p>
+<p><code class="docutils literal notranslate"><span class="pre">_bexp_menu_music</span></code> <strong>Music (str)</strong> Set this music as the background music in the bonus experience menu. You don’t normally need to set this manually, since it is set by the <code class="docutils literal notranslate"><span class="pre">open_bexp_menu</span></code> event command.</p>
+<p><code class="docutils literal notranslate"><span class="pre">_phase_music_fade_ms</span></code> <strong>int</strong> Number of milliseconds the phase music will take to fade in. Defaults to 400 ms.</p>
+<p><code class="docutils literal notranslate"><span class="pre">_last_choice</span></code> <strong>str</strong> Always holds the most recent choice made by the player from using the <code class="docutils literal notranslate"><span class="pre">choice</span></code> event command.</p>
+</section>
+<section id="level-variables">
+<h2>Level Variables<a class="headerlink" href="Special-Variables.html#level-variables" title="Link to this heading"></a></h2>
+<p>These variables are cleared after winning or losing the current level</p>
+<p><code class="docutils literal notranslate"><span class="pre">_win_game</span></code> <strong>bool</strong> Set to True to force the player to win the current level. Best practice is to just call the <code class="docutils literal notranslate"><span class="pre">win_game</span></code> event command, which does the same thing.</p>
+<p><code class="docutils literal notranslate"><span class="pre">_lose_game</span></code> <strong>bool</strong> Set to True to force the player to lose the current level. Best practice is to just call the <code class="docutils literal notranslate"><span class="pre">lose_game</span></code> event command, which does the same things.</p>
+<p><code class="docutils literal notranslate"><span class="pre">_level_end_triggered</span></code> <strong>bool</strong> Internal to the engine; Do not modify yourself.</p>
+<p><code class="docutils literal notranslate"><span class="pre">_fog_of_war</span></code> <strong>bool</strong> Determines whether there is a base fog of war</p>
+<p><code class="docutils literal notranslate"><span class="pre">_fog_of_war_type</span></code> <strong>int</strong> Defaults to 0
+0 - Entire map is revealed, but enemy positions are masked (like in the GBA)
+1 - Entire map is revealed, but enemy positions are masked (like in the GBA) (yes, these are identical for past compatibility reasons)
+2 - Both map and enemy positions are masked (like in Thracia)
+3 - Both map and enemy positions are masked at the start, but the map stays revealed after exploring it</p>
+<p><code class="docutils literal notranslate"><span class="pre">_fog_of_war_radius</span></code> <strong>int</strong> The distance that player units will be able to see in the fog. Defaults to 0.</p>
+<p><code class="docutils literal notranslate"><span class="pre">_ai_fog_of_war_radius</span></code> <strong>int</strong> The distance that ai units will be able to see in the fog. If not set, defaults to <code class="docutils literal notranslate"><span class="pre">_fog_of_war_radius</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">_other_fog_of_war_radius</span></code> <strong>int</strong> The distance that other team units will be able to see in the fog. If not set, defaults to <code class="docutils literal notranslate"><span class="pre">_ai_fog_of_war_radius</span></code></p>
+<p><code class="docutils literal notranslate"><span class="pre">_prep_pick</span></code> <strong>bool</strong> Set to True to enable “Pick Units” in the prep screen. You don’t normally need to set this manually, since it is set by the <code class="docutils literal notranslate"><span class="pre">prep</span></code> event command.</p>
+<p><code class="docutils literal notranslate"><span class="pre">_prep_slots</span></code> <strong>int</strong> Limits the number of units that can be brought to the level. Used only when you want to limit the number of player units to a number lower than the number of Formation tiles. Defaults to None.</p>
+<p><code class="docutils literal notranslate"><span class="pre">_minimum_deployment</span></code> <strong>int</strong> Must deploy at least this many units during the Prep Screen. If you have less units that this, must deploy all units.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Skill-Component-Reference.html" class="btn btn-neutral float-left" title="Skill Component Dictionary" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Special-Tags.html" class="btn btn-neutral float-right" title="Special Tags" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, rainlash.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

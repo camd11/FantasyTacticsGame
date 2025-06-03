@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Conditionals &mdash; lt-maker  documentation</title>
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/theme_overrides.css?v=5f1687b9" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/jquery.js?v=5d32c60e"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/doctools.js?v=9a2dae69"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="https://lt-maker.readthedocs.io/en/latest/_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Region Events" href="Region-Events.html" />
+    <link rel="prev" title="Event Overview" href="Event-Overview.html" /> 
+<script async type="text/javascript" src="https://lt-maker.readthedocs.io/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="lt-maker" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/source/events/Conditionals.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            lt-maker
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../home.html">Lex Talionis Wiki</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Editor Guides:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../editors/Editors-Overview.html">Editors Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../editors/index.html">Editors</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Events:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Events</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="Event-Overview.html">Event Overview</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="Conditionals.html#">Conditionals</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Conditionals.html#event-objects">Event Objects</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Conditionals.html#boolean-operators">Boolean Operators</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Conditionals.html#list-comprehensions">List comprehensions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Conditionals.html#common-tasks">Common Tasks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Conditionals.html#full-useful-attributes-of-global-game-object">Full Useful Attributes of Global Game Object</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Region-Events.html">Region Events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Miscellaneous-Events.html">Miscellaneous Events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Test-Events.html">Test Events</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Python-Eventing.html">Python Eventing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Event-Debugger.html">Debugger</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Guides:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guides/Guides-Overview.html">Guides Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/index.html">Guides</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">appendix:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/Text-Formatting-Commands.html">Text Formatting Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/Item-Component-Reference.html">Item Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/Skill-Component-Reference.html">Skill Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/Special-Variables.html">Special Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/Special-Tags.html">Special Tags</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/trigger-reference.html">Event Triggers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/Random-Seed-Mechanics.html">Random Seed Mechanics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/FAQ.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/Contributing_to_the_LTWiki.html">Contributing to the LTWiki</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendix/index.html">Code Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">lt-maker</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Events</a></li>
+      <li class="breadcrumb-item active">Conditionals</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://gitlab.com/rainlash/lt-maker/blob/master/docs/source/events/Conditionals.md" class="fa fa-gitlab"> Edit on GitLab</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="conditionals">
+<h1>Conditionals<a class="headerlink" href="Conditionals.html#conditionals" title="Link to this heading"></a></h1>
+<p><em>last updated v0.1</em></p>
+<p>Conditionals are perhaps the most powerful tool in the game designer’s arsenal. They allow you to further refine how and when certain events will occur, abilities can be activated, or items will behave, and much more.</p>
+<p><img alt="ExampleConditionalInSkillEditor" src="../../_images/SkillEditorConditional.png" /></p>
+<p>All conditionals in the <strong>Lex Talionis</strong> engine are evaluated at runtime by a Python evaluation engine. As such, this means that all conditionals must be written in valid Python. At first this may seem to have a strict learning curve, but the minimal Python needed to write conditionals can be learned easily. Having the conditionals evaluated by a real programming language like Python enables them to be much more powerful and expressive than would otherwise be possible.</p>
+<section id="event-objects">
+<h2>Event Objects<a class="headerlink" href="Conditionals.html#event-objects" title="Link to this heading"></a></h2>
+<p><img alt="ExampleConditionalInEventEditor" src="../../_images/EventEditorCondition.png" /></p>
+<p>While checking the conditionals for an event (whether that be through the Condition box in the left pane of the Event Editor or through an if statement), the event may expose certain variables with extra information.</p>
+<p>For instance, in a <code class="docutils literal notranslate"><span class="pre">unit_wait</span></code> event, the <code class="docutils literal notranslate"><span class="pre">unit</span></code> variable is set to the unit that just waited. You could use the <code class="docutils literal notranslate"><span class="pre">unit</span></code> variable now to figure out which unit just waited, their team, their class, etc.</p>
+<p>Each event exposes a different set of variables. Check out the Trigger List section in the <a class="reference internal" href="Event-Overview.html#eventoverview"><span class="std std-ref">Event-Overview</span></a> for more information.</p>
+</section>
+<section id="boolean-operators">
+<h2>Boolean Operators<a class="headerlink" href="Conditionals.html#boolean-operators" title="Link to this heading"></a></h2>
+<p>You can use <code class="docutils literal notranslate"><span class="pre">and</span></code>, <code class="docutils literal notranslate"><span class="pre">or</span></code>, and <code class="docutils literal notranslate"><span class="pre">not</span></code> to combine or invert conditionals as necessary. <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">and</span> <span class="pre">B</span></code> returns true if both A and B return true individually, otherwise it will return false. <code class="docutils literal notranslate"><span class="pre">A</span> <span class="pre">or</span> <span class="pre">B</span></code> returns true if either A or B return true individually, otherwise it will return false. <code class="docutils literal notranslate"><span class="pre">not</span> <span class="pre">A</span></code> will return true if A is false, and vice versa.</p>
+<p>You can do this more than once in a chain. For instance <code class="docutils literal notranslate"><span class="pre">(A</span> <span class="pre">and</span> <span class="pre">B)</span> <span class="pre">or</span> <span class="pre">C</span></code> will check whether A and B are both true, or C is true. If C is false and it is not the case that both A and B are true, then it will return false.</p>
+<p>Example Use Case: <code class="docutils literal notranslate"><span class="pre">game.check_alive('Joel')</span> <span class="pre">and</span> <span class="pre">game.check_alive('Nia')</span></code> to check that both characters are alive before giving them a post-battle conversation.</p>
+</section>
+<section id="list-comprehensions">
+<h2>List comprehensions<a class="headerlink" href="Conditionals.html#list-comprehensions" title="Link to this heading"></a></h2>
+<p>Sometimes you need to check the values for several objects at once. You can do this using Python <em>list comprehensions</em>.</p>
+<p>Python list comprehensions follow a simple syntax:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">obj</span> <span class="k">for</span> <span class="n">obj</span> <span class="ow">in</span> <span class="n">list_of_objects</span> <span class="k">if</span> <span class="n">obj</span> <span class="ow">is</span> <span class="n">good</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>This python statement will return a list of the objects in <code class="docutils literal notranslate"><span class="pre">list_of_objects</span></code>, filtered by the if statement at the end, so it will only return the <em>good</em> objects. The if statement at the end is optional and can be left off if you don’t want to filter the object list by any property.</p>
+<p>Example (Checks if a unit has a skill with nid <code class="docutils literal notranslate"><span class="pre">Vantage</span></code>)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>if;&#39;Vantage&#39; in [skill.nid for skill in unit.skills]
+    s;{unit};I have vantage!
+end
+</pre></div>
+</div>
+<p>You can use the python functions <code class="docutils literal notranslate"><span class="pre">len</span></code>, <code class="docutils literal notranslate"><span class="pre">sum</span></code>, <code class="docutils literal notranslate"><span class="pre">any</span></code>, and <code class="docutils literal notranslate"><span class="pre">all</span></code> on list comprehensions.</p>
+<p>Example (Checks if any player unit’s y position on the map is less than 13)</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">any</span><span class="p">(</span><span class="n">unit</span><span class="o">.</span><span class="n">position</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">13</span> <span class="k">for</span> <span class="n">unit</span> <span class="ow">in</span> <span class="n">game</span><span class="o">.</span><span class="n">units</span> <span class="k">if</span> <span class="n">unit</span><span class="o">.</span><span class="n">position</span> <span class="ow">and</span> <span class="n">unit</span><span class="o">.</span><span class="n">team</span> <span class="o">==</span> <span class="s1">&#39;player&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">len</span></code> returns the number of objects in the list</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sum</span></code> adds up the objects in the list</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">any</span></code> returns <strong>True</strong> if at least one object in the list is true</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">all</span></code> returns <strong>True</strong> if <em>all</em> objects in the list are true</p></li>
+</ol>
+<blockquote>
+<div><p>If you are new to Python, you can always find out more information by just googling it. These days, Python is a common first-time coders language, so there is lots of information out there for beginners.</p>
+</div></blockquote>
+</section>
+<section id="common-tasks">
+<h2>Common Tasks<a class="headerlink" href="Conditionals.html#common-tasks" title="Link to this heading"></a></h2>
+<p>Check if the unit referenced by the event is a specific unit
+<code class="docutils literal notranslate"><span class="pre">unit.nid</span> <span class="pre">==</span> <span class="pre">'Eirika'</span></code></p>
+<p>Check if the region referenced by the event is a specific region
+<code class="docutils literal notranslate"><span class="pre">region.nid</span> <span class="pre">==</span> <span class="pre">'House1'</span></code></p>
+<p>Check if a unit is alive
+<code class="docutils literal notranslate"><span class="pre">game.check_alive(unit.nid)</span></code> or <code class="docutils literal notranslate"><span class="pre">game.check_alive('Eirika')</span></code></p>
+<p>Check if a unit is dead
+<code class="docutils literal notranslate"><span class="pre">game.check_dead(unit.nid)</span></code> or <code class="docutils literal notranslate"><span class="pre">game.check_dead('Eirika')</span></code></p>
+<p>Check the team of a unit
+<code class="docutils literal notranslate"><span class="pre">unit.team</span> <span class="pre">==</span> <span class="pre">'player'</span></code> or <code class="docutils literal notranslate"><span class="pre">game.get_unit('Eirika').team</span> <span class="pre">==</span> <span class="pre">'player'</span></code></p>
+<p>Check the current turn number
+<code class="docutils literal notranslate"><span class="pre">game.turncount</span> <span class="pre">==</span> <span class="pre">5</span></code> or <code class="docutils literal notranslate"><span class="pre">game.turncount</span> <span class="pre">&lt;</span> <span class="pre">10</span></code></p>
+<p>Check nid of terrain at a position
+<code class="docutils literal notranslate"><span class="pre">game.tilemap.get_terrain(position)</span></code></p>
+<p>Check name of terrain at a position
+<code class="docutils literal notranslate"><span class="pre">DB.terrain.get(game.tilemap.get_terrain(position)).name</span></code></p>
+<p>Check the current mode
+<code class="docutils literal notranslate"><span class="pre">game.mode.nid</span> <span class="pre">==</span> <span class="pre">'Lunatic'</span></code></p>
+<p>Check the current level
+<code class="docutils literal notranslate"><span class="pre">game.level.nid</span> <span class="pre">==</span> <span class="pre">'Chapter</span> <span class="pre">2'</span></code></p>
+<p>Access a level variable
+<code class="docutils literal notranslate"><span class="pre">game.level_vars['num_switches']</span></code></p>
+<p>Access a game variable
+<code class="docutils literal notranslate"><span class="pre">game.game_vars['villages_saved']</span></code></p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span><span class="p">;</span><span class="n">game</span><span class="o">.</span><span class="n">game_vars</span><span class="p">[</span><span class="s1">&#39;villages_saved&#39;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">3</span>
+    <span class="n">give_item</span><span class="p">;</span><span class="n">Protagonist</span><span class="p">;</span><span class="n">Reward</span>
+<span class="n">end</span>
+</pre></div>
+</div>
+<p>Variables can also be accessed in the following manner in the event editor:
+<code class="docutils literal notranslate"><span class="pre">{v:num_switches}</span></code> or <code class="docutils literal notranslate"><span class="pre">{v:villages_saved}</span></code></p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span><span class="p">;{</span><span class="n">v</span><span class="p">:</span><span class="n">villages_saved</span><span class="p">}</span> <span class="o">&gt;=</span> <span class="mi">3</span>
+    <span class="n">give_item</span><span class="p">;</span><span class="n">Protagonist</span><span class="p">;</span><span class="n">Reward</span>
+<span class="n">end</span>
+</pre></div>
+</div>
+<p>Check if a boss unit has already given their fight quote for the challenger
+<code class="docutils literal notranslate"><span class="pre">check_pair('Lyon',</span> <span class="pre">'Eirika')</span></code></p>
+<p>Check if a boss unit has already given their default fight quote. <code class="docutils literal notranslate"><span class="pre">Eirika</span></code> and <code class="docutils literal notranslate"><span class="pre">Ephraim</span></code> are the units with non-default fight quotes
+<code class="docutils literal notranslate"><span class="pre">check_default('Lyon',</span> <span class="pre">['Eirika',</span> <span class="pre">'Ephraim'])</span></code> or <code class="docutils literal notranslate"><span class="pre">check_default('Batta',</span> <span class="pre">[])</span></code></p>
+<p>Check size of party
+<code class="docutils literal notranslate"><span class="pre">len(game.get_units_in_party())</span></code></p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="k">if</span><span class="p">;</span><span class="nb">len</span><span class="p">(</span><span class="n">game</span><span class="o">.</span><span class="n">get_units_in_party</span><span class="p">())</span> <span class="o">&lt;</span> <span class="mi">5</span>
+    <span class="n">alert</span><span class="p">;</span><span class="n">You</span> <span class="n">have</span> <span class="n">lost</span> <span class="n">too</span> <span class="n">many</span> <span class="n">members</span> <span class="n">of</span> <span class="n">your</span> <span class="n">party</span>
+    <span class="n">lose_game</span>
+<span class="n">end</span>
+</pre></div>
+</div>
+</section>
+<section id="full-useful-attributes-of-global-game-object">
+<h2>Full Useful Attributes of Global Game Object<a class="headerlink" href="Conditionals.html#full-useful-attributes-of-global-game-object" title="Link to this heading"></a></h2>
+<p>The game object is a very powerful source of information about the state of the game. It keeps track of all units in the current level as well as all non-generic units ever loaded into the game (whether alive or dead).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>game_vars: dict[str: ??]
+level_vars: dict[str: ??]
+playtime: float  # How long has the player been playing on this save file
+turncount: int
+units: list  # List of all units the game is tracking
+mode: DifficultyModeObject  # the current mode
+level: LevelObject  # the current level object
+tilemap: TileMapObject  # The current tilemap
+party: PartyObject  # the current party
+
+get_unit(str) -&gt; UnitObject  # Returns a Unit with the given nid
+get_region(str) -&gt; RegionObject  # Returns a Region with the given nid
+get_party(str) -&gt; PartyObject # Returns the party with the given nid
+get_all_units() -&gt; list  # Returns all alive units on the map
+get_player_units() -&gt; list  # All alive player units on the map
+get_enemy_units() -&gt; list  # All alive enemy units on the map
+get_all_units_in_party(str?) -&gt; list  # All non-generic player units in the given party (defaults to current party)
+get_units_in_party(str?) -&gt; list  # All alive non-generic player units in the given party (defaults to current party)
+check_dead(str) -&gt; bool
+check_alive(str) -&gt; bool
+get_money() -&gt; int  # money of current party
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Event-Overview.html" class="btn btn-neutral float-left" title="Event Overview" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Region-Events.html" class="btn btn-neutral float-right" title="Region Events" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, rainlash.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

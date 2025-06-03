@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Code Documentation &mdash; lt-maker  documentation</title>
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/theme_overrides.css?v=5f1687b9" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/jquery.js?v=5d32c60e"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/doctools.js?v=9a2dae69"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="https://lt-maker.readthedocs.io/en/latest/_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="GameState class" href="game-state-reference.html" />
+    <link rel="prev" title="Contributing to the LTWiki" href="Contributing_to_the_LTWiki.html" /> 
+<script async type="text/javascript" src="https://lt-maker.readthedocs.io/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="lt-maker" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/source/appendix/index.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            lt-maker
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../home.html">Lex Talionis Wiki</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Editor Guides:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../editors/Editors-Overview.html">Editors Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../editors/index.html">Editors</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Events:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../events/index.html">Events</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Guides:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guides/Guides-Overview.html">Guides Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/index.html">Guides</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">appendix:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Text-Formatting-Commands.html">Text Formatting Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Item-Component-Reference.html">Item Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Skill-Component-Reference.html">Skill Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Special-Variables.html">Special Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Special-Tags.html">Special Tags</a></li>
+<li class="toctree-l1"><a class="reference internal" href="trigger-reference.html">Event Triggers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Random-Seed-Mechanics.html">Random Seed Mechanics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Contributing_to_the_LTWiki.html">Contributing to the LTWiki</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="index.html#">Code Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="game-state-reference.html">GameState class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="level-reference.html">Level Object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit-reference.html">UnitObject class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="region-reference.html">RegionObject class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="region-reference.html#regionprefab-class">RegionPrefab class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="party-reference.html">Party Object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_funcs-reference.html">Unit Helper Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="item_funcs-reference.html">Item Helper Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="query_funcs-reference.html">Useful Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="constants-reference.html">Constants</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">lt-maker</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Code Documentation</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://gitlab.com/rainlash/lt-maker/blob/master/docs/source/appendix/index.rst" class="fa fa-gitlab"> Edit on GitLab</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="code-documentation">
+<h1>Code Documentation<a class="headerlink" href="index.html#code-documentation" title="Link to this heading"></a></h1>
+<p>Documentation for many of the functions and objects utilized by the engine.</p>
+<p>These functions and objects can be refrenced in your own events and conditions.</p>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="game-state-reference.html">GameState class</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="game-state-reference.html#app.engine.game_state.GameState"><code class="docutils literal notranslate"><span class="pre">GameState</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="game-state-reference.html#app.engine.game_state.GameState.is_displaying_overworld"><code class="docutils literal notranslate"><span class="pre">GameState.is_displaying_overworld()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game-state-reference.html#app.engine.game_state.GameState.level"><code class="docutils literal notranslate"><span class="pre">GameState.level</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game-state-reference.html#app.engine.game_state.GameState.level_nid"><code class="docutils literal notranslate"><span class="pre">GameState.level_nid</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game-state-reference.html#app.engine.game_state.GameState.current_party"><code class="docutils literal notranslate"><span class="pre">GameState.current_party</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game-state-reference.html#app.engine.game_state.GameState.tilemap"><code class="docutils literal notranslate"><span class="pre">GameState.tilemap</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game-state-reference.html#app.engine.game_state.GameState.bg_tilemap"><code class="docutils literal notranslate"><span class="pre">GameState.bg_tilemap</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game-state-reference.html#app.engine.game_state.GameState.mode"><code class="docutils literal notranslate"><span class="pre">GameState.mode</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game-state-reference.html#app.engine.game_state.GameState.party"><code class="docutils literal notranslate"><span class="pre">GameState.party</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game-state-reference.html#app.engine.game_state.GameState.get_party"><code class="docutils literal notranslate"><span class="pre">GameState.get_party()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game-state-reference.html#app.engine.game_state.GameState.units"><code class="docutils literal notranslate"><span class="pre">GameState.units</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game-state-reference.html#app.engine.game_state.GameState.regions"><code class="docutils literal notranslate"><span class="pre">GameState.regions</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game-state-reference.html#app.engine.game_state.GameState.get_data"><code class="docutils literal notranslate"><span class="pre">GameState.get_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game-state-reference.html#app.engine.game_state.GameState.get_unit"><code class="docutils literal notranslate"><span class="pre">GameState.get_unit()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game-state-reference.html#app.engine.game_state.GameState.get_klass"><code class="docutils literal notranslate"><span class="pre">GameState.get_klass()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game-state-reference.html#app.engine.game_state.GameState.get_convoy_inventory"><code class="docutils literal notranslate"><span class="pre">GameState.get_convoy_inventory()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game-state-reference.html#app.engine.game_state.GameState.get_item"><code class="docutils literal notranslate"><span class="pre">GameState.get_item()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game-state-reference.html#app.engine.game_state.GameState.get_skill"><code class="docutils literal notranslate"><span class="pre">GameState.get_skill()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game-state-reference.html#app.engine.game_state.GameState.get_region"><code class="docutils literal notranslate"><span class="pre">GameState.get_region()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game-state-reference.html#app.engine.game_state.GameState.get_region_under_pos"><code class="docutils literal notranslate"><span class="pre">GameState.get_region_under_pos()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game-state-reference.html#app.engine.game_state.GameState.get_ai_group"><code class="docutils literal notranslate"><span class="pre">GameState.get_ai_group()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game-state-reference.html#app.engine.game_state.GameState.ai_group_active"><code class="docutils literal notranslate"><span class="pre">GameState.ai_group_active()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game-state-reference.html#app.engine.game_state.GameState.get_units_in_ai_group"><code class="docutils literal notranslate"><span class="pre">GameState.get_units_in_ai_group()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game-state-reference.html#app.engine.game_state.GameState.get_all_units"><code class="docutils literal notranslate"><span class="pre">GameState.get_all_units()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game-state-reference.html#app.engine.game_state.GameState.get_player_units"><code class="docutils literal notranslate"><span class="pre">GameState.get_player_units()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game-state-reference.html#app.engine.game_state.GameState.get_enemy_units"><code class="docutils literal notranslate"><span class="pre">GameState.get_enemy_units()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game-state-reference.html#app.engine.game_state.GameState.get_enemy1_units"><code class="docutils literal notranslate"><span class="pre">GameState.get_enemy1_units()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game-state-reference.html#app.engine.game_state.GameState.get_enemy2_units"><code class="docutils literal notranslate"><span class="pre">GameState.get_enemy2_units()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game-state-reference.html#app.engine.game_state.GameState.get_other_units"><code class="docutils literal notranslate"><span class="pre">GameState.get_other_units()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game-state-reference.html#app.engine.game_state.GameState.get_team_units"><code class="docutils literal notranslate"><span class="pre">GameState.get_team_units()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game-state-reference.html#app.engine.game_state.GameState.get_travelers"><code class="docutils literal notranslate"><span class="pre">GameState.get_travelers()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game-state-reference.html#app.engine.game_state.GameState.get_player_units_and_travelers"><code class="docutils literal notranslate"><span class="pre">GameState.get_player_units_and_travelers()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game-state-reference.html#app.engine.game_state.GameState.get_rescuer"><code class="docutils literal notranslate"><span class="pre">GameState.get_rescuer()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game-state-reference.html#app.engine.game_state.GameState.get_rescuers_position"><code class="docutils literal notranslate"><span class="pre">GameState.get_rescuers_position()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game-state-reference.html#app.engine.game_state.GameState.get_all_units_in_party"><code class="docutils literal notranslate"><span class="pre">GameState.get_all_units_in_party()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game-state-reference.html#app.engine.game_state.GameState.get_units_in_party"><code class="docutils literal notranslate"><span class="pre">GameState.get_units_in_party()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game-state-reference.html#app.engine.game_state.GameState.get_all_player_units"><code class="docutils literal notranslate"><span class="pre">GameState.get_all_player_units()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game-state-reference.html#app.engine.game_state.GameState.is_roam"><code class="docutils literal notranslate"><span class="pre">GameState.is_roam()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game-state-reference.html#app.engine.game_state.GameState.get_roam_unit"><code class="docutils literal notranslate"><span class="pre">GameState.get_roam_unit()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game-state-reference.html#app.engine.game_state.GameState.check_dead"><code class="docutils literal notranslate"><span class="pre">GameState.check_dead()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game-state-reference.html#app.engine.game_state.GameState.check_alive"><code class="docutils literal notranslate"><span class="pre">GameState.check_alive()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game-state-reference.html#app.engine.game_state.GameState.get_terrain_nid"><code class="docutils literal notranslate"><span class="pre">GameState.get_terrain_nid()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game-state-reference.html#app.engine.game_state.GameState.get_all_formation_spots"><code class="docutils literal notranslate"><span class="pre">GameState.get_all_formation_spots()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game-state-reference.html#app.engine.game_state.GameState.get_open_formation_spots"><code class="docutils literal notranslate"><span class="pre">GameState.get_open_formation_spots()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game-state-reference.html#app.engine.game_state.GameState.get_money"><code class="docutils literal notranslate"><span class="pre">GameState.get_money()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game-state-reference.html#app.engine.game_state.GameState.get_bexp"><code class="docutils literal notranslate"><span class="pre">GameState.get_bexp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game-state-reference.html#app.engine.game_state.GameState.get_random"><code class="docutils literal notranslate"><span class="pre">GameState.get_random()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game-state-reference.html#app.engine.game_state.GameState.get_random_float"><code class="docutils literal notranslate"><span class="pre">GameState.get_random_float()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game-state-reference.html#app.engine.game_state.GameState.get_random_choice"><code class="docutils literal notranslate"><span class="pre">GameState.get_random_choice()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="game-state-reference.html#app.engine.game_state.GameState.get_random_weighted_choice"><code class="docutils literal notranslate"><span class="pre">GameState.get_random_weighted_choice()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="level-reference.html">Level Object</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="level-reference.html#app.engine.objects.level.LevelObject"><code class="docutils literal notranslate"><span class="pre">LevelObject</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="level-reference.html#app.engine.objects.level.LevelObject.nid"><code class="docutils literal notranslate"><span class="pre">LevelObject.nid</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="level-reference.html#app.engine.objects.level.LevelObject.name"><code class="docutils literal notranslate"><span class="pre">LevelObject.name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="level-reference.html#app.engine.objects.level.LevelObject.tilemap"><code class="docutils literal notranslate"><span class="pre">LevelObject.tilemap</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="level-reference.html#app.engine.objects.level.LevelObject.bg_tilemap"><code class="docutils literal notranslate"><span class="pre">LevelObject.bg_tilemap</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="level-reference.html#app.engine.objects.level.LevelObject.party"><code class="docutils literal notranslate"><span class="pre">LevelObject.party</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="level-reference.html#app.engine.objects.level.LevelObject.music"><code class="docutils literal notranslate"><span class="pre">LevelObject.music</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="level-reference.html#app.engine.objects.level.LevelObject.objective"><code class="docutils literal notranslate"><span class="pre">LevelObject.objective</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="level-reference.html#app.engine.objects.level.LevelObject.units"><code class="docutils literal notranslate"><span class="pre">LevelObject.units</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="level-reference.html#app.engine.objects.level.LevelObject.regions"><code class="docutils literal notranslate"><span class="pre">LevelObject.regions</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="level-reference.html#app.engine.objects.level.LevelObject.ai_groups"><code class="docutils literal notranslate"><span class="pre">LevelObject.ai_groups</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="unit-reference.html">UnitObject class</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject"><code class="docutils literal notranslate"><span class="pre">UnitObject</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.nid"><code class="docutils literal notranslate"><span class="pre">UnitObject.nid</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.prefab_nid"><code class="docutils literal notranslate"><span class="pre">UnitObject.prefab_nid</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.generic"><code class="docutils literal notranslate"><span class="pre">UnitObject.generic</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.persistent"><code class="docutils literal notranslate"><span class="pre">UnitObject.persistent</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.ai"><code class="docutils literal notranslate"><span class="pre">UnitObject.ai</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.ai_group"><code class="docutils literal notranslate"><span class="pre">UnitObject.ai_group</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.roam_ai"><code class="docutils literal notranslate"><span class="pre">UnitObject.roam_ai</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.faction"><code class="docutils literal notranslate"><span class="pre">UnitObject.faction</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.team"><code class="docutils literal notranslate"><span class="pre">UnitObject.team</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.portrait_nid"><code class="docutils literal notranslate"><span class="pre">UnitObject.portrait_nid</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.affinity"><code class="docutils literal notranslate"><span class="pre">UnitObject.affinity</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.klass"><code class="docutils literal notranslate"><span class="pre">UnitObject.klass</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.variant"><code class="docutils literal notranslate"><span class="pre">UnitObject.variant</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.name"><code class="docutils literal notranslate"><span class="pre">UnitObject.name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.desc"><code class="docutils literal notranslate"><span class="pre">UnitObject.desc</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.party"><code class="docutils literal notranslate"><span class="pre">UnitObject.party</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.level"><code class="docutils literal notranslate"><span class="pre">UnitObject.level</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.exp"><code class="docutils literal notranslate"><span class="pre">UnitObject.exp</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.stats"><code class="docutils literal notranslate"><span class="pre">UnitObject.stats</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.growths"><code class="docutils literal notranslate"><span class="pre">UnitObject.growths</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.growth_points"><code class="docutils literal notranslate"><span class="pre">UnitObject.growth_points</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.stat_cap_modifiers"><code class="docutils literal notranslate"><span class="pre">UnitObject.stat_cap_modifiers</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.wexp"><code class="docutils literal notranslate"><span class="pre">UnitObject.wexp</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.position"><code class="docutils literal notranslate"><span class="pre">UnitObject.position</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.starting_position"><code class="docutils literal notranslate"><span class="pre">UnitObject.starting_position</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.previous_position"><code class="docutils literal notranslate"><span class="pre">UnitObject.previous_position</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.traveler"><code class="docutils literal notranslate"><span class="pre">UnitObject.traveler</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.strike_partner"><code class="docutils literal notranslate"><span class="pre">UnitObject.strike_partner</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.lead_unit"><code class="docutils literal notranslate"><span class="pre">UnitObject.lead_unit</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.dead"><code class="docutils literal notranslate"><span class="pre">UnitObject.dead</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.is_dying"><code class="docutils literal notranslate"><span class="pre">UnitObject.is_dying</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.items"><code class="docutils literal notranslate"><span class="pre">UnitObject.items</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.has_rescued"><code class="docutils literal notranslate"><span class="pre">UnitObject.has_rescued</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.has_taken"><code class="docutils literal notranslate"><span class="pre">UnitObject.has_taken</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.has_given"><code class="docutils literal notranslate"><span class="pre">UnitObject.has_given</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.has_dropped"><code class="docutils literal notranslate"><span class="pre">UnitObject.has_dropped</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.has_run_ai"><code class="docutils literal notranslate"><span class="pre">UnitObject.has_run_ai</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.get_max_hp"><code class="docutils literal notranslate"><span class="pre">UnitObject.get_max_hp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.get_hp"><code class="docutils literal notranslate"><span class="pre">UnitObject.get_hp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.get_max_mana"><code class="docutils literal notranslate"><span class="pre">UnitObject.get_max_mana()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.get_mana"><code class="docutils literal notranslate"><span class="pre">UnitObject.get_mana()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.get_max_fatigue"><code class="docutils literal notranslate"><span class="pre">UnitObject.get_max_fatigue()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.get_fatigue"><code class="docutils literal notranslate"><span class="pre">UnitObject.get_fatigue()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.get_exp"><code class="docutils literal notranslate"><span class="pre">UnitObject.get_exp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.add_skill"><code class="docutils literal notranslate"><span class="pre">UnitObject.add_skill()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.remove_skill"><code class="docutils literal notranslate"><span class="pre">UnitObject.remove_skill()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.skills"><code class="docutils literal notranslate"><span class="pre">UnitObject.skills</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.stat_bonus"><code class="docutils literal notranslate"><span class="pre">UnitObject.stat_bonus()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.get_stat"><code class="docutils literal notranslate"><span class="pre">UnitObject.get_stat()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.get_growth"><code class="docutils literal notranslate"><span class="pre">UnitObject.get_growth()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.get_stat_cap"><code class="docutils literal notranslate"><span class="pre">UnitObject.get_stat_cap()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.get_damage_with_current_weapon"><code class="docutils literal notranslate"><span class="pre">UnitObject.get_damage_with_current_weapon()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.get_accuracy_with_current_weapon"><code class="docutils literal notranslate"><span class="pre">UnitObject.get_accuracy_with_current_weapon()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.get_avoid_with_current_weapon"><code class="docutils literal notranslate"><span class="pre">UnitObject.get_avoid_with_current_weapon()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.tags"><code class="docutils literal notranslate"><span class="pre">UnitObject.tags</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.get_ai"><code class="docutils literal notranslate"><span class="pre">UnitObject.get_ai()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.get_roam_ai"><code class="docutils literal notranslate"><span class="pre">UnitObject.get_roam_ai()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.accessories"><code class="docutils literal notranslate"><span class="pre">UnitObject.accessories</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.nonaccessories"><code class="docutils literal notranslate"><span class="pre">UnitObject.nonaccessories</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.get_skill"><code class="docutils literal notranslate"><span class="pre">UnitObject.get_skill()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.get_weapon"><code class="docutils literal notranslate"><span class="pre">UnitObject.get_weapon()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.get_accessory"><code class="docutils literal notranslate"><span class="pre">UnitObject.get_accessory()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.can_equip"><code class="docutils literal notranslate"><span class="pre">UnitObject.can_equip()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject.get_internal_level"><code class="docutils literal notranslate"><span class="pre">UnitObject.get_internal_level()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="region-reference.html">RegionObject class</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="region-reference.html#app.engine.objects.region.RegionObject"><code class="docutils literal notranslate"><span class="pre">RegionObject</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="region-reference.html#app.engine.objects.region.RegionObject.nid"><code class="docutils literal notranslate"><span class="pre">RegionObject.nid</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="region-reference.html#app.engine.objects.region.RegionObject.region_type"><code class="docutils literal notranslate"><span class="pre">RegionObject.region_type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="region-reference.html#app.engine.objects.region.RegionObject.position"><code class="docutils literal notranslate"><span class="pre">RegionObject.position</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="region-reference.html#app.engine.objects.region.RegionObject.size"><code class="docutils literal notranslate"><span class="pre">RegionObject.size</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="region-reference.html#app.engine.objects.region.RegionObject.sub_nid"><code class="docutils literal notranslate"><span class="pre">RegionObject.sub_nid</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="region-reference.html#app.engine.objects.region.RegionObject.condition"><code class="docutils literal notranslate"><span class="pre">RegionObject.condition</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="region-reference.html#app.engine.objects.region.RegionObject.time_left"><code class="docutils literal notranslate"><span class="pre">RegionObject.time_left</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="region-reference.html#app.engine.objects.region.RegionObject.only_once"><code class="docutils literal notranslate"><span class="pre">RegionObject.only_once</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="region-reference.html#app.engine.objects.region.RegionObject.interrupt_move"><code class="docutils literal notranslate"><span class="pre">RegionObject.interrupt_move</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="region-reference.html#app.engine.objects.region.RegionObject.hide_time"><code class="docutils literal notranslate"><span class="pre">RegionObject.hide_time</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="region-reference.html#regionprefab-class">RegionPrefab class</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="region-reference.html#app.events.regions.Region"><code class="docutils literal notranslate"><span class="pre">Region</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="region-reference.html#app.events.regions.Region.nid"><code class="docutils literal notranslate"><span class="pre">Region.nid</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="region-reference.html#app.events.regions.Region.region_type"><code class="docutils literal notranslate"><span class="pre">Region.region_type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="region-reference.html#app.events.regions.Region.position"><code class="docutils literal notranslate"><span class="pre">Region.position</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="region-reference.html#app.events.regions.Region.size"><code class="docutils literal notranslate"><span class="pre">Region.size</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="region-reference.html#app.events.regions.Region.sub_nid"><code class="docutils literal notranslate"><span class="pre">Region.sub_nid</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="region-reference.html#app.events.regions.Region.condition"><code class="docutils literal notranslate"><span class="pre">Region.condition</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="region-reference.html#app.events.regions.Region.time_left"><code class="docutils literal notranslate"><span class="pre">Region.time_left</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="region-reference.html#app.events.regions.Region.only_once"><code class="docutils literal notranslate"><span class="pre">Region.only_once</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="region-reference.html#app.events.regions.Region.interrupt_move"><code class="docutils literal notranslate"><span class="pre">Region.interrupt_move</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="region-reference.html#app.events.regions.Region.hide_time"><code class="docutils literal notranslate"><span class="pre">Region.hide_time</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="region-reference.html#app.events.regions.Region.area"><code class="docutils literal notranslate"><span class="pre">Region.area</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="region-reference.html#app.events.regions.Region.center"><code class="docutils literal notranslate"><span class="pre">Region.center</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="region-reference.html#app.events.regions.Region.contains"><code class="docutils literal notranslate"><span class="pre">Region.contains()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="region-reference.html#app.events.regions.Region.get_all_positions"><code class="docutils literal notranslate"><span class="pre">Region.get_all_positions()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="party-reference.html">Party Object</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="party-reference.html#app.engine.objects.party.PartyObject"><code class="docutils literal notranslate"><span class="pre">PartyObject</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="unit_funcs-reference.html">Unit Helper Functions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="unit_funcs-reference.html#app.engine.unit_funcs.growth_rate"><code class="docutils literal notranslate"><span class="pre">growth_rate()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_funcs-reference.html#app.engine.unit_funcs.growth_contribution"><code class="docutils literal notranslate"><span class="pre">growth_contribution()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_funcs-reference.html#app.engine.unit_funcs.base_growth_rate"><code class="docutils literal notranslate"><span class="pre">base_growth_rate()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_funcs-reference.html#app.engine.unit_funcs.difficulty_growth_rate"><code class="docutils literal notranslate"><span class="pre">difficulty_growth_rate()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_funcs-reference.html#app.engine.unit_funcs.get_next_level_up"><code class="docutils literal notranslate"><span class="pre">get_next_level_up()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_funcs-reference.html#app.engine.unit_funcs.auto_level"><code class="docutils literal notranslate"><span class="pre">auto_level()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_funcs-reference.html#app.engine.unit_funcs.difficulty_auto_level"><code class="docutils literal notranslate"><span class="pre">difficulty_auto_level()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_funcs-reference.html#app.engine.unit_funcs.apply_stat_changes"><code class="docutils literal notranslate"><span class="pre">apply_stat_changes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_funcs-reference.html#app.engine.unit_funcs.apply_growth_changes"><code class="docutils literal notranslate"><span class="pre">apply_growth_changes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_funcs-reference.html#app.engine.unit_funcs.get_starting_skills"><code class="docutils literal notranslate"><span class="pre">get_starting_skills()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_funcs-reference.html#app.engine.unit_funcs.get_personal_skills"><code class="docutils literal notranslate"><span class="pre">get_personal_skills()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_funcs-reference.html#app.engine.unit_funcs.get_global_skills"><code class="docutils literal notranslate"><span class="pre">get_global_skills()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_funcs-reference.html#app.engine.unit_funcs.can_unlock"><code class="docutils literal notranslate"><span class="pre">can_unlock()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_funcs-reference.html#app.engine.unit_funcs.can_pairup"><code class="docutils literal notranslate"><span class="pre">can_pairup()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_funcs-reference.html#app.engine.unit_funcs.check_focus"><code class="docutils literal notranslate"><span class="pre">check_focus()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_funcs-reference.html#app.engine.unit_funcs.check_flanked"><code class="docutils literal notranslate"><span class="pre">check_flanked()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_funcs-reference.html#app.engine.unit_funcs.check_flanking"><code class="docutils literal notranslate"><span class="pre">check_flanking()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_funcs-reference.html#app.engine.unit_funcs.wait"><code class="docutils literal notranslate"><span class="pre">wait()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_funcs-reference.html#app.engine.unit_funcs.usable_wtypes"><code class="docutils literal notranslate"><span class="pre">usable_wtypes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_funcs-reference.html#app.engine.unit_funcs.get_weapon_cap"><code class="docutils literal notranslate"><span class="pre">get_weapon_cap()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="item_funcs-reference.html">Item Helper Functions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="item_funcs-reference.html#app.engine.item_funcs.is_magic"><code class="docutils literal notranslate"><span class="pre">is_magic()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="item_funcs-reference.html#app.engine.item_funcs.is_ranged"><code class="docutils literal notranslate"><span class="pre">is_ranged()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="item_funcs-reference.html#app.engine.item_funcs.is_heal"><code class="docutils literal notranslate"><span class="pre">is_heal()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="item_funcs-reference.html#app.engine.item_funcs.available"><code class="docutils literal notranslate"><span class="pre">available()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="item_funcs-reference.html#app.engine.item_funcs.has_magic"><code class="docutils literal notranslate"><span class="pre">has_magic()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="item_funcs-reference.html#app.engine.item_funcs.can_use"><code class="docutils literal notranslate"><span class="pre">can_use()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="item_funcs-reference.html#app.engine.item_funcs.can_repair"><code class="docutils literal notranslate"><span class="pre">can_repair()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="item_funcs-reference.html#app.engine.item_funcs.has_repair"><code class="docutils literal notranslate"><span class="pre">has_repair()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="item_funcs-reference.html#app.engine.item_funcs.buy_price"><code class="docutils literal notranslate"><span class="pre">buy_price()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="item_funcs-reference.html#app.engine.item_funcs.sell_price"><code class="docutils literal notranslate"><span class="pre">sell_price()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="item_funcs-reference.html#app.engine.item_funcs.repair_price"><code class="docutils literal notranslate"><span class="pre">repair_price()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="item_funcs-reference.html#app.engine.item_funcs.create_item"><code class="docutils literal notranslate"><span class="pre">create_item()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="item_funcs-reference.html#app.engine.item_funcs.get_all_items"><code class="docutils literal notranslate"><span class="pre">get_all_items()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="item_funcs-reference.html#app.engine.item_funcs.get_all_items_with_multiitems"><code class="docutils literal notranslate"><span class="pre">get_all_items_with_multiitems()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="item_funcs-reference.html#app.engine.item_funcs.get_all_items_and_abilities"><code class="docutils literal notranslate"><span class="pre">get_all_items_and_abilities()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="item_funcs-reference.html#app.engine.item_funcs.is_weapon_recursive"><code class="docutils literal notranslate"><span class="pre">is_weapon_recursive()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="item_funcs-reference.html#app.engine.item_funcs.is_spell_recursive"><code class="docutils literal notranslate"><span class="pre">is_spell_recursive()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="item_funcs-reference.html#app.engine.item_funcs.get_all_items_from_multi_item"><code class="docutils literal notranslate"><span class="pre">get_all_items_from_multi_item()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="item_funcs-reference.html#app.engine.item_funcs.get_all_tradeable_items"><code class="docutils literal notranslate"><span class="pre">get_all_tradeable_items()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="item_funcs-reference.html#app.engine.item_funcs.get_all_storeable_items"><code class="docutils literal notranslate"><span class="pre">get_all_storeable_items()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="item_funcs-reference.html#app.engine.item_funcs.get_num_items"><code class="docutils literal notranslate"><span class="pre">get_num_items()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="item_funcs-reference.html#app.engine.item_funcs.get_num_accessories"><code class="docutils literal notranslate"><span class="pre">get_num_accessories()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="item_funcs-reference.html#app.engine.item_funcs.too_much_in_inventory"><code class="docutils literal notranslate"><span class="pre">too_much_in_inventory()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="item_funcs-reference.html#app.engine.item_funcs.inventory_full"><code class="docutils literal notranslate"><span class="pre">inventory_full()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="item_funcs-reference.html#app.engine.item_funcs.get_range"><code class="docutils literal notranslate"><span class="pre">get_range()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="item_funcs-reference.html#app.engine.item_funcs.get_range_string"><code class="docutils literal notranslate"><span class="pre">get_range_string()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="item_funcs-reference.html#app.engine.item_funcs.get_max_range"><code class="docutils literal notranslate"><span class="pre">get_max_range()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="item_funcs-reference.html#app.engine.item_funcs.num_stacks"><code class="docutils literal notranslate"><span class="pre">num_stacks()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="item_funcs-reference.html#app.engine.item_funcs.can_be_used_in_base"><code class="docutils literal notranslate"><span class="pre">can_be_used_in_base()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="query_funcs-reference.html">Useful Functions</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine"><code class="docutils literal notranslate"><span class="pre">GameQueryEngine</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.get_item"><code class="docutils literal notranslate"><span class="pre">GameQueryEngine.get_item()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.get_subitem"><code class="docutils literal notranslate"><span class="pre">GameQueryEngine.get_subitem()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.has_item"><code class="docutils literal notranslate"><span class="pre">GameQueryEngine.has_item()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.get_skill"><code class="docutils literal notranslate"><span class="pre">GameQueryEngine.get_skill()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.has_skill"><code class="docutils literal notranslate"><span class="pre">GameQueryEngine.has_skill()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.get_klass"><code class="docutils literal notranslate"><span class="pre">GameQueryEngine.get_klass()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.get_class"><code class="docutils literal notranslate"><span class="pre">GameQueryEngine.get_class()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.get_closest_allies"><code class="docutils literal notranslate"><span class="pre">GameQueryEngine.get_closest_allies()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.get_units_within_distance"><code class="docutils literal notranslate"><span class="pre">GameQueryEngine.get_units_within_distance()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.get_allies_within_distance"><code class="docutils literal notranslate"><span class="pre">GameQueryEngine.get_allies_within_distance()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.get_units_in_area"><code class="docutils literal notranslate"><span class="pre">GameQueryEngine.get_units_in_area()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.get_debuff_count"><code class="docutils literal notranslate"><span class="pre">GameQueryEngine.get_debuff_count()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.get_units_in_region"><code class="docutils literal notranslate"><span class="pre">GameQueryEngine.get_units_in_region()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.any_unit_in_region"><code class="docutils literal notranslate"><span class="pre">GameQueryEngine.any_unit_in_region()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.is_dead"><code class="docutils literal notranslate"><span class="pre">GameQueryEngine.is_dead()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.u"><code class="docutils literal notranslate"><span class="pre">GameQueryEngine.u()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.v"><code class="docutils literal notranslate"><span class="pre">GameQueryEngine.v()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.get_support_rank"><code class="docutils literal notranslate"><span class="pre">GameQueryEngine.get_support_rank()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.get_terrain"><code class="docutils literal notranslate"><span class="pre">GameQueryEngine.get_terrain()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.has_achievement"><code class="docutils literal notranslate"><span class="pre">GameQueryEngine.has_achievement()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="constants-reference.html">Constants</a></li>
+</ul>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Contributing_to_the_LTWiki.html" class="btn btn-neutral float-left" title="Contributing to the LTWiki" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="game-state-reference.html" class="btn btn-neutral float-right" title="GameState class" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, rainlash.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

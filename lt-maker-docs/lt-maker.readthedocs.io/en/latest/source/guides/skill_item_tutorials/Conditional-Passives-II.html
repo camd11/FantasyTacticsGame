@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>4. Conditional Passives II - Warding Blow, Rainlashslayer &mdash; lt-maker  documentation</title>
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/theme_overrides.css?v=5f1687b9" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/jquery.js?v=5d32c60e"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/doctools.js?v=9a2dae69"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="https://lt-maker.readthedocs.io/en/latest/_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="3. Conditional Passives III - Tomefaire, Axe Breaker and Wyrmbane" href="Conditional-Passives-III.html" />
+    <link rel="prev" title="2. Conditional Passives I - Lucky Seven, Odd Rhythm, Wrath and Quick Burn" href="Conditional-Passives-I.html" /> 
+<script async type="text/javascript" src="https://lt-maker.readthedocs.io/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="lt-maker" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/source/guides/skill_item_tutorials/Conditional-Passives-II.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            lt-maker
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../home.html">Lex Talionis Wiki</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Editor Guides:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../editors/Editors-Overview.html">Editors Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../editors/index.html">Editors</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Events:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../events/index.html">Events</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Guides:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Guides-Overview.html">Guides Overview</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Guides</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../setup_tutorials/index.html">Project Setup Tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../eventing_tutorials/index.html">Eventing Tutorials</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Skill and Item Tutorials</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="Creating-Items.html">0. Creating Items</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Direct-Passives.html">1. Direct Passives - Hit +20, MAG +2 and Gamble</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Conditional-Passives-I.html">2. Conditional Passives I - Lucky Seven, Odd Rhythm, Wrath and Quick Burn</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="Conditional-Passives-II.html#">4. Conditional Passives II - Warding Blow, Rainlashslayer</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Conditional-Passives-II.html#required-editors-and-components">Required editors and components</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Conditional-Passives-II.html#skill-descriptions">Skill descriptions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Conditional-Passives-II.html#combat-condition-overview">Combat Condition Overview</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Conditional-Passives-II.html#warding-blow">Warding Blow</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Conditional-Passives-II.html#rainlashslayer">Rainlashslayer</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Conditional-Passives-III.html">3. Conditional Passives III - Tomefaire, Axe Breaker and Wyrmbane</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Tile-Passives.html">4. Tile Oriented Passives - Outdoor Fighter and Indoor Fighter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Auras.html">3. Auras - Hex, Bond and Focus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Skill-Swap.html">[System] Skill Swap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Creating-Capture.html">Capture skill</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Recruit-Skill.html">Recruit Skill</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Summoning.html">Summoning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Shelter-Skill.html">Shelter Skill</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Multi-Items.html">Multi Items</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Nihil.html">Nihil</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">appendix:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Text-Formatting-Commands.html">Text Formatting Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Item-Component-Reference.html">Item Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Skill-Component-Reference.html">Skill Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Special-Variables.html">Special Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Special-Tags.html">Special Tags</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/trigger-reference.html">Event Triggers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Random-Seed-Mechanics.html">Random Seed Mechanics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/FAQ.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Contributing_to_the_LTWiki.html">Contributing to the LTWiki</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/index.html">Code Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">lt-maker</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Guides</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Skill and Item Tutorials</a></li>
+      <li class="breadcrumb-item active">4. Conditional Passives II - Warding Blow, Rainlashslayer</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://gitlab.com/rainlash/lt-maker/blob/master/docs/source/guides/skill_item_tutorials/Conditional-Passives-II.md" class="fa fa-gitlab"> Edit on GitLab</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="conditional-passives-ii-warding-blow-rainlashslayer">
+<h1>4. Conditional Passives II - Warding Blow, Rainlashslayer<a class="headerlink" href="Conditional-Passives-II.html#conditional-passives-ii-warding-blow-rainlashslayer" title="Link to this heading"></a></h1>
+<p>Some skills have conditions that have combat-specific conditions that must be met before becoming active. This guide illustrates how to set up skills of that nature.</p>
+<p>This section assumes you have already read and understood Conditional Passives I.</p>
+<section id="required-editors-and-components">
+<h2>Required editors and components<a class="headerlink" href="Conditional-Passives-II.html#required-editors-and-components" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Skills:</p>
+<ul>
+<li><p>Attribute components - Class Skills</p></li>
+<li><p>Combat components - Damage, Stat Change</p></li>
+<li><p><strong>Advanced components - Combat Condition</strong></p></li>
+</ul>
+</li>
+<li><p><strong>Objects, Attributes and Properties:</strong></p>
+<ul>
+<li><p><strong>mode</strong></p></li>
+<li><p><strong>unit - name</strong></p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="skill-descriptions">
+<h2>Skill descriptions<a class="headerlink" href="Conditional-Passives-II.html#skill-descriptions" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>Warding Blow</strong> - +20 RES when attacking.</p></li>
+<li><p><strong>Rainlashslayer</strong> - +10 damage against units named Rainlash.</p></li>
+</ul>
+</section>
+<section id="combat-condition-overview">
+<h2>Combat Condition Overview<a class="headerlink" href="Conditional-Passives-II.html#combat-condition-overview" title="Link to this heading"></a></h2>
+<p>The Combat Condition component gives access to additional information available only during combat. However, a skill with this component is always treated as inactive outside of combat.</p>
+<p>The additional information granted by this component is: the target of the attack and the mode of the attack.</p>
+<p>The target available in the Combat Condition is a unit object, so you can use any information from the target that you could use from your own unit, such as the get_hp() and get_max_hp() used in the Wrath tutorial.</p>
+<p>The mode is one of two values: ‘attack’ if the holder of the skill initiated combat, and ‘defense’ if the target initiated combat.</p>
+</section>
+<section id="warding-blow">
+<h2>Warding Blow<a class="headerlink" href="Conditional-Passives-II.html#warding-blow" title="Link to this heading"></a></h2>
+<p>The first step is to set up what your skill is supposed to do when it’s active. In the case of Warding Blow, when it’s active, it gives +20 RES. Your skill should look like this to start:</p>
+<p><img alt="WardingBlowStep1" src="../../../_images/1.png" /></p>
+<p>Since Warding Blow only activates while attacking, you need a variable that tracks whether the unit with Warding Blow is attacking or not, which is the ‘mode’ mentioned above. First, you need to include the Combat Condition component.</p>
+<p><img alt="WardingBlowStep2" src="../../../_images/2.png" /></p>
+<p>Since Warding Blow is active when attacking, the condition you need to check is mode == ‘attack’, so just toss that in and you’re done!</p>
+<p><img alt="WardingBlowStep3" src="../../../_images/3.png" /></p>
+</section>
+<section id="rainlashslayer">
+<h2>Rainlashslayer<a class="headerlink" href="Conditional-Passives-II.html#rainlashslayer" title="Link to this heading"></a></h2>
+<p>Once again, we begin with an empty template and add what the skill does when it’s active. In this case, the skill will grant +10 damage when active.</p>
+<p><img alt="RainlashslayerStep1" src="../../../_images/4.png" /></p>
+<p>As before, since this skill activates only when there is another combatant, we need to use the Combat Condition component to get information about that combatant.</p>
+<p>In this case, we want our skill to trigger any time the target is named Rainlash. For this, we will not check the target’s nid as there can be multiple unique units all named Rainlash. Instead, we can use the target’s name field.</p>
+<p><img alt="RainlashslayerStep2" src="../../../_images/5.png" /></p>
+<p>As mentioned earlier, any of the target’s fields can be used in this component, such as their class, stats, and even favorite foods (if you bother to set up Unit Notes).</p>
+<p>As with any conditional, it is possible to create more complex setups if needed, such as a skill that occurs only if the unit is attacking and the target’s name is Rainlash. Go nuts.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Conditional-Passives-I.html" class="btn btn-neutral float-left" title="2. Conditional Passives I - Lucky Seven, Odd Rhythm, Wrath and Quick Burn" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Conditional-Passives-III.html" class="btn btn-neutral float-right" title="3. Conditional Passives III - Tomefaire, Axe Breaker and Wyrmbane" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, rainlash.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

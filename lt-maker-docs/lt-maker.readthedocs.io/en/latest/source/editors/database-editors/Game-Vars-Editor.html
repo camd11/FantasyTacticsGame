@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Game Vars Editor &mdash; lt-maker  documentation</title>
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/theme_overrides.css?v=5f1687b9" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/jquery.js?v=5d32c60e"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/doctools.js?v=9a2dae69"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="https://lt-maker.readthedocs.io/en/latest/_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Weapon Types Editor" href="Weapon-Types-Editor.html" />
+    <link rel="prev" title="Tags Editor" href="Tags-Editor.html" /> 
+<script async type="text/javascript" src="https://lt-maker.readthedocs.io/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="lt-maker" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/source/editors/database-editors/Game-Vars-Editor.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            lt-maker
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../home.html">Lex Talionis Wiki</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Editor Guides:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Editors-Overview.html">Editors Overview</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Editors</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../Editors-Overview.html">Editors Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Level-Editor.html">Level Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Overworld-Editor.html">Overworld Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Event-Editor.html">Event Editor</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Database Editors</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="Units-Editor.html">Units Editor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Teams-Editor.html">Teams Editor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Factions-Editor.html">Factions Editor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Party-Editor.html">Party Editor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Classes-Editor.html">Classes Editor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Tags-Editor.html">Tags Editor</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="Game-Vars-Editor.html#">Game Vars Editor</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Game-Vars-Editor.html#the-example-problem">The Example Problem</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Game-Vars-Editor.html#the-var-slots">The Var Slots</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Game-Vars-Editor.html#special-vars">Special Vars</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Weapon-Types-Editor.html">Weapon Types Editor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Items-And-Skills-Editors.html">Items And Skills Editors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="AI-Editor.html">AI Editor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Terrain-And-Movement-Costs-Editors.html">Terrain and Movement Costs Editors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Stats-Editor.html">Stats Editor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Equations-Editor.html">Equations Editor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Constants-Editor.html">Constants Editor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Difficulty-Modes-Editor.html">Difficulty Modes Editor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Supports-Editor.html">Supports Editor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Lore-Editor.html">Lore Editor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Raw-Data-Editor.html">Raw Data Editor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Translations-Editor.html">Translations Editor</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../resource-editors/index.html">Resource Editors</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Events:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../events/index.html">Events</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Guides:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../guides/Guides-Overview.html">Guides Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guides/index.html">Guides</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">appendix:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Text-Formatting-Commands.html">Text Formatting Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Item-Component-Reference.html">Item Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Skill-Component-Reference.html">Skill Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Special-Variables.html">Special Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Special-Tags.html">Special Tags</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/trigger-reference.html">Event Triggers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Random-Seed-Mechanics.html">Random Seed Mechanics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/FAQ.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Contributing_to_the_LTWiki.html">Contributing to the LTWiki</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/index.html">Code Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">lt-maker</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Editors</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Database Editors</a></li>
+      <li class="breadcrumb-item active">Game Vars Editor</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://gitlab.com/rainlash/lt-maker/blob/master/docs/source/editors/database-editors/Game-Vars-Editor.md" class="fa fa-gitlab"> Edit on GitLab</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="game-vars-editor">
+<h1>Game Vars Editor<a class="headerlink" href="Game-Vars-Editor.html#game-vars-editor" title="Link to this heading"></a></h1>
+<p>The Game Vars editor is an editor that allows you to predefine common <code class="docutils literal notranslate"><span class="pre">GameVar</span></code>s that you may use repeatedly throughout the hack. The editor does not do anything on its own; rather, it helps other editors, such as the Event Editor, function more smoothly, by giving the editor knowledge of common variable names.</p>
+<section id="the-example-problem">
+<h2>The Example Problem<a class="headerlink" href="Game-Vars-Editor.html#the-example-problem" title="Link to this heading"></a></h2>
+<p><strong>I am making a Gaiden Chapter in my game.</strong>
+If the player finds three hidden statues in the Prologue, Chapter 5, and Chapter 12, as well as interact with the puppy on Chapter 7, then they will unlock Chapter 19x. The events for this may appear as follows:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Prologue - If UNIT finds with Statue:</span>
+<span class="n">game_var</span><span class="p">;</span><span class="n">StatueFoundCh1</span><span class="p">;</span><span class="kc">True</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Chapter 5 - If UNIT finds with Statue:</span>
+<span class="n">game_var</span><span class="p">;</span><span class="n">StatueFoundCh5</span><span class="p">;</span><span class="kc">True</span>
+</pre></div>
+</div>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="c1"># Chapter 7 - If UNIT interacts with Puppy:</span>
+<span class="n">game_var</span><span class="p">;</span><span class="n">PuppyInteractedCh7</span><span class="p">;</span><span class="kc">True</span>
+</pre></div>
+</div>
+<p>… And so on. This isn’t so bad. However, you’ve worked on this game for a long time. There are, oh, about ~253 different variables tracking various different flags, and you can’t be expected to remember them all, and remember where they occur, or what they do. Worst of all - you have to type them properly each time, or else your conditions will not work, or some other bug will occur, and it’ll take ages to debug.</p>
+</section>
+<section id="the-var-slots">
+<h2>The Var Slots<a class="headerlink" href="Game-Vars-Editor.html#the-var-slots" title="Link to this heading"></a></h2>
+<p>The Var Slots editor allows you to predefine all of these names. It’s not a very complex editor - it’s mostly a glorified list of strings. But it saves time on all of the above, if you’re a heavy eventer or your project is large.</p>
+<p><img alt="image1" src="../../../_images/var_slot_editor.png" /></p>
+<p>This is the editor. It consists of a single list with three parts: the predefined variable name, a brief description that you can fill out, and finally, a field that contains the locations of all references to the predefined variable name. By filling out the first two fields, you accomplish two things. You write down for future you the exact name of the variable, and a note on what exactly it’s used for.</p>
+<p>There is one final feature of this list - all predefined variables in this list can be autocompleted anywhere a game or level variable is referenced or required:</p>
+<p><img alt="image2" src="../../../_images/var_slot_editor_autocomplete_1.png" /></p>
+<p><img alt="image3" src="../../../_images/var_slot_editor_autocomplete_2.png" /></p>
+<p>This should dramatically reduce the number of headaches you get from debugging misspellings. Happy devving!</p>
+</section>
+<section id="special-vars">
+<h2>Special Vars<a class="headerlink" href="Game-Vars-Editor.html#special-vars" title="Link to this heading"></a></h2>
+<p>Certain variables have hard-coded engine functionality; for more information, please refer to <a class="reference internal" href="../../appendix/Special-Variables.html#special-variables"><span class="std std-ref">Special Variables</span></a>.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Tags-Editor.html" class="btn btn-neutral float-left" title="Tags Editor" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Weapon-Types-Editor.html" class="btn btn-neutral float-right" title="Weapon Types Editor" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, rainlash.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

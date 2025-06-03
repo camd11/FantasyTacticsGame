@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Useful Functions &mdash; lt-maker  documentation</title>
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/theme_overrides.css?v=5f1687b9" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/jquery.js?v=5d32c60e"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/doctools.js?v=9a2dae69"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="https://lt-maker.readthedocs.io/en/latest/_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Constants" href="constants-reference.html" />
+    <link rel="prev" title="Item Helper Functions" href="item_funcs-reference.html" /> 
+<script async type="text/javascript" src="https://lt-maker.readthedocs.io/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="lt-maker" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/source/appendix/query_funcs-reference.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            lt-maker
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../home.html">Lex Talionis Wiki</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Editor Guides:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../editors/Editors-Overview.html">Editors Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../editors/index.html">Editors</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Events:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../events/index.html">Events</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Guides:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guides/Guides-Overview.html">Guides Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/index.html">Guides</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">appendix:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Text-Formatting-Commands.html">Text Formatting Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Item-Component-Reference.html">Item Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Skill-Component-Reference.html">Skill Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Special-Variables.html">Special Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Special-Tags.html">Special Tags</a></li>
+<li class="toctree-l1"><a class="reference internal" href="trigger-reference.html">Event Triggers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Random-Seed-Mechanics.html">Random Seed Mechanics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Contributing_to_the_LTWiki.html">Contributing to the LTWiki</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Code Documentation</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="game-state-reference.html">GameState class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="level-reference.html">Level Object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit-reference.html">UnitObject class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="region-reference.html">RegionObject class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="region-reference.html#regionprefab-class">RegionPrefab class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="party-reference.html">Party Object</a></li>
+<li class="toctree-l2"><a class="reference internal" href="unit_funcs-reference.html">Unit Helper Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="item_funcs-reference.html">Item Helper Functions</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="query_funcs-reference.html#">Useful Functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine"><code class="docutils literal notranslate"><span class="pre">GameQueryEngine</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.get_item"><code class="docutils literal notranslate"><span class="pre">GameQueryEngine.get_item()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.get_subitem"><code class="docutils literal notranslate"><span class="pre">GameQueryEngine.get_subitem()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.has_item"><code class="docutils literal notranslate"><span class="pre">GameQueryEngine.has_item()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.get_skill"><code class="docutils literal notranslate"><span class="pre">GameQueryEngine.get_skill()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.has_skill"><code class="docutils literal notranslate"><span class="pre">GameQueryEngine.has_skill()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.get_klass"><code class="docutils literal notranslate"><span class="pre">GameQueryEngine.get_klass()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.get_class"><code class="docutils literal notranslate"><span class="pre">GameQueryEngine.get_class()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.get_closest_allies"><code class="docutils literal notranslate"><span class="pre">GameQueryEngine.get_closest_allies()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.get_units_within_distance"><code class="docutils literal notranslate"><span class="pre">GameQueryEngine.get_units_within_distance()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.get_allies_within_distance"><code class="docutils literal notranslate"><span class="pre">GameQueryEngine.get_allies_within_distance()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.get_units_in_area"><code class="docutils literal notranslate"><span class="pre">GameQueryEngine.get_units_in_area()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.get_debuff_count"><code class="docutils literal notranslate"><span class="pre">GameQueryEngine.get_debuff_count()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.get_units_in_region"><code class="docutils literal notranslate"><span class="pre">GameQueryEngine.get_units_in_region()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.any_unit_in_region"><code class="docutils literal notranslate"><span class="pre">GameQueryEngine.any_unit_in_region()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.is_dead"><code class="docutils literal notranslate"><span class="pre">GameQueryEngine.is_dead()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.u"><code class="docutils literal notranslate"><span class="pre">GameQueryEngine.u()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.v"><code class="docutils literal notranslate"><span class="pre">GameQueryEngine.v()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.get_support_rank"><code class="docutils literal notranslate"><span class="pre">GameQueryEngine.get_support_rank()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.get_terrain"><code class="docutils literal notranslate"><span class="pre">GameQueryEngine.get_terrain()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.has_achievement"><code class="docutils literal notranslate"><span class="pre">GameQueryEngine.has_achievement()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="constants-reference.html">Constants</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">lt-maker</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Code Documentation</a></li>
+      <li class="breadcrumb-item active">Useful Functions</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://gitlab.com/rainlash/lt-maker/blob/master/docs/source/appendix/query_funcs-reference.rst" class="fa fa-gitlab"> Edit on GitLab</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="useful-functions">
+<h1>Useful Functions<a class="headerlink" href="query_funcs-reference.html#useful-functions" title="Link to this heading"></a></h1>
+<p>You can use any of these functions from within an evaluable in an event directly.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="app.engine.query_engine.GameQueryEngine">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">app.engine.query_engine.</span></span><span class="sig-name descname"><span class="pre">GameQueryEngine</span></span><a class="headerlink" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine" title="Link to this definition"></a></dt>
+<dd><dl class="py method">
+<dt class="sig sig-object py" id="app.engine.query_engine.GameQueryEngine.get_item">
+<span class="sig-name descname"><span class="pre">get_item</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ItemObject</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.get_item" title="Link to this definition"></a></dt>
+<dd><p>Returns a item object by nid or uid.
+:param unit: unit to check
+:param item: item to check</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Item if exists on unit, otherwise None</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Optional[ItemObject]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="app.engine.query_engine.GameQueryEngine.get_subitem">
+<span class="sig-name descname"><span class="pre">get_subitem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parent_item</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">child_item</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ItemObject</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.get_subitem" title="Link to this definition"></a></dt>
+<dd><p>Returns a item object by nid.
+:param unit: unit to check
+:param parent_item: parent item (multi-item) to check
+:param child_item: child item (subitem) to check</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Item if exists on unit, otherwise None</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Optional[ItemObject]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="app.engine.query_engine.GameQueryEngine.has_item">
+<span class="sig-name descname"><span class="pre">has_item</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">team</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">party</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.has_item" title="Link to this definition"></a></dt>
+<dd><p>Check if any unit matching criteria has item.
+Example usage:
+* <cite>has_item(“Iron Sword”, team=”player”)</cite> will check if any player unit is holding an iron sword
+* <cite>has_item(“Sacred Stone”, party=’Eirika’)</cite> will check if Eirika’s party has the item “Sacred Stone”
+:param item: item to check
+:param nid: use to check specific unit nid
+:type nid: optional
+:param team: used to match for team.
+:type team: optional
+:param tag: used to match for tag.
+:type tag: optional
+:param party: used to match for party
+:type party: optional</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if unit has item, else False</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="app.engine.query_engine.GameQueryEngine.get_skill">
+<span class="sig-name descname"><span class="pre">get_skill</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skill</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">SkillObject</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.get_skill" title="Link to this definition"></a></dt>
+<dd><p>Returns a skill object by nid.
+:param unit: unit in question
+:param skill: nid of skill</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Skill, if exists on unit, else None.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Optional[SkillObject] | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="app.engine.query_engine.GameQueryEngine.has_skill">
+<span class="sig-name descname"><span class="pre">has_skill</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skill</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.has_skill" title="Link to this definition"></a></dt>
+<dd><p>checks if unit has skill
+:param unit: unit to check
+:param skill: skill to check</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True if unit has skill, else false</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="app.engine.query_engine.GameQueryEngine.get_klass">
+<span class="sig-name descname"><span class="pre">get_klass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Klass</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.get_klass" title="Link to this definition"></a></dt>
+<dd><p>Returns the klass prefab of the unit.
+:param unit: unit in question</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Klass object if the unit exists and has a valid klass, otherwise None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="app.engine.query_engine.GameQueryEngine.get_class">
+<span class="sig-name descname"><span class="pre">get_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Klass</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.get_class" title="Link to this definition"></a></dt>
+<dd><p>Returns the klass prefab of the unit.
+:param unit: unit in question</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Klass object if the unit exists and has a valid klass, otherwise None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="app.engine.query_engine.GameQueryEngine.get_closest_allies">
+<span class="sig-name descname"><span class="pre">get_closest_allies</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.get_closest_allies" title="Link to this definition"></a></dt>
+<dd><p>Return a list containing the closest player units and their distances.
+:param position: position or unit
+:param num: How many allies to search for. Defaults to 1.
+:type num: int, optional</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Returns <cite>num</cite> pairs of <cite>(unit, distance)</cite> to the position.
+Will return fewer if there are fewer player units than <cite>num</cite>.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>List[Tuple[<a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject">UnitObject</a>, int]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="app.engine.query_engine.GameQueryEngine.get_units_within_distance">
+<span class="sig-name descname"><span class="pre">get_units_within_distance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dist</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">team</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">party</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.get_units_within_distance" title="Link to this definition"></a></dt>
+<dd><p>Return a list containing all units within <cite>dist</cite> distance to the specific position
+that match specific criteria
+:param position: position or unit
+:param dist: How far to search. Defaults to 1.
+:type dist: int, optional
+:param nid: use to check specific unit nid
+:type nid: optional
+:param team: used to match for team.
+:type team: optional
+:param tag: used to match for tag.
+:type tag: optional
+:param party: used to match for party
+:type party: optional</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Returns all pairs of <cite>(unit, distance)</cite>
+within the specified <cite>dist</cite> that match criteria.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>List[Tuple[<a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject">UnitObject</a>, int]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="app.engine.query_engine.GameQueryEngine.get_allies_within_distance">
+<span class="sig-name descname"><span class="pre">get_allies_within_distance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dist</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.get_allies_within_distance" title="Link to this definition"></a></dt>
+<dd><p>Return a list containing all player units within <cite>dist</cite> distance to the specific position.
+:param position: position or unit
+:param dist: How far to search. Defaults to 1.
+:type dist: int, optional</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Returns all pairs of <cite>(unit, distance)</cite>
+within the specified <cite>dist</cite>.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>List[Tuple[<a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject">UnitObject</a>, int]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="app.engine.query_engine.GameQueryEngine.get_units_in_area">
+<span class="sig-name descname"><span class="pre">get_units_in_area</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">position_corner_1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">position_corner_2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.get_units_in_area" title="Link to this definition"></a></dt>
+<dd><p>Returns a list of units within a rectangular area.
+:param position_corner_1: (x, y) coordinates for one corner of the area
+:type position_corner_1: Tuple[int, int]
+:param position_corner_2: (x, y) coordinates for the opposite corner
+:type position_corner_2: Tuple[int, int]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Returns all units with positions with values between those
+specified by the corners (inclusive), or an empty list if no units exist in that area</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>List[<a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject">UnitObject</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="app.engine.query_engine.GameQueryEngine.get_debuff_count">
+<span class="sig-name descname"><span class="pre">get_debuff_count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.get_debuff_count" title="Link to this definition"></a></dt>
+<dd><p>Checks how many negative skills the unit has.
+:param unit: Unit in question</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Number of unique negative skills on the unit</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="app.engine.query_engine.GameQueryEngine.get_units_in_region">
+<span class="sig-name descname"><span class="pre">get_units_in_region</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">region</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">team</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.get_units_in_region" title="Link to this definition"></a></dt>
+<dd><p>returns all units matching the criteria in the given region
+Example usage:
+* <cite>get_units_in_region(‘NorthReinforcements’, team=’player’)</cite> will return all player units in the region
+* <cite>get_units_in_region(‘NorthReinforcements’, nid=’Eirika’)</cite> will return Eirika if Eirika is in the region
+* <cite>get_units_in_region(‘NorthReinforcements’)</cite> will return all units in the region
+:param region: region in question
+:param nid: used to match for NID
+:type nid: optional
+:param team: used to match for team.
+:type team: optional
+:param tag: used to match for tag.
+:type tag: optional</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>all units matching the criteria in the region</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>List[<a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject">UnitObject</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="app.engine.query_engine.GameQueryEngine.any_unit_in_region">
+<span class="sig-name descname"><span class="pre">any_unit_in_region</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">region</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">team</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tag</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.any_unit_in_region" title="Link to this definition"></a></dt>
+<dd><p>checks if any unit matching the criteria is in the region
+Example usage:
+* <cite>any_unit_in_region(‘NorthReinforcements’, team=’player’)</cite> will check if any player unit is in the region
+* <cite>any_unit_in_region(‘NorthReinforcements’, nid=’Eirika’)</cite> will check if Eirika is in the region
+* <cite>any_unit_in_region(‘NorthReinforcements’)</cite> will check if ANY unit is in the region
+:param region: region in question
+:param nid: used to match for NID
+:type nid: optional
+:param team: used to match for team.
+:type team: optional
+:param tag: used to match for tag.
+:type tag: optional</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>if any unit matching criteria is in the region</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="app.engine.query_engine.GameQueryEngine.is_dead">
+<span class="sig-name descname"><span class="pre">is_dead</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.is_dead" title="Link to this definition"></a></dt>
+<dd><p>checks if unit is dead
+:param unit: unit to check</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>if the unit has died</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="app.engine.query_engine.GameQueryEngine.u">
+<span class="sig-name descname"><span class="pre">u</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject"><span class="pre">UnitObject</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.u" title="Link to this definition"></a></dt>
+<dd><p>Shorthand for game.get_unit. Fetches the unit object.
+:param unit: unit nid</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the actual unit object, if exists, else None</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Optional[<a class="reference internal" href="unit-reference.html#app.engine.objects.unit.UnitObject" title="app.engine.objects.unit.UnitObject">UnitObject</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="app.engine.query_engine.GameQueryEngine.v">
+<span class="sig-name descname"><span class="pre">v</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">varname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fallback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Any</span></span></span><a class="headerlink" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.v" title="Link to this definition"></a></dt>
+<dd><p>shorthand for game.level_vars.get and game.game_vars.get. Fetches the variable
+if game.level_vars and game.game_vars share an identical name,
+game.level_vars takes priority
+:param varname: name of the variable
+:param fallback: fallback value, if any. Defaults to None</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the value of the variable</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Any</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="app.engine.query_engine.GameQueryEngine.get_support_rank">
+<span class="sig-name descname"><span class="pre">get_support_rank</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit2</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">NID</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.get_support_rank" title="Link to this definition"></a></dt>
+<dd><p>Returns the most recently obtained support rank between two units.
+:param unit1: unit in the support pair
+:param unit2: the other unit in the support pair</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>if the two units have achieved a support rank.
+none: if the support pair is invalid or no rank has been obtained</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Rank nid</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="app.engine.query_engine.GameQueryEngine.get_terrain">
+<span class="sig-name descname"><span class="pre">get_terrain</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">NID</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span></span><a class="headerlink" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.get_terrain" title="Link to this definition"></a></dt>
+<dd><p>Returns the terrain at position, or, if unit is provided,
+the terrain underneath the unit.
+:param pos: Position tuple or unit</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>the nid of the region, or None if the position is invalid</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>Optional[NID]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="app.engine.query_engine.GameQueryEngine.has_achievement">
+<span class="sig-name descname"><span class="pre">has_achievement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nid</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="query_funcs-reference.html#app.engine.query_engine.GameQueryEngine.has_achievement" title="Link to this definition"></a></dt>
+<dd><p>Checks if an achievement is completed
+:param nid: nid to check for completion</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>if the achievement exists</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="item_funcs-reference.html" class="btn btn-neutral float-left" title="Item Helper Functions" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="constants-reference.html" class="btn btn-neutral float-right" title="Constants" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, rainlash.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

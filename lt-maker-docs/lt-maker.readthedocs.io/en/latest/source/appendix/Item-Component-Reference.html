@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Item Component Dictionary &mdash; lt-maker  documentation</title>
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/theme_overrides.css?v=5f1687b9" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/jquery.js?v=5d32c60e"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/doctools.js?v=9a2dae69"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="https://lt-maker.readthedocs.io/en/latest/_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Skill Component Dictionary" href="Skill-Component-Reference.html" />
+    <link rel="prev" title="Text Formatting Commands" href="Text-Formatting-Commands.html" /> 
+<script async type="text/javascript" src="https://lt-maker.readthedocs.io/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="lt-maker" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/source/appendix/Item-Component-Reference.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            lt-maker
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../home.html">Lex Talionis Wiki</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../getting_started/index.html">Getting Started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Editor Guides:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../editors/Editors-Overview.html">Editors Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../editors/index.html">Editors</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Events:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../events/index.html">Events</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Guides:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../guides/Guides-Overview.html">Guides Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../guides/index.html">Guides</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">appendix:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="Text-Formatting-Commands.html">Text Formatting Commands</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="Item-Component-Reference.html#">Item Component Dictionary</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Item-Component-Reference.html#essential-aspects">Essential Aspects:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Item-Component-Reference.html#targeting">Targeting:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Item-Component-Reference.html#weapon-components">Weapon Components:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Item-Component-Reference.html#restrictions">Restrictions:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Item-Component-Reference.html#exp">EXP:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Item-Component-Reference.html#promotion">Promotion:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Item-Component-Reference.html#extra-components">Extra Components:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Item-Component-Reference.html#staff-components">Staff Components:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Item-Component-Reference.html#special-components">Special Components:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Item-Component-Reference.html#alternate-formulas">Alternate Formulas</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Item-Component-Reference.html#aoe">AOE:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Item-Component-Reference.html#aesthetic-components">Aesthetic Components:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Item-Component-Reference.html#advanced-components">Advanced Components:</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="Skill-Component-Reference.html">Skill Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Special-Variables.html">Special Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Special-Tags.html">Special Tags</a></li>
+<li class="toctree-l1"><a class="reference internal" href="trigger-reference.html">Event Triggers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Random-Seed-Mechanics.html">Random Seed Mechanics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="FAQ.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Contributing_to_the_LTWiki.html">Contributing to the LTWiki</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">Code Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">lt-maker</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Item Component Dictionary</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://gitlab.com/rainlash/lt-maker/blob/master/docs/source/appendix/Item-Component-Reference.md" class="fa fa-gitlab"> Edit on GitLab</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="item-component-dictionary">
+<span id="id1"></span><h1>Item Component Dictionary<a class="headerlink" href="Item-Component-Reference.html#item-component-dictionary" title="Link to this heading"></a></h1>
+<p>The item components in this dictionary are broken down by icon going from left to right, with each icon’s aspects being explained top to bottom.</p>
+<section id="essential-aspects">
+<h2>Essential Aspects:<a class="headerlink" href="Item-Component-Reference.html#essential-aspects" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Component</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>No AI</strong></p></td>
+<td><p>Adding this component prevents the AI from trying to use the item. This is important for sequence items, which the AI is unable to handle.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Spell</strong></p></td>
+<td><p>This item will be included under the Spells menu instead of the Attack menu. A useful way to separate weapons from utility items like staves or non-damaging tomes.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Weapon</strong></p></td>
+<td><p>Item is a weapon that can be used to attack and initiate combat. Important to add to anything that’s being used for that purpose.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Siege Weapon</strong></p></td>
+<td><p>The weapon cannot counterattack or be counterattacked, but can be equipped and double. Used instead of the weapon component.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Usable</strong></p></td>
+<td><p>Item can be used from the items menu. Must be paired with the Targets Allies component.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Usable in Base</strong></p></td>
+<td><p>Item is usable in base. Must be paired with the Targets Allies component.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Unrepairable</strong></p></td>
+<td><p>An item with the repair component cannot repair an item with this component.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Value</strong></p></td>
+<td><p>The value that the item can be bought and sold for in shops.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Accessory</strong></p></td>
+<td><p>The item is considered an accessory and takes up an accessory slot in a unit’s inventory. Make sure to increase the number of accessory slots to more than zero and have a total number of inventory + accessory slots less than six.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Item Prefab</strong></p></td>
+<td><p>The item inherits all the components of the selected item.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Item Tags</strong></p></td>
+<td><p>The item gains all of the associated tags. Note: the tags are associated to the item instead of any unit.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="targeting">
+<h2>Targeting:<a class="headerlink" href="Item-Component-Reference.html#targeting" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Component</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Targets Anything</strong></p></td>
+<td><p>Any tile can be targeted by this item.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Targets Units</strong></p></td>
+<td><p>Any unit within range, regardless of team, can be targeted.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Targets Enemies</strong></p></td>
+<td><p>Can only target enemy units.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Targets Allies</strong></p></td>
+<td><p>Can only target allied units, including green units (assuming a player is using the item).</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>EvalSpecialRange</strong></p></td>
+<td><p>Takes a condition accepting <code class="docutils literal notranslate"><span class="pre">x</span></code>, <code class="docutils literal notranslate"><span class="pre">y</span></code> that will limit what positions relative to the unit can be targeted within range. For example, the condition <code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">==</span> <span class="pre">0</span> <span class="pre">or</span> <span class="pre">y</span> <span class="pre">==</span> <span class="pre">0</span></code> will lock the range to a “cross” shape, allowing the unit to shoot directly vertically or horizontally.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Eval Target Restrict</strong></p></td>
+<td><p>This component takes a string that will be evaluated in python. If the string evaluates to false for a targeted unit they cannot be targeted by this weapon. See an upcoming guide for options when creating these strings.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Empty Tile Target Restrict</strong></p></td>
+<td><p>Used in conjunction with Targets Anything to restrict the target to empty tiles.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Minimum Range</strong></p></td>
+<td><p>A fixed integer that sets the minimum range of an item. Zero means that it can target the user. Unneeded for usable items. Don’t go into the negatives.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Maximum Range</strong></p></td>
+<td><p>A fixed integer that sets the maximum range of an item.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Maximum Equation Range</strong></p></td>
+<td><p>Refers to an equation defined in the equations editor. The maximum range is set to the evaluated value of that equation. Useful for staves like Warp or Physic that are based on the user’s magic.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Global Range</strong></p></td>
+<td><p>Anywhere on the map can be a potential target for this item.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="weapon-components">
+<h2>Weapon Components:<a class="headerlink" href="Item-Component-Reference.html#weapon-components" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Component</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Weapon Type</strong></p></td>
+<td><p>The type of weapon that the wielder must be able to use in order to attack with this item.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Weapon Rank</strong></p></td>
+<td><p>The rank of the desired weapon type needed to use this item.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Magic</strong></p></td>
+<td><p>Item uses magic formulas for calculating damage.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Magic at Range</strong></p></td>
+<td><p>Item uses magic formulas only at range (Levin or Wind Sword)</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Hit</strong></p></td>
+<td><p>The base hit value of the item. Factored into the overall hit equation.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Damage</strong></p></td>
+<td><p>The base might of the item.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Crit</strong></p></td>
+<td><p>The base crit of the item.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Weight</strong></p></td>
+<td><p>Lowers effective speed. At first, subtracted from the CONSTITUTION equation. If negative, subtracts from speed resulting in a unit’s effective speed.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Unwieldy</strong></p></td>
+<td><p>When equipped, defense is reduced by the specified integer.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Stat Change</strong></p></td>
+<td><p>A list of stats that correspond to integers. When equipped, stats are changed by that amount.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="restrictions">
+<h2>Restrictions:<a class="headerlink" href="Item-Component-Reference.html#restrictions" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Component</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Uses</strong></p></td>
+<td><p>The item’s total uses. The item will be destroyed when uses reach zero.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Chapter Uses</strong></p></td>
+<td><p>The item’s uses per chapter. The uses recharge to full at chapter end, even if all are used. Do not combine with the uses component.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>HPCost</strong></p></td>
+<td><p>Item subtracts the specified amount of HP upon use. If the subtraction would kill the unit the item becomes unusable.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Mana Cost</strong></p></td>
+<td><p>Item subtracts the specified amount of Mana upon use. MANA must be defined in the equations editor. If unit does not have enough mana the item will not be usable.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Cooldown</strong></p></td>
+<td><p>The item cannot be used for the specified number of turns. Since timers tick down at the start of the turn, setting cooldown to one will allow the unit to use the item on their next turn.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Prf Unit</strong></p></td>
+<td><p>Only the chosen units can use this weapon.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Prf Class</strong></p></td>
+<td><p>Only the chosen classes can use this weapon.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Prf Tag</strong></p></td>
+<td><p>Only units with the chosen tags can use this weapon.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Prf Affinity</strong></p></td>
+<td><p>Only units that have one of the chosen affinities can use this weapon.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Locked</strong></p></td>
+<td><p>Item cannot be taken or dropped from a unit’s inventory. However, the trade command can be used to rearrange its position, and event commands can remove the item.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="exp">
+<h2>EXP:<a class="headerlink" href="Item-Component-Reference.html#exp" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Component</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>EXP</strong></p></td>
+<td><p>Item gives a fixed integer of EXP each use. Useful for staves like Warp or Rescue.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Level EXP</strong></p></td>
+<td><p>Gives EXP based on the level difference between attacker and defender. How EXP is normally calculated for weapons, with higher level enemies granting more EXP</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Heal EXP</strong></p></td>
+<td><p>Gives EXP based on the amount healed.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>WEXP</strong></p></td>
+<td><p>Gives a fixed integer of weapon EXP.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Fatigue</strong></p></td>
+<td><p>If fatigue is enabled, increases the amount of fatigue a user suffers while using this item. Can be negative in order to remove fatigue.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="promotion">
+<h2>Promotion:<a class="headerlink" href="Item-Component-Reference.html#promotion" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Component</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Promote</strong></p></td>
+<td><p>Promotes the targeted unit (most often the user) into whatever promotions their class has available to them.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Force Promote</strong></p></td>
+<td><p>Promotes the targeted unit into the class specified in the component.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Class Change</strong></p></td>
+<td><p>Reclasses the unit to whatever reclass options they have available.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Force Class Change</strong></p></td>
+<td><p>Reclasses the unit to the specified class.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="extra-components">
+<h2>Extra Components:<a class="headerlink" href="Item-Component-Reference.html#extra-components" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Component</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Effective</strong></p></td>
+<td><p>If this item is effective against an enemy its damage value will be increased by the integer chosen here instead. This is <strong>not</strong> a multiplier, but an addition.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Effective Tag</strong></p></td>
+<td><p>Item will be considered effective if the targeted enemy has any of the tags listed in this component.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Brave</strong></p></td>
+<td><p>Weapon has the brave property, doubling its attacks.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Brave On Attack</strong></p></td>
+<td><p>The weapon is only brave when making an attack, and acts as a normal weapon when being attacked.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Lifelink</strong></p></td>
+<td><p>The unit heals this percentage of damage dealt to an enemy on hit. Chosen value should be between 0 and 1.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Damage on Miss</strong></p></td>
+<td><p>Item deals a percentage of it’s normal damage on a miss.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Eclipse</strong></p></td>
+<td><p>On hit, target loses half of their current HP.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>No Double</strong></p></td>
+<td><p>Item cannot double the enemy.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Cannot Counter</strong></p></td>
+<td><p>Even when equipped as a weapon, the item cannot make a counterattack when its wielder is attacked.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Cannot be Countered</strong></p></td>
+<td><p>Targets cannot make a counterattack with their weapon when attacked.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Ignore Weapon Advantage</strong></p></td>
+<td><p>Any weapon advantage relationships defined in the weapon types editor are ignored by this item.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Reaver</strong></p></td>
+<td><p>Weapon advantage relationships defined in the weapon types editor are doubled and reversed against this weapon.  If two reaver weapons are in combat with each other weapon advantage works as normal.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Double Triangle</strong></p></td>
+<td><p>The effects of weapon advantage relationships are doubled by this item.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Status On Equip</strong></p></td>
+<td><p>A unit with this item equipped will receive the specified status.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Status On Hold</strong></p></td>
+<td><p>A unit with this item in their inventory will receive the specified status.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Gain Mana After Combat</strong></p></td>
+<td><p>Takes a string that will be evaluated by python. At the end of combat the string is evaluated if the item was used and the result is translated into mana gained by the unit. If you want a flat gain of X mana, enter <code class="docutils literal notranslate"><span class="pre">X</span></code>, where X is an integer.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="staff-components">
+<h2>Staff Components:<a class="headerlink" href="Item-Component-Reference.html#staff-components" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Component</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Heal</strong></p></td>
+<td><p>Heals the target for the specified integer.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Magic Heal</strong></p></td>
+<td><p>Heals the target for the specified integer + the HEAL equation defined in the equations editor. Will act oddly if no HEAL equation is defined.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Refresh</strong></p></td>
+<td><p>Has an effect identical to dancing in normal FE. A dance skill makes use of this component in an attached item.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Restore</strong></p></td>
+<td><p>Removes all statuses with the negative component from the target.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Restore Specific</strong></p></td>
+<td><p>Removes the specified status from the target.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Unlock Staff</strong></p></td>
+<td><p>Map regions that are considered Locked can be unlocked with this item. Should not be used in conjunction with other major components.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Can Unlock</strong></p></td>
+<td><p>Allows the item to unlock specific types of locks. In GBA games, the unlock staff can only unlock doors. This component would allow for that limited functionality. In particular, <code class="docutils literal notranslate"><span class="pre">region.nid.startswith('Door')</span></code> would limit the staff to unlocking doors.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Repair</strong></p></td>
+<td><p>Repairs a selected item in the target’s inventory. Used in the Hammerne staff.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Trade</strong></p></td>
+<td><p>Opens a trade menu with a hit target. Can be used for a thief staff.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Menu After Combat</strong></p></td>
+<td><p>Using this item returns the user to the menu state. However, user cannot attack again. Menu activates after any use of the item that involves targeting a unit (including targeting the user).</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="special-components">
+<h2>Special Components:<a class="headerlink" href="Item-Component-Reference.html#special-components" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Component</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Permanent Stat Change</strong></p></td>
+<td><p>Using this item permanently changes the stats of the target in the specified ways. The target and user are often the same unit (think of normal FE stat boosters).</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Permanent Growth Change</strong></p></td>
+<td><p>Using this item permanently changes the growth values of the target in the specified ways.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Wexp Change</strong></p></td>
+<td><p>Using this item permanently changes the WEXP of the target. Can specify individual amounts for different weapon types. Useful for Arms Scroll.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Fatigue on Hit</strong></p></td>
+<td><p>If fatigue is enabled, increases the amount of fatigue a target suffers when hit by this item. Can be negative in order to remove fatigue.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Status on Hit</strong></p></td>
+<td><p>Target gains the specified status on hit. Applies instantly, potentially causing values to change mid-combat.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Status After Combat on Hit</strong></p></td>
+<td><p>If the target is hit they gain the specified status at the end of combat. Prevents changes being applied mid-combat.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Shove</strong></p></td>
+<td><p>Unit is shoved the specified number of tiles.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Shove Target Restrict</strong></p></td>
+<td><p>Works the same as shove but will not allow the item to be selected if the action cannot be performed.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Swap</strong></p></td>
+<td><p>The user and adjacent target’s positions are swapped.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Pivot</strong></p></td>
+<td><p>On hit, the user moves the specified number of tiles past the target.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Pivot Target Restrict</strong></p></td>
+<td><p>Works the same as pivot but will not allow the item to be selected if the action cannot be performed.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Draw Back</strong></p></td>
+<td><p>The user and target both move the specified number of tiles backwards.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Draw Back Target Restrict</strong></p></td>
+<td><p>Works the same as draw back but will not allow the item to be selected if the action cannot be performed.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Steal</strong></p></td>
+<td><p>On hit the user may steal any non-equipped item from the target.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>GBASteal</strong></p></td>
+<td><p>On hit the user may steal non-weapon and non-spell item from the target.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Event On Hit</strong></p></td>
+<td><p>The selected event plays before a hit, if the unit will hit with this item. The event is triggered with args (<code class="docutils literal notranslate"><span class="pre">unit1</span></code>=attacking unit, <code class="docutils literal notranslate"><span class="pre">unit2</span></code>=target, <code class="docutils literal notranslate"><span class="pre">item</span></code>=item, <code class="docutils literal notranslate"><span class="pre">position</span></code>=attacking unit’s position, <code class="docutils literal notranslate"><span class="pre">region</span></code>=targeted position)</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Event After Combat</strong></p></td>
+<td><p>The selected event plays at the end of combat so long as an attack in combat hit.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="alternate-formulas">
+<h2>Alternate Formulas<a class="headerlink" href="Item-Component-Reference.html#alternate-formulas" title="Link to this heading"></a></h2>
+<p>Each of the alternate formulas here replace the specified stat with a selected equation from the equations editor. Most are self explanatory.</p>
+<p>Resist - Resist refers to both defense and resistance. Increasing a unit’s resist will decrease the damage they take, regardless of magic/physical damage. Magic items essentially use this component, by swapping the enemy’s normal DEFENSE equation for the alternate resist formula of MAGIC_DEFENSE.</p>
+<p>Attack vs Defense Speed - Lex Talionis can calculate speed when being attacked differently than speed when attacking. These two components are part of this distinction.</p>
+</section>
+<section id="aoe">
+<h2>AOE:<a class="headerlink" href="Item-Component-Reference.html#aoe" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Component</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Blast AOE</strong></p></td>
+<td><p>Blast extends outwards the specified number of tiles.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Enemy Blast AOE</strong></p></td>
+<td><p>Similar to Blast AOE, except only effects enemies.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Ally Blast AOE</strong></p></td>
+<td><p>Similar to Blast AOE, except only effects allies.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Equation Blast AOE</strong></p></td>
+<td><p>Works similar to Blast AOE, except instead of a fixed integer the range of the blast is chosen by a specified equation.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Enemy Cleave AOE</strong></p></td>
+<td><p>All enemies within one tile (or diagonal from the user) are affected by this attack’s AOE.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>All Allies AOE</strong></p></td>
+<td><p>All allies on the map are targeted by this item’s AOE.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>All Allies Except Self AOE</strong></p></td>
+<td><p>All allies on the map other than the user are targeted by this item’s AOE.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>All Enemies AOE</strong></p></td>
+<td><p>All enemies on the map are targeted by this item’s AOE.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Line AOE</strong></p></td>
+<td><p>A line is drawn from the user to the target, affecting each unit within it. Never extends past the target.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="aesthetic-components">
+<h2>Aesthetic Components:<a class="headerlink" href="Item-Component-Reference.html#aesthetic-components" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Component</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Map Hit Add Blend</strong></p></td>
+<td><p>On hit, the target is made brighter using the specified color.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Map Hit Sub Blend</strong></p></td>
+<td><p>On hit, the target is made darker using the specified color.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Map Hit SFX</strong></p></td>
+<td><p>When the target is hit by this item the selected sfx is played.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Map Cast SFX</strong></p></td>
+<td><p>When item is used the selected sfx is played.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Map Cast Anim</strong></p></td>
+<td><p>Adds a specific animation effect when the item is used. Relevant in map combat situations.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Battle Cast Anim</strong></p></td>
+<td><p>Adds a specific animation effect when the item is used. This does not change the battle animation used, think instead of the effects spells cast when used.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Battle Animation Music</strong></p></td>
+<td><p>When entering a battle with this item the chapter’s normal battle music is substituted for the selected music.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Warning</strong></p></td>
+<td><p>A yellow exclamation mark appears above the wielder’s head. Often used for killing weapons.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Eval Warning</strong></p></td>
+<td><p>A red exclamation mark appears above the wielder’s head if the selected unit matches the evaluated string. Often used for effective weapons.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Text Color</strong></p></td>
+<td><p>Item’s text is recolored to the chosen color.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="advanced-components">
+<h2>Advanced Components:<a class="headerlink" href="Item-Component-Reference.html#advanced-components" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Component</p></th>
+<th class="head"><p>Description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><strong>Multi Item</strong></p></td>
+<td><p>Stores a list of other items to be included as part of this multi item. When using the item the sub-items stored within the list can each be accessed and used. Useful for Three Houses-like magic system.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Sequence Item</strong></p></td>
+<td><p>Item requires various sub-items to be work properly. Useful for complex items like Warp or Rescue. Items are used from list’s top to bottom.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Multi Target</strong></p></td>
+<td><p>Can target a specified number of units when used.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Allow Same Target</strong></p></td>
+<td><p>If the item is multi target this component allows it to select the same target multiple times.</p></td>
+</tr>
+<tr class="row-even"><td><p><strong>Store Unit</strong></p></td>
+<td><p>The targeted unit is stored in the game’s memory when hit. The next time the unload unit component is called the unit is placed on the targeted tile.</p></td>
+</tr>
+<tr class="row-odd"><td><p><strong>Unload Unit</strong></p></td>
+<td><p>Places the unit stored through the store unit component on the specified target (most often a tile).</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Text-Formatting-Commands.html" class="btn btn-neutral float-left" title="Text Formatting Commands" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Skill-Component-Reference.html" class="btn btn-neutral float-right" title="Skill Component Dictionary" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, rainlash.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

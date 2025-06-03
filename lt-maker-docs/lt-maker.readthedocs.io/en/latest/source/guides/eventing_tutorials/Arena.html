@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GBA-style Arena &mdash; lt-maker  documentation</title>
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/theme_overrides.css?v=5f1687b9" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/jquery.js?v=5d32c60e"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/doctools.js?v=9a2dae69"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="https://lt-maker.readthedocs.io/en/latest/_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Breakable Walls" href="Breakable-Walls.html" />
+    <link rel="prev" title="Eventing Tutorials" href="index.html" /> 
+<script async type="text/javascript" src="https://lt-maker.readthedocs.io/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="lt-maker" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/source/guides/eventing_tutorials/Arena.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            lt-maker
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../home.html">Lex Talionis Wiki</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Editor Guides:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../editors/Editors-Overview.html">Editors Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../editors/index.html">Editors</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Events:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../events/index.html">Events</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Guides:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Guides-Overview.html">Guides Overview</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Guides</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../setup_tutorials/index.html">Project Setup Tutorials</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Eventing Tutorials</a><ul class="current">
+<li class="toctree-l3 current"><a class="current reference internal" href="Arena.html#">GBA-style Arena</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Arena.html#prerequisites">Prerequisites</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Arena.html#setting-up-the-event">Setting up the event</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Arena.html#reference">Reference</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Breakable-Walls.html">Breakable Walls</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Death-Quotes.html">Universal Death Quotes Tutorial</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Choices-and-Battle-Saves.html">Choices and Battle Saves</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Unit-Groups.html">Unit Groups</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Achievements.html">Achievements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="A-Simple-Mercenary-Shop.html">A Simple Mercenary Shop Tutorial</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Promotion-Personal-Skills.html">Promotion Personal Skills Tutorial</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../skill_item_tutorials/index.html">Skill and Item Tutorials</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">appendix:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Text-Formatting-Commands.html">Text Formatting Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Item-Component-Reference.html">Item Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Skill-Component-Reference.html">Skill Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Special-Variables.html">Special Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Special-Tags.html">Special Tags</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/trigger-reference.html">Event Triggers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Random-Seed-Mechanics.html">Random Seed Mechanics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/FAQ.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Contributing_to_the_LTWiki.html">Contributing to the LTWiki</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/index.html">Code Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">lt-maker</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Guides</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Eventing Tutorials</a></li>
+      <li class="breadcrumb-item active">GBA-style Arena</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://gitlab.com/rainlash/lt-maker/blob/master/docs/source/guides/eventing_tutorials/Arena.md" class="fa fa-gitlab"> Edit on GitLab</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="gba-style-arena">
+<h1>GBA-style Arena<a class="headerlink" href="Arena.html#gba-style-arena" title="Link to this heading"></a></h1>
+<p><em>last updated 22-01-31</em></p>
+<p><img alt="Screenshot of GBA arena menu screen created by this tutorial" src="../../../_images/ArenaMenu.png" /></p>
+<p>This tutorial will explain how to create an arena where your units can fight, earn experience and money, and potentially die. In this guide, an arena based off the Fire Emblem GBA games will be created, but the features shown here are powerful enough to create significantly different variants on the base idea.</p>
+<p>These relatively new event editor features give you, the game designer, significant freedom in creating all sorts of choices and menus that you can show the player. This means we can create a version of the GBA arena without actually touching any Python code.</p>
+<section id="prerequisites">
+<h2>Prerequisites<a class="headerlink" href="Arena.html#prerequisites" title="Link to this heading"></a></h2>
+<p>It is expected that you, the reader, are already familiar with <a class="reference internal" href="A-Simple-Mercenary-Shop.html"><span class="doc std std-doc">A Simple Mercenary Shop Guide</span></a>. If you aren’t, you may find it useful to understand that guide before diving into this one.</p>
+</section>
+<section id="setting-up-the-event">
+<h2>Setting up the event<a class="headerlink" href="Arena.html#setting-up-the-event" title="Link to this heading"></a></h2>
+<p>First, in your level, create an “event” region with sub_nid “Arena”.</p>
+<p><img alt="Screenshot of &quot;event&quot; region" src="../../../_images/ArenaRegion.png" /></p>
+<p>Now, in the event editor, create a new global event called “Arena”. Set the trigger to “Arena”. You can leave the condition as “True”, since any unit can use the arena.</p>
+<p><img alt="Screenshot of event's main attributes in editor" src="../../../_images/ArenaAttributes.png" /></p>
+<p>You now have an arena event, but nothing happens when you step in the ring. Let’s fix that. We need to start by determining the class, weapon, level, and stats of the enemy you will face in the arena. This will be a lot of setting up and saving variables as we slowly narrow down the choice of enemy.</p>
+<p>First, fade to black</p>
+<p><code class="docutils literal notranslate"><span class="pre">t;close</span></code></p>
+<p>Then, determine your own class and save it to a variable.</p>
+<p><code class="docutils literal notranslate"><span class="pre">level_var;EntrantClass;DB.classes.get(unit.klass)</span></code></p>
+<p>Determine the enemy classes that are in your tier. We don’t want promoted units fighting unpromoted units or vice versa.</p>
+<p><code class="docutils literal notranslate"><span class="pre">level_var;ArenaEnemyKlassList;[k.nid</span> <span class="pre">for</span> <span class="pre">k</span> <span class="pre">in</span> <span class="pre">DB.classes</span> <span class="pre">if</span> <span class="pre">'ArenaIgnore'</span> <span class="pre">not</span> <span class="pre">in</span> <span class="pre">k.tags</span> <span class="pre">and</span> <span class="pre">k.tier</span> <span class="pre">==</span> <span class="pre">game.level_vars['EntrantClass'].tier]</span></code></p>
+<p>Pick one at random.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">level_var</span><span class="p">;</span><span class="n">KlassRNG</span><span class="p">;</span><span class="n">game</span><span class="o">.</span><span class="n">get_random</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">game</span><span class="o">.</span><span class="n">level_vars</span><span class="p">[</span><span class="s1">&#39;ArenaEnemyKlassList&#39;</span><span class="p">])</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">level_var</span><span class="p">;</span><span class="n">ArenaEnemyKlass</span><span class="p">;</span><span class="n">game</span><span class="o">.</span><span class="n">level_vars</span><span class="p">[</span><span class="s1">&#39;ArenaEnemyKlassList&#39;</span><span class="p">][</span><span class="n">game</span><span class="o">.</span><span class="n">level_vars</span><span class="p">[</span><span class="s1">&#39;KlassRNG&#39;</span><span class="p">]]</span>
+</pre></div>
+</div>
+<p>Now assign the enemy a random level, but make sure that it’s close to our entrant’s level. I decided to choose a random level within 4 levels of our entrant’s level, making sure the level isn’t below 1 or above the maximum allowed for the class.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">level_var</span><span class="p">;</span><span class="n">low_level</span><span class="p">;</span><span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">unit</span><span class="o">.</span><span class="n">level</span> <span class="o">-</span> <span class="mi">4</span><span class="p">)</span>
+<span class="n">level_var</span><span class="p">;</span><span class="n">high_level</span><span class="p">;</span><span class="nb">min</span><span class="p">(</span><span class="n">DB</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">game</span><span class="o">.</span><span class="n">level_vars</span><span class="p">[</span><span class="s1">&#39;ArenaEnemyKlass&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">max_level</span><span class="p">,</span> <span class="n">unit</span><span class="o">.</span><span class="n">level</span> <span class="o">+</span> <span class="mi">4</span><span class="p">)</span>
+<span class="n">level_var</span><span class="p">;</span><span class="n">ArenaEnemyLevel</span><span class="p">;</span><span class="n">game</span><span class="o">.</span><span class="n">get_random</span><span class="p">(</span><span class="n">game</span><span class="o">.</span><span class="n">level_vars</span><span class="p">[</span><span class="s1">&#39;low_level&#39;</span><span class="p">],</span> <span class="n">game</span><span class="o">.</span><span class="n">level_vars</span><span class="p">[</span><span class="s1">&#39;high_level&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Now we need to decide, based on the level chosen, what the player’s wager must be in order to buy entry to the arena. We compare the chosen level against the range of levels that were possible to pick. If it’s closer to the high end, then the wager will also be on the high end. I set my lowest wager possible to 550 and my highest wager possible to 1100. I also set it so that if the player has less than 550 gold, they are still able to enter the arena by using all their money.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">level_var</span><span class="p">;</span><span class="n">ArenaPercent</span><span class="p">;(</span><span class="n">game</span><span class="o">.</span><span class="n">level_vars</span><span class="p">[</span><span class="s1">&#39;ArenaEnemyLevel&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">game</span><span class="o">.</span><span class="n">level_vars</span><span class="p">[</span><span class="s1">&#39;low_level&#39;</span><span class="p">])</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">game</span><span class="o">.</span><span class="n">level_vars</span><span class="p">[</span><span class="s1">&#39;high_level&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">game</span><span class="o">.</span><span class="n">level_vars</span><span class="p">[</span><span class="s1">&#39;low_level&#39;</span><span class="p">])</span>
+<span class="n">level_var</span><span class="p">;</span><span class="n">ArenaWager</span><span class="p">;</span><span class="nb">int</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="mi">550</span> <span class="o">+</span> <span class="n">game</span><span class="o">.</span><span class="n">level_vars</span><span class="p">[</span><span class="s1">&#39;ArenaPercent&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1100</span> <span class="o">-</span> <span class="mi">550</span><span class="p">),</span> <span class="n">game</span><span class="o">.</span><span class="n">get_money</span><span class="p">()))</span>
+</pre></div>
+</div>
+<p>Next, we need to give our enemy a valid weapon they can use. It would be no good if a Fighter shows up to the arena with an Iron Lance he can’t wield. We investigate what kinds of weapons their class can wield and pick from among the valid weapon types the one with the highest weapon experience. This will crash if it picks a class that can’t wield any of the weapon types, so make sure you mark those classes with the “ArenaIgnore” tag in the class editor beforehand.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">level_var</span><span class="p">;</span><span class="n">ArenaWexpGain</span><span class="p">;</span><span class="n">DB</span><span class="o">.</span><span class="n">classes</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">game</span><span class="o">.</span><span class="n">level_vars</span><span class="p">[</span><span class="s1">&#39;ArenaEnemyKlass&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">wexp_gain</span>
+<span class="n">level_var</span><span class="p">;</span><span class="n">ArenaItemDict</span><span class="p">;{</span><span class="s1">&#39;Sword&#39;</span><span class="p">:</span> <span class="s1">&#39;Iron Sword&#39;</span><span class="p">,</span> <span class="s1">&#39;Lance&#39;</span><span class="p">:</span> <span class="s1">&#39;Iron Lance&#39;</span><span class="p">,</span> <span class="s1">&#39;Axe&#39;</span><span class="p">:</span> <span class="s1">&#39;Iron Axe&#39;</span><span class="p">,</span> <span class="s1">&#39;Bow&#39;</span><span class="p">:</span> <span class="s1">&#39;Iron Bow&#39;</span><span class="p">,</span> <span class="s1">&#39;Staff&#39;</span><span class="p">:</span> <span class="s1">&#39;Heal&#39;</span><span class="p">,</span> <span class="s1">&#39;Light&#39;</span><span class="p">:</span> <span class="s1">&#39;Lightning&#39;</span><span class="p">,</span> <span class="s1">&#39;Anima&#39;</span><span class="p">:</span> <span class="s1">&#39;Fire&#39;</span><span class="p">,</span> <span class="s1">&#39;Dark&#39;</span><span class="p">:</span> <span class="s1">&#39;Flux&#39;</span><span class="p">}</span>
+<span class="n">level_var</span><span class="p">;</span><span class="n">ArenaWexpGainMaxNid</span><span class="p">;</span><span class="nb">max</span><span class="p">(</span><span class="n">game</span><span class="o">.</span><span class="n">level_vars</span><span class="p">[</span><span class="s1">&#39;ArenaWexpGain&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">wexp_gain</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">level_var</span><span class="p">;</span><span class="n">ArenaItem</span><span class="p">;</span><span class="n">game</span><span class="o">.</span><span class="n">level_vars</span><span class="p">[</span><span class="s1">&#39;ArenaItemDict&#39;</span><span class="p">][</span><span class="n">game</span><span class="o">.</span><span class="n">level_vars</span><span class="p">[</span><span class="s1">&#39;ArenaWexpGainMaxNid&#39;</span><span class="p">]]</span>
+</pre></div>
+</div>
+<p>Now we actually instantiate the unit and their weapon. We add the unit to the closest valid position nearby our arena entrant.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">make_generic</span><span class="p">;;{</span><span class="n">var</span><span class="p">:</span><span class="n">ArenaEnemyKlass</span><span class="p">};{</span><span class="n">var</span><span class="p">:</span><span class="n">ArenaEnemyLevel</span><span class="p">};</span><span class="n">enemy</span>
+<span class="n">add_unit</span><span class="p">;{</span><span class="n">created_unit</span><span class="p">};{</span><span class="n">unit</span><span class="p">};</span><span class="n">immediate</span><span class="p">;</span><span class="n">closest</span>
+<span class="n">give_item</span><span class="p">;{</span><span class="n">created_unit</span><span class="p">};{</span><span class="n">var</span><span class="p">:</span><span class="n">ArenaItem</span><span class="p">};</span><span class="n">no_banner</span>
+</pre></div>
+</div>
+<p>Finally, we can ask the player whether they actually want to fight. We set up the menus and display boxes now.</p>
+<p><img alt="Screenshot of menus and display boxes" src="../../../_images/ArenaMenu.png" /></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">change_background</span><span class="p">;</span><span class="n">Arena</span>
+<span class="n">draw_overlay_sprite</span><span class="p">;</span><span class="n">Dialogue</span><span class="p">;</span><span class="n">menu_bg_clear</span><span class="p">;</span><span class="o">-</span><span class="mi">4</span><span class="p">,</span><span class="mi">8</span><span class="p">;</span><span class="mi">0</span>
+<span class="n">draw_overlay_sprite</span><span class="p">;</span><span class="n">ArenaPortrait</span><span class="p">;</span><span class="n">arena_portrait</span><span class="p">;</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">;</span><span class="mi">1</span>
+<span class="n">table</span><span class="p">;</span><span class="n">GoldDisplay</span><span class="p">;[</span><span class="n">game</span><span class="o">.</span><span class="n">get_money</span><span class="p">()];;;</span><span class="mi">60</span><span class="p">;</span><span class="n">right</span><span class="p">;</span><span class="n">funds_display</span><span class="p">;;</span><span class="n">center</span><span class="p">;</span><span class="n">expression</span>
+<span class="c1"># Fade to arena background</span>
+<span class="n">t</span><span class="p">;</span><span class="nb">open</span>
+</pre></div>
+</div>
+<p>Check if the unit has a weapon and wants to wager the amount of gold we determined in the processes above. If so, take their money and start the fight. You’ll see that in the interact_unit command, we have the player unit fight the created unit, in that order, so the player unit goes first. We also set up the “arena” flag so the player can press B between combat rounds to leave the combat early, forfeiting their wager. The “20” indicates the maximum number of rounds that will occur. Lastly, the “force_animation” flag forces the player to watch the animation if one exists, even if they otherwise have animations turned off. This is to hide the fact that the enemy unit was just spawned somewhere nearby, and to give the player a chance to press B between combat rounds.</p>
+<p>If the player unit doesn’t have a weapon or they refuse the wager, we just tell them to get out of here.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>if;unit.get_weapon()
+    choice;ArenaChoice;Would you like to wager {var:ArenaWager} gold?;Yes,No;;horizontal
+    if;game.game_vars[&#39;ArenaChoice&#39;] == &#39;Yes&#39;
+        sound;GoldExchange
+        give_money;{eval:-game.level_vars[&#39;ArenaWager&#39;]};no_banner
+        speak;;Good luck. Don&#39;t get yourself killed.;60,8;160;clear
+        t;close
+        interact_unit;{unit};{created_unit};;;20;arena;force_animation
+        if;created_unit.is_dying or created_unit.dead
+            t;open
+            s;;So you won, eh? Here&#39;s your prize. {eval:2*game.level_vars[&#39;ArenaWager&#39;]} gold.;60,8;160;clear
+            sound;GoldExchange
+            give_money;{eval:2*game.level_vars[&#39;ArenaWager&#39;]}
+            wait;200
+        end
+        has_attacked;{unit}
+    else
+        s;;What are you wasting my time for?;60,8;160;clear
+    end
+else
+    s;;What! You don&#39;t have a weapon! Get out of here!;60,8;160;clear
+end
+t;close
+</pre></div>
+</div>
+<p><img alt="Screenshot of Arena combat" src="../../../_images/ArenaCombat.png" /></p>
+<p>Now make sure to clean up after yourself. Remove the created unit from the game. Also remember to remove the overlay sprites and tables you created.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">change_background</span>
+<span class="n">remove_unit</span><span class="p">;{</span><span class="n">created_unit</span><span class="p">};</span><span class="n">immediate</span>
+<span class="n">rmtable</span><span class="p">;</span><span class="n">GoldDisplay</span>
+<span class="n">remove_overlay_sprite</span><span class="p">;</span><span class="n">Dialogue</span>
+<span class="n">remove_overlay_sprite</span><span class="p">;</span><span class="n">ArenaPortrait</span>
+<span class="n">t</span><span class="p">;</span><span class="nb">open</span>
+</pre></div>
+</div>
+<p>Congrats! You have now successfully implemented the GBA Arena. It’s not perfect yet as the special UI commands are still missing a couple of small features, but the functionality is complete. Feel free to modify the event code above to meet your own special arena requirements.</p>
+</section>
+<section id="reference">
+<h2>Reference<a class="headerlink" href="Arena.html#reference" title="Link to this heading"></a></h2>
+<p>Here is the full code used in this tutorial:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span># GBA style arena
+transition;Close
+# Determine Enemy&#39;s class, level, and item, along with associated Wager
+level_var;EntrantClass;DB.classes.get(unit.klass)
+level_var;ArenaEnemyKlassList;[k.nid for k in DB.classes if &#39;ArenaIgnore&#39; not in k.tags and k.tier == game.level_vars[&#39;EntrantClass&#39;].tier]
+level_var;KlassRNG;game.get_random(0, len(game.level_vars[&#39;ArenaEnemyKlassList&#39;]) - 1)
+level_var;ArenaEnemyKlass;game.level_vars[&#39;ArenaEnemyKlassList&#39;][game.level_vars[&#39;KlassRNG&#39;]]
+level_var;low_level;max(1, unit.level - 4)
+level_var;high_level;min(DB.classes.get(game.level_vars[&#39;ArenaEnemyKlass&#39;]).max_level, unit.level + 4)
+level_var;ArenaEnemyLevel;game.get_random(game.level_vars[&#39;low_level&#39;], game.level_vars[&#39;high_level&#39;])
+level_var;ArenaPercent;(game.level_vars[&#39;ArenaEnemyLevel&#39;] - game.level_vars[&#39;low_level&#39;]) / float(game.level_vars[&#39;high_level&#39;] - game.level_vars[&#39;low_level&#39;])
+level_var;ArenaWager;int(min(550 + game.level_vars[&#39;ArenaPercent&#39;] * (1100 - 550), game.get_money()))
+level_var;ArenaWexpGain;DB.classes.get(game.level_vars[&#39;ArenaEnemyKlass&#39;]).wexp_gain
+level_var;ArenaItemDict;{&#39;Sword&#39;: &#39;Iron Sword&#39;, &#39;Lance&#39;: &#39;Iron Lance&#39;, &#39;Axe&#39;: &#39;Iron Axe&#39;, &#39;Bow&#39;: &#39;Iron Bow&#39;, &#39;Staff&#39;: &#39;Heal&#39;, &#39;Light&#39;: &#39;Lightning&#39;, &#39;Anima&#39;: &#39;Fire&#39;, &#39;Dark&#39;: &#39;Flux&#39;}
+level_var;ArenaWexpGainMaxNid;max(game.level_vars[&#39;ArenaWexpGain&#39;].items(), key=lambda x: x[1].wexp_gain)[0]
+level_var;ArenaItem;game.level_vars[&#39;ArenaItemDict&#39;][game.level_vars[&#39;ArenaWexpGainMaxNid&#39;]]
+# Actually instantiate unit
+make_generic;;{var:ArenaEnemyKlass};{var:ArenaEnemyLevel};enemy
+add_unit;{created_unit};{unit};immediate;closest
+give_item;{created_unit};{var:ArenaItem};no_banner
+# Now move to Arena
+change_background;Arena
+draw_overlay_sprite;Dialogue;menu_bg_clear;-4,8;0
+draw_overlay_sprite;ArenaPortrait;arena_portrait;4,4;1
+table;GoldDisplay;[game.get_money()];;;60;right;funds_display;;center;expression
+# Fade to arena background
+transition;open
+if;unit.get_weapon()
+    choice;ArenaChoice;Would you like to wager {var:ArenaWager} gold?;Yes,No;;horizontal
+    if;game.game_vars[&#39;ArenaChoice&#39;] == &#39;Yes&#39;
+        sound;GoldExchange
+        give_money;{eval:-game.level_vars[&#39;ArenaWager&#39;]};no_banner
+        speak;;Good luck. Don&#39;t get yourself killed.;60,8;160;clear
+        transition;close
+        interact_unit;{unit};{created_unit};;;20;arena;force_animation
+        if;created_unit.is_dying or created_unit.dead
+            transition;open
+            speak;;So you won, eh? Here&#39;s your prize. {eval:2*game.level_vars[&#39;ArenaWager&#39;]} gold.;60,8;160;clear
+            sound;GoldExchange
+            give_money;{eval:2*game.level_vars[&#39;ArenaWager&#39;]}
+            wait;200
+        end
+        has_attacked;{unit}
+    else
+        speak;;What are you wasting my time for?;60,8;160;clear
+    end
+else
+    speak;;What! You don&#39;t have a weapon! Get out of here!;60,8;160;clear
+end
+transition;close
+# Clean up
+change_background
+remove_unit;{created_unit};immediate
+rmtable;GoldDisplay
+remove_overlay_sprite;Dialogue
+remove_overlay_sprite;ArenaPortrait
+transition;open
+
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Eventing Tutorials" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Breakable-Walls.html" class="btn btn-neutral float-right" title="Breakable Walls" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, rainlash.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

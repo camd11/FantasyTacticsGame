@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portraits Editor &mdash; lt-maker  documentation</title>
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/theme_overrides.css?v=5f1687b9" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/jquery.js?v=5d32c60e"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/doctools.js?v=9a2dae69"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="https://lt-maker.readthedocs.io/en/latest/_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Map Animations Editor" href="Map-Animations-Editor.html" />
+    <link rel="prev" title="Icons Editor" href="Icons-Editor.html" /> 
+<script async type="text/javascript" src="https://lt-maker.readthedocs.io/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="lt-maker" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/source/editors/resource-editors/Portraits-Editor.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            lt-maker
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../home.html">Lex Talionis Wiki</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Editor Guides:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Editors-Overview.html">Editors Overview</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Editors</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../Editors-Overview.html">Editors Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Level-Editor.html">Level Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Overworld-Editor.html">Overworld Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Event-Editor.html">Event Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../database-editors/index.html">Database Editors</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Resource Editors</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="Icons-Editor.html">Icons Editor</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="Portraits-Editor.html#">Portraits Editor</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Portraits-Editor.html#adding-new-portraits">Adding New Portraits</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Portraits-Editor.html#adding-a-new-portrait">Adding a New Portrait</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Portraits-Editor.html#modifying-existing-portraits">Modifying Existing Portraits</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Portraits-Editor.html#editor-features">Editor Features</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Portraits-Editor.html#misc">Misc</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Map-Animations-Editor.html">Map Animations Editor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Backgrounds-Editor.html">Backgrounds Editor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Map-Sprites-Editor.html">Map Sprites Editor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Combat-Animations-Editor.html">Combat Animations Editor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Tilemaps-Editor.html">Tilemaps Editor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Sounds-Editor.html">Sounds Editor</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Events:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../events/index.html">Events</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Guides:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../guides/Guides-Overview.html">Guides Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guides/index.html">Guides</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">appendix:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Text-Formatting-Commands.html">Text Formatting Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Item-Component-Reference.html">Item Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Skill-Component-Reference.html">Skill Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Special-Variables.html">Special Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Special-Tags.html">Special Tags</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/trigger-reference.html">Event Triggers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Random-Seed-Mechanics.html">Random Seed Mechanics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/FAQ.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Contributing_to_the_LTWiki.html">Contributing to the LTWiki</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/index.html">Code Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">lt-maker</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Editors</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Resource Editors</a></li>
+      <li class="breadcrumb-item active">Portraits Editor</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://gitlab.com/rainlash/lt-maker/blob/master/docs/source/editors/resource-editors/Portraits-Editor.md" class="fa fa-gitlab"> Edit on GitLab</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="portraits-editor">
+<h1>Portraits Editor<a class="headerlink" href="Portraits-Editor.html#portraits-editor" title="Link to this heading"></a></h1>
+<p><em>last updated 2025-04-20</em></p>
+<p>The Portraits Editor lets you add or modify portraits that can be used for characters in the engine.</p>
+<p><img alt="Editor" src="../../../_images/PortraitsEditor.png" /></p>
+<section id="adding-new-portraits">
+<h2>Adding New Portraits<a class="headerlink" href="Portraits-Editor.html#adding-new-portraits" title="Link to this heading"></a></h2>
+<p>Portraits are imported as PNGs in a single sprite sheet. The <strong>Raw Sprite</strong> preview section on the bottom right of the Portrait Editor shows the format that the editor expects a portrait to be in. There are a few components to the portrait format.</p>
+<p><img alt="Eirka Sprite Sheet" src="../../../_images/PortraitEirika.png" /></p>
+<p><strong>Dimensions</strong>: The editor expects sprite sheets to be 128x112 pixels.</p>
+<p><strong>Background Color</strong>: The editor wants the background color to be the <code class="docutils literal notranslate"><span class="pre">#80a080</span></code> hex code shade of green. This is a very specific color that the engine is set to ignore, allowing for a transparent background in game. The editor will try to force the background color of your imported sprite sheet to be green.</p>
+<p><strong>Sections</strong>: The image below specifies the sections expected in the sprite sheet. There is some extra unused space at the top and bottom right that is in the shade <code class="docutils literal notranslate"><span class="pre">#80a080</span></code>. There are 11 sections in the portrait sprite sheet, these are separated more generally into: face, minimug, eyes, and mouth sections. The mouth sections are split into smile frame A-C, neutral frame A-C and status screen frame. The eye sections are split into blinking frame A-B. These frames are overlaid onto the face to create talking and blinking animations.</p>
+<p><img alt="Sprite Sheet Format" src="../../../_images/Format.png" /></p>
+<p>Make sure your portraits are in this specific format before you add it to the editor. Feel free to download the above image to use as a template for creating sprite sheets.</p>
+</section>
+<section id="adding-a-new-portrait">
+<h2>Adding a New Portrait<a class="headerlink" href="Portraits-Editor.html#adding-a-new-portrait" title="Link to this heading"></a></h2>
+<p>You can add new portraits by clicking the <code class="docutils literal notranslate"><span class="pre">Add</span> <span class="pre">New</span> <span class="pre">Unit</span> <span class="pre">Portrait...</span></code> button. This will bring up a window for you to navigate to your PNG sprite sheet to import it into the editor.</p>
+<p>After importing, the editor will run two automatic steps. If the portrait sprite sheet is given in the correct format as described above, the editor will automatically try to place the mouth and eye frames on the face based on image similarity. If the editor fails to find a matching location the mouth and eye frames will be placed in the top left. The editor will also automatically recolor the background of the portrait sprite sheet to be <code class="docutils literal notranslate"><span class="pre">#80a080</span></code> based on the background color of the face section.</p>
+<p>The editor <em>will not</em> initially make a copy of the file you import. This means that the automatic colorkey algorithm may modify the colors in the file you import. If that is something you care about make a copy of the portrait sprite and import the copy instead. Once you save your project the editor will create a copy of the portrait inside of your project.</p>
+</section>
+<section id="modifying-existing-portraits">
+<h2>Modifying Existing Portraits<a class="headerlink" href="Portraits-Editor.html#modifying-existing-portraits" title="Link to this heading"></a></h2>
+<p>Editing existing portraits is as easy as opening the PNG file associated with each portrait imported into the editor in the image manipulation software of your choice and editing it. The already imported portraits can be found under <code class="docutils literal notranslate"><span class="pre">your_project.ltproj/resources/portraits/</span></code>. You can then click on the portrait in the editor and edit the extra settings.</p>
+</section>
+<section id="editor-features">
+<h2>Editor Features<a class="headerlink" href="Portraits-Editor.html#editor-features" title="Link to this heading"></a></h2>
+<p>The editor has a few extra features that are available for use after importing the portrait sprite sheet. To show what they do this guide will import the above portrait format image into the editor as a demonstration.</p>
+<p>You will notice that after importing the portrait sprite sheet into the editor the background on the face section has automatically been changed to <code class="docutils literal notranslate"><span class="pre">#80a080</span></code>. This is a feature of the editor to make importing sprite sheets from other engines that expect a different color background to be a slightly smoother process. If this feature of the editor created any problems for you refer to the <a class="reference internal" href="Portraits-Editor.html#modifying-existing-portraits">Modifying Existing Portraits</a> section. The editor will also automatically try to place the mouth and eye frames on the face based on image similarity. If the editor fails to find a matching location the mouth and eye frames will be placed in the top left.</p>
+<p><img alt="Format Sprite Sheet Imported Into Editor" src="../../../_images/FormatImported.png" /></p>
+<p>The <code class="docutils literal notranslate"><span class="pre">Portrait</span> <span class="pre">Selector</span></code> section of the editor on the left, you can see the minimug section is previewed as the unit icon.</p>
+<p>In the <code class="docutils literal notranslate"><span class="pre">Portrait</span> <span class="pre">Preview</span></code> section of the editor on the right, you can see that the editor has overlaid the neutral frame A section of the portrait sprite sheet onto the face section. The background is also transparent as the background has been changed to <code class="docutils literal notranslate"><span class="pre">#80a080</span></code>.</p>
+<p><img alt="format sprite sheet in the editor" src="../../../_images/FormatImportedInEditor.png" /></p>
+<p>Below the preview, you will find three buttons: <code class="docutils literal notranslate"><span class="pre">Smile</span></code>, <code class="docutils literal notranslate"><span class="pre">Talk</span></code>, and <code class="docutils literal notranslate"><span class="pre">Blink</span></code>. These three buttons are responsible for controlling what is displayed in the preview section. <code class="docutils literal notranslate"><span class="pre">Smile</span></code> will overlay smile frame A onto the portrait. <code class="docutils literal notranslate"><span class="pre">Talk</span></code> will cycle through smile frame A-C and overlay it onto the portrait. <code class="docutils literal notranslate"><span class="pre">Blink</span></code> will quickly overlay blinking frame A before transitioning to blinking frame B. These three buttons make it easy for you to position the overlays and check what the portraits will look like in your game.</p>
+<p>The status screen section of the portrait sprite sheet will be overlaid at the same location as the mouth frames and will be used when displaying the character in the info/status screen in the game.</p>
+<p>On the right of the preview there are three settings you can adjust: the <code class="docutils literal notranslate"><span class="pre">Blinking</span> <span class="pre">Offset</span></code>, the <code class="docutils literal notranslate"><span class="pre">Smiling</span> <span class="pre">Offset</span></code> and the <code class="docutils literal notranslate"><span class="pre">Info</span> <span class="pre">Menu</span> <span class="pre">Offset</span></code>. The <code class="docutils literal notranslate"><span class="pre">Blinking</span> <span class="pre">Offset</span></code> controls where the mouth frames are overlaid over the face. The <code class="docutils literal notranslate"><span class="pre">Blinking</span> <span class="pre">Offset</span></code> controls where the eye frames are overlaid over the face. The <code class="docutils literal notranslate"><span class="pre">Info</span> <span class="pre">Menu</span> <span class="pre">Offset</span></code> controls the vertical offset of the entire portrait displayed in the info/status screen in game.</p>
+<p>An example of this can be seen in the image below, where the blinking frame has been overlaid on the face by toggling the <code class="docutils literal notranslate"><span class="pre">Blink</span></code> button and all of the offsets have been adjusted to reasonable locations.</p>
+<p><img alt="format sprite sheet in the editor after adjusting offsets" src="../../../_images/FormatImportedInEditorAdjustedOffsets.png" /></p>
+<p><code class="docutils literal notranslate"><span class="pre">Smile</span></code> and <code class="docutils literal notranslate"><span class="pre">Talk</span></code> will use the same <code class="docutils literal notranslate"><span class="pre">Smiling</span> <span class="pre">Offset</span></code> as they are both mouth frames, so you will be able to immediately spot if it is in the wrong position. However, <code class="docutils literal notranslate"><span class="pre">Blinking</span> <span class="pre">Offset</span></code> used by the eye frames will not be shown by default, so make sure to toggle the <code class="docutils literal notranslate"><span class="pre">Blink</span></code> option at least once to check.</p>
+<p><img alt="Normal?" src="../../../_images/CorrectBlinkOffset.png" /> <img alt="Oops" src="../../../_images/IncorrectBlinkOffset.png" /></p>
+<p>The <code class="docutils literal notranslate"><span class="pre">Auto-guess</span> <span class="pre">Offsets</span></code> button runs an algorithm that tries to automatically overlay the mouth and eye frames at appropriate locations on the face based on an image similarity algorithm. If the algorithm fails you can manually adjust the offsets in the <code class="docutils literal notranslate"><span class="pre">Blinking</span> <span class="pre">Offset</span></code> and <code class="docutils literal notranslate"><span class="pre">Smiling</span> <span class="pre">Offset</span></code> fields. This step is automatically run for new sprite sheets imported into the editor. The <code class="docutils literal notranslate"><span class="pre">Automatically</span> <span class="pre">colorkey</span></code> button runs an algorithm that changes the background color to <code class="docutils literal notranslate"><span class="pre">#80a080</span></code> based on the background color of the face section. This step is also automatically run for new sprite sheets imported into the editor.</p>
+<p>Press <code class="docutils literal notranslate"><span class="pre">OK</span></code> or <code class="docutils literal notranslate"><span class="pre">Apply</span></code> to save any changes.</p>
+<p>After adding a new sprite, you can now use it as a unit portrait in the <strong>Unit Editor</strong>. You can see that the portrait displayed lines up with the <code class="docutils literal notranslate"><span class="pre">Info</span> <span class="pre">Menu</span> <span class="pre">Offset</span></code> selected in the portrait editor.</p>
+<p><img alt="portrait used in unit editor" src="../../../_images/PortraitInUnitEditor.png" /></p>
+</section>
+<section id="misc">
+<h2>Misc<a class="headerlink" href="Portraits-Editor.html#misc" title="Link to this heading"></a></h2>
+<p>When referencing a portrait directly in a <code class="docutils literal notranslate"><span class="pre">speak</span></code> command, the text log feature will use the name of the portrait within this editor as the name of the speaker in the backlog. Remember this to avoid (or subtly place) spoilers in your text.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Icons-Editor.html" class="btn btn-neutral float-left" title="Icons Editor" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Map-Animations-Editor.html" class="btn btn-neutral float-right" title="Map Animations Editor" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, rainlash.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

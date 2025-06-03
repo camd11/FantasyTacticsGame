@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>1. Direct Passives - Hit +20, MAG +2 and Gamble &mdash; lt-maker  documentation</title>
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/theme_overrides.css?v=5f1687b9" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/jquery.js?v=5d32c60e"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/doctools.js?v=9a2dae69"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="https://lt-maker.readthedocs.io/en/latest/_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="2. Conditional Passives I - Lucky Seven, Odd Rhythm, Wrath and Quick Burn" href="Conditional-Passives-I.html" />
+    <link rel="prev" title="0. Creating Items" href="Creating-Items.html" /> 
+<script async type="text/javascript" src="https://lt-maker.readthedocs.io/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="lt-maker" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/source/guides/skill_item_tutorials/Direct-Passives.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            lt-maker
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../home.html">Lex Talionis Wiki</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Editor Guides:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../editors/Editors-Overview.html">Editors Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../editors/index.html">Editors</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Events:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../events/index.html">Events</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Guides:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Guides-Overview.html">Guides Overview</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Guides</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../setup_tutorials/index.html">Project Setup Tutorials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../eventing_tutorials/index.html">Eventing Tutorials</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Skill and Item Tutorials</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="Creating-Items.html">0. Creating Items</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="Direct-Passives.html#">1. Direct Passives - Hit +20, MAG +2 and Gamble</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Direct-Passives.html#required-editors-and-components">Required editors and components</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Direct-Passives.html#skill-descriptions">Skill descriptions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Direct-Passives.html#step-1-create-a-skill">Step 1: Create a Skill</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Direct-Passives.html#step-2-assign-the-skill">Step 2: Assign the Skill</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Direct-Passives.html#step-3-add-combat-component">Step 3: Add combat component</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Direct-Passives.html#step-4-test-the-stat-alterations-in-game">Step 4: Test the stat alterations in-game</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Conditional-Passives-I.html">2. Conditional Passives I - Lucky Seven, Odd Rhythm, Wrath and Quick Burn</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Conditional-Passives-II.html">4. Conditional Passives II - Warding Blow, Rainlashslayer</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Conditional-Passives-III.html">3. Conditional Passives III - Tomefaire, Axe Breaker and Wyrmbane</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Tile-Passives.html">4. Tile Oriented Passives - Outdoor Fighter and Indoor Fighter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Auras.html">3. Auras - Hex, Bond and Focus</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Skill-Swap.html">[System] Skill Swap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Creating-Capture.html">Capture skill</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Recruit-Skill.html">Recruit Skill</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Summoning.html">Summoning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Shelter-Skill.html">Shelter Skill</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Multi-Items.html">Multi Items</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Nihil.html">Nihil</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">appendix:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Text-Formatting-Commands.html">Text Formatting Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Item-Component-Reference.html">Item Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Skill-Component-Reference.html">Skill Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Special-Variables.html">Special Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Special-Tags.html">Special Tags</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/trigger-reference.html">Event Triggers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Random-Seed-Mechanics.html">Random Seed Mechanics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/FAQ.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Contributing_to_the_LTWiki.html">Contributing to the LTWiki</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/index.html">Code Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">lt-maker</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Guides</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Skill and Item Tutorials</a></li>
+      <li class="breadcrumb-item active">1. Direct Passives - Hit +20, MAG +2 and Gamble</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://gitlab.com/rainlash/lt-maker/blob/master/docs/source/guides/skill_item_tutorials/Direct-Passives.md" class="fa fa-gitlab"> Edit on GitLab</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <p><small><code class="docutils literal notranslate"><span class="pre">Originally</span> <span class="pre">written</span> <span class="pre">by</span> <span class="pre">Hillgarm.</span> <span class="pre">Last</span> <span class="pre">Updated</span> <span class="pre">2022-09-01</span></code></small></p>
+<section id="direct-passives-hit-20-mag-2-and-gamble">
+<h1>1. Direct Passives - Hit +20, MAG +2 and Gamble<a class="headerlink" href="Direct-Passives.html#direct-passives-hit-20-mag-2-and-gamble" title="Link to this heading"></a></h1>
+<p>Despite the name, skills are actually effects, which covers everything from statuses (buffs/debuffs) to skills and additional actions. They can be applied into units or terrain, and be triggered by other skills, items, or events. In this tutorial series we will focus on class skills as these can be less intuitive to make.</p>
+<p>All of the elements used will be listed at the start of each guide, with the new items written in <strong>bold</strong>. Each step will be fully described at the first time, all following occurrences will be listed as the step name instead.</p>
+<p><strong>INDEX</strong></p>
+<ul class="simple">
+<li><p><strong>Required editors and components</strong></p></li>
+<li><p><strong>Skill descriptions</strong></p></li>
+<li><p><strong>Step 1: Create a Skill</strong></p>
+<ul>
+<li><p>Step 1.1: Create a Class Skill</p></li>
+</ul>
+</li>
+<li><p><strong>Step 2: Assign the Skill</strong></p>
+<ul>
+<li><p>Step 2.1A: Assign the Skill to an Unit</p></li>
+<li><p>Step 2.1B: Assign the Skill to a Class</p></li>
+<li><p>Step 2.2: Inspect the skill in-game</p></li>
+</ul>
+</li>
+<li><p><strong>Step 3: Add a combat components</strong></p>
+<ul>
+<li><p>Step 3.A: <strong>[Hit +20]</strong> Add a Hit component</p></li>
+<li><p>Step 3.B: <strong>[MAG +2]</strong> Add a Stat Change component</p></li>
+<li><p>Step 3.C: <strong>[Gamble]</strong> Add a Stat Change component and a Crit component</p></li>
+</ul>
+</li>
+<li><p><strong>Step 4: Check the stat alterations in-game</strong></p></li>
+<li><p><strong>Conclusion</strong></p></li>
+</ul>
+<section id="required-editors-and-components">
+<h2>Required editors and components<a class="headerlink" href="Direct-Passives.html#required-editors-and-components" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>Skills:</strong></p>
+<ul>
+<li><p><strong>Attribute components - Class Skills</strong></p></li>
+<li><p><strong>Combat components - Stat Change, Hit and Crit</strong></p></li>
+</ul>
+</li>
+<li><p><strong>Units</strong></p></li>
+<li><p><strong>Classes</strong></p></li>
+</ul>
+</section>
+<section id="skill-descriptions">
+<h2>Skill descriptions<a class="headerlink" href="Direct-Passives.html#skill-descriptions" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p><strong>Hit +20</strong> - Grants +20 Hit.</p></li>
+<li><p><strong>MAG +2</strong> - Grants +2 Magic.</p></li>
+<li><p><strong>Gamble</strong> - Grants -5 Hit and +10 Crit.</p></li>
+</ul>
+</section>
+<section id="step-1-create-a-skill">
+<h2>Step 1: Create a Skill<a class="headerlink" href="Direct-Passives.html#step-1-create-a-skill" title="Link to this heading"></a></h2>
+<p>Open the <strong>Skill Editor</strong> in the <strong>Edit Menu</strong> and create a new <strong>Skill</strong>.</p>
+<p><img alt="1_1" src="../../../_images/1_1.png" /></p>
+<p>Our new skill has to have a completely unique name for the <strong>Unique ID</strong> field. This will be how the engine will identify which skill is being used or called. By default, the engine will auto fill the <strong>Display Name</strong> with the <strong>Unique ID</strong> value, but you may change it at will. I’ll be changing my skill name to be in lower case.</p>
+<p>We can also give our skill a <strong>Description</strong> and an <strong>Icon</strong>, these are important for in-game inspection.</p>
+<p><img alt="1_2" src="../../../_images/1_2.png" /></p>
+<p>For our skill to do anything, we need to assign <strong>Components</strong>. You can do it by clicking on the icons below the description box, which will open a menu with multiple options to pick from.</p>
+<section id="step-1-1-create-a-class-skill">
+<h3>Step 1.1: Create a Class Skill<a class="headerlink" href="Direct-Passives.html#step-1-1-create-a-class-skill" title="Link to this heading"></a></h3>
+<p>To make our skill into a proper class skill, we need to give it the <strong>Class Skill</strong> component. The option can be found within the <strong>Attribute Components</strong> menu, represented by the <strong>Star icon</strong>.</p>
+<p><img alt="1_3" src="../../../_images/1_3.png" /></p>
+<p>Skills that have the <strong>Class Skill component</strong> will show an inspectable icon under the character’s stats. It is recommended to use this component on all personal and class skills.</p>
+<p><img alt="1_4" src="../../../_images/1_4.png" /></p>
+<p>All the added <strong>components</strong> will be displayed individually within the component box. Skills can have as many components as you see fit but only one of each. They can also be reordered by dragging them up and down the box.</p>
+<p>You can get some additional information on any given component by hovering over them, both in menu and once they are added. It’s a great feature to know if you want to swim on your own.</p>
+<p><img alt="1_5" src="../../../_images/1_5.png" /></p>
+</section>
+</section>
+<section id="step-2-assign-the-skill">
+<h2>Step 2: Assign the Skill<a class="headerlink" href="Direct-Passives.html#step-2-assign-the-skill" title="Link to this heading"></a></h2>
+<p>Before we get our skill to do anything, we need to know how to assign our skill to a unit for testing purposes. There are a couple of options available but for this tutorial we will stick to the <strong>Class</strong> and <strong>Unit</strong> options. You may choose which one of these methods to use.</p>
+<p>We will be using Eirika as our target unit for the following steps.</p>
+<section id="step-2-1a-assign-the-skill-to-an-unit">
+<h3>Step 2.1A: Assign the skill to an Unit<a class="headerlink" href="Direct-Passives.html#step-2-1a-assign-the-skill-to-an-unit" title="Link to this heading"></a></h3>
+<p>Open the <strong>Units Editor</strong> in the <strong>Edit Menu</strong> and select the unit that will get the skill. For this tutorial I will select the default <strong>unit</strong> Eirika.</p>
+<p><img alt="1_6" src="../../../_images/1_6.png" /></p>
+<p>Click on the <strong>+</strong> button on the <strong>Personal Skill</strong> division to give your unit a new skill, then select the desired skill. Keep the <strong>Level</strong> parameter at 1 for testing purposes.</p>
+<p><img alt="1_7" src="../../../_images/1_7.png" /></p>
+</section>
+<section id="step-2-1b-assign-the-skill-to-an-unit">
+<h3>Step 2.1B: Assign the skill to an Unit<a class="headerlink" href="Direct-Passives.html#step-2-1b-assign-the-skill-to-an-unit" title="Link to this heading"></a></h3>
+<p>Open the <strong>Classes Editor</strong> in the <strong>Edit Menu</strong> and select the class that will get the skill. For this tutorial I will select the default <strong>class</strong> Eirika_Lord.</p>
+<p><img alt="1_8" src="../../../_images/1_8.png" /></p>
+<p>Click on the <strong>+</strong> button on the <strong>Class Skill</strong> division to give it a new skill, then select the desired skill. You may change the <strong>Level</strong> parameter in case you want to test other interactions.</p>
+<p><img alt="1_9" src="../../../_images/1_9.png" /></p>
+</section>
+<section id="step-2-2-inspect-the-skill-in-game">
+<h3>Step 2.2: Inspect the skill in-game<a class="headerlink" href="Direct-Passives.html#step-2-2-inspect-the-skill-in-game" title="Link to this heading"></a></h3>
+<p>Select the desired chapter for testing. This chapter must contain at least one unit that had the skill assigned by the chosen method.</p>
+<p><img alt="1_10" src="../../../_images/1_10.png" /></p>
+<p>Click on the <strong>Test Current Chapter</strong> (F5) button in the <strong>Test Menu</strong> to run it.</p>
+<p><img alt="1_11" src="../../../_images/1_11.png" /></p>
+<p>With the game running, we can now inspect the unit with the <strong>Info Key</strong>. The default inputs for it are the <strong>scroll button</strong> (mouse) or the <strong>C key</strong> (keyboard).</p>
+<p><img alt="1_12" src="../../../_images/1_12.png" /></p>
+<p>This will open the <strong>unit information window</strong>, allowing you to check which effects are active.</p>
+<p>If you assigned the <strong>Class Skill component</strong> to the skill, the icon will displayed at page 1, at the bottom of the screen. Otherwise, it will be displayed at page 3, within the status division, also at the bottom.</p>
+<p><img alt="1_13" src="../../../_images/1_13.png" /></p>
+<p>Use the <strong>Info Key</strong> again to check the name and description of your skill.</p>
+<p><img alt="1_14" src="../../../_images/1_14.png" /></p>
+</section>
+</section>
+<section id="step-3-add-combat-component">
+<h2>Step 3: Add combat component<a class="headerlink" href="Direct-Passives.html#step-3-add-combat-component" title="Link to this heading"></a></h2>
+<p>All the components we will use in this tutorial belong to the <strong>Combat Components</strong> menu, represented by the <strong>(Single) Sword icon</strong>.</p>
+<p><img alt="1_15" src="../../../_images/1_15.png" /></p>
+<section id="step-3-a-hit-20-add-a-hit-component">
+<h3>Step 3.A: [Hit +20] Add a Hit component<a class="headerlink" href="Direct-Passives.html#step-3-a-hit-20-add-a-hit-component" title="Link to this heading"></a></h3>
+<p>For <em>Hit +20</em>, we will need the <strong>Hit component</strong>. This component is an individual integer type. It will only apply an increment to the <strong>Hit stat</strong>.</p>
+<p><img alt="1_16" src="../../../_images/1_16.png" /></p>
+<p>By default, the component will add the value to the <strong>Hit stat</strong>, always being positive, but it can be negative if specified. Set the value to 20.</p>
+<p><img alt="1_17" src="../../../_images/1_17.png" /></p>
+<p>The end result should look like this:</p>
+<p><img alt="1_18" src="../../../_images/1_18.png" /></p>
+<p>In-game, the <strong>Hit stat</strong> value is always displayed as its total sum. To check if it is working properly, you can enable and disable the skill comparing the stat changes for both scenarios.</p>
+</section>
+<section id="step-3-b-mag-2-add-a-stat-change-component">
+<h3>Step 3.B: [MAG +2] Add a Stat Change component<a class="headerlink" href="Direct-Passives.html#step-3-b-mag-2-add-a-stat-change-component" title="Link to this heading"></a></h3>
+<p>For <em>MAG +2</em>, we will need the <strong>Stat Change component</strong>.</p>
+<p><img alt="1_19" src="../../../_images/1_19.png" /></p>
+<p>The <strong>Stat Change component</strong> is the one responsible for handling additive <strong>base stats</strong> operations. It is similar to the <strong>Hit component</strong> but instead of being a single stat, it is a list of all base stats. We can add multiple stats to this component.</p>
+<p><img alt="1_20" src="../../../_images/1_20.png" /></p>
+<p>To add a new stat, click on the <strong>+</strong> button. Select the MAG <strong>Stat</strong> and assign its <strong>Value</strong> to 2.</p>
+<p><img alt="1_21" src="../../../_images/1_21.png" /></p>
+<p>The end result should look like this:</p>
+<p><img alt="1_22" src="../../../_images/1_22.png" /></p>
+<p>The majority of the <strong>base stats</strong> will have their value split into <strong>base value</strong> and <strong>bonus value</strong> (in green). We can easily check it in-game by inspecting the unit.</p>
+<p><img alt="1_23" src="../../../_images/1_23.png" /></p>
+</section>
+<section id="step-3-c-gamble-add-a-hit-component-and-a-crit-component">
+<h3>Step 3.C: [Gamble] Add a Hit component and a Crit component<a class="headerlink" href="Direct-Passives.html#step-3-c-gamble-add-a-hit-component-and-a-crit-component" title="Link to this heading"></a></h3>
+<p>For Gamble, we need to add both the <strong>Hit component</strong> and the <strong>Crit component</strong>.</p>
+<p><img alt="1_24" src="../../../_images/1_24.png" /></p>
+<p>This time we will give <strong>Hit component</strong> a negative value. The end result should look like this:</p>
+<p><img alt="1_25" src="../../../_images/1_25.png" /></p>
+</section>
+</section>
+<section id="step-4-test-the-stat-alterations-in-game">
+<h2>Step 4: Test the stat alterations in-game<a class="headerlink" href="Direct-Passives.html#step-4-test-the-stat-alterations-in-game" title="Link to this heading"></a></h2>
+<p>All we have left is to check if our skill is working or not. Run a Test where your playable unit has the skill and check the stats, then do the same without the skill.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Creating-Items.html" class="btn btn-neutral float-left" title="0. Creating Items" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Conditional-Passives-I.html" class="btn btn-neutral float-right" title="2. Conditional Passives I - Lucky Seven, Odd Rhythm, Wrath and Quick Burn" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, rainlash.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

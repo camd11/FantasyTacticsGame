@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Difficulty Modes Editor &mdash; lt-maker  documentation</title>
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="https://lt-maker.readthedocs.io/en/latest/_static/theme_overrides.css?v=5f1687b9" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/jquery.js?v=5d32c60e"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/documentation_options.js?v=5929fcd5"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/doctools.js?v=9a2dae69"></script>
+        <script src="https://lt-maker.readthedocs.io/en/latest/_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="https://lt-maker.readthedocs.io/en/latest/_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="Supports Editor" href="Supports-Editor.html" />
+    <link rel="prev" title="Constants Editor" href="Constants-Editor.html" /> 
+<script async type="text/javascript" src="https://lt-maker.readthedocs.io/_/static/javascript/readthedocs-addons.js"></script><meta name="readthedocs-project-slug" content="lt-maker" /><meta name="readthedocs-version-slug" content="latest" /><meta name="readthedocs-resolver-filename" content="/source/editors/database-editors/Difficulty-Modes-Editor.html" /><meta name="readthedocs-http-status" content="200" /></head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            lt-maker
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../home.html">Lex Talionis Wiki</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Getting Started:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started/index.html">Getting Started</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Editor Guides:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../Editors-Overview.html">Editors Overview</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../index.html">Editors</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../Editors-Overview.html">Editors Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Level-Editor.html">Level Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Overworld-Editor.html">Overworld Editor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Event-Editor.html">Event Editor</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="index.html">Database Editors</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="Units-Editor.html">Units Editor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Teams-Editor.html">Teams Editor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Factions-Editor.html">Factions Editor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Party-Editor.html">Party Editor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Classes-Editor.html">Classes Editor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Tags-Editor.html">Tags Editor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Game-Vars-Editor.html">Game Vars Editor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Weapon-Types-Editor.html">Weapon Types Editor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Items-And-Skills-Editors.html">Items And Skills Editors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="AI-Editor.html">AI Editor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Terrain-And-Movement-Costs-Editors.html">Terrain and Movement Costs Editors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Stats-Editor.html">Stats Editor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Equations-Editor.html">Equations Editor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Constants-Editor.html">Constants Editor</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="Difficulty-Modes-Editor.html#">Difficulty Modes Editor</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Difficulty-Modes-Editor.html#explanation-of-options">Explanation of Options</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Difficulty-Modes-Editor.html#difficulty-using-test-current-chapter">Difficulty Using “Test Current Chapter”</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Difficulty-Modes-Editor.html#growth-mechanics">Growth Mechanics</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Supports-Editor.html">Supports Editor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Lore-Editor.html">Lore Editor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Raw-Data-Editor.html">Raw Data Editor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Translations-Editor.html">Translations Editor</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../resource-editors/index.html">Resource Editors</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Events:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../events/index.html">Events</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Guides:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../guides/Guides-Overview.html">Guides Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../guides/index.html">Guides</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">appendix:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Text-Formatting-Commands.html">Text Formatting Commands</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Item-Component-Reference.html">Item Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Skill-Component-Reference.html">Skill Component Dictionary</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Special-Variables.html">Special Variables</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Special-Tags.html">Special Tags</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/trigger-reference.html">Event Triggers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Random-Seed-Mechanics.html">Random Seed Mechanics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/FAQ.html">Frequently Asked Questions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/Contributing_to_the_LTWiki.html">Contributing to the LTWiki</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendix/index.html">Code Documentation</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">lt-maker</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Editors</a></li>
+          <li class="breadcrumb-item"><a href="index.html">Database Editors</a></li>
+      <li class="breadcrumb-item active">Difficulty Modes Editor</li>
+      <li class="wy-breadcrumbs-aside">
+              <a href="https://gitlab.com/rainlash/lt-maker/blob/master/docs/source/editors/database-editors/Difficulty-Modes-Editor.md" class="fa fa-gitlab"> Edit on GitLab</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="difficulty-modes-editor">
+<h1>Difficulty Modes Editor<a class="headerlink" href="Difficulty-Modes-Editor.html#difficulty-modes-editor" title="Link to this heading"></a></h1>
+<section id="explanation-of-options">
+<h2>Explanation of Options<a class="headerlink" href="Difficulty-Modes-Editor.html#explanation-of-options" title="Link to this heading"></a></h2>
+<section id="permadeath">
+<h3>Permadeath<a class="headerlink" href="Difficulty-Modes-Editor.html#permadeath" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Casual</strong>: When a unit reaches 0 HP, they are removed from the map for the current chapter, but will be available next map.</p></li>
+<li><p><strong>Classic</strong>: When a unit reaches 0 HP, they die permanently.</p></li>
+</ul>
+</section>
+<section id="growth-method">
+<h3>Growth Method<a class="headerlink" href="Difficulty-Modes-Editor.html#growth-method" title="Link to this heading"></a></h3>
+<p>All units have a specific growth rate for each of their stats. This growth rate determines the likelihood that the unit will gain a point in that stat on level-up. A growth rate greater than or equal to 100% guarantees a point on each level-up. A growth rate lower than 0% indicates a chance for the unit to <em>lose</em> points in that stat on level-up.</p>
+<ul class="simple">
+<li><p><strong>Random</strong>: Truly random growths. For each stat, a random number is rolled between 0 and 99. If the number is less than the growth rate, that stat increases.</p></li>
+<li><p><strong>Fixed</strong>: Units will always have their average stats. A unit with a 50% growth rate is guaranteed to get a stat increase every other level.</p></li>
+<li><p><strong>Dynamic</strong>: Like <strong>Random</strong>, but it applies a rubberbanding effect to the growth rate. If a unit fails to increase a stat on level-up, next level-up that stat will have a higher effective growth rate.</p></li>
+</ul>
+</section>
+<section id="rng-method">
+<h3>RNG Method<a class="headerlink" href="Difficulty-Modes-Editor.html#rng-method" title="Link to this heading"></a></h3>
+<p>This determines how the engine decides whether an attack is a hit or a miss.</p>
+<ul class="simple">
+<li><p><strong>Classic</strong>: Used in FE1-5. No modifications. A 70% displayed chance to hit is exactly a 70% real chance to hit.</p></li>
+<li><p><strong>True Hit</strong>: Used in FE6-13. The engine generates two random numbers and averages them. This makes displayed chances to hit above 50% more likely than expected, and those lower than 50% less likely than expected. A 70% displayed chance to hit is actually 82.3%.</p></li>
+<li><p><strong>True Hit+</strong>: Like <strong>True Hit</strong>, but the engine generates <em>three</em> random numbers and averages them. A 70% displayed chance to hit is actually 88.2%.</p></li>
+<li><p><strong>Grandmaster</strong>: All attacks hit. However, the damage an attack deals is multiplied by the displayed chance to hit. An attack that deals 10 damage with a 70% displayed chance to hit will always hit, dealing 7 damage.</p></li>
+</ul>
+</section>
+</section>
+<section id="difficulty-using-test-current-chapter">
+<h2>Difficulty Using “Test Current Chapter”<a class="headerlink" href="Difficulty-Modes-Editor.html#difficulty-using-test-current-chapter" title="Link to this heading"></a></h2>
+<p>When testing a singular chapter via the “Test Current Chapter” option, the difficulty mode at the top of the list is automatically used. When testing with a “Player’s Choice” difficulty option, the default permadeath option is Casual, while the default growths option is Fixed.</p>
+</section>
+<section id="growth-mechanics">
+<h2>Growth Mechanics<a class="headerlink" href="Difficulty-Modes-Editor.html#growth-mechanics" title="Link to this heading"></a></h2>
+<section id="stat-gain-on-level-up">
+<h3>Stat Gain on Level Up<a class="headerlink" href="Difficulty-Modes-Editor.html#stat-gain-on-level-up" title="Link to this heading"></a></h3>
+<p>The <strong>Lex Talionis</strong> engine implements three different methods you can choose from for how your units will level up. You can find these options in the DifficultyEditor.</p>
+<p>You can choose different growth methods for the player characters and the enemy characters. For instance, you could use the classic <em>Random</em> growth method for player characters, and then select <em>Fixed</em> for enemy characters to make their stats in battle more consistent.</p>
+<p>The remaining fourth option, <em>Match</em>, is only available for non-player units and will force them to use whatever the player units use. This option is found in the Constants editor.</p>
+<p><img alt="ConstantsEditor" src="../../../_images/constants-editor.png" /></p>
+<section id="random">
+<h4>Random<a class="headerlink" href="Difficulty-Modes-Editor.html#random" title="Link to this heading"></a></h4>
+<p>This is the classic Fire Emblem experience. A unit with an <code class="docutils literal notranslate"><span class="pre">X</span></code> growth rate in a stat, will have exactly an <code class="docutils literal notranslate"><span class="pre">X%</span></code> chance to gain one point in that stat each time the unit levels up.</p>
+<section id="additional-notes">
+<h5>Additional Notes:<a class="headerlink" href="Difficulty-Modes-Editor.html#additional-notes" title="Link to this heading"></a></h5>
+<p>A unit with a 100 or greater growth rate in a stat will automatically gain at least one point in that stat. A unit with a 260 growth rate will automatically gain two points in that stat on level up, and then has a 60% chance to gain a third point in that stat.</p>
+<p>A unit with a negative growth rate will have a chance of losing a point in that stat. From a -20 growth rate it follows that the unit will have a 20% chance to lose a point in that stat on level up.</p>
+<p>If a stat is already at it’s maximum value, it will not increase any further. In the <strong>Lex Talionis</strong>engine, there is no re-roll on an empty level up like there is in the GBA games.</p>
+</section>
+</section>
+<section id="fixed">
+<h4>Fixed<a class="headerlink" href="Difficulty-Modes-Editor.html#fixed" title="Link to this heading"></a></h4>
+<p>All units will always have their average stats. A unit with an <code class="docutils literal notranslate"><span class="pre">X</span></code> growth rate in a stat will gain a stat point every <code class="docutils literal notranslate"><span class="pre">100/X</span></code> levels. This keeps each stat as close as possible to its average value for that stat.</p>
+<section id="id1">
+<h5>Additional Notes:<a class="headerlink" href="Difficulty-Modes-Editor.html#id1" title="Link to this heading"></a></h5>
+<p>Units start with 50 “growth points” in each stat. On each level up, they gain their growths in that stat. So, a unit with a 25 growth rate will go from 50 starting growth points to 75 growth points at level 2.</p>
+<p>If the new value would be greater than or equal to 100, the stat is increased by 1 and then their growth points in that stat are reduced by 100.</p>
+<p>Example:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>Growth Rate = 60
+Level 1 Growth Points = 50
+Level 2 Growth Points = 50 + 60 =&gt; 10 (Stat Increased!)
+Level 3 Growth Points = 10 + 60 =&gt; 70
+Level 4 Growth Points = 70 + 60 =&gt; 30 (Stat Increased!)
+Level 5 Growth Points = 30 + 60 =&gt; 90
+Level 6 Growth Points = 90 + 60 =&gt; 50 (Stat Increased!)
+Level 7 Growth Points = 50 + 60 =&gt; 10 (Stat Increased!)
+Level 8 Growth Points = 10 + 60 =&gt; 70
+...
+</pre></div>
+</div>
+</section>
+</section>
+<section id="dynamic">
+<h4>Dynamic<a class="headerlink" href="Difficulty-Modes-Editor.html#dynamic" title="Link to this heading"></a></h4>
+<p>Unit’s growth rates will fluctuate to keep their stats close to the average value. The variance value used for this is 10. Otherwise, this method works identically to the <em>Random</em> method.</p>
+<p>A unit with a <code class="docutils literal notranslate"><span class="pre">X</span></code> growth rate starts with a <code class="docutils literal notranslate"><span class="pre">X%</span></code> chance to level up their stat. The growth rate will be modified on each level up depending on whether their stat levels.</p>
+<p>On success, growth rate is reduced by <code class="docutils literal notranslate"><span class="pre">(100</span> <span class="pre">-</span> <span class="pre">true_growth_rate)</span> <span class="pre">/</span> <span class="pre">variance</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">*</span><span class="n">Repeated</span> <span class="n">Successful</span> <span class="n">Level</span> <span class="n">Ups</span><span class="o">*</span>
+<span class="kc">True</span> <span class="n">Growth</span> <span class="n">Rate</span> <span class="o">=</span> <span class="mi">60</span>
+<span class="n">Level</span> <span class="mi">1</span> <span class="n">Growth</span> <span class="n">Rate</span> <span class="o">=</span> <span class="mi">60</span>
+<span class="n">Level</span> <span class="mi">2</span> <span class="n">Growth</span> <span class="n">Rate</span> <span class="o">=</span> <span class="mi">60</span> <span class="o">-</span> <span class="p">((</span><span class="mi">100</span> <span class="o">-</span> <span class="mi">60</span><span class="p">)</span> <span class="o">/</span> <span class="mi">10</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="mi">56</span>
+<span class="n">Level</span> <span class="mi">3</span> <span class="n">Growth</span> <span class="n">Rate</span> <span class="o">=</span> <span class="mi">56</span> <span class="o">-</span> <span class="p">((</span><span class="mi">100</span> <span class="o">-</span> <span class="mi">60</span><span class="p">)</span> <span class="o">/</span> <span class="mi">10</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="mi">52</span>
+<span class="n">Level</span> <span class="mi">4</span> <span class="n">Growth</span> <span class="n">Rate</span> <span class="o">=</span> <span class="mi">52</span> <span class="o">-</span> <span class="mi">4</span> <span class="o">=&gt;</span> <span class="mi">48</span>
+<span class="o">...</span>
+</pre></div>
+</div>
+<p>On failure, growth rate is increased by <code class="docutils literal notranslate"><span class="pre">true_growth_rate</span> <span class="pre">/</span> <span class="pre">variance</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">*</span><span class="n">Repeated</span> <span class="n">Failed</span> <span class="n">Level</span> <span class="n">Ups</span><span class="o">*</span>
+<span class="kc">True</span> <span class="n">Growth</span> <span class="n">Rate</span> <span class="o">=</span> <span class="mi">60</span>
+<span class="n">Level</span> <span class="mi">1</span> <span class="n">Growth</span> <span class="n">Rate</span> <span class="o">=</span> <span class="mi">60</span>
+<span class="n">Level</span> <span class="mi">2</span> <span class="n">Growth</span> <span class="n">Rate</span> <span class="o">=</span> <span class="mi">60</span> <span class="o">+</span> <span class="p">(</span><span class="mi">60</span> <span class="o">/</span> <span class="mi">10</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="mi">66</span>
+<span class="n">Level</span> <span class="mi">3</span> <span class="n">Growth</span> <span class="n">Rate</span> <span class="o">=</span> <span class="mi">66</span> <span class="o">+</span> <span class="p">(</span><span class="mi">60</span> <span class="o">/</span> <span class="mi">10</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="mi">72</span>
+<span class="n">Level</span> <span class="mi">4</span> <span class="n">Growth</span> <span class="n">Rate</span> <span class="o">=</span> <span class="mi">72</span> <span class="o">+</span> <span class="mi">6</span> <span class="o">=&gt;</span> <span class="mi">78</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="average-stats">
+<h3>Average Stats<a class="headerlink" href="Difficulty-Modes-Editor.html#average-stats" title="Link to this heading"></a></h3>
+<p>All methods result in the unit having the same average stat as they level up. For instance, a level 1 unit that starts with a Speed stat of 5 and a speed growth of 40, under all three methods, will end up with, on average, a Speed stat of 13 at level 20. The only difference is how wide the variance on the results will be, with the <em>Fixed</em> method having no variance, and the <em>Dynamic</em> method have reduced variance compared to the <em>Random</em> method.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="Constants-Editor.html" class="btn btn-neutral float-left" title="Constants Editor" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="Supports-Editor.html" class="btn btn-neutral float-right" title="Supports Editor" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, rainlash.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
