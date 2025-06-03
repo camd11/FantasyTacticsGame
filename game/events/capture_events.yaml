@@ -1,0 +1,86 @@
+# game/events/capture_events.yaml
+
+# This file outlines the skeleton for the Capture mechanic's events and related skills
+# as described in the Lex Talionis "Creating-Capture" tutorial.
+# Event scripts are intended for use within the Lex Talionis event editor.
+# Skill definitions are conceptual and typically managed in data files (e.g., skills.csv or project.json).
+
+# --- Skills (Conceptual Definitions) ---
+# These would typically be in a skills.csv or managed by the engine's database editor.
+#
+# - NID: CaptureCommand
+#   Name: Capture
+#   Desc: "Halves STR, MAG, SKL, LCK, SPD for this attack. If foe is defeated and user's CON > foe's CON, capture foe."
+#   Components:
+#     - type: combat_art # Component key might be just 'combat_art'
+#       value: CaptureArtEffect
+#     - type: display_name
+#       value: Capture
+#     # Other relevant components: target_enemy, etc.
+#
+# - NID: CaptureArtEffect
+#   Name: Capture Art Logic (Hidden)
+#   Components:
+#     - type: event_after_initiated_combat
+#       value: Global_Capture_Event
+#     - type: stat_halve # Component key might be 'stat_halve' or similar
+#       value: "STR,MAG,SKL,LCK,SPD" # Comma-separated string as per tutorial image
+#     - type: hidden # Component key might be 'hidden' with a boolean value or just its presence implies true
+#       value: true
+#     - type: no_animation
+#       value: true
+#     # - type: combat_art_always_available
+#     #   value: true # Or specific availability conditions
+
+# --- Event Definitions ---
+# These would be created in the Lex Talionis Event Editor.
+# The 'script_lines' below represent the commands entered into the editor.
+
+parsed_event_scripts:
+  Global_Capture_Event: # NID for this event script
+    name: "Capture Logic" # Display name in editor
+    level: Global # Scope of the event
+    trigger: None # This event is called directly by the 'CaptureArtEffect' skill
+    script_lines:
+      # Condition: Defender HP <= 0 AND Attacker CON > Defender CON AND Attacker not already rescuing
+      - "if;game.get_unit(unit.nid).get_hp() <= 0 and game.get_unit(unit.nid).stats['CON'] < game.get_unit(unit2.nid).stats['CON'] and not unit.traveler"
+      - "  resurrect;{e:unit2.nid}"
+      - "  change_team;{e:unit2.nid};player"
+      - "  pair_up;{e:unit2.nid};{e:unit.nid}" # Attacker (unit) rescues defender (unit2). {unit_being_rescued_nid};{rescuer_nid}
+      - "  set_current_hp;{e:unit2.nid};0" # Set to 0 HP so they die if dropped
+      # Else If Condition: Defender is unarmed OR has a non-countering weapon
+      - "elif;not game.get_unit(unit2.nid).get_weapon() or 'cannot_counter' in game.get_unit(unit2.nid).get_weapon().tags"
+      - "  resurrect;{e:unit2.nid}"
+      - "  change_team;{e:unit2.nid};player"
+      - "  pair_up;{e:unit2.nid};{e:unit.nid}"
+      - "  set_current_hp;{e:unit2.nid};0"
+      - "end"
+
+  Search_For_Empty_HP: # Optional supporting event from tutorial
+    name: "Handle Dropped 0 HP Units (Wait)"
+    level: Global
+    trigger: unit_wait # Runs when any unit finishes its action
+    script_lines:
+      # Loop through all units on the map and call 'Kill_Empty_HP_Unit' for each
+      - "loop_units;[u.nid for u in game.units if u.position];Kill_Empty_HP_Unit"
+
+  Kill_Empty_HP_Unit: # Optional supporting event from tutorial
+    name: "Kill Unit if HP is 0"
+    level: Global
+    trigger: None # Called by 'Search_For_Empty_HP' via loop_units
+    script_lines:
+      - "if;unit.get_hp() == 0"
+      - "  kill_unit;{e:unit.nid}"
+      - "end"
+
+  Kill_0_HP_Travelers_End_Chapter: # Optional supporting event from tutorial
+    name: "Handle Captured Units at Chapter End"
+    level: Global
+    trigger: None # Called by a custom loop_units command before 'win_game'
+    script_lines:
+      # This event is intended to be called by a line like:
+      # loop_units;[u.nid for u in game.get_player_units() if u.traveler];Kill_0_HP_Travelers_End_Chapter
+      # 'unit.traveler' here refers to the NID of the unit being carried.
+      - "if;game.get_unit(unit.traveler) and game.get_unit(unit.traveler).get_hp() == 0"
+      - "  kill_unit;{eval:game.get_unit(unit.traveler)};immediate" # eval might be needed if unit.traveler is just a string NID
+      - "end"

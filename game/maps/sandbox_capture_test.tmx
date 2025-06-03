@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.4" tiledversion="1.4.3" orientation="orthogonal" renderorder="right-down" width="10" height="10" tilewidth="16" tileheight="16" infinite="0" nextlayerid="4" nextobjectid="3">
+ <tileset firstgid="1" name="placeholder_tiles" tilewidth="16" tileheight="16" tilecount="1" columns="1">
+  <image source="../resources/placeholder_tiles.png" width="16" height="16"/>
+ </tileset>
+ <layer id="1" name="Tile Layer 1" width="10" height="10">
+  <data encoding="csv">
+1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1
+</data>
+ </layer>
+ <objectgroup id="2" name="Unit Layer">
+  <object id="1" name="PlayerUnit" type="unit" gid="1" x="16" y="32">
+   <properties>
+    <property name="team" value="player"/>
+    <property name="class" value="GenericClass"/>
+    <property name="level" type="int" value="1"/>
+    <property name="items" value="Iron Sword"/>
+   </properties>
+  </object>
+  <object id="2" name="EnemyUnit" type="unit" gid="1" x="128" y="32">
+   <properties>
+    <property name="team" value="enemy"/>
+    <property name="class" value="GenericClass"/>
+    <property name="level" type="int" value="1"/>
+    <property name="items" value="Iron Lance"/>
+   </properties>
+  </object>
+ </objectgroup>
+</map>
