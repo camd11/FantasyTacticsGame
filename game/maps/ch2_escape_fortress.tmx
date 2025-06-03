@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="20" height="30" tilewidth="16" tileheight="16" infinite="0" nextlayerid="4" nextobjectid="2">
+ <properties>
+  <property name="is_indoor" type="bool" value="true"/>
+  <property name="music" value="FortressTheme"/> <!-- Placeholder music -->
+  <property name="objective" value="Escape the fortress with Leif."/>
+ </properties>
+ <tileset firstgid="1" name="placeholder_indoor_tileset" tilewidth="16" tileheight="16" tilecount="256" columns="16">
+  <image source="../../FE-Repo/Tilesets/Arena/Arena.png" width="256" height="256"/> <!-- Example tileset, replace as needed -->
+ </tileset>
+ <layer id="1" name="Tile Layer 1" width="20" height="30">
+  <data encoding="csv">
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,
+1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1
+</data>
+ </layer>
+ <objectgroup id="2" name="Regions">
+  <object id="1" name="EscapePoint_1" type="EscapePoint" x="160" y="16" width="32" height="16"/> 
+  <!-- Example EscapePoint. Adjust x, y, width, height as needed. Add more if desired. -->
+ </objectgroup>
+ <!-- Add unit groups (player, enemy, other) and specific units here using Tiled -->
+ <!-- Example Player Unit Group -->
+ <!--
+ <objectgroup id="3" name="PlayerUnits">
+  <object name="Leif" type="unit" gid="1" x="80" y="400" width="16" height="16">
+   <properties>
+    <property name="team" value="player"/>
+    <property name="class" value="Lord"/> <!-- Ensure this matches your classes.json -->
+    <property name="level" type="int" value="1"/>
+    <property name="items" value="LightBrand,Vulnerary"/> <!-- Ensure these match your items.json -->
+    <property name="movement_stars" type="int" value="1"/>
+    <property name="leadership_stars" type="int" value="1"/>
+   </properties>
+  </object>
+  <object name="MountedUnit" type="unit" gid="1" x="96" y="400" width="16" height="16">
+   <properties>
+    <property name="team" value="player"/>
+    <property name="class" value="Cavalier"/> <!-- Or PegasusKnight, etc. -->
+    <property name="level" type="int" value="1"/>
+   </properties>
+  </object>
+ </objectgroup>
+ -->
+</map>

@@ -1,0 +1,272 @@
+[
+  {
+    "nid": "IronSword",
+    "name": "Iron Sword",
+    "desc": "A standard iron sword.",
+    "icon_nid": "ItemIcons",
+    "icon_index": 0,
+    "components": [
+      ["Weapon"],
+      ["Weapon Type", "Sword"],
+      ["Weapon Rank", "E"],
+      ["Damage", 5],
+      ["Hit", 90],
+      ["Crit", 0],
+      ["Weight", 5],
+      ["Minimum Range", 1],
+      ["Maximum Range", 1],
+      ["Uses", 46],
+      ["WEXP", 1],
+      ["Value", 460]
+    ]
+  },
+  {
+    "nid": "IronLance",
+    "name": "Iron Lance",
+    "desc": "A standard iron lance.",
+    "icon_nid": "ItemIcons",
+    "icon_index": 1,
+    "components": [
+      ["Weapon"],
+      ["Weapon Type", "Lance"],
+      ["Weapon Rank", "E"],
+      ["Damage", 7],
+      ["Hit", 80],
+      ["Crit", 0],
+      ["Weight", 8],
+      ["Minimum Range", 1],
+      ["Maximum Range", 1],
+      ["Uses", 40],
+      ["WEXP", 1],
+      ["Value", 640]
+    ]
+  },
+  {
+    "nid": "IronAxe",
+    "name": "Iron Axe",
+    "desc": "A standard iron axe.",
+    "icon_nid": "ItemIcons",
+    "icon_index": 2,
+    "components": [
+      ["Weapon"],
+      ["Weapon Type", "Axe"],
+      ["Weapon Rank", "E"],
+      ["Damage", 9],
+      ["Hit", 70],
+      ["Crit", 0],
+      ["Weight", 12],
+      ["Minimum Range", 1],
+      ["Maximum Range", 1],
+      ["Uses", 35],
+      ["WEXP", 1],
+      ["Value", 700]
+    ]
+  },
+  {
+    "nid": "IronBow",
+    "name": "Iron Bow",
+    "desc": "A standard iron bow.",
+    "icon_nid": "ItemIcons",
+    "icon_index": 3,
+    "components": [
+      ["Weapon"],
+      ["Weapon Type", "Bow"],
+      ["Weapon Rank", "E"],
+      ["Damage", 6],
+      ["Hit", 70],
+      ["Crit", 0],
+      ["Weight", 7],
+      ["Minimum Range", 2],
+      ["Maximum Range", 2],
+      ["Uses", 40],
+      ["WEXP", 1],
+      ["Value", 560]
+    ]
+  },
+  {
+    "nid": "FireTome",
+    "name": "Fire",
+    "desc": "Basic anima magic. Hurls a ball of fire.",
+    "icon_nid": "ItemIcons",
+    "icon_index": 4,
+    "components": [
+      ["Weapon"],
+      ["Magic"],
+      ["Weapon Type", "Anima"],
+      ["Weapon Rank", "E"],
+      ["Damage", 5],
+      ["Hit", 90],
+      ["Crit", 0],
+      ["Weight", 2],
+      ["Minimum Range", 1],
+      ["Maximum Range", 2],
+      ["Uses", 30],
+      ["WEXP", 1],
+      ["Value", 420]
+    ]
+  },
+  {
+    "nid": "HealStaff",
+    "name": "Heal",
+    "desc": "Restores a small amount of HP to an ally.",
+    "icon_nid": "ItemIcons",
+    "icon_index": 5,
+    "components": [
+      ["Spell"],
+      ["Targets Allies"],
+      ["Magic Heal", 10],
+      ["Hit", 60],
+      ["Weight", 3],
+      ["Minimum Range", 1],
+      ["Maximum Range", 1],
+      ["Uses", 30],
+      ["WEXP", 10],
+      ["Value", 600],
+      ["Fatigue", 1]
+    ]
+  },
+  {
+    "nid": "Vulnerary",
+    "name": "Vulnerary",
+    "desc": "Restores 10 HP.",
+    "icon_nid": "ItemIcons",
+    "icon_index": 6,
+    "components": [
+      ["Usable"],
+      ["Usable in Base"],
+      ["Targets Allies"],
+      ["Heal", 10],
+      ["Uses", 3],
+      ["Value", 300]
+    ]
+  },
+  {
+    "nid": "StaminaDrink",
+    "name": "Stamina Drink",
+    "desc": "Resets the user's fatigue to 0.",
+    "icon_nid": "ItemIcons",
+    "icon_index": 7,
+    "components": [
+      ["Usable"],
+      ["Usable in Base"],
+      ["Targets Allies"],
+      ["event_on_use", "Use_Stamina_Drink_Event"],
+      ["Uses", 1],
+      ["Value", 1000]
+    ]
+  },
+  {
+    "nid": "Lockpick",
+    "name": "Lockpick",
+    "desc": "Opens doors and chests. Thief-only.",
+    "icon_nid": "ItemIcons",
+    "icon_index": 8,
+    "components": [
+      ["Usable"],
+      ["Targets Anything"],
+      ["Unlock Staff"],
+      ["Uses", 15],
+      ["Value", 1200],
+      ["Skill Requirement", "ThiefSkillNID"]
+    ]
+  },
+  {
+    "nid": "TorchStaff",
+    "name": "Torch",
+    "desc": "Illuminates a wide area for 5 turns.",
+    "icon_nid": "ItemIcons",
+    "icon_index": 9,
+    "components": [
+      ["Spell"],
+      ["Targets Allies"],
+      ["Minimum Range", 0],
+      ["Maximum Range", 0],
+      ["Status on Use", "TorchLightStatusID"],
+      ["Hit", 100],
+      ["Weight", 2],
+      ["Uses", 10],
+      ["Value", 500],
+      ["Fatigue", 1]
+    ]
+  },
+  {
+    "nid": "IronDagger",
+    "name": "Iron Dagger",
+    "desc": "A basic dagger, light and quick.",
+    "icon_nid": "ItemIcons",
+    "icon_index": 10,
+    "components": [
+      ["Weapon"],
+      ["Weapon Type", "Knife"],
+      ["Weapon Rank", "E"],
+      ["Damage", 3],
+      ["Hit", 95],
+      ["Crit", 5],
+      ["Weight", 2],
+      ["Minimum Range", 1],
+      ["Maximum Range", 1],
+      ["Uses", 50],
+      ["WEXP", 1],
+      ["Value", 300]
+    ]
+  },
+  {
+    "nid": "OffensiveStaff_LowHit",
+    "name": "Feeble Hex",
+    "desc": "A weak offensive staff, prone to missing. Deals minor magic damage.",
+    "icon_nid": "ItemIcons",
+    "icon_index": 11,
+    "components": [
+      ["Spell"],
+      ["Magic"],
+      ["Targets Enemies"],
+      ["Damage", 5],
+      ["Hit", 40],
+      ["Crit", 0],
+      ["Weight", 4],
+      ["Minimum Range", 1],
+      ["Maximum Range", 2],
+      ["Uses", 15],
+      ["WEXP", 2],
+      ["Value", 750],
+      ["Fatigue", 2]
+    ]
+  },
+  {
+    "nid": "Vulnerary_Stealable",
+    "name": "Vulnerary (S)",
+    "desc": "Restores 10 HP. Seems easy to pilfer.",
+    "icon_nid": "ItemIcons",
+    "icon_index": 6,
+    "components": [
+      ["Usable"],
+      ["Usable in Base"],
+      ["Targets Allies"],
+      ["Heal", 10],
+      ["Uses", 1],
+      ["Value", 150],
+      ["Weight", 1]
+    ]
+  },
+  {
+    "nid": "SteelAxe",
+    "name": "Steel Axe",
+    "desc": "A heavy steel axe.",
+    "icon_nid": "ItemIcons",
+    "icon_index": 12,
+    "components": [
+      ["Weapon"],
+      ["Weapon Type", "Axe"],
+      ["Weapon Rank", "D"],
+      ["Damage", 11],
+      ["Hit", 65],
+      ["Crit", 0],
+      ["Weight", 15],
+      ["Minimum Range", 1],
+      ["Maximum Range", 1],
+      ["Uses", 30],
+      ["WEXP", 1],
+      ["Value", 900]
+    ]
+  }
+]

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="10" height="8" tilewidth="16" tileheight="16" infinite="0" nextlayerid="2" nextobjectid="1">
+ <layer id="1" name="Tile Layer 1" width="10" height="8">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+ <!-- TODO: Add a simple tileset, e.g., a basic plains or indoor tile from FE-Repo/ or lt-maker/ -->
+ <!-- This map is primarily for showing the deployment list. Player units will be placed via events. -->
+ <!-- If a small encounter is desired, add a few enemy units here or via events. -->
+</map>

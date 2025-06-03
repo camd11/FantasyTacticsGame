@@ -1,0 +1,85 @@
+# Event Script for Chapter 3b - Fatigue Results
+# Purpose: Show the results of fatigue lock-out from ch3a.
+# Player units available for deployment should reflect fatigue status.
+
+music:
+  player_phase: "Player Phase Music" # TODO: Replace with actual music key
+  enemy_phase: "Enemy Phase Music"   # TODO: Replace with actual music key
+  # ... other music keys as needed
+
+level_vars:
+  map_id: "ch3b_fatigue_results"
+  # next_map_id: "ch4_next_story_map" # TODO: Define if this leads to another chapter
+  title: "Chapter 3b - The Aftermath"
+  objective: "Prepare for the next engagement." # Or a simple objective if playable
+  # The deployment phase is key here. The game engine should automatically
+  # filter out units that are fatigued based on the fatigue_events.py logic
+  # that ran at the end of ch3a_fatigue_trial.
+
+# Units for this map. Player units are typically defined by who is available
+# from the roster after fatigue checks. Enemies can be predefined if there's an encounter.
+units:
+  # Player units are typically handled by the deployment screen logic.
+  # The engine should present a list of available (non-fatigued) units.
+  # No explicit player unit definitions are usually needed here unless
+  # you want to force specific non-fatigued units for story reasons,
+  # or if this map doesn't have a standard deployment phase.
+
+  # Example: A small, token enemy force if this map has a brief encounter.
+  # Remove or adjust if this is just a results/deployment screen.
+  - team: enemy
+    ai: "Stationary" # Or None if no combat
+    units:
+      - id: "Enemy_Scout1"
+        class: "Thief" # TODO: Replace with actual class
+        level: 1
+        position: [8, 6] # TODO: Adjust position
+        items: ["IronDagger"]
+      # - id: "Enemy_Scout2"
+      #   class: "Thief"
+      #   level: 1
+      #   position: [8, 2]
+      #   items: ["IronDagger"]
+
+# Event definitions
+events:
+  on_level_start:
+    - show_objective: {text: "Observe fatigued units and prepare."} # TODO: Adjust objective text
+    # The core of this map is the deployment phase.
+    # The game engine, after running fatigue_events.py from the end of ch3a,
+    # should ensure that the deployment list for ch3b correctly shows
+    # which units are unavailable due to fatigue.
+
+    # If there are player units to spawn (e.g., a fixed starting unit like the lord),
+    # they would be defined in the 'units' section or spawned here.
+    # However, for demonstrating fatigue, the focus is on who *cannot* be deployed.
+    - spawn_group: {group: units} # Spawns any predefined units (e.g., enemies)
+
+  # Win Condition:
+  # Could be as simple as starting the map and seeing the deployment,
+  # or a very simple objective like "Survive 1 turn" or "Move Lord to X,Y".
+  on_turn_change:
+    - if:
+        condition: "game.turncount == 2" # Example: End after 1 full turn
+        actions:
+          - chapter_victory:
+              # next_chapter_event_file: "game/events/ch4_next_story_map_events.yaml" # TODO: Define next chapter
+              # Or, if this is the end of a demo sequence:
+              # - game_win: {}
+              # - alert: {text: "Fatigue demonstration complete."}
+              - alert: {text: "Fatigue lock-out observed. Proceeding..."}
+              # - transition_to_world_map: {} # Or similar next step
+
+  # Optional: If there's a small combat encounter
+  # on_death:
+  #   - if:
+  #       condition: "all_enemies_defeated()" # Assuming a helper function or equivalent check
+  #       actions:
+  #         - chapter_victory:
+  #             # next_chapter_event_file: "..."
+  #             - alert: {text: "Enemies cleared. Fatigue lock-out observed."}
+
+
+# This map heavily relies on the game's fatigue system and deployment screen
+# correctly reflecting the state of units after ch3a_fatigue_trial and the
+# execution of fatigue_events.py.

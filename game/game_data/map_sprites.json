@@ -1,0 +1,52 @@
+[
+    {
+        "nid": "lord_leif",
+        "map_sprite_name": "lord_leif",
+        "layer": 3,
+        "speed": 160,
+        "standing_frames": [0, 1, 2],
+        "moving_frames": [0, 1, 2, 3],
+        "sprite_dim": [16, 16],
+        "offset": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    },
+    {
+        "nid": "cavalier_m",
+        "map_sprite_name": "cavalier_m",
+        "layer": 3,
+        "speed": 160,
+        "standing_frames": [0, 1, 2],
+        "moving_frames": [0, 1, 2, 3],
+        "sprite_dim": [32, 32],
+        "offset": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    },
+    {
+        "nid": "thief_m",
+        "map_sprite_name": "thief_m",
+        "layer": 3,
+        "speed": 160,
+        "standing_frames": [0, 1, 2],
+        "moving_frames": [0, 1, 2, 3],
+        "sprite_dim": [16, 16],
+        "offset": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    },
+    {
+        "nid": "mage_m",
+        "map_sprite_name": "mage_m",
+        "layer": 3,
+        "speed": 160,
+        "standing_frames": [0, 1, 2],
+        "moving_frames": [0, 1, 2, 3],
+        "sprite_dim": [16, 16],
+        "offset": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    },
+    {
+        "nid": "pegasus_knight_f",
+        "map_sprite_name": "pegasus_knight_f",
+        "layer": 3,
+        "speed": 160,
+        "standing_frames": [0, 1, 2],
+        "moving_frames": [0, 1, 2, 3],
+        "sprite_dim": [32, 32],
+        "offset": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    }
+]

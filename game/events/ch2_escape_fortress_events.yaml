@@ -1,0 +1,135 @@
+# Chapter 2: Escape the Fortress - Event Script
+
+# Global imports for event functions (if using Python-based events)
+# from game.events.mount_events import Indoor_Map_Auto_Dismount
+# from game.events.leadership_star_events import Global_Leadership_Star_Event
+# from game.events.escape_events import Global_Escape_Event
+
+# --- Level Setup ---
+level_prep:
+  - trigger: on_level_start
+    event_name: Setup_Ch2_Fortress
+    commands:
+      - comment: "Initialize Chapter 2: Escape the Fortress"
+      - music: "FortressTheme"  # Match with map property or override
+      - weather: None  # Indoor map, so no weather
+      # Trigger Indoor Map Auto Dismount
+      # In a pure YAML system, this might be a flag the engine checks.
+      # If using Python events, you'd call the function.
+      # For now, assume the engine handles `is_indoor: true` from the TMX.
+      # If specific event call is needed:
+      # - call_event: {event_name: "Indoor_Map_Auto_Dismount"} # Assumes this event is registered globally or imported
+      - comment: "Indoor_Map_Auto_Dismount should be active due to map property 'is_indoor: true'"
+
+      # Activate Leadership Star Event
+      # - call_event: {event_name: "Global_Leadership_Star_Event", condition: "always"} # Assumes global registration
+      - comment: "Global_Leadership_Star_Event should be active (typically registered in global_triggers.yaml)"
+
+      # Activate Movement Star Event
+      - comment: "Global_Movement_Star_Event should be active (typically registered in global_triggers.yaml)"
+
+      # Activate Global Escape Event
+      # - call_event: {event_name: "Global_Escape_Event", condition: "always"} # Assumes global registration
+      - comment: "Global_Escape_Event should be active (typically registered in global_triggers.yaml)"
+      - display_chapter_title: {title: "Chapter 2", subtitle: "Escape the Fortress"}
+
+# --- Unit Deployment ---
+# Actual unit positions and initial properties are defined in the .tmx file.
+# This section can be used for conditional deployments or reinforcements.
+# For now, we assume initial deployment is handled by the TMX loader.
+
+# Example: Reinforcements (if needed later)
+# reinforcements_turn_3:
+#   - trigger: on_turn_start
+#     condition: game.turn_count == 3
+#     event_name: Enemy_Reinforcements_Ch2
+#     commands:
+#       - add_unit: {unit_id: "EnemySoldier_Reinforce1", position: [1, 5], team: "enemy", ai_group: "Aggressive"}
+#       - add_unit: {unit_id: "EnemyArcher_Reinforce1", position: [3, 5], team: "enemy", ai_group: "HoldAndShoot"}
+
+# --- Enemy AI ---
+# Basic AI behaviors. More complex AI can be defined here or in separate AI scripts.
+enemy_ai_setup:
+  - trigger: on_level_start # Or on_enemy_phase_start for dynamic AI changes
+    event_name: Setup_Enemy_AI_Ch2
+    commands:
+      - set_ai_group_behavior:
+          group_name: "FortressGuards" # Assign this AI group to enemies in Tiled
+          behavior: "guard_area" # Example behavior: stay near post, attack if player in range
+          target_area: [[5,5], [15,15]] # Example area
+          options: { pursuit_range: 5 }
+      - set_ai_group_behavior:
+          group_name: "Chasers"
+          behavior: "chase_player" # Example: actively pursue player units
+          options: { priority_target: "Lord" } # e.g., target Leif
+
+# --- Win Condition: Lord Escapes ---
+win_condition_lord_escapes:
+  - trigger: on_unit_escape # This trigger would be part of Global_Escape_Event logic
+    condition: event.unit.nid == "Leif" and event.region.name.startswith("EscapePoint")
+    event_name: Lord_Escaped_Ch2
+    commands:
+      - comment: "Leif has escaped!"
+      - music: "VictoryTheme" # Placeholder
+      - dialog:
+          speaker: "Leif"
+          text: "We made it out! Let's move quickly."
+      - win_game
+
+# --- Loss Conditions ---
+loss_condition_leif_defeated:
+  - trigger: on_unit_death
+    condition: event.unit.nid == "Leif"
+    event_name: Leif_Defeated_Ch2
+    commands:
+      - comment: "Leif has been defeated."
+      - music: "GameOverTheme" # Placeholder
+      - dialog:
+          speaker: "Narrator" # Or a surviving ally
+          text: "Leif has fallen... Our hopes are lost."
+      - game_over
+
+loss_condition_all_players_defeated:
+  - trigger: on_phase_end # Check at the end of player or enemy phase
+    condition: len(game.get_units_by_team('player')) == 0 and game.turn_count > 0 # Ensure not on turn 0 before deployment
+    event_name: All_Players_Defeated_Ch2
+    commands:
+      - comment: "All player units have been defeated."
+      - music: "GameOverTheme" # Placeholder
+      - dialog:
+          speaker: "Narrator"
+          text: "All our forces have been vanquished..."
+      - game_over
+
+# --- Other Chapter-Specific Events ---
+# Example: A character-specific dialogue on reaching a certain point
+# some_event_trigger:
+#   - trigger: on_region_stand
+#     condition: event.unit.nid == "SomeUnit" and event.region.name == "SecretPassageInfo"
+#     event_name: Found_Secret_Info_Ch2
+#     commands:
+#       - dialog:
+#           speaker: "SomeUnit"
+#           text: "I found a hidden note! It speaks of a quicker way out."
+#       - give_item: {unit_nid: "SomeUnit", item_nid: "SecretMap"}
+
+# --- Ensure Global Events are Active ---
+# The following events are assumed to be part of global_triggers.yaml or similar
+# and thus active on all maps unless specifically disabled.
+# If they need explicit activation per map, uncomment and adjust.
+
+# - event: Global_Leadership_Star_Event
+#   trigger: on_combat_start, on_turn_start # Or however it's triggered
+#   condition: "always" # Or map-specific conditions
+
+# - event: Global_Movement_Star_Event
+#   trigger: on_turn_start # Or however it's triggered
+#   condition: "always"
+
+# - event: Global_Escape_Event
+#   trigger: on_command_select # e.g., when "Escape" command is chosen on an EscapePoint
+#   condition: "always"
+
+# - event: Indoor_Map_Auto_Dismount
+#   trigger: on_level_start
+#   condition: game.level.properties.get('is_indoor', False) == True

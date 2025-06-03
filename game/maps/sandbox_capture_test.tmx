@@ -18,20 +18,38 @@
 </data>
  </layer>
  <objectgroup id="2" name="Unit Layer">
-  <object id="1" name="PlayerUnit" type="unit" gid="1" x="16" y="32">
+  <object id="1" name="Leif" type="unit" gid="1" x="16" y="32">
    <properties>
     <property name="team" value="player"/>
-    <property name="class" value="GenericClass"/>
+    <property name="nid" value="Leif"/>
+    <property name="class" value="Lord_Leif"/> <!-- nid from units.json will override this, but good for clarity -->
     <property name="level" type="int" value="1"/>
-    <property name="items" value="Iron Sword"/>
+    <property name="items" value="IronSword,LightSword"/>
    </properties>
   </object>
-  <object id="2" name="EnemyUnit" type="unit" gid="1" x="128" y="32">
+  <object id="2" name="Enemy_Brigand_CON3" type="unit" gid="1" x="128" y="32">
    <properties>
     <property name="team" value="enemy"/>
-    <property name="class" value="GenericClass"/>
+    <property name="nid" value="Enemy_Brigand_CON3"/>
+    <property name="class" value="Thief_FE5"/>
     <property name="level" type="int" value="1"/>
-    <property name="items" value="Iron Lance"/>
+    <property name="items" value="IronSword"/>
+   </properties>
+  </object>
+  <object id="3" name="EnemyUnit_Unarmed" type="unit" gid="1" x="128" y="64">
+   <properties>
+    <property name="team" value="enemy"/>
+    <property name="class" value="Archer_FE5"/>
+    <property name="level" type="int" value="1"/>
+    <property name="items" value=""/> <!-- Unarmed -->
+   </properties>
+  </object>
+  <object id="4" name="AllyUnit_ToRescue" type="unit" gid="1" x="16" y="64">
+   <properties>
+    <property name="team" value="player"/>
+    <property name="class" value="PegasusKnight"/> <!-- CON 5 -->
+    <property name="level" type="int" value="1"/>
+    <property name="items" value="IronLance"/>
    </properties>
   </object>
  </objectgroup>

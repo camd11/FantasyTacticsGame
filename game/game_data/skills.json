@@ -1,0 +1,573 @@
+[
+  {
+    "nid": "CarryingPenalty",
+    "name": "Carrying Penalty",
+    "desc": "Str, Mag, Skl, Spd, Def are halved while carrying a unit.",
+    "icon_nid": "GenericSkill", 
+    "icon_index": [0, 0],
+    "components": [
+      {
+        "nid": "stat_multiplier",
+        "name": "Stat Multiplier",
+        "value": [
+          ["STR", 0.5],
+          ["MAG", 0.5],
+          ["SKL", 0.5],
+          ["SPD", 0.5],
+          ["DEF", 0.5]
+        ]
+      },
+      {
+        "nid": "hidden",
+        "name": "Hidden"
+      }
+    ]
+  },
+  {
+    "nid": "CaptureArtEffect",
+    "name": "Capture Art Effect (Hidden)",
+    "desc": "Applies stat penalties for capture and triggers capture logic.",
+    "icon_nid": "GenericSkill",
+    "icon_index": [0, 0],
+    "components": [
+      {
+        "nid": "stat_multiplier",
+        "name": "Stat Multiplier (Capture Attempt)",
+        "value": [
+          ["STR", 0.5],
+          ["MAG", 0.5],
+          ["SKL", 0.5],
+          ["SPD", 0.5],
+          ["DEF", 0.5]
+        ]
+      },
+      {
+        "nid": "event_after_initiated_combat",
+        "name": "Event After Initiated Combat",
+        "value": "Global_Capture_Event"
+      },
+      {
+        "nid": "hidden",
+        "name": "Hidden"
+      },
+      {
+        "nid": "no_animation",
+        "name": "No Animation",
+        "value": true
+      }
+    ]
+  },
+  {
+    "nid": "CaptureCommand",
+    "name": "Capture",
+    "desc": "Halves Str/Mag/Skl/Spd/Def for this attack. If foe is defeated & user's CON > foe's CON (or foe unarmed), capture foe.",
+    "icon_nid": "GenericSkill",
+    "icon_index": [0, 0],
+    "components": [
+      {
+        "nid": "combat_art",
+        "name": "Combat Art",
+        "value": "CaptureArtEffect"
+      },
+      {
+        "nid": "target_enemy",
+        "name": "Target Enemy"
+      },
+      {
+        "nid": "requires_wexp",
+        "name": "Requires Wexp",
+        "value": false
+      }
+    ]
+  },
+  {
+    "nid": "CarryingMovementPenalty",
+    "name": "Carrying Movement Penalty",
+    "desc": "MOV is halved while carrying a heavy unit.",
+    "icon_nid": "GenericSkill",
+    "icon_index": [0, 0],
+    "components": [
+      {
+        "nid": "stat_multiplier",
+        "name": "Stat Multiplier (Movement)",
+        "value": [
+          ["MOV", 0.5]
+        ]
+      },
+      {
+        "nid": "hidden",
+        "name": "Hidden"
+      }
+    ]
+  },
+  {
+    "nid": "RescueAllyArtEffect",
+    "name": "Rescue Ally Art Effect (Hidden)",
+    "desc": "Triggers allied rescue logic.",
+    "icon_nid": "GenericSkill",
+    "icon_index": [0, 0],
+    "components": [
+      {
+        "nid": "event_after_initiated_combat",
+        "name": "Event After Action",
+        "value": "Global_Allied_Rescue_Event"
+      },
+      {
+        "nid": "hidden",
+        "name": "Hidden"
+      },
+      {
+        "nid": "no_animation",
+        "name": "No Animation",
+        "value": true
+      }
+    ]
+  },
+  {
+    "nid": "RescueAllyCommand",
+    "name": "Rescue Ally",
+    "desc": "Carry an adjacent ally if user's CON > ally's CON. Incurs stat penalties.",
+    "icon_nid": "GenericSkill",
+    "icon_index": [0, 0],
+    "components": [
+      {
+        "nid": "combat_art",
+        "name": "Combat Art (Non-Combat)",
+        "value": "RescueAllyArtEffect"
+      },
+      {
+        "nid": "target_ally",
+        "name": "Target Ally"
+      },
+      {
+        "nid": "requires_wexp",
+        "name": "Requires Wexp",
+        "value": false
+      },
+      {
+        "nid": "no_combat",
+        "name": "No Combat",
+        "value": true
+      }
+    ]
+  },
+  {
+    "nid": "FatigueAccumulator",
+    "name": "Fatigue Accumulator",
+    "desc": "Unit gains fatigue after performing an action.",
+    "icon_nid": "GenericSkill",
+    "icon_index": [0, 0],
+    "components": [
+      {
+        "nid": "event_after_action",
+        "name": "Event After Action",
+        "value": "Global_Gain_Fatigue_Event"
+      },
+      {
+        "nid": "hidden",
+        "name": "Hidden"
+      }
+    ]
+  },
+  {
+    "nid": "Fatigued_Out",
+    "name": "Fatigued Out",
+    "desc": "Unit is too fatigued to be deployed in the next chapter.",
+    "icon_nid": "GenericSkill",
+    "icon_index": [1, 0],
+    "components": [
+      {
+        "nid": "prevent_deployment",
+        "name": "Prevent Deployment"
+      },
+      {
+        "nid": "status",
+        "name": "Status"
+      },
+      {
+        "nid": "time",
+        "name": "Duration (Chapters)",
+        "value": 1
+      }
+    ]
+  },
+  {
+    "nid": "LeadershipStar_1",
+    "name": "Leadership Star (1)",
+    "desc": "Grants 1 Leadership Star.",
+    "icon_nid": "GenericSkill",
+    "icon_index": [0, 1],
+    "components": [{"nid": "hidden", "name": "Hidden"}]
+  },
+  {
+    "nid": "LeadershipStar_2",
+    "name": "Leadership Star (2)",
+    "desc": "Grants 2 Leadership Stars.",
+    "icon_nid": "GenericSkill",
+    "icon_index": [0, 1],
+    "components": [{"nid": "hidden", "name": "Hidden"}]
+  },
+  {
+    "nid": "LeadershipStar_3",
+    "name": "Leadership Star (3)",
+    "desc": "Grants 3 Leadership Stars.",
+    "icon_nid": "GenericSkill",
+    "icon_index": [0, 1],
+    "components": [{"nid": "hidden", "name": "Hidden"}]
+  },
+  {
+    "nid": "LeadershipStar_4",
+    "name": "Leadership Star (4)",
+    "desc": "Grants 4 Leadership Stars.",
+    "icon_nid": "GenericSkill",
+    "icon_index": [0, 1],
+    "components": [{"nid": "hidden", "name": "Hidden"}]
+  },
+  {
+    "nid": "LeadershipStar_5",
+    "name": "Leadership Star (5)",
+    "desc": "Grants 5 Leadership Stars.",
+    "icon_nid": "GenericSkill",
+    "icon_index": [0, 1],
+    "components": [{"nid": "hidden", "name": "Hidden"}]
+  },
+  {
+    "nid": "MovementStar_1",
+    "name": "Movement Star (1)",
+    "desc": "Grants 1 Movement Star. Chance to act again after waiting.",
+    "icon_nid": "GenericSkill",
+    "icon_index": [1, 1],
+    "components": [
+      {
+        "nid": "event_after_wait_action",
+        "name": "Movement Star Refresh",
+        "value": "Global_Movement_Star_Refresh_Event"
+      }
+    ]
+  },
+  {
+    "nid": "MovementStar_2",
+    "name": "Movement Star (2)",
+    "desc": "Grants 2 Movement Stars. Chance to act again after waiting.",
+    "icon_nid": "GenericSkill",
+    "icon_index": [1, 1],
+    "components": [
+      {
+        "nid": "event_after_wait_action",
+        "name": "Movement Star Refresh",
+        "value": "Global_Movement_Star_Refresh_Event"
+      }
+    ]
+  },
+  {
+    "nid": "MovementStar_3",
+    "name": "Movement Star (3)",
+    "desc": "Grants 3 Movement Stars. Chance to act again after waiting.",
+    "icon_nid": "GenericSkill",
+    "icon_index": [1, 1],
+    "components": [
+      {
+        "nid": "event_after_wait_action",
+        "name": "Movement Star Refresh",
+        "value": "Global_Movement_Star_Refresh_Event"
+      }
+    ]
+  },
+  {
+    "nid": "MovementStar_4",
+    "name": "Movement Star (4)",
+    "desc": "Grants 4 Movement Stars. Chance to act again after waiting.",
+    "icon_nid": "GenericSkill",
+    "icon_index": [1, 1],
+    "components": [
+      {
+        "nid": "event_after_wait_action",
+        "name": "Movement Star Refresh",
+        "value": "Global_Movement_Star_Refresh_Event"
+      }
+    ]
+  },
+  {
+    "nid": "MovementStar_5",
+    "name": "Movement Star (5)",
+    "desc": "Grants 5 Movement Stars. Chance to act again after waiting.",
+    "icon_nid": "GenericSkill",
+    "icon_index": [1, 1],
+    "components": [
+      {
+        "nid": "event_after_wait_action",
+        "name": "Movement Star Refresh",
+        "value": "Global__Movement_Star_Refresh_Event"
+      }
+    ]
+  },
+  {
+    "nid": "PCC_0",
+    "name": "Pursuit Critical Coefficient (0)",
+    "desc": "Unit's critical hit rate is multiplied by 0 on follow-up attacks.",
+    "icon_nid": "GenericSkill",
+    "icon_index": [0, 0],
+    "components": [
+      {"nid": "pcc_static", "name": "PCC Static Multiplier", "value": 0},
+      {"nid": "hidden", "name": "Hidden"}
+    ]
+  },
+  {
+    "nid": "PCC_1",
+    "name": "Pursuit Critical Coefficient (1)",
+    "desc": "Unit's critical hit rate is multiplied by 1 on follow-up attacks.",
+    "icon_nid": "GenericSkill",
+    "icon_index": [0, 0],
+    "components": [
+      {"nid": "pcc_static", "name": "PCC Static Multiplier", "value": 1},
+      {"nid": "hidden", "name": "Hidden"}
+    ]
+  },
+  {
+    "nid": "PCC_2",
+    "name": "Pursuit Critical Coefficient (2)",
+    "desc": "Unit's critical hit rate is multiplied by 2 on follow-up attacks.",
+    "icon_nid": "GenericSkill",
+    "icon_index": [0, 0],
+    "components": [
+      {"nid": "pcc_static", "name": "PCC Static Multiplier", "value": 2},
+      {"nid": "hidden", "name": "Hidden"}
+    ]
+  },
+  {
+    "nid": "PCC_3",
+    "name": "Pursuit Critical Coefficient (3)",
+    "desc": "Unit's critical hit rate is multiplied by 3 on follow-up attacks.",
+    "icon_nid": "GenericSkill",
+    "icon_index": [0, 0],
+    "components": [
+      {"nid": "pcc_static", "name": "PCC Static Multiplier", "value": 3},
+      {"nid": "hidden", "name": "Hidden"}
+    ]
+  },
+  {
+    "nid": "PCC_4",
+    "name": "Pursuit Critical Coefficient (4)",
+    "desc": "Unit's critical hit rate is multiplied by 4 on follow-up attacks.",
+    "icon_nid": "GenericSkill",
+    "icon_index": [0, 0],
+    "components": [
+      {"nid": "pcc_static", "name": "PCC Static Multiplier", "value": 4},
+      {"nid": "hidden", "name": "Hidden"}
+    ]
+  },
+  {
+    "nid": "PCC_5",
+    "name": "Pursuit Critical Coefficient (5)",
+    "desc": "Unit's critical hit rate is multiplied by 5 on follow-up attacks.",
+    "icon_nid": "GenericSkill",
+    "icon_index": [0, 0],
+    "components": [
+      {"nid": "pcc_static", "name": "PCC Static Multiplier", "value": 5},
+      {"nid": "hidden", "name": "Hidden"}
+    ]
+  },
+  {
+    "nid": "StealArtEffect",
+    "name": "Steal Art Effect (Hidden)",
+    "desc": "Triggers steal logic.",
+    "icon_nid": "GenericSkill",
+    "icon_index": [0, 0],
+    "components": [
+      {
+        "nid": "event_after_initiated_combat",
+        "name": "Event After Action",
+        "value": "Global_Steal_Event"
+      },
+      {
+        "nid": "hidden",
+        "name": "Hidden"
+      },
+      {
+        "nid": "no_animation",
+        "name": "No Animation",
+        "value": true
+      }
+    ]
+  },
+  {
+    "nid": "StealCommand",
+    "name": "Steal",
+    "desc": "Attempt to steal an item from an adjacent enemy. Requires Thief's CON >= Enemy's CON and Thief's CON >= Item's Weight.",
+    "icon_nid": "GenericSkill",
+    "icon_index": [2, 0],
+    "components": [
+      {
+        "nid": "combat_art",
+        "name": "Combat Art (Non-Combat)",
+        "value": "StealArtEffect"
+      },
+      {
+        "nid": "target_enemy",
+        "name": "Target Enemy"
+      },
+      {
+        "nid": "requires_wexp",
+        "name": "Requires Wexp",
+        "value": false
+      },
+      {
+        "nid": "no_combat",
+        "name": "No Combat",
+        "value": true
+      },
+      {
+        "nid": "max_range",
+        "name": "Max Range",
+        "value": 1
+      },
+      {
+        "nid": "min_range",
+        "name": "Min Range",
+        "value": 1
+      }
+    ]
+  },
+  {
+    "nid": "DismountArtEffect",
+    "name": "Dismount Art Effect (Hidden)",
+    "desc": "Triggers dismount logic.",
+    "icon_nid": "GenericSkill",
+    "icon_index": [0, 0],
+    "components": [
+      {
+        "nid": "event_after_action",
+        "name": "Event After Action",
+        "value": "Global_Dismount_Event"
+      },
+      {
+        "nid": "hidden",
+        "name": "Hidden"
+      },
+      {
+        "nid": "no_animation",
+        "name": "No Animation",
+        "value": true
+      }
+    ]
+  },
+  {
+    "nid": "DismountCommand",
+    "name": "Dismount",
+    "desc": "Dismount from steed. Changes class to foot version and consumes action. Only available on outdoor maps if mounted.",
+    "icon_nid": "GenericSkill",
+    "icon_index": [3, 0],
+    "components": [
+      {
+        "nid": "combat_art",
+        "name": "Combat Art (Non-Combat)",
+        "value": "DismountArtEffect"
+      },
+      {
+        "nid": "target_self",
+        "name": "Target Self"
+      },
+      {
+        "nid": "requires_wexp",
+        "name": "Requires Wexp",
+        "value": false
+      },
+      {
+        "nid": "no_combat",
+        "name": "No Combat",
+        "value": true
+      },
+      {
+        "nid": "condition",
+        "name": "Condition",
+        "value": "unit.is_mounted() and game.map.properties.get('terrain_type') == 'outdoor'"
+      }
+    ]
+  },
+  {
+    "nid": "MountArtEffect",
+    "name": "Mount Art Effect (Hidden)",
+    "desc": "Triggers mount logic.",
+    "icon_nid": "GenericSkill",
+    "icon_index": [0, 0],
+    "components": [
+      {
+        "nid": "event_after_action",
+        "name": "Event After Action",
+        "value": "Global_Mount_Event"
+      },
+      {
+        "nid": "hidden",
+        "name": "Hidden"
+      },
+      {
+        "nid": "no_animation",
+        "name": "No Animation",
+        "value": true
+      }
+    ]
+  },
+  {
+    "nid": "MountCommand",
+    "name": "Mount",
+    "desc": "Mount steed. Changes class to mounted version and consumes action. Only available on outdoor maps if dismounted and originally a mounted class.",
+    "icon_nid": "GenericSkill",
+    "icon_index": [4, 0],
+    "components": [
+      {
+        "nid": "combat_art",
+        "name": "Combat Art (Non-Combat)",
+        "value": "MountArtEffect"
+      },
+      {
+        "nid": "target_self",
+        "name": "Target Self"
+      },
+      {
+        "nid": "requires_wexp",
+        "name": "Requires Wexp",
+        "value": false
+      },
+      {
+        "nid": "no_combat",
+        "name": "No Combat",
+        "value": true
+      },
+      {
+        "nid": "condition",
+        "name": "Condition",
+        "value": "not unit.is_mounted() and unit.can_mount() and game.map.properties.get('terrain_type') == 'outdoor'"
+      }
+    ]
+  },
+  {
+    "nid": "Lord",
+    "name": "Lord",
+    "desc": "Identifies this unit as a Lord. If this unit escapes, the chapter ends.",
+    "icon_nid": "GenericSkill",
+    "icon_index": [0, 2],
+    "components": [
+      {
+        "nid": "hidden",
+        "name": "Hidden"
+      }
+    ]
+  },
+  {
+    "nid": "Captured",
+    "name": "Captured",
+    "desc": "Unit has been captured and cannot be deployed.",
+    "icon_nid": "GenericSkill",
+    "icon_index": [2, 2],
+    "components": [
+      {
+        "nid": "prevent_deployment",
+        "name": "Prevent Deployment"
+      },
+      {
+        "nid": "status",
+        "name": "Status"
+      }
+    ]
+  }
+]

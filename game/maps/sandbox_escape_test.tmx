@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.4" tiledversion="1.4.3" orientation="orthogonal" renderorder="right-down" width="10" height="10" tilewidth="16" tileheight="16" infinite="0" nextlayerid="5" nextobjectid="5">
+ <properties>
+  <property name="name" value="Sandbox Escape Test"/>
+  <property name="music" value="Default"/> <!-- Placeholder -->
+  <property name="objective" value="Escape"/> <!-- Placeholder -->
+  <property name="weather" value="None"/>
+  <property name="terrain_type" value="outdoor"/> <!-- Assuming outdoor for mount/dismount if relevant -->
+ </properties>
+ <tileset firstgid="1" name="placeholder_tiles" tilewidth="16" tileheight="16" tilecount="1" columns="1">
+  <image source="../resources/placeholder_tiles.png" width="16" height="16"/>
+ </tileset>
+ <layer id="1" name="Tile Layer 1" width="10" height="10">
+  <data encoding="csv">
+1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1,
+1,1,1,1,1,1,1,1,1,1
+</data>
+ </layer>
+ <objectgroup id="2" name="Unit Layer">
+  <object id="1" name="Leif" type="unit" gid="1" x="16" y="16"> <!-- (1,1) -->
+   <properties>
+    <property name="team" value="player"/>
+    <property name="nid" value="Leif"/>
+    <property name="class" value="Lord_Leif"/>
+    <property name="level" type="int" value="1"/>
+    <property name="items" value="IronSword,LightSword"/>
+   </properties>
+  </object>
+  <object id="2" name="Finn" type="unit" gid="1" x="32" y="16"> <!-- (2,1) -->
+   <properties>
+    <property name="team" value="player"/>
+    <property name="nid" value="Finn"/>
+    <property name="class" value="Cavalier"/>
+    <property name="level" type="int" value="1"/>
+    <property name="items" value="IronLance"/>
+   </properties>
+  </object>
+  <object id="3" name="Enemy_Brigand" type="unit" gid="1" x="128" y="128"> <!-- (8,8) -->
+   <properties>
+    <property name="team" value="enemy"/>
+    <property name="nid" value="Enemy_Brigand_CON3"/> <!-- Using a weak enemy for testing -->
+    <property name="class" value="Thief_FE5"/>
+    <property name="level" type="int" value="1"/>
+    <property name="items" value="IronSword"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <objectgroup id="3" name="Region Layer">
+  <object id="4" name="EscapePoint_1" type="region" x="144" y="144" width="16" height="16"> <!-- (9,9) -->
+   <properties>
+    <property name="nid" value="EscapePoint"/>
+    <property name="region_type" value="event"/> <!-- Or whatever type your engine uses for such regions -->
+    <property name="sub_type" value="EscapePoint"/>
+    <!-- No specific event script needed here as the global unit_move trigger handles it -->
+   </properties>
+  </object>
+ </objectgroup>
+ <layer id="4" name="Weather Layer" width="10" height="10" visible="0" opacity="0.5">
+  <data encoding="csv">
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0
+</data>
+ </layer>
+</map>

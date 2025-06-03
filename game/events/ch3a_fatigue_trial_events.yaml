@@ -1,0 +1,125 @@
+# Event Script for Chapter 3a - Fatigue Trial
+# Purpose: Allow players to accumulate fatigue on units and observe PCC.
+# Transitions to ch3b_fatigue_results.tmx upon completion.
+
+music:
+  player_phase: "Player Phase Music" # TODO: Replace with actual music key
+  enemy_phase: "Enemy Phase Music"   # TODO: Replace with actual music key
+  # ... other music keys as needed
+
+level_vars:
+  map_id: "ch3a_fatigue_trial"
+  next_map_id: "ch3b_fatigue_results" # For chapter transition
+  title: "Chapter 3a - The Trial"
+  objective: "Survive for 5 turns or defeat the enemy commander." # TODO: Adjust as needed
+
+# Unit groups - TODO: Populate with actual unit data and positions
+# Ensure units reference data from game/game_data/
+units:
+  - team: player
+    ai: None # Player controlled
+    units:
+      # Example: Staff user for fatigue accumulation
+      - id: "Player_Healer1"
+        class: "Priest" # TODO: Replace with actual class
+        level: 5
+        position: [2, 2] # TODO: Adjust position
+        items: ["HealStaff"] # TODO: Replace with actual item ID
+      - id: "Player_Healer2"
+        class: "Priest" # TODO: Replace with actual class
+        level: 5
+        position: [2, 3] # TODO: Adjust position
+        items: ["HealStaff"] # TODO: Replace with actual item ID
+
+      # Example: Unit with high PCC or PCC skill
+      - id: "Player_PCC_User"
+        class: "Myrmidon" # TODO: Replace with actual class
+        level: 7
+        position: [3, 5] # TODO: Adjust position
+        skills: ["PCC_Skill"] # TODO: Replace with actual PCC skill if applicable, or ensure base PCC is high
+        items: ["IronSword"]
+
+      # Example: Other player units
+      - id: "Player_Fighter1"
+        class: "Fighter"
+        level: 5
+        position: [4, 2]
+        items: ["IronAxe"]
+
+  - team: enemy
+    ai: "Pursue" # Basic AI, TODO: Adjust as needed
+    units:
+      # Example: Durable, non-lethal enemy for fatigue building
+      - id: "Enemy_TargetDummy1"
+        class: "Knight" # TODO: Replace with actual class
+        level: 3
+        position: [10, 5] # TODO: Adjust position
+        stats: {HP: 50, DEF: 10} # High HP, decent DEF
+        items: ["IronLance_NoCrit"] # TODO: Ensure this weapon cannot crit or is weak
+        ai_group: "stationary_guard"
+
+      # Example: Enemies for PCC demonstration (can be doubled)
+      - id: "Enemy_PCC_Victim1"
+        class: "Soldier" # TODO: Replace with actual class
+        level: 3
+        position: [10, 7] # TODO: Adjust position
+        stats: {SPD: 2} # Low speed to be doubled
+        items: ["IronLance"]
+        ai_group: "standard_attack"
+
+      # Example: Enemy Commander (if win condition is defeat commander)
+      - id: "Enemy_Commander"
+        class: "Brigand"
+        level: 8
+        position: [12, 8]
+        items: ["SteelAxe"]
+        ai_group: "commander_ai"
+        # This unit could be the target for a "Defeat Commander" win condition
+
+# Event definitions
+events:
+  on_level_start:
+    - show_objective: {text: "Survive for 5 turns or defeat the enemy commander."} # TODO: Match level_vars.objective
+    - spawn_group: {group: units} # Spawns all defined units
+
+  # TODO: Add any specific turn events or region events if needed for the scenario
+
+  # Win Conditions
+  # Option 1: Survive X turns
+  on_turn_change:
+    - if:
+        condition: "game.turncount == 6" # Survive 5 turns (event triggers at start of turn 6)
+        actions:
+          - chapter_victory:
+              next_chapter_event_file: "game/events/ch3b_fatigue_results_events.yaml" # Ensure this path is correct
+              # The fatigue_events.py script should be triggered by the engine's chapter end sequence
+
+  # Option 2: Defeat a specific enemy (e.g., Enemy_Commander)
+  on_death:
+    - if:
+        condition: "unit.nid == 'Enemy_Commander'"
+        actions:
+          - chapter_victory:
+              next_chapter_event_file: "game/events/ch3b_fatigue_results_events.yaml" # Ensure this path is correct
+              # The fatigue_events.py script should be triggered by the engine's chapter end sequence
+
+  # Lose Condition (optional, e.g., main lord defeated)
+  # on_death:
+  #   - if:
+  #       condition: "unit.nid == 'MAIN_LORD_NID' and unit.team == 'player'" # TODO: Replace MAIN_LORD_NID
+  #       actions:
+  #         - game_over
+
+# AI groups (optional, for more complex AI behaviors)
+# ai_groups:
+#   stationary_guard:
+#     ai: "Guard"
+#     target_tile: [10, 5] # Example
+#   standard_attack:
+#     ai: "AttackWeakest"
+#   commander_ai:
+#     ai: "ProtectLeader" # Or some other specific AI
+
+# Ensure that your game engine correctly calls the fatigue processing script
+# (e.g., game/events/fatigue_events.py) during the chapter_victory or
+# equivalent end-of-chapter sequence to update unit fatigue before loading ch3b.

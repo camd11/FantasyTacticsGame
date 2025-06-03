@@ -1,0 +1,17 @@
+# game/events/global_triggers.yaml
+# This file contains global event triggers that are not specific to a single mechanic
+# but rather hook into general game actions like unit movement.
+
+parsed_event_scripts:
+  Global_Escape_Objective_Check_On_Move:
+    name: "Global Escape Objective Check on Unit Move"
+    level: Global  # This event should be active on any map.
+    trigger: unit_move  # Triggers after a unit finishes its movement.
+    # The 'script' key directly calls the specified Python function.
+    # The engine is expected to pass the necessary arguments to this function,
+    # typically (unit, old_position, new_position, event_object).
+    # Our Python function game.events.escape_events.on_unit_move is defined as:
+    # on_unit_move(event_name: str, unit: UnitObject, new_position: tuple)
+    # We assume the engine maps the 'event_object' or its NID to 'event_name',
+    # and provides 'unit' and 'new_position' accordingly.
+    script: "game.events.escape_events.on_unit_move"

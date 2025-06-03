@@ -1,0 +1,120 @@
+# Basic event script for Chapter 1: Supply Raid
+# Showcasing Capture, Steal, and Staff Miss mechanics
+
+level_info:
+  tilemap: ch1_supply_raid
+  music: {
+    player_phase: "PlayerPhaseMusic", # Placeholder, replace with actual music key
+    enemy_phase: "EnemyPhaseMusic",   # Placeholder
+    boss_phase: "BossMusic"           # Placeholder
+  }
+  objective: {
+    simple: "Defeat all enemies" # Or "Seize the throne at X,Y"
+  }
+  # win_condition: event_name_for_win # Optional: trigger a specific event on win
+
+# Player Units - Ensure these unit_ids and class_ids exist in your game_data
+# And that they have appropriate skills/stats for Capture, Steal, Staff use.
+units:
+  - unit_id: P001_Leif_Like # Unit capable of Capture (e.g., has CaptureCommand skill)
+    class_id: Lord_Capture # Class with good Build/CON
+    team: player
+    position: [3, 3] # Example starting position
+    level: 1
+    stats: # Example stats, adjust as needed
+      HP: 20, STR: 5, MAG: 2, SKL: 5, SPD: 6, LCK: 3, DEF: 4, RES: 2, BLD: 7, MOV: 5
+    skills: ["CaptureCommand"] # Ensure this skill is defined
+    items: ["IronSword"] # Ensure IronSword is defined in items.json
+
+  - unit_id: P002_Thief # Thief unit
+    class_id: Thief_FE5 # Corrected NID
+    team: player
+    position: [4, 4]
+    level: 1
+    stats:
+      HP: 18, STR: 3, MAG: 0, SKL: 7, SPD: 9, LCK: 5, DEF: 3, RES: 1, BLD: 5, MOV: 6
+    skills: ["StealCommand"] # Ensure this skill is defined
+    items: ["IronDagger", "Lockpick"] # Ensure items are defined
+
+  - unit_id: P003_StaffUser # Staff user
+    class_id: Priest
+    team: player
+    position: [3, 5]
+    level: 1
+    stats:
+      HP: 16, STR: 1, MAG: 6, SKL: 4, SPD: 5, LCK: 6, DEF: 2, RES: 7, BLD: 4, MOV: 5
+    skills: []
+    items: ["HealStaff", "OffensiveStaff_LowHit"] # Ensure staves are defined, one with potentially low hit
+
+# Enemy Units
+  - unit_id: E001_WeakBrigand # Capture target
+    class_id: Brigand
+    team: enemy
+    position: [10, 5]
+    level: 1
+    stats: # Low Build/CON
+      HP: 22, STR: 6, MAG: 0, SKL: 3, SPD: 4, LCK: 1, DEF: 3, RES: 0, BLD: 6, MOV: 5
+    ai: "attack_in_range" # Basic AI
+    items: ["IronAxe"]
+
+  - unit_id: E002_ItemHolder # Has stealable items
+    class_id: Archer_FE5 # Corrected NID
+    team: enemy
+    position: [12, 7]
+    level: 2
+    stats:
+      HP: 20, STR: 5, MAG: 0, SKL: 4, SPD: 5, LCK: 2, DEF: 3, RES: 1, BLD: 5, MOV: 5
+    ai: "attack_in_range"
+    items: ["IronBow", "Vulnerary_Stealable"] # Ensure Vulnerary_Stealable is defined and has weight
+
+  - unit_id: E003_StaffTarget # Target for offensive staves
+    class_id: Soldier
+    team: enemy
+    position: [10, 10]
+    level: 1
+    stats:
+      HP: 24, STR: 7, MAG: 1, SKL: 4, SPD: 3, LCK: 0, DEF: 5, RES: 1, BLD: 8, MOV: 4
+    ai: "attack_in_range"
+    items: ["IronLance"]
+
+  - unit_id: E004_GenericEnemy
+    class_id: Fighter
+    team: enemy
+    position: [15, 5]
+    level: 2
+    stats:
+      HP: 25, STR: 8, MAG: 0, SKL: 5, SPD: 6, LCK: 2, DEF: 4, RES: 0, BLD: 9, MOV: 5
+    ai: "attack_in_range"
+    items: ["SteelAxe"]
+
+# Event Triggers
+events:
+  # Example: Start of Turn 1 event
+  # - name: start_turn_1
+  #   trigger: turn_start(1)
+  #   actions:
+  #     - say("Narrator", "The supply raid begins!")
+
+  # Example: Win condition event (if not using simple objective)
+  # - name: check_victory
+  #   trigger: condition("game.check_dead_all_enemies('enemy')") # Or custom condition
+  #   actions:
+  #     - win_game()
+
+  # Basic enemy AI behavior (can be more complex)
+  # The engine might handle basic AI, but you can define specific behaviors here.
+  # For example, making a unit guard a specific area or target a specific player unit.
+
+# Regions (if needed for seize points, escape points, etc.)
+# regions:
+#   - region_id: SeizePoint
+#     shape: [18, 2, 1, 1] # x, y, width, height
+#     region_type: Seize
+
+# Deployment positions for player units (if not specified in unit block)
+# deployment_points:
+#   player:
+#     - [2,2]
+#     - [2,3]
+#     - [3,2]
+#     - [3,3]
